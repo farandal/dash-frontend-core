@@ -1,0 +1,3 @@
+[submodule "apps/pinoywok"]
+	path = apps/pinoywok
+	url = https://github.com/farandal/dash-frontend-domain.git
