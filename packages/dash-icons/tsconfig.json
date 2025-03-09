@@ -1,0 +1,14 @@
+{
+	"extends": "dash-tsconfig/react-library.json",
+	"compilerOptions": {
+		//"jsx": "react",
+		//"types": ["@types/jest", "@types/node"]
+	},
+	"include": [
+		"src/**/*.ts",
+		"src/**/*.tsx"
+		//"index.ts" //"src/**/*.css"
+		//"src/tests/PMUIButton/primary.test.js"
+	],
+	"exclude": ["node_modules"]
+}

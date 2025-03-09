@@ -1,0 +1,14 @@
+{
+	"extends": "./tsconfig.json",
+	"compilerOptions": {
+		"outDir": "dash-icons"
+	},
+	"exclude": ["src/stories", "src/app", "src/config"],
+	"include": [
+		"src/**/*.ts",
+		"src/**/*.tsx",
+		"src/**/*.js",
+		"src/**/*.css",
+		"src/custom.d.ts"
+	]
+}

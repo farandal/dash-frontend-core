@@ -1,0 +1,16 @@
+import * as React from 'react';
+import { SVGProps } from 'react';
+const SvgTrayArroeUp = (props: SVGProps<SVGSVGElement>) => (
+	<svg
+		viewBox='0 0 24 24'
+		fill='none'
+		xmlns='http://www.w3.org/2000/svg'
+		{...props}
+	>
+		<path
+			d='M2 12h2v5h16v-5h2v5c0 1.11-.89 2-2 2H4a2 2 0 0 1-2-2v-5ZM12 2 6.46 7.46l1.42 1.42L11 5.75V15h2V5.75l3.13 3.13 1.42-1.43L12 2Z'
+			fill='#121857'
+		/>
+	</svg>
+);
+export default SvgTrayArroeUp;
