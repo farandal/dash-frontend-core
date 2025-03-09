@@ -6,6 +6,7 @@
       "packages/**/*"
     ],
     "scripts": {
+     "new" : "chmod +x ./new.sh && ./new.sh",
       "dev": "cd apps/dash && vite",
       "build": "turbo build",
       "lint": "turbo run lint",
