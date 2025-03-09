@@ -7,3 +7,4 @@
 .turbo
 yarn-error.log
 apps/!(dash)
+yarn.lock
