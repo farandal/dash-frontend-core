@@ -1,0 +1,19 @@
+{
+	"extends": "./tsconfig.json",
+	"include": [
+		// 👇️ add all the directories and files
+		// that you want to lint here
+		"src",
+		// add all files in which you see
+		// the "parserOptions.project" error
+		".eslintrc.json",
+		//"dash-types",
+		//"dash-types/index.d.ts",
+		//"dash-types/promarketing-types/index.d.ts",
+		//"dash-types/types/src/index.d.ts",
+		//"rollup.config.ts",
+		"index.d.ts",
+		"src/index.d.ts"
+		//"rollup.config.ts"
+	]
+}
