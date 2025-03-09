@@ -1,0 +1,32 @@
+export interface ILogisticCenter {
+	/** */
+	id: number;
+	/** */
+	name: string;
+	/** */
+	address: string;
+	/** */
+	address_geocoded: number[];
+	/** */
+	detail?: string;
+	/** */
+	responsable: string;
+	/** */
+	email: string;
+	/** */
+	phone: string;
+	/** */
+	active: boolean;
+	/** */
+	commune_id: number;
+	/** */
+	client_id: number;
+	/** */
+	created_at?: string;
+	/** */
+	updated_at: string;
+	/** */
+	volume_id?: number;
+	/** */
+	css_mails?: string;
+}
