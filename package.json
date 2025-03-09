@@ -1,0 +1,52 @@
+{
+    "name": "dash-frontend",
+    "private": true,
+    "workspaces": [
+      "apps/*",
+      "packages/**/*"
+    ],
+    "scripts": {
+      "dev": "cd apps/dash && vite",
+      "build": "turbo build",
+      "lint": "turbo run lint",
+      "lint:packages": "npm-run-all --parallel --print-label --continue-on-error lint:packages:*",
+      "lint:packages:semver": "syncpack lint-semver-ranges",
+      "lint:packages:mismatches": "syncpack list-mismatches",
+      "lint:check": "prettier --check \"**/*.{js,ts,tsx,md,mdx,json}\"",
+      "lint:fix": "prettier --write  \"**/*.{js,ts,tsx,md,mdx,json}\"",
+      "clean": "turbo run clean && rm -rf node_modules",
+      "add-changeset": "changeset add",
+      "version-packages": "changeset version",
+      "prepare": "husky install",
+      "prerelease": "yarn run build",
+      "release": "changeset publish",
+      "test": "turbo run test",
+      "types:check": "turbo run types:check"
+    },
+    "dependencies": {
+      "dash-eslint": "*",
+      "dash-prettier": "*"
+    },
+    "devDependencies": {
+      "@changesets/cli": "latest",
+      "@commitlint/cli": "latest",
+      "@commitlint/config-conventional": "latest",
+      "@types/jest": "latest",
+      "@types/react": "latest",
+      "@types/react-dom": "latest",
+      "autoprefixer": "latest",
+      "depcheck": "latest",
+      "husky": "latest",
+      "npm-run-all": "latest",
+      "postcss": "latest",
+      "prettier": "latest",
+      "syncpack": "latest",
+      "turbo": "latest"
+    },
+    "packageManager": "yarn@1.22.19",
+    "engines": {
+      "node": ">=20.18.3",
+      "npm": ">=9.6.7"
+    }
+  }
+  
