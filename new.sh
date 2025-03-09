@@ -37,61 +37,110 @@ if [ -d "$dest_dir" ]; then
     fi
 fi
 
-# Get Git repository URL for the new submodule
-read -p "Enter the Git repository URL for the client submodule: " repo_url
+# Ask if user wants to set up a submodule
+read -p "Do you want to set up this app as a Git submodule? (y/n): " setup_submodule
 
-# Create temp directory to prepare the submodule content
-temp_dir=$(mktemp -d)
-echo "Copying template files to temporary directory..."
-cp -r "$src_dir"/* "$temp_dir"/
-
-# Update package.json with the new app name in the temp directory
-echo "Updating package.json with new app name..."
-sed -i.bak "s/\"name\": \".*\"/\"name\": \"$app_name\"/" "$temp_dir/package.json" && rm "$temp_dir/package.json.bak"
-
-# Clone the repository, initialize it if empty, and push template files
-echo "Initializing repository with template files..."
-temp_clone_dir=$(mktemp -d)
-if ! git clone "$repo_url" "$temp_clone_dir"; then
-    echo "Error: Failed to clone repository"
-    rm -rf "$temp_dir" "$temp_clone_dir"
-    exit 1
-fi
-
-# Copy template files to the cloned repository
-cp -r "$temp_dir"/* "$temp_clone_dir"/
-
-# Commit and push the template files
-cd "$temp_clone_dir"
-git add .
-if git status | grep -q "Changes to be committed"; then
-    git commit -m "Initialize repository with template files"
-    if ! git push; then
-        echo "Error: Failed to push to repository. Check your permissions."
+if [ "$setup_submodule" = "y" ]; then
+    # Ask if they have a remote URL ready
+    read -p "Do you have a remote Git repository URL? (y/n): " has_remote_url
+    
+    # Create temp directory to prepare the submodule content
+    temp_dir=$(mktemp -d)
+    echo "Copying template files to temporary directory..."
+    cp -r "$src_dir"/* "$temp_dir"/
+    
+    # Update package.json with the new app name in the temp directory
+    echo "Updating package.json with new app name..."
+    sed -i.bak "s/\"name\": \".*\"/\"name\": \"$app_name\"/" "$temp_dir/package.json" && rm "$temp_dir/package.json.bak" || true
+    
+    if [ "$has_remote_url" = "y" ]; then
+        # Get Git repository URL for the new submodule
+        read -p "Enter the Git repository URL for the client submodule: " repo_url
+        
+        # Clone the repository, initialize it if empty, and push template files
+        echo "Initializing repository with template files..."
+        temp_clone_dir=$(mktemp -d)
+        if ! git clone "$repo_url" "$temp_clone_dir"; then
+            echo "Error: Failed to clone repository"
+            rm -rf "$temp_dir" "$temp_clone_dir"
+            exit 1
+        fi
+        
+        # Copy template files to the cloned repository
+        cp -r "$temp_dir"/* "$temp_clone_dir"/
+        
+        # Commit and push the template files
+        cd "$temp_clone_dir"
+        git add .
+        if git status | grep -q "Changes to be committed"; then
+            git commit -m "Initialize repository with template files"
+            if ! git push; then
+                echo "Error: Failed to push to repository. Check your permissions."
+                cd - > /dev/null
+                rm -rf "$temp_dir" "$temp_clone_dir"
+                exit 1
+            fi
+        else
+            echo "No changes to commit. Repository may already be initialized."
+        fi
         cd - > /dev/null
+        
+        # Now add the initialized repository as a submodule
+        echo "Adding repository as a submodule..."
+        if ! git submodule add "$repo_url" "$dest_dir"; then
+            echo "Error: Failed to add submodule. Try using --force if appropriate."
+            rm -rf "$temp_dir" "$temp_clone_dir"
+            exit 1
+        fi
+        
+        # Clean up the temp directories
         rm -rf "$temp_dir" "$temp_clone_dir"
-        exit 1
+    else
+        # Create a local git repository
+        echo "Creating local git repository..."
+        mkdir -p "$dest_dir"
+        
+        # Copy template files to the new directory
+        cp -r "$temp_dir"/* "$dest_dir"/
+        
+        # Initialize git repository
+        cd "$dest_dir"
+        git init
+        git add .
+        git commit -m "Initial commit with template files"
+        cd - > /dev/null
+        
+        # Add the local repository as a submodule
+        echo "Adding local repository as a submodule..."
+        git submodule add --force "./$dest_dir" "$dest_dir" || true
+        
+        # Clean up temp directory
+        rm -rf "$temp_dir"
+        
+        echo ""
+        echo "To add a remote URL later:"
+        echo "  cd $dest_dir"
+        echo "  git remote add origin [your-remote-url]"
+        echo "  git push -u origin main"
     fi
 else
-    echo "No changes to commit. Repository may already be initialized."
-fi
-cd - > /dev/null
-
-# Now add the initialized repository as a submodule
-echo "Adding repository as a submodule..."
-if ! git submodule add "$repo_url" "$dest_dir"; then
-    echo "Error: Failed to add submodule. Try using --force if appropriate."
-    rm -rf "$temp_dir" "$temp_clone_dir"
-    exit 1
+    # Simple directory copy without submodule setup
+    echo "Creating a regular app directory (not a submodule)..."
+    cp -r "$src_dir" "$dest_dir"
+    
+    # Update package.json with the new app name
+    echo "Updating package.json with new app name..."
+    sed -i.bak "s/\"name\": \".*\"/\"name\": \"$app_name\"/" "$dest_dir/package.json" && rm "$dest_dir/package.json.bak" || true
 fi
 
-# Clean up the temp directories
-rm -rf "$temp_dir" "$temp_clone_dir"
-
-# Commit the submodule addition
-echo "Committing the new submodule to the main repository..."
-git add "$dest_dir" .gitmodules
-git commit -m "Add $app_name project as a submodule at apps/dash"
+# Commit the changes if it's a submodule
+if [ "$setup_submodule" = "y" ]; then
+    # Commit the submodule addition
+    echo "Committing the new submodule to the main repository..."
+    git add .gitmodules 2>/dev/null || true
+    git add "$dest_dir" 2>/dev/null || true
+    git commit -m "Add $app_name project as a submodule at apps/dash" || echo "Nothing to commit. Submodule might already be tracked."
+fi
 
 echo "Successfully created new app as a submodule at $dest_dir"
 echo ""
@@ -110,4 +159,6 @@ echo "   cd [main-repo-root]"
 echo "   git pull"
 echo "   git submodule update --remote"
 echo ""
-echo "Note: Clients can only push to the $dest_dir submodule, not to the main repository"
+if [ "$setup_submodule" = "y" ]; then
+    echo "Note: Clients can only push to the $dest_dir submodule, not to the main repository"
+fi
