@@ -1,0 +1,89 @@
+.MuiTablePagination-actions {
+	margin-left: 1rem !important;
+}
+.MuiPaginationItem-root {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	padding: 5px 6px;
+	width: 32px;
+	height: 32px;
+	background: @white;
+	border: 1px solid @module-background;
+	border-radius: 2px;
+
+	font-style: normal;
+	font-weight: 400;
+	font-size: 14px;
+	line-height: 22px;
+	text-align: center;
+	color: #262626;
+
+	&.Mui-selected {
+		background: @white;
+		border: 1px solid @main-color;
+		color: @main-color;
+	}
+
+	&.MuiPaginationItem-previousNext {
+		background: @main-color;
+		border: 1px solid @main-color;
+		color: @white;
+	}
+
+	&.Mui-disabled {
+		background: #f5f5f5;
+		border: 1px solid @module-background;
+		color: #bfbfbf;
+	}
+}
+
+.dash-pagination-component {
+	background-color: #f5f5f5;
+  z-index: 800;
+	position: fixed;
+	bottom: 15px;
+	//right: 15px;
+	right: 0px;
+	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+	border-radius: 8px;
+	.MuiTablePagination-select {
+		background-color: @main-color;
+    color: white !important;
+    font-weight: bold;
+    font-size: 10px;
+	}
+}
+
+.MuiPaginationItem-page {
+  display: inline-flex;
+  -webkit-box-align: center;
+  align-items: center;
+  -webkit-box-pack: center;
+  justify-content: center;
+  position: relative;
+  -webkit-tap-highlight-color: transparent;
+  background-color: transparent;
+  outline: 0px;
+  border: 0px;
+  cursor: pointer;
+  user-select: none;
+  vertical-align: middle;
+  appearance: none;
+  text-decoration: none;
+  font-family: Roboto, Helvetica, Arial, sans-serif;
+  font-weight: 400;
+  font-size: 0.875rem;
+  line-height: 1.43;
+  letter-spacing: 0.01071em;
+  border-radius: 13px;
+  text-align: center;
+  box-sizing: border-box;
+  min-width: 26px;
+  height: 26px;
+  padding: 0px 4px;
+  margin: 0px 1px;
+  color: rgb(35, 48, 68);
+  transition: color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms, background-color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+}

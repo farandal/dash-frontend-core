@@ -1,0 +1,26 @@
+{
+  "name": "dash-styles",
+  "version": "0.0.0",
+  "private": true,
+  "main": "src/index.tsx",
+  "exports": {
+    ".": {
+      "import": "./src/index.tsx",
+      "require": "./src/index.tsx"
+    },
+    "./dash.less": {
+      "import": "./src/dash.less",
+      "require": "./src/dash.less"
+    },
+    "./styles/*": {
+      "import": "./src/styles/*",
+      "require": "./src/styles/*"
+    }
+  },
+  "license": "MIT",
+  "devDependencies": {},
+  "dependencies": {
+    "@mui/utils": "latest",
+    "react-admin": "latest"
+  }
+}

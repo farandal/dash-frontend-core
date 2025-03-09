@@ -1,0 +1,108 @@
+@input-color: @main-color;
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+    transition: background-color 5000s ease-in-out 0s;
+}
+
+.MuiAutocomplete-inputRoot {
+    flex-wrap: nowrap !important;
+}
+
+.MuiInputBase-colorPrimary{
+    background-color: @white;
+    border-color: @input-color;
+    color: @input-color;
+    fieldset{
+        border-radius: 6px;
+        border-color: @input-color !important;
+        border-width: 1px !important;
+        box-shadow: 2px 2px rgba(154, 101, 224, 0);
+        transition: all 0.4s;
+    }
+    input, .MuiSelect-select{
+        width: 100%;
+        min-width: 0;
+        //min-height: 45px;
+        border-radius: 6px;
+        font-family: 'Montserrat';
+        font-style: normal;
+        font-weight: 400;
+        font-size: 16px;
+        line-height: 24px;
+        color: #8C8C8C;
+    }
+    &:hover{
+        fieldset{
+            box-shadow: 2px 2px rgba(154, 101, 224, 0.4);
+        }
+    }
+}
+
+.MuiFormLabel-colorPrimary{
+    color: #8C8C8C;
+    &.Mui-focused{
+        color: @input-color !important;
+    }
+}
+
+.input-label-top{
+    > .MuiFormLabel-root{
+        position: static;
+        transform: unset;
+        font-family: 'Montserrat';
+        font-style: normal;
+        font-weight: 400;
+        font-size: 14px;
+        line-height: 22px;
+        color: #262626;
+    }
+    > .MuiInputBase-root{
+        fieldset{
+            top: 0;
+            legend{
+                display: none;
+            }
+        }
+    }
+}
+
+.select-label{
+    position: static;
+    transform: unset;
+    font-family: 'Montserrat' !important;
+    font-style: normal !important;
+    font-weight: 400 !important;
+    font-size: 14px !important;
+    line-height: 22px !important;
+}
+
+.MuiList-root{
+    .MuiMenuItem-root{
+        font-family: 'Montserrat';
+        font-style: normal;
+        font-weight: 400;
+        font-size: 16px;
+        line-height: 24px;
+        color: #8C8C8C;
+    }
+}
+
+.MuiCheckbox-root{
+    color: @main-color !important;
+}
+
+.MuiFormLabel-asterisk{
+    color: #FF0000 !important;
+}
+
+.MuiFormControlLabel-label{
+    font-family: 'Montserrat';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 22px;
+    color: #262626;
+}

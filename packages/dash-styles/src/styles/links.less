@@ -1,0 +1,28 @@
+a, .dash-link{
+  color: @dash-principal-color;
+}
+
+.link {
+  display: flex;
+  width: fit-content;
+  margin: .5rem 0;
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 22px;
+
+  text-align: right;
+  text-decoration-line: underline;
+  // color: $c-blue;
+  transition: all .4s;
+  &--dark-red{
+      color: @main-color-contrast !important;
+  }
+
+  .icon{
+      margin-right: 10px;
+  }
+
+  &:hover{
+      text-decoration: underline;
+  }
+}

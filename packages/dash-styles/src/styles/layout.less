@@ -1,0 +1,110 @@
+.dash-layout-content > .dash-layout-content  {
+  padding: 0 !important;
+}
+
+.framed-layout{
+  > #root{
+      background-color: aliceblue;
+      > div > div > .lite{
+          background-color: transparent;
+      }
+      .ant-layout{
+          .ant-layout-content.dash-layout-content, .ant-layout-footer{
+              background-color: transparent;
+              border-top: unset;
+          }
+      }
+  }
+}
+
+
+.framed-layout{
+  .dash-module-box-content{
+      max-width: calc(100vw - 60px - 107px);
+  }   
+}
+
+/* Layout overwrites */
+
+.dash-layout-content{
+  padding: 0 15px 0 263px;
+  transition: all .4s;
+  .dash-app-module{
+      margin: 0;
+      padding: 0 0 0 5px;
+      width: 100%;
+      .dash-module-box-content{
+          padding: 0;
+      }
+  .dash-box{
+    width: 100%;
+  }
+  }
+}
+
+.dash-app-layout-sidebar-collapsed{
+  .dash-header, .dash-layout-content{
+      padding: 0 15px 0 65px;
+  }
+}
+
+/* Adds the default header padding for the expanded menu */
+.dash-header{
+  padding: 0 0px 0 263px;
+}
+
+
+@media (max-width: @mq-sm){
+  .dash-header, .dash-layout-content{
+      padding: 0;
+  }
+  
+  .dash-app-layout-sidebar-collapsed{
+      .dash-header, .dash-layout-content{
+          padding: 0;
+      }
+  }
+
+  .dash-layout-content{
+      .dash-app-module{
+          //margin: 0 19px;
+          //width: calc(100% - 38px);
+          //max-width: calc(100% - 38px);
+          width: calc(100%);
+          max-width: calc(100%);
+          margin: 0;
+          padding: 0;
+      }
+  }
+}
+
+/* @deprecated ANTD */
+/*
+.framed-layout{
+  .ant-layout-header.dash-header{
+      // position: fixed;
+      top: 30px;
+      left: 30px;
+      // width: calc(100% - 60px);
+      width: 100%;
+  }
+}
+@media screen and (max-width: 991px){
+  
+  .framed-layout{
+      .ant-layout-header.dash-header{
+          // position: fixed;
+          top: 0;
+          left: 0px;
+          border-top-left-radius: 0;
+          border-top-right-radius: 0;
+          width: calc(100%);
+      }
+  }
+  .framed-layout #root .ant-layout-sider{
+      border-top-left-radius: 0 !important;
+      border-bottom-left-radius: 0 !important;
+      height: calc(100vh) !important;
+  }
+}
+*/

@@ -1,0 +1,141 @@
+.MuiTableCell-root.MuiTableCell-head{
+    //padding: 16px;
+    background-color: @main-color !important;
+    span{
+        font-style: normal;
+        font-weight: 600;
+        font-size: 14px;
+        line-height: 22px;
+        color: @white;
+    }
+    svg{
+        color: @white !important; 
+    }
+}
+
+.MuiTableCell-root.MuiTableCell-body{
+  span{
+      //display: inline;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      label{
+          margin: 0 5px;
+      }
+  }
+  .tags-wrapper{
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+  }
+}
+
+.RaDatagrid-headerCell{
+  //min-width: 140px;
+  text-align: center;
+}
+.MuiTableCell-root.MuiTableCell-body{
+  //text-align: center;
+  border-bottom: 1px solid rgba(224, 224, 224, 1);
+  padding: 2px 16px;
+}
+
+
+/* Stikcy header */
+
+.sticky-header-wrapper .RaDatagrid-tableWrapper {
+  max-height: calc(~"100vh - 90px"); // minus the floating paginator size
+  box-sizing: border-box;
+}
+/*
+.sticky-header-wrapper.sortable-datagrid .RaDatagrid-thead {
+  display: inline;
+}
+
+.sortable-datagrid .RaDatagrid-thead {
+  display: flex;
+}
+.sortable-datagrid .MuiTableContainer-root {
+  display: flex;
+}
+*/
+.MuiTableContainer-root, .dash-datagrid-wrapper{
+  // margin-top: 50px;
+  // max-height: 480px !important;
+  // // overflow-x: unset !important;
+  .RaDatagrid-tableWrapper{
+      width: 100%;
+      //min-width: 920px;
+      //margin-top: 15px;
+      //max-height: unset !important;
+      //overflow: auto;
+  }
+}
+
+.RaDatagrid-tableWrapper{
+  //max-height: calc(100vh - 70px);
+  //margin-bottom: 70px;
+  overflow: auto;
+}
+
+.RaBulkActionsToolbar-topToolbar{
+  .MuiButtonBase-root{
+      background-color: #fff1f0;
+      border: 1px solid @pink;
+      border-radius: 6px !important;
+      font-family: 'Montserrat' !important;
+      font-style: normal !important;
+      font-weight: 700 !important;
+      font-size: 16px !important;
+      line-height: 24px !important;
+      color: @pink !important;
+      min-height: auto !important;
+      height: auto !important;
+      padding: 4px 10px !important;
+      .MuiButton-startIcon{
+          color: @pink !important;
+          width: 18px !important;
+      }
+      &:hover{
+          background-color: @pink;
+          color: #fff1f0 !important;
+          .MuiButton-startIcon{
+              color: #fff1f0 !important;
+          }
+      }
+  }
+}
+
+.RaDatagrid-tableWrapper{
+  //max-height: calc(100vh - 70px);
+  //margin-bottom: 70px;
+  overflow: auto;
+}
+
+.RaBulkActionsToolbar-topToolbar{
+  .MuiButtonBase-root{
+      background-color: #fff1f0;
+      border: 1px solid @pink;
+      border-radius: 6px !important;
+      font-family: 'Montserrat' !important;
+      font-style: normal !important;
+      font-weight: 700 !important;
+      font-size: 16px !important;
+      line-height: 24px !important;
+      color: @pink !important;
+      min-height: auto !important;
+      height: auto !important;
+      padding: 4px 10px !important;
+      .MuiButton-startIcon{
+          color: @pink !important;
+          width: 18px !important;
+      }
+      &:hover{
+          background-color: @pink;
+          color: #fff1f0 !important;
+          .MuiButton-startIcon{
+              color: #fff1f0 !important;
+          }
+      }
+  }
+}

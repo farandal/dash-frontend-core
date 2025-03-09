@@ -1,0 +1,135 @@
+/*.RaList-content {
+  //overflow: scroll !important;
+}*/
+/*
+.dash-app-module {
+  .RaList-actions > .MuiPaper-root {
+    background-color: inherit;
+    border-radius: inherit;
+    box-shadow: inherit;
+  }
+  .RaList-main > .MuiPaper-root {
+    background-color: inherit;
+    border-radius: inherit;
+    box-shadow: inherit;
+  }  
+}*/
+
+.dash-module-box-content div:empty,
+.edit-page div:empty,
+.show-page div:empty,
+.view-page div:empty,
+.create-page div:empty
+{
+  display: none;
+}
+
+.MuiStack-root {
+  align-items: stretch !important;
+}
+
+.top-toolbar {
+
+      .MuiToolbar-root {
+        
+          //background-color: #F6F7FC;
+          //border-right: 1px solid #c8c8c8;
+          padding-bottom:0px;
+          padding-right: 10px;
+          margin-right: 35px;
+      
+      }
+ 
+}
+
+.RaCreate-main, .RaEdit-main  { 
+  > .MuiPaper-root {
+    background-color: inherit;
+    border-radius: inherit;
+    box-shadow: inherit;
+  }
+  form {
+    > .MuiToolbar-root {
+      margin-top: 15px;
+    }
+  }
+}
+/* Hack - for some reason RA adds an empty span immediately after */ 
+.RaList-actions > span {
+    display: none;
+}
+
+.RaList-actions {
+    display: block !important;
+    //margin-bottom: 15px;
+}
+
+
+.list-page .RaList-main {
+  width: 100%;
+  // To give paginator space
+  padding-bottom: 80px;
+}
+
+/* This is mented to show a horizontal scroll feature when not all elements of bulk actions fit */
+
+/*.RaBulkActionsToolbar-topToolbar {
+  overflow-x: scroll;
+}*/
+
+/*.RaFilterForm-filterFormInput .MuiFormControl-root {
+  //min-width: 217px;
+  width: 100%;
+}*/
+
+.toolbar-filters {
+  width: 100%
+
+}
+
+.filter-field {
+  width: 25%;
+}
+
+@media (max-width: @mq-lg){
+  .filter-field {
+    width: 33%;
+  }
+}
+
+
+@media (max-width: @mq-md){
+  .filter-field {
+    width: 50%;
+  }
+}
+
+@media (max-width: @mq-sm){
+  .filter-field {
+    width: 100%;
+  }
+}
+
+.MuiToolbar-root.RaBulkActionsToolbar-toolbar {
+  min-height: unset !important;
+  -webkit-transform: translateY(0px) !important;
+  -moz-transform: translateY(0px) !important;
+  -ms-transform: translateY(0x) !important;
+  transform: translateY(0px) !important;
+  position: relative !important;
+  width: 100%;
+  //overflow-x: scroll;
+}
+
+
+.MuiSelect-select .RaSelectArrayInput-chips {
+  display: contents !important;
+}
+
+.MuiSelect-select:hover .RaSelectArrayInput-chips {
+  //display: flex !important;
+  position: absolute;
+  background: white;
+  border-radius: 14px;
+  padding: 4px;
+}

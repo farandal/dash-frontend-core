@@ -1,0 +1,78 @@
+@font-face {
+    font-family: "Montserrat";
+    font-weight: 400;
+    src: local("Montserrat"),
+      url("../assets/fonts/Montserrat-Regular.ttf") format("truetype");
+  }
+
+@font-face {
+    font-family: "Montserrat";
+    font-weight: 600;
+    src: local("Montserrat"),
+      url("../assets/fonts/Montserrat-Bold.ttf") format("truetype");
+}
+
+
+body{
+  font-family: "Montserrat";
+  background-color: @white;
+ 
+  .dash-app-layout{
+      background-color: transparent;
+      width: 100%;
+      //min-width: 485px;
+      height: 100vh;
+  }
+  .MuiScopedCssBaseline-root{
+      background-color: transparent;
+  }
+}
+
+
+#root {
+  height:100%
+}
+
+li { list-style: none }
+ul { padding-inline-start: 0px;}
+
+
+
+.MuiTypography-root {
+  width:100%;
+}
+
+legend {
+  float: inherit;
+}
+
+h3 { margin: 0; }
+
+fieldset {
+  border: none
+}
+
+fieldset legend {
+  font-size: larger;
+  font-weight: bold;
+}
+
+// Responsive exceptions
+
+@media (max-width: @mq-sm) {
+  
+  .sm-hide { 
+    display: none !important;
+  }
+  
+  body.ingresar-paquete .dash-header-content,
+  body.egresar-paquete .dash-header-content,
+  body.admin-warehouse-enter .dash-header-content,
+  body.admin-warehouse-dispatch .dash-header-content,
+  body.admin-warehouse-return .dash-header-content
+  {
+    display: none !important;
+  }
+
+
+}
