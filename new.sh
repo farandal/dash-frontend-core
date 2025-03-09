@@ -5,10 +5,10 @@ read -p "Enter the new app name: " app_name
 app_name=$(echo "$app_name" | tr '[:upper:]' '[:lower:]' | tr -d ' ')
 
 # Source directory
-src_dir="apps/dash"
+src_dir="apps/demo"
 
 # Destination directory
-dest_dir="apps/$app_name"
+dest_dir="apps/dash"
 
 # Check if source directory exists
 if [ ! -d "$src_dir" ]; then
