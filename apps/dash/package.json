@@ -80,7 +80,7 @@
 		"qs": "latest",
 		"query-string": "latest",
 		"react": "latest",
-		"react-18-beautiful-dnd-grid": "*",
+	
 		"react-admin": "latest",
 		"react-chartjs-2": "^5.3.0",
 		"react-device-detect": "latest",
