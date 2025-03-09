@@ -1,0 +1,47 @@
+/* eslint react/jsx-key: off */
+import React, { Suspense } from 'react';
+import { GlobalLoader } from 'dash-admin';
+import { Loading } from 'react-admin';
+import { ErrorBoundary } from 'react-error-boundary';
+import LoaderAnimation from 'react-spinners/PuffLoader';
+
+const ErrorFallback = ({ error, resetErrorBoundary }) => {
+	return <Loading loadingPrimary='Error' loadingSecondary={error.message} />;
+};
+
+const AppComponent = React.lazy(() => {
+	return new Promise((resolve) => setTimeout(resolve, 1 * 1000)).then(
+		// @ts-ignore
+		() => import('@app/DASHApp'), 
+	);
+});
+
+const AppAsyncWrapper: React.FC<any> = () => {
+
+	return (
+		<>
+			<ErrorBoundary
+				FallbackComponent={ErrorFallback}
+				onReset={() => {
+					// reset the state of your app so the error doesn't happen again
+				}}
+			>
+				<Suspense fallback={<Loading loadingPrimary='' loadingSecondary='' />}>
+					<AppComponent />
+				</Suspense>
+			</ErrorBoundary>
+			<GlobalLoader overlayBackground='rgba(255, 255, 255, 0.0)'>
+				<LoaderAnimation
+					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+					// @ts-ignore
+					size={20}
+					color={'#222'}
+					//loading={loading}
+					// css={spinnerStyle}
+				/>
+			</GlobalLoader>
+		</>
+	);
+};
+
+export default AppAsyncWrapper;

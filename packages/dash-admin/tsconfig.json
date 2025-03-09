@@ -1,0 +1,20 @@
+{
+	"extends": "dash-tsconfig/base.json",
+	"exclude": [
+		"src/**/*.spec.ts",
+		"src/**/*.spec.tsx",
+		"src/**/*.spec.js",
+		"src/stories/**/*.stories.tsx"
+	],
+	"include": [
+		"src/**/*.ts",
+		"src/**/*.tsx",
+		"src/**/*.js",
+		"src/custom.d.ts",
+		//"dash-types/index.d.ts",
+		//"dash-types/dash-types/index.d.ts",
+		//"dash-types/types/src/index.d.ts",
+		"index.d.ts",
+		"src/index.d.ts"
+	]
+}
