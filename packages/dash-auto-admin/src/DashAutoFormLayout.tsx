@@ -1,0 +1,105 @@
+import { DashAutoFormTabs } from '.';
+import IDashAutoAdminAttribute from './interfaces/IDashAutoAdminAttribute';
+import IDashAutoAdminFormOptions from './interfaces/IDashAutoAdminFormOptions';
+import IDashAutoAdminResourceConfig from './interfaces/IDashAutoAdminResourceConfig';
+
+import { default as AttributeToInput } from './mui/AttributeToInput';
+import hashedGroupByTabs from './utils/hashedGroupByTabs';
+
+const DashAutoFormLayout = (
+	schema: IDashAutoAdminAttribute[],
+	resourceConfig: IDashAutoAdminResourceConfig,
+	options?: IDashAutoAdminFormOptions,
+) => {
+	const groupedTabs = hashedGroupByTabs(schema);
+
+	const renderEdit = (tab: string): JSX.Element[] => {
+		const groupedAttributesByTab = groupedTabs[tab] ? groupedTabs[tab] : [];
+		return groupedAttributesByTab
+			.filter((attribute) => attribute?.inEdit !== false)
+			.map((attribute, idx) =>
+				AttributeToInput('edit', resourceConfig, attribute, idx, options),
+			);
+	};
+
+	const renderCreate = (tab: string): JSX.Element[] => {
+		const groupedAttributesByTab = groupedTabs[tab] ? groupedTabs[tab] : [];
+		return groupedAttributesByTab
+			.filter((attribute) => attribute?.inCreate !== false)
+			.map((attribute, idx) =>
+				AttributeToInput('create', resourceConfig, attribute, idx, options),
+			);
+	};
+
+	/*
+   const renderShow = (tab: string): JSX.Element[] => {
+    const groupedAttributesByTab = groupedTabs.hasOwnProperty(tab) ? groupedTabs[tab] : [];
+    return groupedAttributesByTab.filter(attribute => attribute?.inShow !== false).map((attribute, idx) => AttributeToInput(attribute, idx, options))
+  }*/
+
+	/*
+   return groupByTabs(schema).map((groupOfAttributes, idx) => (
+        <fieldset key={"fieldset-" + idx}>
+          <legend>{groupOfAttributes[0].tab || (options?.label || 'Datos')}</legend>
+          {groupOfAttributes.filter(attribute => attribute?.inEdit !== false).map((attribute, idx) => AttributeToInput(attribute, idx, options))}
+        </fieldset>
+      ))
+
+  */
+
+	switch (options.mode) {
+		case 'create':
+			if (
+				!resourceConfig.createLayout ||
+				typeof resourceConfig.createLayout !== 'function'
+			) {
+				console.error(
+					'createLayout must be present and be a function in the resource definition when using formGroupMode layout, fallback to tabs',
+				);
+
+				return DashAutoFormTabs({
+					schema: schema,
+					resource: resourceConfig,
+					options: options,
+				});
+			}
+
+			return resourceConfig.createLayout(renderCreate);
+
+		case 'edit':
+			if (
+				!resourceConfig.editLayout ||
+				typeof resourceConfig.editLayout !== 'function'
+			) {
+				console.error(
+					'editLayout must be present and be a function in the resource definition when using formGroupMode layout, fallback to tabs',
+				);
+				return DashAutoFormTabs({
+					schema: schema,
+					resource: resourceConfig,
+					options: options,
+				});
+			}
+
+			return resourceConfig.editLayout(renderEdit);
+
+			/*case "view":
+    case "list":
+      if (!resource.showLayout || typeof resource.showLayout !== "function") {
+        console.error("showLayout must be present and be a function in the resource definition when using formGroupMode layout, fallback to tabs");
+        return AutoFormTabs({
+          schema: schema,
+          resource: resource,
+          options: { mode: options.mode },
+        })
+      }
+
+      return resource.createLayout(renderShow)
+    */
+
+		default:
+			return <>options.mode not allowed</>;
+	}
+};
+
+export default DashAutoFormLayout;
