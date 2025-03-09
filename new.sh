@@ -162,3 +162,5 @@ echo ""
 if [ "$setup_submodule" = "y" ]; then
     echo "Note: Clients can only push to the $dest_dir submodule, not to the main repository"
 fi
+
+git config --local status.submodulesummary 0
