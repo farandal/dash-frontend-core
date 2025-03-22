@@ -127,7 +127,7 @@ const systemResources: IAppResourceConfig[] = [
         ...drawerSettings,
     },
     {
-        roles: [DASHAppConstants.system.SYSTEM_ROLE, DASHAppConstants.system.TENANT_ROLE],
+        roles: [DASHAppConstants.system.SYSTEM_ROLE],
         component: ResourceTemplate,
         trash: true,
         model: 'system/users',
