@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import { JSX, ReactNode } from 'react';
 
 import IDashAutoAdminCustomFieldComponent from './IDashAutoAdminCustomFieldComponent';
 import IRecord from './IRecord';
