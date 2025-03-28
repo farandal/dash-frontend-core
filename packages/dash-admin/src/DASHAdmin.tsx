@@ -142,6 +142,7 @@ import {
 import { IDashAutoAdminResourceConfig } from 'dash-auto-admin';
 import ResourceTemplate from './templates/ResourceTemplate';
 import { JSX } from 'react';
+import RADashComponent from './react-admin-dash/RADashComponent';
 
 interface IAsyncResources extends AdminUIProps {
   resources: any;
@@ -348,6 +349,7 @@ const DASHAdminApp: React.FC<IDASHAdmin<unknown, unknown, unknown, unknown, unkn
       //store={store} //TODO implement the store override
       // error={{ errorComponent: Error }} // TODO ¿how to customize the error page?
       >
+
         <AdminUI
           {...(customNotification && { notification: customNotification })}
           layout={customLayout}
@@ -359,6 +361,7 @@ const DASHAdminApp: React.FC<IDASHAdmin<unknown, unknown, unknown, unknown, unkn
         >
           {children}
         </AdminUI>
+        <RADashComponent />
       </AdminContext>
     </DictionaryProvider>
   ) : (
@@ -366,6 +369,7 @@ const DASHAdminApp: React.FC<IDASHAdmin<unknown, unknown, unknown, unknown, unkn
       dictionary={customDict ? { ...constants.systemConstants.dict, ...customDict } : constants.systemConstants.dict}
       replacements={customReplacements ? { ...constants.systemConstants.replacements, ...customReplacements } : constants.systemConstants.replacements}
     >
+
       <AdminContext
         dataProvider={customDataProvider || dataProvider}
         i18nProvider={customI18nProvider || i18nProvider}
@@ -375,6 +379,7 @@ const DASHAdminApp: React.FC<IDASHAdmin<unknown, unknown, unknown, unknown, unkn
         {...(history && { history: history })}
       // error={{ errorComponent: Error }} // TODO how to customize the error page
       >
+
         <AsyncResources
           {...(customNotification && { notification: customNotification })}
           /* @ts-ignore type mismatch */
@@ -384,7 +389,9 @@ const DASHAdminApp: React.FC<IDASHAdmin<unknown, unknown, unknown, unknown, unkn
           {...(Error && { error: Error })}
           resources={resources}
         />
+        <RADashComponent />
       </AdminContext>
+
     </DictionaryProvider>
   );
 };
