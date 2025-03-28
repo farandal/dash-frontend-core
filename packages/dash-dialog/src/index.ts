@@ -4,3 +4,4 @@ export {
 	DialogServiceContext,
 } from './DialogService';
 
+export { default } from "./AppDialog";
