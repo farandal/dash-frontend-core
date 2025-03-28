@@ -1,26 +1,26 @@
 import {
-	Paper,
-	Table,
-	TableBody,
-	TableCell,
-	TableContainer,
-	TableHead,
-	TableRow,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
 } from '@mui/material';
 
-import React, { FC } from 'react';
+import React, { FC, JSX } from 'react';
 import isComponent from '../../utils/isComponent';
 
 interface IDictEntry {
-	[x: string]: any;
+  [x: string]: any;
 }
 export interface MUISimpleJsonTable {
-	tableData: any;
-	vertical: boolean;
-	ignore?: string[];
-	include?: string[];
-	dict?: IDictEntry;
-	showKey?: boolean;
+  tableData: any;
+  vertical: boolean;
+  ignore?: string[];
+  include?: string[];
+  dict?: IDictEntry;
+  showKey?: boolean;
 }
 
 function isJSXElement(value: any): value is JSX.Element {
@@ -53,94 +53,94 @@ function isReactNodeArrayOrJSXElementArray(value: any): boolean {
 // Todo: Typescript ignore, debe ser arreglo
 // Todo: incluir diccionario
 const MUISimpleJsonTable: FC<MUISimpleJsonTable> = ({
-	tableData,
-	vertical,
-	ignore,
-	include,
-	dict,
-	showKey,
+  tableData,
+  vertical,
+  ignore,
+  include,
+  dict,
+  showKey,
 }) => {
-	if (!ignore) ignore = [];
-	if (!include) include = [];
-	if (!dict) dict = {};
+  if (!ignore) ignore = [];
+  if (!include) include = [];
+  if (!dict) dict = {};
 
-	let column = tableData ? Object.keys(tableData) : [];
-	if (include.length) column = column.filter((key) => include.includes(key));
-	if (ignore.length) column = column.filter((key) => !ignore.includes(key));
+  let column = tableData ? Object.keys(tableData) : [];
+  if (include.length) column = column.filter((key) => include.includes(key));
+  if (ignore.length) column = column.filter((key) => !ignore.includes(key));
 
-	const parseValue = (value: any) => {
-		if (typeof value !== 'object') {
-			if (dict.hasOwnProperty(value)) {
-				return dict[value];
-			}
-			return value;
-		}
+  const parseValue = (value: any) => {
+    if (typeof value !== 'object') {
+      if (dict.hasOwnProperty(value)) {
+        return dict[value];
+      }
+      return value;
+    }
 
-		if (
-			isComponent(value) 
-			|| isReactNodeArrayOrJSXElementArray
-			// TODO: WARNING: the $$typeof checking fails several tests, we rely on isComponent.
-			/*||
-			(value.$$typeof !== undefined && value.$$typeof.toString() === 'Symbol(react.element)')*/
-		) {
-			return value;
-		}
+    if (
+      isComponent(value)
+      || isReactNodeArrayOrJSXElementArray
+      // TODO: WARNING: the $$typeof checking fails several tests, we rely on isComponent.
+      /*||
+      (value.$$typeof !== undefined && value.$$typeof.toString() === 'Symbol(react.element)')*/
+    ) {
+      return value;
+    }
 
-		if (Array.isArray(value)) {
-			return JSON.stringify(value);
-		}
+    if (Array.isArray(value)) {
+      return JSON.stringify(value);
+    }
 
-		
 
-		return <MUISimpleJsonTable tableData={value} vertical={true} />;
-	};
 
-	const ThData = () => {
-		return (
-			column &&
-			column.map((data, key) => (
-				<TableCell key={key}>{parseValue(data)}</TableCell>
-			))
-		);
-	};
+    return <MUISimpleJsonTable tableData={value} vertical={true} />;
+  };
 
-	const tdData = () => {
-		return vertical ? (
-			column &&
-				column.map((v, key) => {
-					return (
-						<TableRow key={key}>
-							{showKey && <TableCell>{parseValue(v)}</TableCell>}
-							<TableCell>{parseValue(tableData[v])}</TableCell>
-						</TableRow>
-					);
-				})
-		) : (
-			<TableRow>
-				{column &&
-					column.map((v, key) => {
-						return <TableCell key={key}>{parseValue(tableData[v])}</TableCell>;
-					})}
-			</TableRow>
-		);
-	};
+  const ThData = () => {
+    return (
+      column &&
+      column.map((data, key) => (
+        <TableCell key={key}>{parseValue(data)}</TableCell>
+      ))
+    );
+  };
 
-	return vertical ? (
-		<TableContainer component={Paper}>
-			<Table>
-				<TableBody>{tdData()}</TableBody>
-			</Table>
-		</TableContainer>
-	) : (
-		<TableContainer component={Paper}>
-			<Table>
-				<TableHead>
-					<TableRow>{ThData()}</TableRow>
-				</TableHead>
-				<TableBody>{tdData()}</TableBody>
-			</Table>
-		</TableContainer>
-	);
+  const tdData = () => {
+    return vertical ? (
+      column &&
+      column.map((v, key) => {
+        return (
+          <TableRow key={key}>
+            {showKey && <TableCell>{parseValue(v)}</TableCell>}
+            <TableCell>{parseValue(tableData[v])}</TableCell>
+          </TableRow>
+        );
+      })
+    ) : (
+      <TableRow>
+        {column &&
+          column.map((v, key) => {
+            return <TableCell key={key}>{parseValue(tableData[v])}</TableCell>;
+          })}
+      </TableRow>
+    );
+  };
+
+  return vertical ? (
+    <TableContainer component={Paper}>
+      <Table>
+        <TableBody>{tdData()}</TableBody>
+      </Table>
+    </TableContainer>
+  ) : (
+    <TableContainer component={Paper}>
+      <Table>
+        <TableHead>
+          <TableRow>{ThData()}</TableRow>
+        </TableHead>
+        <TableBody>{tdData()}</TableBody>
+      </Table>
+    </TableContainer>
+  );
 };
 
 export default MUISimpleJsonTable;
