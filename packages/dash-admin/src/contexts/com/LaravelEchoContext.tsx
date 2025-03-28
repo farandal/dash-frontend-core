@@ -31,10 +31,6 @@ const LaravelEchoProvider: FC<ILaravelEchoProvider> = ({
 
   const { events, lastEvent, clear } = manager ? manager() : LaravelEchoMgr();
 
-  useEffect(() => {
-    console.log(lastEvent, events)
-  }, [events, lastEvent])
-
   return <LaravelEchoContext.Provider
     value={{ events: events, lastEvent: lastEvent, clear: clear }}
   >

@@ -4,9 +4,13 @@ import usePrevious from '@rooks/use-previous';
 import { Channel } from 'laravel-echo/src/channel';
 import Echo, { EchoOptions } from 'laravel-echo';
 import Pusher from 'pusher-js';
-import moment from 'moment';
+
 import { ConstantsContext } from '../../config/ConstantsService';
 import { getEnv } from '../../config/DASHAdminSystemConstants';
+
+import { IDASHAppState } from 'dash-admin-state';
+import { IDashAutoAdminResourceConfig } from 'dash-auto-admin';
+import { useSelector } from 'react-redux';
 
 // Make Pusher available globally
 (window as any).Pusher = Pusher;
@@ -50,7 +54,7 @@ const useLaravelEcho = ({
   type,
   channel,
   events,
-  userId,
+  //userId,
   socketId,
   pingInterval = 30000, // Default ping interval: 30 seconds
   debug = true
@@ -58,7 +62,7 @@ const useLaravelEcho = ({
   type: 'public' | 'private';
   channel: string;
   events: { [key: string]: (e: any) => any };
-  userId?: number;
+  //userId?: number;
   socketId?: string;
   pingInterval?: number;
   debug?: boolean
@@ -70,9 +74,23 @@ const useLaravelEcho = ({
   const prevChannel = usePrevious(channel);
   const constants = useContext(ConstantsContext);
   const pingTimerRef = useRef<number | null>(null);
-  const clientIdRef = useRef<string | null>(null);
 
+  const auth: any = useSelector(
+    (state: IDASHAppState<any, any, IDashAutoAdminResourceConfig>) =>
+      state.auth
+  );
+  const [userId, setUserId] = useState(null);
 
+  useEffect(() => {
+
+    if (auth.user?.id && typeof auth.user.id === 'number' && auth.user.id !== userId) {
+      setUserId(auth.user.id);
+    }
+    if (auth?.authenticated === false) {
+      setUserId(null);
+    }
+
+  }, [auth])
 
   const isProd = getEnv('APP_ENV') === 'production';
 
@@ -101,9 +119,35 @@ const useLaravelEcho = ({
     }
   }, [laravelEchoClient, debug]);
 
+  // Hash for the client, it has to be like that, because public channel is open parallel to private which requires userid
+  // For now this implementation is constrained to 2 clients, one for public and one for private only. 
   const getClientId = useCallback(() => {
-    return `${type}-${userId || 'public'}-${socketId || 'default'}`;
-  }, [type, userId, socketId]);
+    //return `${type}-${userId || 'public'}`;
+    return type
+  }, [type, userId]);
+
+  const cleanup = useCallback(() => {
+    if (pingTimerRef.current) {
+      window.clearInterval(pingTimerRef.current);
+      pingTimerRef.current = null;
+    }
+    //if (laravelEchoClient) {
+    log('Disconnecting Laravel Echo client...', getClientId());
+    //echoManager.getClient(getClientId()).disconnect();
+    laravelEchoClient && laravelEchoClient.disconnect();
+    echoManager.getClient(getClientId()).disconnect();
+    log('Setting Laravel Echo client to null...');
+    setLaravelEchoClient(null);
+    log('Setting Echo channel to null...');
+    setEchoChannel(null);
+    log('Clearing current events...');
+    setCurrentEvents([]);
+    log('Setting connection status to false...');
+    setIsConnected(false);
+    log('Removing client from Echo manager...');
+    echoManager.removeClient(getClientId())
+    //}
+  }, [laravelEchoClient]);
 
   useEffect(() => {
 
@@ -116,27 +160,22 @@ const useLaravelEcho = ({
       return
     }
 
-    const cleanup = () => {
-      if (pingTimerRef.current) {
-        window.clearInterval(pingTimerRef.current);
-        pingTimerRef.current = null;
-      }
+    if (type === 'private' && !userId) {
+      console.log('[WebSocket] Skipping private channel - no userId specified');
+      return;
+    }
 
-      if (laravelEchoClient) {
-        laravelEchoClient.disconnect();
-        setLaravelEchoClient(null);
-        setEchoChannel(null);
-        setCurrentEvents([]);
-        setIsConnected(false);
-      }
-    };
+    const clientId = getClientId();
+
+
 
     if (type === 'public' || (type === 'private' && userId)) {
-      const clientId = getClientId();
-      clientIdRef.current = clientId;
+
 
       if (echoManager.clients.has(clientId)) {
         const existingClient = echoManager.getClient(clientId);
+
+        log('Setting Laravel Echo client to existing client...', clientId);
         setLaravelEchoClient(existingClient);
         return;
       }
@@ -217,6 +256,7 @@ const useLaravelEcho = ({
           });
         }
 
+        log('Setting Echo client', clientId);
         echoManager.setClient(clientId, echo);
         setLaravelEchoClient(echo);
       } catch (error) {
@@ -227,9 +267,13 @@ const useLaravelEcho = ({
     return () => {
       if (debug) {
         console.log("%c📡 Socket listener unmounted!", "color: #ff6b6b; font-weight: bold;");
+        cleanup();
       }
     };
   }, [userId]);
+
+
+
 
   useEffect(() => {
     if (!laravelEchoClient || !channel) return;
@@ -256,7 +300,7 @@ const useLaravelEcho = ({
 
         if (type === 'private') {
           log(`Subscribing to private channel: ${channel}`);
-          newChannel = laravelEchoClient.private(channel);
+          newChannel = laravelEchoClient.private(channel.replace('{userId}', userId.toString()));
         } else {
           log(`Subscribing to public channel: ${channel}`);
           newChannel = laravelEchoClient.channel(channel);

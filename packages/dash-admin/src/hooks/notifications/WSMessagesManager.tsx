@@ -48,7 +48,6 @@ const WSMessagesManager = (): ILaravelEchoManager => {
   const [events, setEvents] = useState<INotificationPayloadBase[]>([]);
   const [lastEvent, setLastEvent] = useState<INotificationPayloadBase>(null);
   //const dispatch = useDispatch();
-  const authContext: IAuthContext = useContext(AuthContext);
 
   const clear = () => {
     setLastEvent(null);
@@ -70,12 +69,12 @@ const WSMessagesManager = (): ILaravelEchoManager => {
         popStickyMessage(notification)
       }
     },
-    userId: authContext.user.id
+    //userId: authContext?.user?.id
   });
 
   useLaravelEcho({
     type: 'private',
-    channel: `user.${authContext.user.id}`,
+    channel: `user.{userId}`,
     events: {
       // Try all these variations to see which one works
       'notification': (notification: INotificationPayloadBase) => {
@@ -83,11 +82,10 @@ const WSMessagesManager = (): ILaravelEchoManager => {
         console.log('Received notification event:', notification);
         setEvents([...events, notification]);
         setLastEvent(notification);
-
         popPrivateMessage(notification);
       }
     },
-    userId: authContext.user.id
+    //userId: authContext?.user?.id
   });
 
 
