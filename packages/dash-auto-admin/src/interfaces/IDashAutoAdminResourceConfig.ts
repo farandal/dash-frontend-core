@@ -98,8 +98,11 @@ export default interface IDashAutoAdminResourceConfig {
 	drawer?: boolean;
 	/** */
 	drawerOptions?: {
+        /* TODO! show or view? */
 		/** */
 		view?: boolean;
+        /** */
+		show?: boolean;
 		/** */
 		edit?: boolean;
 		/** */
@@ -109,6 +112,10 @@ export default interface IDashAutoAdminResourceConfig {
 	drawerProps?: IDashAutoDrawerPublicProps;
 	/** */
 	formGroupMode?: 'tabs' | 'groups' | 'layout';
+    formGroupModes?: {
+        create?: 'tabs' | 'groups' | 'layout';
+        edit?: 'tabs' | 'groups' | 'layout';
+    }
 	/** */
 	saveButton?: boolean;
 	/** */

@@ -38,6 +38,7 @@ import { useLocation, useParams } from 'react-router';
 import replaceParams from '../utils/replaceParams';
 import { useSelector } from 'react-redux';
 import { IDASHAppState } from 'dash-admin-state';
+import { useEditContext } from 'react-admin';
 
 
 //export type ICustomRAButton<T extends RaRecord> = ShowButtonProps;
@@ -116,7 +117,7 @@ const AttributeToInput = (
  
 	const mode = options?.mode || 'view';
 
-	const record = useRecordContext();
+	const record =  options?.mode === 'edit' ? useEditContext() : useRecordContext();
 	const location = useLocation();
 
 	const params = useParams();
@@ -248,7 +249,6 @@ const AttributeToInput = (
         
 		return (
 			<FunctionFieldWrapper index={index} method={mode} input={input}>
-               
 				<UserAction
 					record={record}
 					key={index}
@@ -424,7 +424,6 @@ const AttributeToInput = (
 	/* Special cases – Passing strings, passing enums */
 	if (typeof input.type === 'string') {
 
-        
 		/* table.field */
 
 		const _params = { ...params, ...(location.pathname.match(/\d+/g) || []).map(Number).reduce((acc, curr, currentIndex) => {
@@ -436,16 +435,18 @@ const AttributeToInput = (
 		const _inputType = replaceParams(_params, input.type);
 		const [reference, sourceName] = _inputType.split('.');
 		const CustomComponent = input.component || SelectInput;
+        
+ 
+
 		if (input && input.multiple === false) {
 			return (
 				<FunctionFieldWrapper index={index} method={mode} input={input}>
 					<ReferenceInput
 						key={index}
-						fullWidth
 						allowEmpty
 						filters
 						label={input.label}
-						source={input.attribute}
+						source={input.listAttribute || input.attribute}
 						reference={reference}
 						sort={{ field: sourceName, order: 'ASC' }}
 						//queryOptions={{ refetchOnWindowFocus: false }}
@@ -456,11 +457,9 @@ const AttributeToInput = (
 							//queryOptions={{ refetchOnWindowFocus: false }}
 							method={'edit'} // edit because its AttributeToInput
 							attribute={input}
-							fullWidth
 							label={input?.label || ''}
 							{...input.fieldOptions}
                             onChange={e => {
-                               
                                 if(options?.handleChange) {
                                     options.handleChange(e);
                                 } 
@@ -480,7 +479,7 @@ const AttributeToInput = (
 				<ReferenceArrayInput
 					key={index}
 					reference={reference}
-					source={input.attribute}
+					source={input.listAttribute || input.attribute}
 					//queryOptions={{ refetchOnWindowFocus: false }}
 					{...input.componentProps}
 				>

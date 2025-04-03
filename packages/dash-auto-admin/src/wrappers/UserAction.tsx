@@ -23,10 +23,9 @@ import IDashAutoAdminResourceConfig from '../interfaces/IDashAutoAdminResourceCo
 
 const UserAction: React.FC<IDashAutoAdminCustomFieldComponent> = ({ method, attribute, resourceConfig, record }) => {
     if (attribute.component && isFC(attribute.component)) {
-        const Action =
-            attribute.component as React.FC<IDashAutoAdminCustomFieldComponent>;
-        return (
-            <Action
+     
+        const Action = attribute.component as React.FC<IDashAutoAdminCustomFieldComponent>;
+        return <Action
                 method={method}
                 attribute={attribute}
                 resourceConfig={resourceConfig}
@@ -34,12 +33,10 @@ const UserAction: React.FC<IDashAutoAdminCustomFieldComponent> = ({ method, attr
                 {...attribute?.componentProps}
 
             />
-        );
     }
 
     if (typeof attribute.action === 'function') {
         const callback = attribute.action as ActionCallback;
-
         return (
             <WithRecord
                 label={attribute.label}

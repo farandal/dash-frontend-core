@@ -25,26 +25,27 @@ const DashAutoFormGroups = (
 					attributes = attributes.filter(
 						(attribute) => attribute?.inDrawer !== false,
 					);
-				return attributes.length ? (
+				const filteredAttributes = attributes.filter((attribute) => attribute?.inCreate !== false);
+				return filteredAttributes.length ? (
 					<fieldset key={`auto-admin-fieldset-${idx}`}>
-						<legend>
-							{attributes[0].tab || options?.label || DEFAULT_TAB_LABEL}
-						</legend>
-						{attributes
-							.filter((attribute) => attribute?.inCreate !== false)
-							.map(
-								(attribute, i) =>
-									React.cloneElement(
-										AttributeToInput(
-											options.mode,
-											resourceConfig,
-											attribute,
-											i,
-											options,
-										),
-										{ key: `create-${idx}-${i}` },
+						{filteredAttributes.length > 0 && (
+							<legend>
+								{attributes[0].tab || options?.label || DEFAULT_TAB_LABEL}
+							</legend>
+						)}
+						{filteredAttributes.map(
+							(attribute, i) =>
+								React.cloneElement(
+									AttributeToInput(
+										options.mode,
+										resourceConfig,
+										attribute,
+										i,
+										options,
 									),
-							)}
+									{ key: `create-${idx}-${i}` },
+								),
+						)}
 					</fieldset>
 				) : null;
 			});
@@ -56,26 +57,26 @@ const DashAutoFormGroups = (
 					attributes = attributes.filter(
 						(attribute) => attribute?.inDrawer !== false,
 					);
-
-				return attributes.length ? (
+				const filteredAttributes = attributes.filter((attribute) => attribute?.inEdit !== false);
+				return filteredAttributes.length ? (
 					<fieldset key={`auto-admin-fieldset-${idx}`}>
-						<legend>
-							{attributes[0].tab || options?.label || DEFAULT_TAB_LABEL}
-						</legend>
-						{attributes
-							.filter((attribute) => attribute?.inEdit !== false)
-							.map((attribute, i) =>
-								React.cloneElement(
-									AttributeToInput(
-										options.mode,
-										resourceConfig,
-										attribute,
-										i,
-										options,
-									),
-									{ key: `edit-${idx}-${i}` },
+						{filteredAttributes.length > 0 && (
+							<legend>
+								{attributes[0].tab || options?.label || DEFAULT_TAB_LABEL}
+							</legend>
+						)}
+						{filteredAttributes.map((attribute, i) =>
+							React.cloneElement(
+								AttributeToInput(
+									options.mode,
+									resourceConfig,
+									attribute,
+									i,
+									options,
 								),
-							)}
+								{ key: `edit-${idx}-${i}` },
+							),
+						)}
 					</fieldset>
 				) : null;
 			});
@@ -87,26 +88,26 @@ const DashAutoFormGroups = (
 					attributes = attributes.filter(
 						(attribute) => attribute?.inDrawer !== false,
 					);
-				return attributes.length ? (
+				const filteredAttributes = attributes.filter((attribute) => attribute?.inShow !== false);
+				return filteredAttributes.length ? (
 					<fieldset key={`auto-admin-fieldset-${idx}`}>
-						<legend>
-							{attributes[0].tab || options?.label || DEFAULT_TAB_LABEL}
-						</legend>
-
-						{attributes
-							.filter((attribute) => attribute?.inShow !== false)
-							.map((attribute, i) =>
-								React.cloneElement(
-									AttributeToInput(
-										options.mode,
-										resourceConfig,
-										attribute,
-										i,
-										options,
-									),
-									{ key: `view-${idx}-${i}` },
+						{filteredAttributes.length > 0 && (
+							<legend>
+								{attributes[0].tab || options?.label || DEFAULT_TAB_LABEL}
+							</legend>
+						)}
+						{filteredAttributes.map((attribute, i) =>
+							React.cloneElement(
+								AttributeToInput(
+									options.mode,
+									resourceConfig,
+									attribute,
+									i,
+									options,
 								),
-							)}
+								{ key: `view-${idx}-${i}` },
+							),
+						)}
 					</fieldset>
 				) : null;
 			});
@@ -118,26 +119,26 @@ const DashAutoFormGroups = (
 					attributes = attributes.filter(
 						(attribute) => attribute?.inDrawer !== false,
 					);
-				return attributes.length ? (
+				const filteredAttributes = attributes.filter((attribute) => attribute?.inShow !== false);
+				return filteredAttributes.length ? (
 					<fieldset key={`auto-admin-fieldset-${idx}`}>
-						<legend>
-							{attributes[0].tab || options?.label || DEFAULT_TAB_LABEL}
-						</legend>
-
-						{attributes
-							.filter((attribute) => attribute?.inShow !== false)
-							.map((attribute, i) =>
-								React.cloneElement(
-									AttributeToInput(
-										options.mode,
-										resourceConfig,
-										attribute,
-										i,
-										options,
-									),
-									{ key: `list-${idx}-${i}` },
+						{filteredAttributes.length > 0 && (
+							<legend>
+								{attributes[0].tab || options?.label || DEFAULT_TAB_LABEL}
+							</legend>
+						)}
+						{filteredAttributes.map((attribute, i) =>
+							React.cloneElement(
+								AttributeToInput(
+									options.mode,
+									resourceConfig,
+									attribute,
+									i,
+									options,
 								),
-							)}
+								{ key: `list-${idx}-${i}` },
+							),
+						)}
 					</fieldset>
 				) : null;
 			});

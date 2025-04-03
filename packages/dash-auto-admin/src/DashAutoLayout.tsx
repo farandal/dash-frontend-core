@@ -4,6 +4,7 @@ import IDashAutoAdminResourceConfig from './interfaces/IDashAutoAdminResourceCon
 import { AttributeToField } from './mui/AttributeToField';
 import hashedGroupByTabs from './utils/hashedGroupByTabs';
 import IDashAutoAdminFormOptions from './interfaces/IDashAutoAdminFormOptions';
+import { JSX } from 'react';
 
 export interface IDashAutoLayoutRenderFunction {
 	(

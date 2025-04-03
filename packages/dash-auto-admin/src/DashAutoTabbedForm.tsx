@@ -45,7 +45,11 @@ const DashAutoTabbedForm: React.FC<IDashAutoTabbedForm> = ({
 	
     const dataProvider = useDataProvider();
  
-	const formGroupMode = resourceConfig?.formGroupMode
+	const formGroupMode = mode === 'create' && resourceConfig?.formGroupModes?.create
+		? resourceConfig.formGroupModes.create
+		: mode === 'edit' && resourceConfig?.formGroupModes?.edit
+		? resourceConfig.formGroupModes.edit
+		: resourceConfig?.formGroupMode
 		? resourceConfig.formGroupMode
 		: 'tabs';
 
