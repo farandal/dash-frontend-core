@@ -52,15 +52,15 @@
         min-height: auto;
         border: unset;
 
-      
+
     }
 }
 
 .dash-module{
     &-top-content{
-        width: 100%; 
+        width: 100%;
         //padding-bottom: 15px;
-        //margin-bottom: 15px;   
+        //margin-bottom: 15px;
         overflow-y: hidden;
         overflow-x: auto;
         position: relative;
@@ -81,7 +81,7 @@
         flex-wrap: unset;
         border-bottom: 1px solid @main-color;
         position: relative;
-        
+
         li{
             cursor: pointer;
             .dash-link{
@@ -132,14 +132,60 @@
     }
 }
 
+
+.dash-module-action {
+  display: flex;
+  justify-content: flex-end;
+
+  button {
+    z-index: 1000;
+  }
+
+  .MuiButton-root {
+    padding: 2px 8px;
+    font-size: 0.8rem !important;
+    min-width: 40px;
+    min-height: 20px;
+  }
+
+  margin-bottom: -50px;
+
+
+}
+
+
 @media (max-width: @mq-sm){
     .dash-module{
         &-box-header{
             .dash-module{
                 &-top-content{
-                    margin-top: 25px;
+                    //margin-top: 25px;
                 }
             }
         }
     }
+
+    ul.dash-module-horizontal-nav {
+      margin: 0;
+
+      .dash-link {
+        height: auto;
+        min-height: auto;
+        padding: 2px 5px;
+
+      }
+    }
+
+
+    .dash-module-action {
+
+      @media (max-width: @mq-sm) {
+
+        margin-bottom: -28px;
+      }
+
+    }
+
 }
+
+

@@ -12,7 +12,7 @@
     background-color: inherit;
     border-radius: inherit;
     box-shadow: inherit;
-  }  
+  }
 }*/
 
 .dash-module-box-content div:empty,
@@ -31,18 +31,18 @@
 .top-toolbar {
 
       .MuiToolbar-root {
-        
+
           //background-color: #F6F7FC;
           //border-right: 1px solid #c8c8c8;
           padding-bottom:0px;
           padding-right: 10px;
           margin-right: 35px;
-      
+
       }
- 
+
 }
 
-.RaCreate-main, .RaEdit-main  { 
+.RaCreate-main, .RaEdit-main  {
   > .MuiPaper-root {
     background-color: inherit;
     border-radius: inherit;
@@ -54,7 +54,7 @@
     }
   }
 }
-/* Hack - for some reason RA adds an empty span immediately after */ 
+/* Hack - for some reason RA adds an empty span immediately after */
 .RaList-actions > span {
     display: none;
 }
@@ -62,13 +62,17 @@
 .RaList-actions {
     display: block !important;
     //margin-bottom: 15px;
+    form {
+      min-height: auto;
+    }
 }
 
 
 .list-page .RaList-main {
   width: 100%;
   // To give paginator space
-  padding-bottom: 80px;
+   //padding-bottom: 80px;
+   //margin-bottom: 80px;
 }
 
 /* This is mented to show a horizontal scroll feature when not all elements of bulk actions fit */
@@ -132,4 +136,8 @@
   background: white;
   border-radius: 14px;
   padding: 4px;
+}
+
+.RaDatagrid-tableWrapper table {
+  margin-top: auto !important;
 }
