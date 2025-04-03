@@ -11,7 +11,8 @@ const RADashComponent = () => {
 
   useEffect(() => {
     if (!identityLoading && identity) {
-      console.log("UPDATING DASH STATE USER", identity)
+      console.log("W.I.P !! identity updated", identity)
+      // TODO: compare values before dispatch! 
       dispatch(
         DASH_REDUX_ACTIONS.updateAuth({
           user: identity,
