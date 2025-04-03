@@ -78,7 +78,7 @@ const DomainAppLayout = <U, A>(props: IDomainAppLayout<U, A>): React.JSX.Element
   ) : (
     <>
       <Box key={1} ref={contentRef} className={'dash-layout-content'}>
-        <Redirect path={'/login'} timer={10} />
+        {/*<Redirect path={'/login'} timer={10} />*/}
         {children}
       </Box>
     </>

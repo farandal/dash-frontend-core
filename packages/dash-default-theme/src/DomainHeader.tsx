@@ -60,12 +60,10 @@ const DomainHeader = <U, A>({
         <div className='dash-header'>
             <div className='dash-header-container'>
 
-           
                 <div className='dash-header-subheader'>
                     <div className='dash-header-subheader-action'>
                         <IconButton onClick={() => onToggleExpandedNav()}>
-                            {' '}
-                            <MenuOpenIcon sx={{ fontSize: 24 }} />
+                            <MenuOpenIcon sx={{ color: 'white', fontSize: 27 }} />
                         </IconButton>
                     </div>
                     <div className='dash-header-subheader-logo'>
