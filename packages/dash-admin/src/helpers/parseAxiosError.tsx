@@ -1,14 +1,13 @@
 export const parseAxiosError = (error: any): string => {
 
-
     // Handle array of validation errors
-    if (typeof error === 'object') {
-        
+    if (error?.originalError?.response?.data?.errors && typeof error?.originalError?.response?.data?.errors === 'object') {    
+        const originalErrors = error.originalError.response.data.errors;
         const errorMessages = []
         
-        for (const key in error) {
-            if (Array.isArray(error[key])) {
-                errorMessages.push(...error[key])
+        for (const key in originalErrors) {
+            if (Array.isArray(originalErrors[key])) {
+                errorMessages.push(...originalErrors[key])
             }
         }
         
@@ -17,7 +16,6 @@ export const parseAxiosError = (error: any): string => {
         }
     }
 
-   
      // First priority - response data message
      if (error?.response?.data?.message) {
         return error.response.data.message;

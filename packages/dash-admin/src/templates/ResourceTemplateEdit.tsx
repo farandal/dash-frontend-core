@@ -92,16 +92,18 @@ export const ResourceTemplateEdit: FC<IResourceTemplateController> = (props) => 
 	};
 
     const onError = (_error: any) => {
+       
+        const _errorParser = resourceConfig.errorParser || parseAxiosError
         
 		if (resourceConfig.onError) {
 			resourceConfig.onError('edit', _error);
             return;
 		} 
-
+       
         dialog({
             variant: 'danger',
             title: `${resourceConfig.label} Error`,
-            content: `${parseAxiosError(_error)}`,
+            content: _errorParser(_error),
             onConfirm: () => {},
             onClose: () => {},
         });
@@ -117,7 +119,7 @@ export const ResourceTemplateEdit: FC<IResourceTemplateController> = (props) => 
 
 	const ToolBar = () => (
 		<Toolbar>
-			<DashAutoAdminSaveButton resourceConfig={resourceConfig} onSubmit={onEdit} />
+			<DashAutoAdminSaveButton resourceConfig={resourceConfig} onSubmit={onEdit} onError={onError} />
 		</Toolbar>
 	);
 
