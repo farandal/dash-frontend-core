@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { JSX } from 'react';
 import IReferenceFilter from './interfaces/IReferenceFilter';
 
 import { TextInput, ReferenceInput, SelectInput, DateInput } from 'react-admin';

@@ -38,7 +38,8 @@ const checkIfModeEnablesButton = (modes?:IAutoGridButton['modes'], mode?:IToolba
  * @returns The rendered toolbar save button or `null` if the button should not be rendered.
  */
 export const ToolbarSaveButton:FC<IToolbarButton> = (props) => {
-	const { resourceConfig, mode } = props;
+	const { resourceConfig, mode, onError,onSubmit } = props;
+    debugger;
 	if (!resourceConfig) return <SaveButton/>;
 	if (resourceConfig.toolbarSaveButton) {
 		if (resourceConfig.toolbarSaveButton?.enabled) {
@@ -47,7 +48,7 @@ export const ToolbarSaveButton:FC<IToolbarButton> = (props) => {
 					...(resourceConfig.toolbarSaveButton?.props || {}),
 					alwaysEnable: resourceConfig?.saveButtonAlwaysEnabled === true ? true : false,
 				};
-				return resourceConfig.toolbarSaveButton?.component ? <resourceConfig.toolbarSaveButton.component {...buttonProps} />  : <DashAutoAdminSaveButton {...buttonProps} />;
+				return resourceConfig.toolbarSaveButton?.component ? <resourceConfig.toolbarSaveButton.component {...buttonProps} />  : <DashAutoAdminSaveButton {...buttonProps} onError={onError} onSubmit={onSubmit} />;
 			}
 		}
 	}

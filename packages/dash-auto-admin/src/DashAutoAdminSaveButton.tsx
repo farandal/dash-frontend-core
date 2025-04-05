@@ -21,6 +21,7 @@ import { SaveButton, SaveButtonProps } from 'react-admin/src';
 import { useFormContext } from 'react-hook-form';
 import IDashAutoAdminResourceConfig from './interfaces/IDashAutoAdminResourceConfig';
 import { FC } from 'react';
+import { IDashAutoAdminBackendError,IDashAutoAdminDefaultBackendStructure } from 'dash-axios-hook';
 
 export interface IDashAutoAdminSaveButton extends SaveButtonProps {
   resourceConfig: IDashAutoAdminResourceConfig;
@@ -32,11 +33,12 @@ const DashAutoAdminSaveButton: FC<IDashAutoAdminSaveButton> = (props) => {
   const { reset, setError } = useFormContext();
   const alwaysEnabled = resourceConfig?.saveButtonAlwaysEnabled === true ? true : false;
   const debug = true;
+
   return resourceConfig?.resetFormAfterSubmit === true ? (
     <SaveButton
       {...rest}
-      type={'button'}
-      /*mutationOptions={{
+      
+      mutationOptions={{
         onSuccess: (data) => {
           if (debug) console.log('onSuccess called with data:', data);
           if (onSubmit) {
@@ -44,58 +46,65 @@ const DashAutoAdminSaveButton: FC<IDashAutoAdminSaveButton> = (props) => {
           }
           reset();
         },
-        onError: (error, _variables, _context) => {
-          if (debug) console.log('onError called with error:', error);
+        onError: (error:unknown, _variables, _context) => {
+          const _error = (error as IDashAutoAdminBackendError).originalError.response?.data as IDashAutoAdminDefaultBackendStructure;
+          
+          if (debug) console.log('onError called with error:', _error);
           //if(!!Object.keys(error).length) {
-          if (Object.keys(error).length) {
-            Object.keys(error).forEach((key: any) => {
-              setError(key, { message: error[key][0] }, { shouldFocus: false });
-            });
-          }
+            if (Object.keys(_error?.errors || {}).length) {
+                Object.keys(_error?.errors || {}).forEach((key: any) => {
+                  //setError(key, { message: _error?.errors?.[key][0] || _error?.message }, { shouldFocus: false });
+                  console.log("Set error",key,{ message: _error?.errors?.[key].join(", ") || _error?.message }, { shouldFocus: false })
+                });
+              }
 
           if (onError) {
             onError(error);
           }
 
         },
-      }}*/
+      }}
       alwaysEnable={
         alwaysEnabled
       }
+      type='button'
     />
   ) : (
     <SaveButton
       {...rest}
-      /*{...(onSubmit && {
+      {...({
         mutationOptions: {
           onSuccess: (data) => {
+            debugger;
             if (debug) console.log('onSuccess called with data:', data);
             if (onSubmit) {
               onSubmit(data);
             }
           },
           onError: (error, _variables, _context) => {
-            if (debug) console.log('onError called with error:', error);
-            if (onError) {
-              onError(error);
-            }
-          	
-            if (Object.keys(error).length) {
-              Object.keys(error).forEach((key: any) => {
-                setError(key, { message: error[key][0] }, { shouldFocus: false });
+            const _error = (error as IDashAutoAdminBackendError).originalError.response?.data as IDashAutoAdminDefaultBackendStructure;
+          
+            if (debug) console.log('onError called with error:', _error);
+            //if(!!Object.keys(error).length) {
+            if (Object.keys(_error?.errors || {}).length) {
+              Object.keys(_error?.errors || {}).forEach((key: any) => {
+                //setError(key, { message: _error?.errors?.[key][0] || _error?.message }, { shouldFocus: false });
+                console.log("Set error",key,{ message: _error?.errors?.[key].join(", ") || _error?.message }, { shouldFocus: false })
               });
             }
-
+  
             if (onError) {
-          	
               onError(error);
             }
+          
           },
         },
-      })}*/
+      })}
+      type='button'
       alwaysEnable={
         alwaysEnabled
       }
+     
     />
   );
 };

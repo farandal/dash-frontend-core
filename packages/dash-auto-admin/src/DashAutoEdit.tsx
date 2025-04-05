@@ -49,8 +49,8 @@ const DashAutoEdit: React.FC<IAutoForm> = ({
 							resourceConfig.toolbarSaveButton?.props)}
 					/>
 				)*/}
-				<BottomToolbarSaveButton mode='edit' resourceConfig={resourceConfig}/>
-				<BottomToolbarDeleteButton mode='edit' resourceConfig={resourceConfig}/>
+				<BottomToolbarSaveButton mode='edit' resourceConfig={resourceConfig} onError={onError} onSubmit={onSubmit} />
+				<BottomToolbarDeleteButton mode='edit' resourceConfig={resourceConfig} onError={onError} onSubmit={onSubmit} />
 				{/*evalActionPermission(
 					resourceConfig,
 					resourceConfig.toolbarDeleteButton,

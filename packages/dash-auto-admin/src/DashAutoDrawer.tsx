@@ -11,6 +11,7 @@ import { useLocation } from 'react-router';
 import AutoShow from './DashAutoShow';
 import React from 'react';
 import { Drawer, SwipeableDrawer, DrawerProps } from '@mui/material';
+import DashAutoAdminSaveButton from './DashAutoAdminSaveButton';
 
 export interface IDashAutoDrawerPublicProps extends DrawerProps {
     beforeSubmit?: (data: any) => any;
@@ -127,19 +128,26 @@ const DashAutoDrawer: React.FC<IDashAutoDrawer> = ({
         return (
             <Toolbar>
                 {mode === 'edit' && resourceConfig?.saveButton !== false && (
-                    <SaveButton
+                      <DashAutoAdminSaveButton
                         alwaysEnable={
                             resourceConfig?.saveButtonAlwaysEnabled === true ? true : false
                         }
                         label='Guardar'
+                        resourceConfig={resourceConfig}
+                        onSubmit={_onSubmit}
+                        onError={onError}
+                
                     />
                 )}
                 {mode === 'create' && resourceConfig?.saveButton !== false && (
-                    <SaveButton
+                      <DashAutoAdminSaveButton
+                        resourceConfig={resourceConfig}
                         alwaysEnable={
                             resourceConfig?.saveButtonAlwaysEnabled === true ? true : false
                         }
                         label='Crear'
+                        onSubmit={_onSubmit}
+                        onError={onError}
                     />
                 )}
                 {/*resourceConfig?.listDeleteButton?.enabled && (

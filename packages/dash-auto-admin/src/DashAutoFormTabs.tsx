@@ -32,18 +32,7 @@ const DashAutoFormTabs = ({
 
     const isDrawer = options.isDrawer === true ? true : false;
     const dispatch = useDispatch();
-    //const { setValue, getValues } = useFormContext();
-
-
-    const formData = useSelector(
-		(
-			state: IDASHAppState<any, any, IDashAutoAdminResourceConfig>,
-		) => {
-			
-			return state.formData || {};
-		},
-	);
-
+    
 
     const handleChange = (event) => {
       
@@ -74,44 +63,7 @@ const DashAutoFormTabs = ({
   
         dispatch({ type: SET_FORM_DATA, payload: { [name]: payloadValue } });
     };
-    /*
-    useEffect(() => {
-        dispatch({ type: CLEAR_FORM_DATA });
-    },[])
-    */
-    /*useEffect(() => {
-        // Populate form fields with existing data from Redux
-        Object.keys(formData).forEach(key => {
-            setValue(key, formData[key]);
-        });
-    }, [formData, setValue]);*/
-
-    /*useEffect(() => {
-        debugger;
-        dispatch({ type: CLEAR_FORM_DATA });
-    },[])*/
-
-
-   
-    /*
-    useEffect(() => {
-        // Populate form fields with existing data from Redux
-        Object.keys(formData).forEach(key => { 
-            setTimeout(() => {
-                const input = document.querySelector(`input[name="${key}"]`);
-              
-                if (input) {
-                    console.log(key, formData[key]);
-                    input.value = formData[key];
-                }
-            }, 50);
-        });
-    }, [formData]);
-    */
-
-    /*useEffect(() => {
-       console.log(formData)
-    }, [formData]);*/
+    
 
     options = {...options, handleChange};
 
@@ -173,6 +125,8 @@ const DashAutoFormTabs = ({
                                     {AttributeToInput('edit', resource, attribute, i, options)}
                                 </div>
                             ))}
+
+
                         </FormTab>
                     )
                 );

@@ -15,7 +15,6 @@ import {
     TabbedShowLayout,
     TopToolbar,
     Toolbar,
-    SaveButton,
     useNotify,
     useRedirect,
     useRefresh
@@ -32,6 +31,7 @@ import DashAutoDrawer from './DashAutoDrawer';
 import IDashAutoAdminResourceConfig from './interfaces/IDashAutoAdminResourceConfig';
 import evalActionPermission from './utils/evalActionPermission';
 import DashRedirect from './DashRedirect';
+import DashAutoAdminSaveButton from './DashAutoAdminSaveButton';
 // TODO: The following dependencies shpuld not depend on @dashboard
 
 export const ResourceTemplate = (
@@ -325,12 +325,15 @@ export const ResourceTemplate = (
                         const ToolBar = () => {
                             return (
                                 <Toolbar>
-                                    <SaveButton
+                                    <DashAutoAdminSaveButton
+                                        resourceConfig={resourceConfig}
                                         alwaysEnable={
                                             resourceConfig?.saveButtonAlwaysEnabled === true
                                                 ? true
                                                 : false
                                         }
+                                        onSubmit={onEdit}
+                                        onError={onError}
                                     />
                                 </Toolbar>
                             );
@@ -455,12 +458,15 @@ export const ResourceTemplate = (
                         const ToolBar = () => {
                             return (
                                 <Toolbar>
-                                    <SaveButton
+                                     <DashAutoAdminSaveButton
+                                        resourceConfig={resourceConfig}
                                         alwaysEnable={
                                             resourceConfig?.saveButtonAlwaysEnabled === true
                                                 ? true
                                                 : false
                                         }
+                                        onSubmit={onCreate}
+                                        onError={onError}
                                     />
                                 </Toolbar>
                             );

@@ -1,8 +1,9 @@
+import { IDashAutoAdminSaveButton } from '../DashAutoAdminSaveButton';
 import IDashAutoAdminResourceConfig from './IDashAutoAdminResourceConfig';
 
-export interface IToolbarButton {
+export interface IToolbarButton extends IDashAutoAdminSaveButton {
 	/** */
-	resourceConfig: IDashAutoAdminResourceConfig;
+	//resourceConfig: IDashAutoAdminResourceConfig;
 	/** */
 	mode?: 'edit' | 'show' | 'list' | 'create'
 }

@@ -34,7 +34,7 @@ export default interface IDashAutoAdminResourceConfig {
 	model: string;
 	/** */
 	label?: string;
-	//icon?: JSX.Element | ComponentType<any>;
+	//icon?: React.ReactElement | ComponentType<any>;
 	/** */
 	//icon?:  React.ReactElement<any, string | React.JSXElementConstructor<any>> | React.ReactFragment | OverridableComponent<SvgIconTypeMap<{}, "svg">> & { muiName: string; };
 	/** */
@@ -89,7 +89,7 @@ export default interface IDashAutoAdminResourceConfig {
 	/** */
 	customToolbarActions?: (filters: ReactNode[]) => any;
 	/** */
-	customListActions?: FC<IDashAutoAdminListActions>; //(resourceConfig:IDashAutoAdminResourceConfig,listProps:any,isLoading:boolean,data?:any) => JSX.Element;
+	customListActions?: FC<IDashAutoAdminListActions>; //(resourceConfig:IDashAutoAdminResourceConfig,listProps:any,isLoading:boolean,data?:any) => React.ReactElement;
 	/** */
 	listActionsWrapper?: React.FC<IDashAutoListActionsWrapper>;
 	/** Enables soft deletes controller, to force delete records or reinstall them. */
@@ -157,7 +157,7 @@ export default interface IDashAutoAdminResourceConfig {
 		method,
 		attribute,
 		children,
-	}: IDashAutoAdminCustomFieldComponent) => JSX.Element;
+	}: IDashAutoAdminCustomFieldComponent) => React.ReactElement;
 	/** DataGridProps extends Partial<DatagridProps> from React Admin. */
 	dataGridProps?: Partial<DatagridProps>;
 	/** DataGridComponent replaces the default <AutoDataGrid/> wrapped in a <List/>; use the listComponent to replace the complete list view. */
@@ -171,7 +171,7 @@ export default interface IDashAutoAdminResourceConfig {
 	 * they extends an FC<PropsWithChildren>
 	 * by default is react-admin DataGrid, but it can be overwritten by the custom datagrid component.
 	 */
-	dataGridWrapper?: (props: any) => JSX.Element;
+	dataGridWrapper?: (props: any) => React.ReactElement;
 	/** ListProps extends Partial<ListProps> from React Admin. */
 	listProps?: Partial<ListProps>;
 	/** Pagination is an optional component that aims to replace the default Pagination component that extends React Admin PaginationProps. */
@@ -268,14 +268,14 @@ export default interface IDashAutoAdminResourceConfig {
 
 	/** */
 	BulkActions?:
-	| JSX.Element
+	| React.ReactElement
 	| ReactNode
-	| (() => JSX.Element | ReactNode);
+	| (() => React.ReactElement | ReactNode);
 	/** */
 	RowActions?:
-	| JSX.Element
+	| React.ReactElement
 	| ReactNode
-	| (() => JSX.Element | ReactNode);
+	| (() => React.ReactElement | ReactNode);
 
 	//toolbarShow?: boolean | ((resourceConfig: IDashAutoAdminResourceConfig) => boolean);
 	//toolbarList?: boolean | ((resourceConfig: IDashAutoAdminResourceConfig) => boolean);
@@ -283,47 +283,47 @@ export default interface IDashAutoAdminResourceConfig {
 	//toolbarSave?: boolean | ((resourceConfig: IDashAutoAdminResourceConfig) => boolean);
 
 	/** */
-	customRoutes?: (resourceConfig: IDashAutoAdminResourceConfig) => JSX.Element;
+	customRoutes?: (resourceConfig: IDashAutoAdminResourceConfig) => React.ReactElement;
 	/** */
-	showComponent?: (resourceConfig: IDashAutoAdminResourceConfig) => JSX.Element;
+	showComponent?: (resourceConfig: IDashAutoAdminResourceConfig) => React.ReactElement;
 	/** List Component replaces the complete list component only wrapped by the specified layout; e.g: reference filters will not be applied. */
 	listComponent?: (
 		resourceConfig: IDashAutoAdminResourceConfig,
 		onError?: (data: any) => void,
 		onSubmit?: (data: any) => void,
-	) => JSX.Element;
+	) => React.ReactElement;
 	
 	
 	/** */
-	editComponent?: (resourceConfig: IDashAutoAdminResourceConfig) => JSX.Element;
+	editComponent?: (resourceConfig: IDashAutoAdminResourceConfig) => React.ReactElement;
 	/** */
-	createComponent?: (resourceConfig: IDashAutoAdminResourceConfig) => JSX.Element;
+	createComponent?: (resourceConfig: IDashAutoAdminResourceConfig) => React.ReactElement;
 
 	/** */
-	createLayout?: (render: IDashAutoLayoutRenderFunction) => JSX.Element;
+	createLayout?: (render: IDashAutoLayoutRenderFunction) => React.ReactElement;
 	/** */
-	editLayout?: (render: IDashAutoLayoutRenderFunction) => JSX.Element;
+	editLayout?: (render: IDashAutoLayoutRenderFunction) => React.ReactElement;
 	/** */
-	showLayout?: (render: IDashAutoLayoutRenderFunction) => JSX.Element;
+	showLayout?: (render: IDashAutoLayoutRenderFunction) => React.ReactElement;
 	/** Generally the error handler is performed in the ResourceTemplate, in case no ResourceTemplate and defualt react-admin beheaviour is implemented, default value will be true. */
 	processErrors?: boolean;
-	/** */
+	errorParser?: (error: any) => string | React.ReactElement;	/** */
 	resetSelectedIdsOnLoad?: boolean;
 
 	/** */
 	AutoEditTopToolbarElements?: (
 		resourceConfig: IDashAutoAdminResourceConfig,
-	) => JSX.Element;
+	) => React.ReactElement;
 	/** */
 	AutoCreateTopToolbarElements?: (
 		resourceConfig: IDashAutoAdminResourceConfig,
-	) => JSX.Element;
+	) => React.ReactElement;
 	/** */
 	AutoEditBottomToolbarElements?: (
 		resourceConfig: IDashAutoAdminResourceConfig
-	) => JSX.Element;
+	) => React.ReactElement;
 	/** */
 	AutoCreateBottomToolbarElements?: (
 		resourceConfig: IDashAutoAdminResourceConfig,
-	) => JSX.Element;
+	) => React.ReactElement;
 }

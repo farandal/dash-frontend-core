@@ -13,20 +13,22 @@ import IToolbarButton from '../../interfaces/IToolbarButton';
  * @returns A save button component, either the default `SaveButton` or a custom component specified in the `resourceConfig`.
  */
 export const BottomToolbarSaveButton:FC<IToolbarButton> = (props) => {
-	const { resourceConfig } = props;
-	if (!resourceConfig) return <SaveButton/>;
+	const { resourceConfig, onError, onSubmit } = props;
+
+	if (!resourceConfig) return <DashAutoAdminSaveButton resourceConfig={resourceConfig} onError={onError} onSubmit={onSubmit} />;
 	if (resourceConfig.bottomToolbarSaveButton) {
 		if (resourceConfig.bottomToolbarSaveButton?.enabled) {
 			const buttonProps = {
+                resourceConfig:resourceConfig,
 				...(resourceConfig.bottomToolbarSaveButton?.props || {}),
 				alwaysEnable: resourceConfig?.saveButtonAlwaysEnabled === true ? true : false,
 			};
-			return resourceConfig.bottomToolbarSaveButton?.component ? <resourceConfig.bottomToolbarSaveButton.component {...buttonProps} />  : <DashAutoAdminSaveButton {...buttonProps} />;
+			return resourceConfig.bottomToolbarSaveButton?.component ? <resourceConfig.bottomToolbarSaveButton.component {...buttonProps} />  : <DashAutoAdminSaveButton {...buttonProps} onError={onError} onSubmit={onSubmit}/>;
 		} else {
 			return null;
 		}
 	}
-	return <SaveButton/>;
+	return <DashAutoAdminSaveButton resourceConfig={resourceConfig} onError={onError} onSubmit={onSubmit}/>;
 };
 
 

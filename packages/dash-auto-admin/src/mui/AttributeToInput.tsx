@@ -18,8 +18,9 @@ import {
 	TextInput,
 	useRecordContext,
 } from 'react-admin';
+import { ErrorMessage } from "@hookform/error-message"
 
-import { InputAdornment, InputLabel } from '@mui/material';
+import { InputAdornment, InputLabel, Typography } from '@mui/material';
 import Visibility from '@mui/icons-material/Visibility';
 
 import IDashAutoAdminAttribute from '../interfaces/IDashAutoAdminAttribute';
@@ -39,6 +40,7 @@ import replaceParams from '../utils/replaceParams';
 import { useSelector } from 'react-redux';
 import { IDASHAppState } from 'dash-admin-state';
 import { useEditContext } from 'react-admin';
+import { useFormContext } from 'react-hook-form';
 
 
 //export type ICustomRAButton<T extends RaRecord> = ShowButtonProps;
@@ -62,6 +64,15 @@ const FunctionFieldWrapper = ({
 	..._props
 }: IFieldWrapper): JSX.Element => {
 	const sortable = input?.sortable === true ? true : false;
+
+    const {
+                   
+        formState: { errors },
+        
+      } = useFormContext()
+
+      
+
 	if (method === 'edit') {
 		return (
 			<div
@@ -78,7 +89,16 @@ const FunctionFieldWrapper = ({
 						return React.cloneElement(children, { record: record });
 					}}
 				/>
-			</div>
+              
+               <ErrorMessage
+                    errors={errors}
+                    name={input.attribute}
+                    render={({ message }) => {
+                        return message ? <Typography className='dash-admin-field-error' color="error" >{message}</Typography> : null;
+                    }}
+/>	
+                    
+            </div>
 		);
 	}
 	return (
@@ -132,9 +152,8 @@ const AttributeToInput = (
 				_attribute,
                 _resourceConfig,
 				children,
-			}: IDashAutoAdminCustomFieldComponent) => {
-				return children;
-			};
+			}: IDashAutoAdminCustomFieldComponent) => children;
+		
 
 	switch (input.type) {
 		case 'string':

@@ -17,6 +17,7 @@ import axios from 'axios';
 import { useSelector } from 'react-redux';
 import { IDASHAppState } from 'dash-admin-state';
 import { Loading } from 'react-admin';
+import { useFormContext, useFormState } from 'react-hook-form';
 
 
 export type IDashAutoTabbedForm = IDashAutoAdminForm;
@@ -43,7 +44,10 @@ const DashAutoTabbedForm: React.FC<IDashAutoTabbedForm> = ({
 	const record = useRecordContext();
     const debug = true;
 	
-    const dataProvider = useDataProvider();
+       // Add this to access form methods including setError
+       const formContext = useFormContext();
+    
+       const dataProvider = useDataProvider();
  
 	const formGroupMode = mode === 'create' && resourceConfig?.formGroupModes?.create
 		? resourceConfig.formGroupModes.create
@@ -219,6 +223,24 @@ const DashAutoTabbedForm: React.FC<IDashAutoTabbedForm> = ({
 				validate={validate(resourceConfig.schema)}
                 reValidateMode="onBlur"
 				className={'auto-admin-grouped-form'}
+                /*
+                mutationOptions={{
+                    onError: (error) => {
+                        debugger;
+                        // Extract validation errors from response
+                        if (error.response?.data?.errors) {
+                            const fieldErrors = error.response.data.errors;
+                            
+                            // React-admin will automatically set these errors on the form fields
+                            return fieldErrors;
+                        }
+                        
+                        // Forward to custom error handler if provided
+                        if (onError) {
+                            onError(error);
+                        }
+                    }
+                }}*/
 			>
 				{resourceConfig.createComponent(resourceConfig)}
 			</SimpleForm>
@@ -236,6 +258,23 @@ const DashAutoTabbedForm: React.FC<IDashAutoTabbedForm> = ({
 				validate={validate(resourceConfig.schema)}
                 reValidateMode="onBlur"
 				className={'auto-admin-grouped-form'}
+                /*mutationOptions={{
+                    onError: (error) => {
+                        debugger;
+                        // Extract validation errors from response
+                        if (error.response?.data?.errors) {
+                            const fieldErrors = error.response.data.errors;
+                            
+                            // React-admin will automatically set these errors on the form fields
+                            return fieldErrors;
+                        }
+                        
+                        // Forward to custom error handler if provided
+                        if (onError) {
+                            onError(error);
+                        }
+                    }
+                }}*/
 			>
 				{resourceConfig.editComponent(resourceConfig)}
 			</SimpleForm>
@@ -245,6 +284,7 @@ const DashAutoTabbedForm: React.FC<IDashAutoTabbedForm> = ({
 	if (formGroupMode === 'tabs') {
         //console.log(record,formData, {...record,...formData});
 		return (
+			<>
 			<TabbedForm
 				key="tabbed-form"
 				toolbar={toolbar || null}
@@ -255,13 +295,35 @@ const DashAutoTabbedForm: React.FC<IDashAutoTabbedForm> = ({
                 syncWithLocation={false}
                 //warnWhenUnsavedChanges
                 defaultValues={mode === "create" ? formData : {...record,...formData}}
+                /* mutationOptions seems to have been deprectated from Forms, moved to  react-admin SaveButton, implemented at is at DashAutoAdminSaveButton. */
+                /*mutationOptions={{
+                    onError: (error) => {
+                        debugger;
+                        // Extract validation errors from response
+                        if (error.response?.data?.errors) {
+                            const fieldErrors = error.response.data.errors;
+                            
+                            // React-admin will automatically set these errors on the form fields
+                            return fieldErrors;
+                        }
+                        
+                        // Forward to custom error handler if provided
+                        if (onError) {
+                            onError(error);
+                        }
+                    }
+                }}*/
 			>
+                {/* It has to be a function and not a Functional component, because it returns an array of JSX elements without parent container */}
+                {/* The downside, is can't implement hooks within the DashAutoFormTabs component */}
 				{DashAutoFormTabs({
 					schema: resourceConfig.schema,
 					resource: resourceConfig,
 					options: { mode: mode, isDrawer: isDrawer },
 				})}
 			</TabbedForm>
+      
+            </>
 		);
 	}
 
@@ -275,6 +337,25 @@ const DashAutoTabbedForm: React.FC<IDashAutoTabbedForm> = ({
 				validate={validate(resourceConfig.schema)}
                 reValidateMode="onBlur"
 				className={'auto-admin-grouped-form'}
+               /* mutationOptions seems to have been deprectated from Forms, moved to  react-admin SaveButton, implemented at is at DashAutoAdminSaveButton. */
+                
+                /*mutationOptions={{
+                    onError: (error) => {
+                        debugger;
+                        // Extract validation errors from response
+                        if (error.response?.data?.errors) {
+                            const fieldErrors = error.response.data.errors;
+                            
+                            // React-admin will automatically set these errors on the form fields
+                            return fieldErrors;
+                        }
+                        
+                        // Forward to custom error handler if provided
+                        if (onError) {
+                            onError(error);
+                        }
+                    }
+                }}*/
 			>
 				{DashAutoFormGroups(resourceConfig.schema, resourceConfig, {
 					mode: mode,
@@ -294,6 +375,23 @@ const DashAutoTabbedForm: React.FC<IDashAutoTabbedForm> = ({
 				validate={validate(resourceConfig.schema)}
                 reValidateMode="onBlur"
 				className={'auto-admin-grouped-form'}
+                /*mutationOptions={{
+                    onError: (error) => {
+                        debugger;
+                        // Extract validation errors from response
+                        if (error.response?.data?.errors) {
+                            const fieldErrors = error.response.data.errors;
+                            
+                            // React-admin will automatically set these errors on the form fields
+                            return fieldErrors;
+                        }
+                        
+                        // Forward to custom error handler if provided
+                        if (onError) {
+                            onError(error);
+                        }
+                    }
+                }}*/
 			>
 				{DashAutoFormLayout(resourceConfig.schema, resourceConfig, {
 					mode: mode,
