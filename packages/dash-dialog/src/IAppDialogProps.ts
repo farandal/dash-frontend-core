@@ -1,10 +1,10 @@
 import { ModalProps } from '@mui/material';
+import { JSX, PropsWithChildren } from 'react';
 
-export interface IAppDialogProps extends Omit<ModalProps, 'content' | 'title'> {
-	/** */
+export interface IAppDialogProps extends PropsWithChildren<Omit<ModalProps, 'content' | 'title'| 'children'>> {	/** */
 	variant: 'default' | 'info' | 'success' | 'danger';
 	/** */
-	onSubmit?: () => void;
+	//onSubmit?: () => void;
 	/** */
 	onClose?: () => void;
 	/** */
@@ -29,9 +29,9 @@ export interface IAppDialogProps extends Omit<ModalProps, 'content' | 'title'> {
 	/** */
 	content?: string | JSX.Element;
 	/** enable/disable sound (optional) */
+   
 	sound?: boolean;
 }
-
 export type AppDialogOptions = Omit<IAppDialogProps, 'open' | 'children'>;
 
 export default IAppDialogProps;

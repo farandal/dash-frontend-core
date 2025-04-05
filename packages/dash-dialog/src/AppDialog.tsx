@@ -22,8 +22,7 @@ const PaperComponent = (props: PaperProps) => {
   return <Paper {...props} />
 };
 
-export const AppDialog: React.FC<IAppDialogProps> = (props) => {
-  const {
+export const AppDialog: React.FC<IAppDialogProps> = (props) => {  const {
     onClose,
     onConfirm,
     onCancel,

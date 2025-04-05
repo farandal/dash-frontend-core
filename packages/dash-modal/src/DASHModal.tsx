@@ -68,7 +68,7 @@ const DASHModal: React.FC<IAppDialogProps> = (props) => {
 		onClose,
 		onCancel,
 		onConfirm,
-		onSubmit,
+		//onSubmit,
 		open = false,
 		//closeText = null,
 		confirmText = 'Continuar',
