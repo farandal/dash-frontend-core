@@ -1,4 +1,4 @@
-import axios, { AxiosRequestConfig } from 'axios';
+import axios, { Axios, AxiosError, AxiosRequestConfig } from 'axios';
 import DASHAdminSystemConstants from 'dash-admin/src/config/DASHAdminSystemConstants';
 
 //import { getCookie } from '../utils/cookies';
@@ -38,15 +38,8 @@ export const initAxios = (
 			//console.log("Axios Success", response);
 			return response;
 		},
-		(error) => {
-			window.dispatchEvent(new MessageEvent('GlobalError', { data: {error:error} }));
-			if (error.response && error.response.status === 422) {
-				/**
-				 * Error Handling This is important for the system to parse Form field errors within AutoAdmin.
-				 * therefore, an extra handling for errors are implemented in dataProvider and authProvider
-				 */
-				return Promise.reject(error.response.data?.errors || error);
-			}
+		(error:AxiosError) => {
+			window.dispatchEvent(new MessageEvent('AxiosOriginalError', { data: {error:error} }));
 			return Promise.reject(error);
 		},
 	);
