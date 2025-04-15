@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "232278589863",
+    "project_id": "pinoywok",
+    "storage_bucket": "pinoywok.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:232278589863:android:91a877714eaf20d3117682",
+        "android_client_info": {
+          "package_name": "cl.pinoywok.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDQjxzx1Ssn2YsL2Fm2aEgA1I6ajItgc3g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

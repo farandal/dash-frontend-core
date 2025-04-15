@@ -20,13 +20,13 @@ export const AvatarHandler: React.FC<AvatarComponent> = (props) => {
 	const onChange = (file: File) => {
 		setValue(attribute.attribute, file, { shouldDirty: true });
 	};
-
+    
 	return (
 		<>
 			<SingleImageUploader
 				classNamePrefix='dash-profile'
 				//{...method === "edit" && { currentUrl:record[_attributeName]} }
-                {...method === "edit" && { currentUrl: `${record.image_url}`} }
+                {...method === "edit" && { currentUrl: `${record.image_path}`} }
                 /*...method === "edit" && { currentUrl: `${new URL(record.image_url).origin}/${record.image_path}`} */
                
 				onChange={onChange}

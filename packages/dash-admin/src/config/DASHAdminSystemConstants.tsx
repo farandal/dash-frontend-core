@@ -33,14 +33,14 @@ export const getEnv = (key: string) => {
 
 const system = {
   API_URL: getEnv('APP_BACKEND_URL') || 'http://localhost:8000',
-  SOCKET_URL: getEnv('APP_SOCKET_URL') || (typeof window !== 'undefined' ? window.location.hostname : 'localhost') + ':6001',
+  SOCKET_URL: (getEnv('APP_SOCKETS_HOST') || (typeof window !== 'undefined' ? window.location.hostname : 'localhost')) + (getEnv('APP_SOCKETS_PORT') ? ':' + getEnv('APP_SOCKETS_PORT') : ''), 
   SOCKETS_ENABLED: JSON.parse(getEnv('APP_SOCKETS_ENABLED')) || false,
   SOCKETS_BROADCASTER: getEnv('APP_SOCKETS_BROADCASTER') || 'pusher',
   SOCKETS_KEY: getEnv('APP_SOCKETS_KEY') || 'dash',
   ADMIN_API_URL: getEnv('APP_ADMIN_API_URL'),
   DEBUG: true, // String(getEnv("APP_DEBUG")) === 'true' ? true : false,
   SHOW_GLOBAL_TOAST_ERROR: false,
-  SHOW_GLOBAL_DIALOG_ERROR: false,
+  SHOW_GLOBAL_DIALOG_ERROR: true,
   DASH_SYSTEM_ROLE: getEnv('DASH_SYSTEM_ROLE') || 'System',
   DASH_ADMIN_ROLE: getEnv('DASH_ADMIN_ROLE') || 'Administrator',
   HAS_ADMINISTRATOR_ID_ROLE: 'HasAdministratorId',

@@ -46,7 +46,7 @@ const AvatarComponent: React.FC<{}> = ({ ...props }) => {
                 <LoadingIndicator />
             </Avatar>
         );
-
+       
     return (
         <>
 
@@ -54,8 +54,8 @@ const AvatarComponent: React.FC<{}> = ({ ...props }) => {
                 className='dash-user-avatar'
                 onMouseEnter={(e) => handleAvatarClick(e)}
             >
-                {identity.image_url ? (
-                    <Avatar {...(identity.image_path && { src: identity.image_url + identity.image_path })} />
+                {identity.image_path ? (
+                    <Avatar {...(identity.image_path && { src: identity.image_path })} />
                 ) : (
                     <Avatar>{identity.name.charAt(0).toUpperCase()}</Avatar>
                 )}

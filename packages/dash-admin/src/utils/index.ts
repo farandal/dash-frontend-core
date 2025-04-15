@@ -14,3 +14,4 @@ export * from "./resolveObjectPath"
 export * from "./setNativeValue"
 export * from "./slugify"
 export * from "./validators"
+export * from './dashDefaultQueryClient';

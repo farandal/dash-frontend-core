@@ -196,9 +196,14 @@ const useLaravelEcho = ({
                     key: getEnv('APP_SOCKETS_KEY') || 'dash',
                     wsHost: getEnv('APP_SOCKETS_HOST') || window.location.hostname,
                     wsPort: getEnv('APP_SOCKETS_PORT') || '6001',
+                    
+                    secure: isProd,
                     forceTLS: isProd,
+                    encrypted: isProd,
+                    useTLS: isProd,
+
                     disableStats: !isProd,
-                    enabledTransports: ['ws', 'wss'],
+                    enabledTransports: isProd ? ['wss','ws'] : ['ws'],                    
                     disableCluster: true,
                     cluster: 'mt1',
                     logToConsole: debug,

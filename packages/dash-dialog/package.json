@@ -36,7 +36,6 @@
 		"@rollup/plugin-typescript": "latest",
 		"query-string": "latest",
 		"react-admin": "latest",
-		"dash-auto-admin": "*",
 		"react-custom-scrollbars-2": "latest",
 		"react-draggable": "latest",
 		"react-loading-overlay-ts": "latest",

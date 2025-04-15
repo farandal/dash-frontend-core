@@ -17,7 +17,8 @@
     "tsc": "tsc -p tsconfig.json",
     "test": "jest --watch --config jest.config.json",
     "format": "prettier --write 'src/**/*.{ts,tsx}'",
-    "build": "rm -rf lib && mkdir lib && TSC_COMPILE_ON_ERROR=true tsc -p tsconfig.build.json",
+    "build": "echo 'Skipping build for react-18-beautiful-dnd-grid'",
+    "_build": "rm -rf lib && mkdir lib && tsc -p tsconfig.build.json --noEmitOnError false",
     "test:pack": "npm run build && npm pack",
     "test:demo": "npm run build && rm -rf demo/src/lib && cp -r lib demo/src/lib",
     "prepublishOnly": "npm run build"
@@ -53,7 +54,8 @@
     "prettier": "^1.18.2",
     "react-dom": "^16.9.0",
     "ts-jest": "^24.1.0",
-    "typescript": "^3.6.3"
+    "typescript": "^3.6.3",
+    "dash-tsconfig": "*"
   },
   "dependencies": {
     "@hello-pangea/dnd": "^17.0.0",

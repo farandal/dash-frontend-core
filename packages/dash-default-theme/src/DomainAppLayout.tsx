@@ -2,7 +2,7 @@ import * as React from 'react';
 import { useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { useNavigate } from 'react-router';
+
 import { useStore } from 'react-admin';
 
 import { Box } from '@mui/material';
@@ -10,13 +10,13 @@ import { Box } from '@mui/material';
 import useLocalStorage from 'dash-admin/src/hooks/useLocalStorage';
 import { IAppLayout } from 'dash-admin/src/layout/AppLayout';
 import { DASH_REDUX_ACTIONS, IDASHAppState } from 'dash-admin-state';
-import GlobalErrorsHandler from 'dash-admin/src/components/misc/GlobalErrorsHandler';
+
 
 
 import DomainTheme from './DomainTheme';
 import DomainHeader from './DomainHeader';
 
-import { Redirect } from 'dash-admin';
+
 import { IDashAutoAdminResourceConfig } from 'dash-auto-admin';
 
 export interface IDomainAppLayout<U = any, A = any> extends IAppLayout {
@@ -71,7 +71,7 @@ const DomainAppLayout = <U, A>(props: IDomainAppLayout<U, A>): React.JSX.Element
           <Box key={2} sx={{ mb: 3 }}>
             <div className='dash-layout-footer-content'></div>
           </Box>
-          <GlobalErrorsHandler />
+         
         </DomainTheme>
       )}
     </>

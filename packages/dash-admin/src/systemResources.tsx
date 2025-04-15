@@ -224,7 +224,8 @@ const systemResources: IAppResourceConfig[] = [
         inList: false,
         tab: 'Contraseña',
         validate: (password: string, values: any) => {
-          if (values?.password !== password) {
+           
+          if (values.password !== "" && (values.password !== password)) {
             throw Error('Contraseñas no coinciden.');
           }
         },
@@ -293,6 +294,8 @@ const systemResources: IAppResourceConfig[] = [
     //references: [{ reference: 'roles', target: 'id', schema: roleSchema }],
     icon: <Person />,
     redirectAfterUpdate: false,
+    showDialogAfterSubmit: true,
+    showNotifyAfterSubmit: true,
     menu: [
       {
         title: 'Usuarios',
@@ -373,7 +376,7 @@ const systemResources: IAppResourceConfig[] = [
       return params;
     },
     redirectAfterUpdate: false,
-    showDialogAfterSubmit: false,
+
     mutationMode: 'pessimistic',
     dataGridProps: { stickyHeader: true },
     dataGridWrapper: (props: any) => <TableContainer sx={{ maxHeight: 800 }} >{props.children}</TableContainer>,

@@ -40,6 +40,7 @@ export const ResourceTemplateEdit: FC<IResourceTemplateController> = (props) => 
 		resourceConfig?.showDialogAfterSubmit === false ? false : true;
 
 	const onEdit = (data: any) => {
+
 		if (_showNotifyAfterSubmit) {
 			notify('Recurso Editado', { type: 'success' });
 		}
@@ -79,6 +80,8 @@ export const ResourceTemplateEdit: FC<IResourceTemplateController> = (props) => 
 					redirect('/' + resourceConfig.model + '/' + data.id);
 					break;
 				case 'list':
+                    redirect("/" + resourceConfig.model);
+                    break;
 				default:
 					//redirect("/" + resourceConfig.model);
 					break;

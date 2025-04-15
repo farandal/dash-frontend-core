@@ -1,0 +1,16 @@
+{
+    "icon": {
+      "source": "./apps/dash/resources/logo.png",
+      "output": "resources",
+      "platforms": ["android", "ios"]
+    },
+    "splash": {
+      "source": "./apps/dash/resources/splash.png",
+      "output": "resources",
+      "platforms": ["android", "ios"],
+      "backgroundColor": "#FFFFFF"
+    },
+    "platforms": ["android", "ios"],
+    "androidOutputType": "mipmap",
+    "iosOutputType": "appiconset"
+  }

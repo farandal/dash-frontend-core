@@ -1,7 +1,6 @@
 /** INTERFACES */
 export type { IAuthContext } from './contexts/auth'
 export type { ILaravelEchoManager } from './contexts/com/LaravelEchoMgr'
-export type { INotificationPayloadBase } from './contexts/com/components/notificationFormats'
 
 /** Global Loader */
 export { default as useGlobalLoaderMgr } from './hooks/useGlobalLoaderMgr';
@@ -35,5 +34,19 @@ export { default as WSMessagesManager } from './hooks/notifications/WSMessagesMa
 export { default as Redirect } from './components/custom/Redirect';
 export { default as getEnv } from "./config/DASHAdminSystemConstants";
 
+export { default as RoutingWrapper, AnimatedRoutesWrapper } from './RoutingWrapper';
+export type { IDASHRoutingWrapper } from './RoutingWrapper';
+
+export {default as LaravelEchoContext} from "./contexts/com/LaravelEchoContext"
+export type {ILaravelEchoContext} from "./contexts/com/LaravelEchoContext"
+
+export {default as DASHGlobalErrorHandler} from "./components/misc/DASHGlobalErrorHandler"
+export type {
+    INotificationPayloadBase,
+    INotificationPayload,
+    DefaultSystemNotification,
+    IFormattedNotification,
+    INotificationFormat
+} from "./contexts/com/components/notificationFormats"
 
 export * from "./utils"

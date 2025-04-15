@@ -125,6 +125,7 @@ const Profile: FC = (_props) => {
 					defaultValues={{ name: identity.name, email: identity.email }}
 					className='dash-form'
 				>
+                   
 					<Card className='dash-card-content dash-card-profile'>
 						<Grid container>
 							<Grid item xs={12} md={4}>
@@ -168,7 +169,7 @@ const Profile: FC = (_props) => {
 										</IconButton>
 											</div>*/}
                                    
-									<SingleImageUploader currentUrl={identity.image_url+identity.image_path} onChange={(file:File) => {
+									<SingleImageUploader currentUrl={identity.image_path} onChange={(file:File) => {
 										setAvatar({
 											rawFile: file,
 											urlFile: URL.createObjectURL(file),

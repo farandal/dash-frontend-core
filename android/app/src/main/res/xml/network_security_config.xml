@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <domain-config cleartextTrafficPermitted="true">
+        <!-- Add your API domain -->
+        <domain includeSubdomains="true">api.pinoywok.cl</domain>
+           <!-- Add port if needed -->
+        <domain includeSubdomains="true">api.pinoywok.cl:6001</domain>
+        <domain includeSubdomains="true">pinoywok.cl</domain>
+        
+        <!-- Keep any existing domains you need -->
+        <domain includeSubdomains="true">localhost</domain>
+      
+    </domain-config>
+    
+    <!-- For any other domains, you can set a base-config -->
+    <base-config cleartextTrafficPermitted="true">
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
+</network-security-config>

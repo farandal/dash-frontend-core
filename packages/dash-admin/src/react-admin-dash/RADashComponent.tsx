@@ -32,12 +32,6 @@ const RADashComponent = () => {
 
   }, [identity, identityLoading]);
 
-  return (
-    <div>
-
-      <p>{JSON.stringify(identity?.id)}</p>
-
-    </div>
-  );
+  return null;
 };
 export default RADashComponent;

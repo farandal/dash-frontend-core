@@ -76,6 +76,8 @@ export default interface IDashAutoAdminAttribute {
 	componentProps?: any;
 	/** Validation function for the field */
 	validate?: (value: any, allValues: any) => void;
+    /** Some components handle by default the react-hook-form error, use this prop to hide the DASH Auto default error message */
+    hideErrorMessage?: boolean; 
 	/** Whether to enable pagination */
 	pagination?: boolean;
 	/** Whether multiple values are allowed */

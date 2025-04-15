@@ -18,6 +18,7 @@ const useGlobalErrorMediator = () => {
 
 	React.useEffect(() => {
 		localStorage.setItem('lastGlobalError', JSON.stringify({}));
+        
 		window.addEventListener('GlobalError', errorChangeHandler);
 		return () => {
 			localStorage.setItem('lastGlobalError', JSON.stringify({}));
