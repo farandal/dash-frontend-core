@@ -10,3 +10,4 @@ apps/dash
 yarn.lock
 **/.DS_Store
 .gitmodules
+release
