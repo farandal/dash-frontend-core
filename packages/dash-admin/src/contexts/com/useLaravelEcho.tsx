@@ -57,7 +57,8 @@ const useLaravelEcho = ({
     //userId,
     socketId,
     pingInterval = 30000, // Default ping interval: 30 seconds
-    debug = true
+    debug = true,
+    enabled = false
 }: {
     type: 'public' | 'private';
     channel: string;
@@ -65,7 +66,8 @@ const useLaravelEcho = ({
     //userId?: number;
     socketId?: string;
     pingInterval?: number;
-    debug?: boolean
+    debug?: boolean,
+    enabled?:boolean
 }) => {
     const [echoChannel, setEchoChannel] = useState<Channel | null>(null);
     const [laravelEchoClient, setLaravelEchoClient] = useState<Echo<"pusher"> | null>(null);
@@ -150,12 +152,16 @@ const useLaravelEcho = ({
     }, [laravelEchoClient]);
 
     useEffect(() => {
-
+        
+        if(!enabled) {
+            return;
+        }
 
         if (!(JSON.parse(getEnv('APP_SOCKETS_ENABLED')))) {
             return;
         }
-
+        
+        /*
         if (!userId) {
             return
         }
@@ -164,6 +170,7 @@ const useLaravelEcho = ({
             console.log('[WebSocket] Skipping private channel - no userId specified');
             return;
         }
+        */
 
         const clientId = getClientId();
 

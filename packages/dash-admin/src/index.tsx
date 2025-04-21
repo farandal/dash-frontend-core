@@ -49,4 +49,6 @@ export type {
     INotificationFormat
 } from "./contexts/com/components/notificationFormats"
 
+export * from "./contexts/auth"
+
 export * from "./utils"
