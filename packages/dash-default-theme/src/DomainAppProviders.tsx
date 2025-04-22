@@ -7,8 +7,8 @@ import { LaravelEchoProvider } from 'dash-admin/src/contexts/com/LaravelEchoCont
 import DASHAppConstants from 'dash-constants';
 import { CacheInvalidatorContextProvider } from 'dash-admin/src/utils/cache/CacheInvalidatorContext';
 import { CacheInvalidatorListenerComponent, DASHGlobalErrorHandler, Redirect, WSMessagesManager } from 'dash-admin';
-import { Theme, ThemeProvider } from '@mui/material';
-import { dashTheme } from 'dash-styles';
+import { createTheme, Theme, ThemeProvider } from '@mui/material';
+import { appTheme } from 'dash-styles';
 
 import { LocalizationProvider, LocalizationProviderProps } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -31,10 +31,32 @@ const DomainAppProviders = <U,A,R>({
     children
 }: IDomainAppProviders<U,A,R>): React.JSX.Element => {  
     
+
+    const [themeState, setTheme] = useState(() => theme ? theme : createTheme(appTheme()))
+    /*const [theme, setTheme] = useState(() => createTheme(appTheme()));
+    const [customTheme, setCustomTheme] = useState(() => appTheme());
+    
+    useEffect(() => {
+        // Create theme after CSS variables are loaded
+        const extendedOptions = deepmerge(appTheme(), {
+            breakpoints: {
+                values: {
+                  xs: 0,
+                  sm: 960,
+                  md: 990,
+                  lg: 1200,
+                  xl: 1536,
+                },
+            },
+        });
+        setTheme(createTheme(extendedOptions));
+        setCustomTheme(extendedOptions);
+    }, []);*/
+
   return (
     <Provider store={store}>
     <AuthContextProvider>
-    <ThemeProvider theme={theme || dashTheme}>
+    <ThemeProvider theme={themeState}>
         <LocalizationProvider dateAdapter={dateAdapter || AdapterDayjs}>
     <DialogServiceProvider
       component={DASHModal}

@@ -6,7 +6,7 @@
  */
 import * as React from 'react';
 import { Route, Routes } from 'react-router-dom';
-import { dashTheme } from 'dash-styles';
+import { appTheme } from 'dash-styles';
 
 import MyLoginPage from './pages/Login';
 import Profile from './pages/Profile';
@@ -143,6 +143,7 @@ import { IDashAutoAdminResourceConfig } from 'dash-auto-admin';
 import ResourceTemplate from './templates/ResourceTemplate';
 import { JSX } from 'react';
 import RADashComponent from './react-admin-dash/RADashComponent';
+import { createTheme } from '@mui/material';
 
 interface IAsyncResources extends AdminUIProps {
   resources: any;
@@ -188,7 +189,7 @@ const DASHAdminApp: React.FC<IDASHAdmin<unknown, unknown, unknown, unknown, unkn
   //const currentAppLocale = AppLocale[locale.locale];
 
   // Theme
-  const appThemeConfig = customThemeConfig || dashTheme; // Matetial UI light theme
+  const appThemeConfig = customThemeConfig || createTheme(appTheme()); // Matetial UI light theme
   const [themeConfig] = useTheme(appThemeConfig);
 
   //Roles

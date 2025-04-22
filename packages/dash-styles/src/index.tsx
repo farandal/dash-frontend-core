@@ -3,7 +3,7 @@ import { deepmerge } from '@mui/utils';
 import { createTheme } from '@mui/material/styles';
 
 const defaultColors = {
-  main: '#1976d2',
+  main:'#000',
   mainContrast: '#444444',
   white: '#ffffff',
   textPrimary: '#000000',
@@ -14,17 +14,18 @@ const defaultColors = {
   info: '#2196f3'
 };
 
+
 const getCSSVar = (name: string) => {
-  const value = getComputedStyle(document.documentElement)
+  const value = window.getComputedStyle(document.documentElement)
     .getPropertyValue(name)
     .trim();
+    console.log("getCSSVAR", name, value);
   return value || null;
 };
 
-const mainColor = getCSSVar('--main-color-contrast') || defaultColors.mainContrast;
-const mainColorContrast = getCSSVar('--main-color-contrast') || defaultColors.mainContrast;
-
-export const globalPallete = {
+//const mainColor = getCSSVar('--main-color') || defaultColors.main;
+//const mainColorContrast = getCSSVar('--main-color-contrast') || defaultColors.mainContrast;
+	export const globalPallete = () => ({
 		success: {
 			main: getCSSVar('--success-color') || defaultColors.success,
 			contrastText: getCSSVar('--white-color') || defaultColors.white,
@@ -42,12 +43,14 @@ export const globalPallete = {
     },
 
 	primary: {
-		main: mainColor,
-		light: mainColor,
-		dark: mainColor,
+		main: getCSSVar('--main-color') || defaultColors.main,
+		light: getCSSVar('--main-color') || defaultColors.main,
+		dark: getCSSVar('--main-color') || defaultColors.main,
 	},
 	secondary: {
-		main: mainColorContrast,
+		main: getCSSVar('--main-color-contrast') || defaultColors.mainContrast,
+    light: getCSSVar('--main-color-contrast') || defaultColors.mainContrast,
+    dark: getCSSVar('--main-color-contrast') || defaultColors.mainContrast,
 	},
 
 	text: {
@@ -56,13 +59,12 @@ export const globalPallete = {
 	},
 
 	action: {
-		active: getCSSVar('--main-color-contrast') || defaultColors.main,
+		active: getCSSVar('--main-color-contrast') || defaultColors.mainContrast,
 	},
 
 	borderRadius: 3,
-};
-
-export const appTheme = deepmerge(defaultTheme, {
+});
+export const appTheme = () => deepmerge(defaultTheme, {
 
 	breakpoints: {
 		values: {
@@ -74,7 +76,7 @@ export const appTheme = deepmerge(defaultTheme, {
 		},
 	},
 	palette: {
-		...globalPallete,
+		...globalPallete(),
 	},
 	components: {
 		/*MuiInputLabel: {
@@ -103,24 +105,24 @@ export const appTheme = deepmerge(defaultTheme, {
 					//height: 36,
 					margin: 4,
 					textTransform: 'none',
-					color: globalPallete.primary.main,
+					color: globalPallete().primary.main,
 					backgroundColor: 'transparent',
 					'&:hover': {
 						color: getCSSVar('--white-color') || defaultColors.white,
-						backgroundColor: mainColorContrast,
+						backgroundColor: getCSSVar('--main-color-contrast') || defaultColors.mainContrast,
 					},
 					'&:active': {
 						color: getCSSVar('--white-color') || defaultColors.white,
-						backgroundColor: mainColorContrast,
+						backgroundColor: getCSSVar('--main-color-contrast') || defaultColors.mainContrast,
 
 					},
 					'&.default': {
 						background: getCSSVar('--white-color') || defaultColors.white,
-						color: mainColorContrast,
+						color: getCSSVar('--main-color') || defaultColors.main,
 					},
 					'&.submit': {
 						background:
-							`linear-gradient(101.98deg, ${mainColor} 0%, ${mainColorContrast} 111.65%)`,
+							`linear-gradient(101.98deg, ${getCSSVar('--main-color-contrast') || defaultColors.mainContrast} 0%, ${getCSSVar('--main-color') || defaultColors.main} 111.65%)`,
 						color: getCSSVar('--white-color') || defaultColors.white,
 					},
 				},
@@ -148,15 +150,15 @@ export const appTheme = deepmerge(defaultTheme, {
 						color: 'primary',
 
 						style: {
-							backgroundColor: mainColor,
+							backgroundColor: getCSSVar('--main-color') || defaultColors.main,
 							color: getCSSVar('--white-color') || defaultColors.white,
 							'&:hover': {
 								color: getCSSVar('--white-color') || defaultColors.white,
-								backgroundColor: mainColorContrast,
+								backgroundColor: getCSSVar('--main-color-contrast') || defaultColors.mainContrast,
 							},
 							'&:active': {
 								color: getCSSVar('--white-color') || defaultColors.white,
-								backgroundColor: mainColor,
+								backgroundColor: getCSSVar('--main-color') || defaultColors.main,
 							},
 						},
 					},
@@ -173,26 +175,22 @@ export const appTheme = deepmerge(defaultTheme, {
 	},
 });
 
-export const darkTheme = deepmerge(appTheme, {
+export const darkTheme = () => deepmerge(appTheme, {
 	palette: {
 		mode: 'dark',
 		borderRadius: 0,
 	},
 });
 
-export const lightTheme = deepmerge(appTheme, {
+export const lightTheme = () => deepmerge(appTheme, {
 	palette: {
 		mode: 'light',
 		borderRadius: 0,
 	},
 });
 
-export const themes = {
-  light: createTheme(lightTheme),
-  dark: createTheme(darkTheme),
-};
 
-export const dashThemeConfig = appTheme;
-export const dashTheme = createTheme(appTheme);
+//export const dashThemeConfig = appTheme;
+//export const dashTheme = createTheme(appTheme);
 
-export default dashThemeConfig;
+export default appTheme;

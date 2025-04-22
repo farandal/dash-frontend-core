@@ -137,7 +137,7 @@ const useLaravelEcho = ({
         log('Disconnecting Laravel Echo client...', getClientId());
         //echoManager.getClient(getClientId()).disconnect();
         laravelEchoClient && laravelEchoClient.disconnect();
-        echoManager.getClient(getClientId()).disconnect();
+        //echoManager.getClient(getClientId()).disconnect();
         log('Setting Laravel Echo client to null...');
         setLaravelEchoClient(null);
         log('Setting Echo channel to null...');
@@ -147,7 +147,7 @@ const useLaravelEcho = ({
         log('Setting connection status to false...');
         setIsConnected(false);
         log('Removing client from Echo manager...');
-        echoManager.removeClient(getClientId())
+        //echoManager.removeClient(getClientId())
         //}
     }, [laravelEchoClient]);
 

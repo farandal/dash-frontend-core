@@ -26,17 +26,17 @@
     }
     .sidebar-header{
         width: 100%;
-        padding: 31px 8px 11.13px;
+        padding: 10px;
     }
     .sidebar-logo{
         display: block;
-        //height: 31px;
-        margin: 0 auto 8.13px;
+        height: 80px;
+        margin: 0 auto 8px;
         > img{
             width: 100%;
             height: 100%;
             object-fit: contain;
-            filter: brightness(0) invert(1);
+            //filter: brightness(0) invert(1);
         }
     }
     .sidebar-list {
@@ -55,27 +55,28 @@
         }
         /* Handle */
         &::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.2);
+            background: @dash-sidebar-handle-primary;
             border-radius: 5px;
         }
         /* Handle on hover */
         &::-webkit-scrollbar-thumb:hover {
-            background: rgba(255, 255, 255, 0.5);
+            background: @dash-sidebar-handle-contrast;
         }
         .MuiButtonBase-root.MuiListItemButton-root{
             color: @dash-sidebar-color-primary;
             display: flex;
             align-items: center;
             min-height: auto;
-            padding: 9px 17.55px 9px 15.15px;
+            padding: 9px 17px 9px 15px;
             &:hover{
-                background-color: @dash-sidebar-bg-secondary;
+                background-color: @dash-sidebar-bg-contrast;
+                color: @dash-sidebar-color-contrast;
             }
             .MuiListItemIcon-root{
                 //color: @dash-sidebar-color-primary;
                 width: 18px;
                 height: 18px;
-                margin: 0 10px 0 7.15px;
+                margin: 0 10px 0 7px;
                 min-width: auto;
                 svg{
                     width: 100%;
@@ -97,7 +98,7 @@
                     line-height: 22px;
                 }
             }
-        }
+      }
 
         .MuiCollapse-wrapper{
             background-color: @dash-sidebar-submenu-bg-primary;
@@ -108,7 +109,7 @@
                     border-radius: 5px;
                     padding: 3px;
                     background-color: @dash-sidebar-bg-primary;
-                    color: white;
+                    //color: white;
                     width: 18px;
                     height: 18px;
                     display: inline-grid;
@@ -119,18 +120,9 @@
                     height: 12px;
                 }
                 a.RaMenuItemLink-active{
-                    background-color: @dash-sidebar-submenu-bg-secondary;
+                    background-color: @dash-sidebar-submenu-bg-contrast;
                 }
-                a{
-                    background-color: @dash-sidebar-submenu-bg-primary;
-                    padding-left: 38px !important;
-                    color: @dash-sidebar-submenu-color-primary;
-                }
-                &:hover{
-                    a{
-                        background-color: @dash-sidebar-submenu-bg-secondary;
-                    }
-                }
+
             }
         }
     }
@@ -150,7 +142,7 @@
     }
     &.collapsed{
         .sidebar-logo{
-            width: 31px;
+            width: 100%;
         }
         .sidebar-list{
             .MuiButtonBase-root.MuiListItemButton-root{
@@ -181,6 +173,21 @@
     }
 }
 
+
+
+.collapsed { .sidebar-logo{
+ display: block;
+ height: 60px;
+ margin: 0 auto 8px;
+ > img{
+     width: 100%;
+     height: 100%;
+     object-fit: contain;
+     //filter: brightness(0) invert(1);
+ }
+}
+}
+
 @media (max-width: @mq-sm){
     .sidebar-drawer{
         > .MuiPaper-root.MuiDrawer-paper{
@@ -195,57 +202,39 @@
     }
 }
 
-// Colors Expanded Menu
-
-.sidebar-list {
-    .MuiButtonBase-root{
-        .MuiListItemIcon-root{
-            color: @dash-sidebar-bg-secondary;
+// Expanded Menu
+.sidebar-list, .dropdown  {
+    > .MuiButtonBase-root {
+        > .MuiListItemIcon-root,
+        > .MuiListItemText-root .MuiTypography-root {
+            color: @dash-sidebar-color-primary;
         }
-        .MuiListItemText-root{
-            .MuiTypography-root{
-                color: @dash-sidebar-bg-secondary;
+        > &:hover {
+            color: @dash-sidebar-color-contrast;
+            .MuiListItemIcon-root,
+            .MuiListItemText-root .MuiTypography-root {
+                color: @dash-sidebar-color-contrast;
             }
         }
     }
-    .MuiButtonBase-root:hover {
-        color: @dash-sidebar-bg-primary;
-        .MuiListItemText-root{
-            .MuiTypography-root{
-                color: @dash-sidebar-bg-primary;
-            }
-        }
-        .MuiListItemIcon-root{
-            color: @dash-sidebar-bg-primary;
-        }
-    }
-
-    &-sub{
-
-        .MuiButtonBase-root{
-            .MuiListItemIcon-root{
+    &-sub {
+        .MuiButtonBase-root {
+            .MuiListItemIcon-root {
                 color: @dash-sidebar-submenu-color-primary;
             }
-
-            .MuiListItemText-root{
-                .MuiTypography-root{
-                    color: @dash-sidebar-submenu-color-primary;
-                }
-            }
-        }
-        .MuiButtonBase-root:hover {
-            color: @dash-sidebar-submenu-color-secondary;
-            .MuiListItemText-root{
-                .MuiTypography-root{
-                    color: @dash-sidebar-submenu-color-primary;
-                }
-            }
-            .MuiListItemIcon-root{
+            .MuiListItemText-root .MuiTypography-root {
                 color: @dash-sidebar-submenu-color-primary;
+            }
+            &:hover {
+                .MuiListItemText-root .MuiTypography-root,
+                .MuiListItemIcon-root {
+                    color: @dash-sidebar-submenu-color-contrast;
+                }
             }
         }
     }
 }
+
 
 
 .sidebar-collapsed-menu {
@@ -282,10 +271,6 @@
         padding: 0.7rem 1rem;
       }
 
-      .menu-items a:hover,
-      .menu-items button:hover {
-        background-color: #f2f2f2;
-      }
 
       .arrow::after {
         content: "";
@@ -309,7 +294,7 @@
         min-width: 10rem;
         padding: 0.5rem 0;
         list-style: none;
-        background-color: #fff;
+        background-color: @dash-sidebar-submenu-bg-primary;
         border-radius: 0.5rem;
         display: none;
       }

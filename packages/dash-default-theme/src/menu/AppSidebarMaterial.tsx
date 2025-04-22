@@ -107,7 +107,7 @@ const AppSidebarMaterial = (props) => {
 							logoSmall
 						}
 					</div>
-					<IconButton onClick={toggleDrawer} >
+					<IconButton color='secondary' onClick={toggleDrawer} >
 						{navExpanded ? (
 							<KeyboardDoubleArrowLeftIcon />
 						) : (
