@@ -1,5 +1,5 @@
 
-import { SelectInput } from 'react-admin';
+import { ArrayInput, ReferenceArrayField, SelectInput } from 'react-admin';
 import { SelectArrayInput } from 'react-admin';
 import ResourceTemplate from './templates/ResourceTemplate';
 import IAppResourceConfig from './interfaces/IAppResourceConfig';
@@ -179,7 +179,8 @@ const systemResources: IAppResourceConfig[] = [
         attribute: 'public_id',
         label: 'Rut',
         type: String,
-        fieldOptions: { required: true/*, validate: [required()],*/, showDiv: true, fullWidth: true },
+        fieldProps: { required: true/*, validate: [required()],*/, showDiv: true},
+        slotProps: {  fullWidth: true  },
         sortable: true,
         inEdit: true,
         inCreate: true,
@@ -206,7 +207,7 @@ const systemResources: IAppResourceConfig[] = [
         attribute: 'password',
         type: String,
         isPassword: true,
-        fieldOptions: { fullWidth: true },
+        slotProps: { fullWidth: true },
         inList: false,
         tab: 'Contraseña',
         validate: (password: string) => {
@@ -220,7 +221,7 @@ const systemResources: IAppResourceConfig[] = [
         attribute: 'password_confirmation',
         type: String,
         isPassword: true,
-        fieldOptions: { fullWidth: true },
+        slotProps: { fullWidth: true },
         inList: false,
         tab: 'Contraseña',
         validate: (password: string, values: any) => {
@@ -241,37 +242,38 @@ const systemResources: IAppResourceConfig[] = [
       {
         tab: 'Datos Usuario',
         label: 'Roles',
-        attribute: 'role_ids',
-        //listAttribute: 'name',
+        attribute: 'roles',
+        listAttribute: 'role_ids',
         type: 'system/role.name',
         //type: Object,
         // TODO Agregar un filtro, solo para traer los roles de cliente.
-        pagination: false,
+        //pagination: false,
         multiple: true,
+        inList: false,
+        inShow: false,
         //custom: true,
         //componentProps:{ options: {fullwidth: true} },
-        component: SelectArrayInput,
+        //component: SelectArrayInput,
         //searchField: "subdomain"
       },
       {
-        attribute: 'active',
-        type: Boolean,
-        inList: true,
-        label: 'Activo',
         tab: 'Datos Usuario',
-        processor: 'Boolean',
+        label: 'Roles',
+        attribute: 'roles',
+        listAttribute: 'role_ids',
+        type: 'system/role.name',
+        //type: Object,
+        // TODO Agregar un filtro, solo para traer los roles de cliente.
+        //pagination: false,
+        multiple: true,
+        inEdit: false,
+        inCreate: false,
+        
+        //custom: true,
+        //componentProps:{ options: {fullwidth: true} },
+        //component: ReferenceArrayField,
+        //searchField: "subdomain"
       },
-      /*{
-          attribute: 'avatar',
-          listAttribute: 'system/userclients.avatar',
-          type: ImageInput, // TODO: el componente no muestra la imágen
-          inList: false,
-          label: 'Imágen',
-          tab: 'Datos Usuario',
-          processor: 'RawFile',
-          //validate: (password: string) => (password && password.length >= 6 ? undefined : <div>Password is too short</div>)
-      },*/
-
       {
         tab: 'Datos Usuario',
         label: 'Cliente',
@@ -289,6 +291,24 @@ const systemResources: IAppResourceConfig[] = [
         //searchField: "subdomain"
         processor: 'Null',
       },
+      {
+        attribute: 'active',
+        type: Boolean,
+        inList: true,
+        label: 'Activo',
+        tab: 'Datos Usuario',
+        processor: 'Boolean',
+      },
+        /*{
+          attribute: 'avatar',
+          listAttribute: 'system/userclients.avatar',
+          type: ImageInput, // TODO: el componente no muestra la imágen
+          inList: false,
+          label: 'Imágen',
+          tab: 'Datos Usuario',
+          processor: 'RawFile',
+          //validate: (password: string) => (password && password.length >= 6 ? undefined : <div>Password is too short</div>)
+      },*/
     ],
     //references: [{ reference: 'roles', target: 'role', schema: rolesSchema }]
     //references: [{ reference: 'roles', target: 'id', schema: roleSchema }],

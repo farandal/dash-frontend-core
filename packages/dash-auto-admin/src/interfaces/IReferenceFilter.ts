@@ -41,7 +41,8 @@ export default interface IReferenceFilter {
 	 * TODO: rename to referenceFieldProps
 	 * props for the reference component, by default <SelectInput/> | <SelectArrayInput/> for single o multiple select filter.
 	 */
-	fieldOptions?: any;
+	fieldProps?: any;
+    slotProps?: any;
 	/**
 	 * TODO: rename to referenceInputProps
 	 * props for the reference input component <ReferenceInput/>.

@@ -1,22 +1,20 @@
 import React, { useEffect } from 'react';
-import { useRedirect } from 'react-admin';
+import { useNavigate } from 'react-router-dom';
 
 export interface IRedirect {
 	path: string;
     timer?: number
 }
 const Redirect: React.FC<IRedirect> = ({ path, timer }) => {
-	const redirect = useRedirect();
+	const navigate = useNavigate();
 	useEffect(() => {
-
         if(timer) {
-        
           setTimeout(() => {
-                    redirect(path);
+                    navigate(path);
                 }, 10);
         } else {
         
-		redirect(path);
+		navigate(path);
         }
 	}, []);
 	return <></>;

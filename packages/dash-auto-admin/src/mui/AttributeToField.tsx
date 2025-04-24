@@ -109,12 +109,12 @@ export const AttributeToField = (
 					label={input.label}
 					source={input.listAttribute ? input.listAttribute : input.attribute}
 					{...{
-						...input.fieldOptions,
+						...input.fieldProps,
 						editable: false,
 						InputProps: { readOnly: true },
 					}}
 					disabled
-					/*options={{...input.fieldOptions,editable:false, InputProps:{readOnly: true}}}*/
+					/*options={{...input.fieldProps,editable:false, InputProps:{readOnly: true}}}*/
 				/>
 			</ComponentWrapper>
 		);
@@ -142,11 +142,11 @@ export const AttributeToField = (
 					label={input.label}
 					source={input.listAttribute ? input.listAttribute : input.attribute}
 					{...{
-						...input.fieldOptions,
+						...input.fieldProps,
 						editable: false,
 						InputProps: { readOnly: true },
 					}}
-					/*options={{...input.fieldOptions,editable:false, InputProps:{readOnly: true}}}*/
+					/*options={{...input.fieldProps,editable:false, InputProps:{readOnly: true}}}*/
 				/>
 			</ComponentWrapper>
 		);
@@ -221,7 +221,7 @@ export const AttributeToField = (
 			/>
 		);
 	}
-
+   
 	if (Array.isArray(input.type) && input.type.length > 0) {
 		const inputType: string | IDashAutoAdminAttribute = input.type[0];
 
@@ -262,6 +262,7 @@ export const AttributeToField = (
 			const _inputType = replaceParams(_params,inputType);
 			
 			const [reference, sourceName] = _inputType.split('.');
+           
 			return (
 				<ComponentWrapper
 					{...(record && { record: record })}
@@ -345,86 +346,95 @@ export const AttributeToField = (
 			return acc;
 		}, {})};
 
-	
+        
 		const  _inputType = replaceParams(_params,input.type);
 		const [reference, sourceName] = _inputType.split('.');
 
-		const filter: any = {};
+        // TODO: pagination in ra was moved, and searchField must be optional, its being appended in all field. 
+        // filters function deprecated for now.
+		/*
+        
+        const filter: any = {};
 		filter.pagination = input.pagination;
 		filter.searchField = input.searchField;
+
+        */
+
+
 		// console.log("input pagination", input.pagination, input);
 		if (input && input.multiple === false) {
-			return (
+
+				const componentWrapperProps = {
+					...(record && { record: record }),
+					method,
+					attribute: input,
+					key: index,
+					label: input.label,
+					sortable: sortableField,
+					source: input.listAttribute ? input.listAttribute : input.attribute,
+					resourceConfig
+				}
+
+				const componentProps = {
+					key: index,
+					...(record && { record: record }),
+					sortable: sortableField,
+					...(sortableField && {
+						sortBy: input.listAttribute || input.attribute,
+					}),
+					label: input.label,
+					link: 'show',
+					source: input.listAttribute ? input.listAttribute : input.attribute,
+					reference: reference
+				}			
+                console.log("AttributeToField: ReferenceField",componentProps);                                                                                                                                                               return (
 				<ComponentWrapper
-					{...(record && { record: record })}
-					method={method}
-					attribute={input}
-					key={index}
-					label={input.label}
-					sortable={sortableField}
-					source={input.listAttribute ? input.listAttribute : input.attribute}
-                    resourceConfig={resourceConfig}
+					{...componentWrapperProps}
 				>
 					<ReferenceField
-						key={index}
-						{...(record && { record: record })}
-						//fullWidth
-						sortable={sortableField}
-						{...(sortableField && {
-							sortBy: input.listAttribute || input.attribute,
-						})}
-						// TODO pagination and filter does not seems to be attributes of RA ReferenceField anymore
-						// pagination={filter.pagination}
-						// filter={filter}
-						/*allowEmpty*/
-
-						label={input.label}
-						link='show'
-						source={input.listAttribute ? input.listAttribute : input.attribute}
-						reference={reference}
-					>
-						<TextField
+						{...componentProps}
+					/>
+					{/*<TextField
 							{...(record && { record: record })}
 							source={sourceName}
 						/>
-					</ReferenceField>
+					</ReferenceField>*/}
 				</ComponentWrapper>
 			);
 		}
 
+        const componentWrapperProps = {
+            ...(record && { record: record }),
+            method: method,
+            attribute: input,
+            key: index,
+            label: input.label,
+            sortable: sortableField,
+            source: input.listAttribute ? input.listAttribute : input.attribute,
+            resourceConfig: resourceConfig
+        }		
+        
+        const componentProps = {
+			key: index,
+			...(record && { record: record }),
+            sortable: sortableField,
+			...(sortableField && {
+				sortBy: input.listAttribute || input.attribute,
+			}),
+			//pagination: filter.pagination,
+			//filter: filter,
+			label: input.label,
+			source: input.listAttribute ? input.listAttribute : input.attribute,
+			reference: reference
+		}
+        console.log("AttributeToField: ReferenceArrayField",componentProps);       
 		return (
-			<ComponentWrapper
-				{...(record && { record: record })}
-				method={method}
-				attribute={input}
-				key={index}
-				label={input.label}
-				sortable={sortableField}
-				source={input.listAttribute ? input.listAttribute : input.attribute}
-                resourceConfig={resourceConfig}
-			>
-				<ReferenceArrayField
-					//fullWidth
-					key={index}
-					{...(record && { record: record })}
-					sortable={sortableField}
-					{...(sortableField && {
-						sortBy: input.listAttribute || input.attribute,
-					})}
-					pagination={filter.pagination}
-					filter={filter}
-					label={input.label}
-					//link='show'
-					source={input.listAttribute ? input.listAttribute : input.attribute}
-					reference={reference}
-				>
-					<SingleFieldList /*link='show'*/>
-						<ChipField
-							{...(record && { record: record })}
-							source={sourceName} /*link='show'*/
-						/>
-					</SingleFieldList>
-				</ReferenceArrayField>
+			<ComponentWrapper {...componentWrapperProps} >
+			<ReferenceArrayField {...componentProps} >
+                            <SingleFieldList /*link='show'*/>
+								<ChipField source={sourceName} /*link='show'*/ />
+							</SingleFieldList>
+            </ReferenceArrayField>	
 			</ComponentWrapper>
 		);
 	}
@@ -464,8 +474,8 @@ export const AttributeToField = (
 									source={
 										input.listAttribute ? input.listAttribute : input.attribute
 									}
-									/*options={input.fieldOptions}*/
-									{...input.fieldOptions}
+									/*options={input.fieldProps}*/
+									{...input.fieldProps}
 								/>
 							</ComponentWrapper>
 						);
@@ -480,7 +490,7 @@ export const AttributeToField = (
           key={index} 
           label={input.label} 
           source={input.listAttribute ? input.listAttribute : input.attribute} 
-          {...input.fieldOptions} 
+          {...input.fieldProps} 
        />
     : 
       
@@ -494,7 +504,7 @@ export const AttributeToField = (
                                     key={index} 
                                     label={input.label} 
                                     source={input.listAttribute ? input.listAttribute : input.attribute} 
-                                    {...input.fieldOptions} 
+                                    {...input.fieldProps} 
                                 />
                   }
       />*/
@@ -547,8 +557,8 @@ export const AttributeToField = (
 							source={
 								input.listAttribute ? input.listAttribute : input.attribute
 							}
-							/*options={input.fieldOptions}*/
-							{...input.fieldOptions}
+							/*options={input.fieldProps}*/
+							{...input.fieldProps}
 						/>
 					</ComponentWrapper>
 				</>
@@ -585,8 +595,8 @@ export const AttributeToField = (
 									source={
 										input.listAttribute ? input.listAttribute : input.attribute
 									}
-									/*options={input.fieldOptions}*/
-									{...input.fieldOptions}
+									/*options={input.fieldProps}*/
+									{...input.fieldProps}
 								/>
 							</ComponentWrapper>
 						</>
@@ -616,11 +626,11 @@ export const AttributeToField = (
 						})}
 						label={input.label}
 						showTime={
-							(input.fieldOptions && input.fieldOptions.showTime) || false
+							(input.fieldProps && input.fieldProps.showTime) || false
 						}
 						source={input.listAttribute ? input.listAttribute : input.attribute}
-						/*options={input.fieldOptions}*/
-						{...input.fieldOptions}
+						/*options={input.fieldProps}*/
+						{...input.fieldProps}
 					/>
 				</ComponentWrapper>
 			);
@@ -718,8 +728,9 @@ export const AttributeToField = (
 				key={index}
 				label={input.label}
 				source={input.listAttribute ? input.listAttribute : input.attribute}
-				/*options={input.fieldOptions}*/
-				{...input.fieldOptions}
+				/*options={input.fieldProps}*/
+				{...input.fieldProps}
+                {...(input.slotProps ? { slotProps: input.slotProps } : {})}
 			/>
 		</ComponentWrapper>
 	);

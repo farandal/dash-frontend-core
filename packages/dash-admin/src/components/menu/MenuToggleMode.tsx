@@ -6,10 +6,12 @@ import {
 	IDASHAppState,
 	DASH_REDUX_ACTIONS,
 	DASH_THEME_SETTINGS,
+    IAuthState,
 } from 'dash-admin-state';
 import { Badge } from '@mui/material';
 
 const MenuToggleMode = () => {
+
 	const darkMode: boolean = useSelector((state: IDASHAppState<any, any, any>) =>
 		state.settings.themeType === DASH_THEME_SETTINGS.THEME_TYPE_DARK
 			? true

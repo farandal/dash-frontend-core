@@ -23,7 +23,7 @@ const tenantUserSchema: IDashAutoAdminAttribute[] = [
 		attribute: 'password',
 		type: String,
 		isPassword: true,
-		fieldOptions: { fullWidth: true },
+		fieldProps: { fullWidth: true },
 		inList: false,
 		tab: 'Contraseña',
 		validate: (password: string) => {
@@ -40,7 +40,7 @@ const tenantUserSchema: IDashAutoAdminAttribute[] = [
 		attribute: 'password_confirmation',
 		type: String,
 		isPassword: true,
-		fieldOptions: {},
+		fieldProps: {},
 		inList: false,
 		tab: 'Contraseña',
 		validate: (repassword: string, values: any) => {

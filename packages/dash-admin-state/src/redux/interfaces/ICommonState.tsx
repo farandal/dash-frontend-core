@@ -5,6 +5,7 @@ export interface IComponentState {
 }
 
 export interface ICommonState {
+  appPath: string;
 	error: string;
 	loading: boolean;
 	message: any; // strin o error

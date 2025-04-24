@@ -326,4 +326,7 @@ export default interface IDashAutoAdminResourceConfig {
 	AutoCreateBottomToolbarElements?: (
 		resourceConfig: IDashAutoAdminResourceConfig,
 	) => React.ReactElement;
+
+    // Extended Resource Props from reactAdmin:
+    recordRepresentation?: string
 }

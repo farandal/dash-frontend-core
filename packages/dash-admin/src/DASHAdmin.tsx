@@ -293,15 +293,30 @@ const DASHAdminApp: React.FC<IDASHAdmin<unknown, unknown, unknown, unknown, unkn
               element={customProfilePage || <Profile />}
             />
           ) : <></>}
-          {authenticated ? getCustomAuthRoutes().map((route, index) =>
-            <Route key={`auth-route-${index}`} {...route.props} />,
-          ) : <></>}
+          
+          {authenticated ? getCustomAuthRoutes()
+          .filter(route => !route.props['data-layout']?.toString().includes('no-layout'))
+          .map((route, index) => {
+            console.log('Auth Route Key:', route.props.get)
+            return <Route key={`auth-route-${index}`} {...route.props} />
+          }) : <></>}
 
-          {getCustomRoutes().map((route, index) => (
-            <Route key={`custom-auth-route-${index}`} {...route.props}>
-              {route.props.children || <></>}
-            </Route>
-          ))}
+      
+            {getCustomRoutes()
+            .filter(route => {
+                if (authenticated && getCustomAuthRoutes().some(authRoute => authRoute.props.path === route.props.path)) {
+                return false
+                }
+                return !route.props['data-layout']?.toString().includes('no-layout')
+            })
+            .map((route, index) => {
+                console.log('Normal Route Key:', route.props)
+                return <Route key={`custom-auth-route-${index}`} {...route.props}>
+                    {route.props.children || <></>}
+                </Route>
+                
+            })}         
+                    
         </CustomRoutes>
 
         <CustomRoutes noLayout>
@@ -326,7 +341,31 @@ const DASHAdminApp: React.FC<IDASHAdmin<unknown, unknown, unknown, unknown, unkn
               element={customVerifyAccount || <VerifyAccount />}
             />
           )}
-          {getCustomRoutes()}
+         
+
+         {authenticated ? getCustomAuthRoutes()
+          .filter(route => route.props['data-layout']?.toString().includes('no-layout'))
+          .map((route, index) => {
+            console.log('No layout Auth Route Key:', route.props.get)
+            return <Route key={`auth-route-${index}`} {...route.props} />
+          }) : <></>}
+
+            {getCustomRoutes()
+            .filter(route => {
+                if (authenticated && getCustomAuthRoutes().some(authRoute => authRoute.props.path === route.props.path)) {
+                return false
+                }
+                return route.props['data-layout']?.toString().includes('no-layout')
+            })
+            .map((route, index) => {
+                console.log('No layout Normal Route Key:', route.props)
+                return <Route key={`custom-auth-route-${index}`} {...route.props}>
+                    {route.props.children || <></>}
+                </Route>
+                
+            })}        
+          
+
         </CustomRoutes>
 
       </AdminUI>

@@ -84,7 +84,7 @@ const tenantResources: IAppResourceConfig[] = [
         attribute: 'password',
         type: String,
         isPassword: true,
-        fieldOptions: { fullWidth: true },
+        fieldProps: { fullWidth: true },
         inList: false,
         tab: 'Contraseña',
         validate: (password: string) => {
@@ -98,7 +98,7 @@ const tenantResources: IAppResourceConfig[] = [
         attribute: 'password_confirmation',
         type: String,
         isPassword: true,
-        fieldOptions: { fullWidth: true },
+        fieldProps: { fullWidth: true },
         inList: false,
         tab: 'Contraseña',
         validate: (password: string, values: any) => {

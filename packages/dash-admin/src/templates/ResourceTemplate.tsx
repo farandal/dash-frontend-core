@@ -168,6 +168,7 @@ export const ResourceTemplate = (
             <Resource
                 options={{ label: resourceConfig.label, group: resourceConfig.group }}
                 name={resourceConfig.model}
+                recordRepresentation={resourceConfig?.recordRepresentation || "name"}
                 resourceConfig={resourceConfig}
                 // @ts-ignore Expected mismatch types, nevertheless compatible 
                 icon={resourceConfig?.icon || <></>}

@@ -19,7 +19,7 @@ const GeocodingFieldView: React.FC<IDashAutoAdminCustomFieldComponent> = ({
 		<RATextField
 			label={attribute.label}
 			source={attribute.attribute}
-			options={attribute.fieldOptions}
+			options={attribute.fieldProps}
 		/>
 	);
 };
@@ -85,7 +85,7 @@ const GeocodingFieldEdit: React.FC<IDashAutoAdminCustomFieldComponent> = ({
                         defaultValue={address}
                         label={attribute.label}
                         source={attribute.attribute}
-                        options={{...attribute.fieldOptions}}
+                        options={{...attribute.fieldProps}}
                         {...getInputProps({})}
                     />*/}
 
@@ -97,7 +97,7 @@ const GeocodingFieldEdit: React.FC<IDashAutoAdminCustomFieldComponent> = ({
 									placeholder: attribute.label,
 									className: `input location-search-input`,
 								})}
-								options={{ ...attribute.fieldOptions }}
+								options={{ ...attribute.fieldProps }}
 								autoComplete='off'
 								defaultValue={address}
 								variant='filled'
@@ -144,7 +144,7 @@ const GeocodingFieldEdit: React.FC<IDashAutoAdminCustomFieldComponent> = ({
 		</PlacesAutocomplete>
 	);
 
-	// <TextInput label={attribute.label} source={attribute.attribute} options={attribute.fieldOptions} />
+	// <TextInput label={attribute.label} source={attribute.attribute} options={attribute.fieldProps} />
 };
 
 const GeocodingField = ({

@@ -52,7 +52,7 @@ const TenantSettingsEdit: React.FC<IDashAutoAdminCustomFieldComponent> = ({
           ...entry,
           .../*method === "edit" &&*/ ((defaultValue !== null ||
             defaultValue !== undefined) && {
-            fieldOptions: {
+            fieldProps: {
               defaultValue: defaultValue,
               fullWidth: true,
             },

@@ -69,7 +69,8 @@ export default interface IDashAutoAdminAttribute {
 	/** Whether field is a password input */
 	isPassword?: boolean;
 	/** Additional field options */
-	fieldOptions?: any;
+	fieldProps?: any;
+    slotProps?: any;
 	/** Action for the field : ReactNode | React.FC<IRecord> | ActionCallback;*/
 	action?: any;
 	/** Additional props for the component */
@@ -85,7 +86,7 @@ export default interface IDashAutoAdminAttribute {
 	/** Whether field is sortable */
 	sortable?: boolean;
 	/** Custom component for rendering the field */
-	component?: React.FC<IDashAutoAdminCustomFieldComponent> | ((props:IDashAutoAdminCustomFieldComponent) => JSX.Element);
+	component?: React.FC<IDashAutoAdminCustomFieldComponent> | ((props:IDashAutoAdminCustomFieldComponent) => JSX.Element) | ((props:any) => JSX.Element);
 	/** Field to use for search functionality */
 	searchField?: string;
 	/** Attribute to use for list display */

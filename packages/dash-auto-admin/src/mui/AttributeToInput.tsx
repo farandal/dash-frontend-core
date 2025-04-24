@@ -158,20 +158,20 @@ const AttributeToInput = (
     switch (input.type) {
         case 'string':
             input.type = String;
-            input.fieldOptions = {
-                ...(input.fieldOptions || {}),
-                fullWidth: input?.fieldOptions?.fullWidth ?? true,
+            input.fieldProps = {
+                ...(input.fieldProps || {}),
+                fullWidth: input?.fieldProps?.fullWidth ?? true,
             };
             break;
         case 'textarea':
 
             input.type = String;
             input.multiple = true;
-            input.fieldOptions = {
-                ...(input.fieldOptions || {}),
-                multiline: input?.fieldOptions?.multiline ?? true,
-                rows: input?.fieldOptions?.rows ?? 4,
-                fullWidth: input?.fieldOptions?.fullWidth ?? true,
+            input.fieldProps = {
+                ...(input.fieldProps || {}),
+                multiline: input?.fieldProps?.multiline ?? true,
+                rows: input?.fieldProps?.rows ?? 4,
+                fullWidth: input?.fieldProps?.fullWidth ?? true,
             };
 
 
@@ -210,7 +210,7 @@ const AttributeToInput = (
                         label={input.label}
                         source={input.listAttribute || input.attribute}
                         {...{
-                            ...input.fieldOptions,
+                            ...input.fieldProps,
                             editable: false,
                             InputProps: {
                                 readOnly: true,
@@ -222,7 +222,7 @@ const AttributeToInput = (
                             },
                         }}
 
-                    /*options={{...input.fieldOptions,editable:false, InputProps:{readOnly: true}}}*/
+                    /*options={{...input.fieldProps,editable:false, InputProps:{readOnly: true}}}*/
                     />
                 </ComponentWrapper>
             </FunctionFieldWrapper>
@@ -247,11 +247,11 @@ const AttributeToInput = (
                         label={input.label}
                         source={input.listAttribute || input.attribute}
                         {...{
-                            ...input.fieldOptions,
+                            ...input.fieldProps,
                             editable: false,
                             InputProps: { readOnly: true },
                         }}
-                    /*options={{...input.fieldOptions,editable:false, InputProps:{readOnly: true}}}*/
+                    /*options={{...input.fieldProps,editable:false, InputProps:{readOnly: true}}}*/
                     />
                 </ComponentWrapper>
             </FunctionFieldWrapper>
@@ -292,13 +292,13 @@ const AttributeToInput = (
                         label={input.label}
                         source={input.attribute}
                         choices={enumToChoices(inputType)}
-                        {...input?.fieldOptions}
+                        {...input?.fieldProps}
                         onChange={e => {
                             if (options?.handleChange) {
                                 options.handleChange(e);
                             }
-                            if (input.fieldOptions?.onChange) {
-                                input.fieldOptions.onChange(e)
+                            if (input.fieldProps?.onChange) {
+                                input.fieldProps.onChange(e)
                             }
                         }}
 
@@ -351,8 +351,8 @@ const AttributeToInput = (
                                     if (options?.handleChange) {
                                         options.handleChange(e);
                                     }
-                                    if (input.fieldOptions?.onChange) {
-                                        input.fieldOptions.onChange(e)
+                                    if (input.fieldProps?.onChange) {
+                                        input.fieldProps.onChange(e)
                                     }
                                 }}
                                 resourceConfig={resourceConfig}
@@ -417,7 +417,7 @@ const AttributeToInput = (
                     source={input.attribute}
                     label={input.label}
                     accept='image/*'
-                    {...input.fieldOptions}
+                    {...input.fieldProps}
                 //queryOptions={{ refetchOnWindowFocus: false }}
 
                 >
@@ -434,7 +434,7 @@ const AttributeToInput = (
                 placeholder={'Arrástre un archivo o haga click aquí para seleccionar'}
                 source={input.attribute}
                 label={input.label}
-                {...input.fieldOptions}
+                {...input.fieldProps}
             >
                 <FileField source='src' title='title' />
             </FileInput>
@@ -481,13 +481,13 @@ const AttributeToInput = (
                             method={'edit'} // edit because its AttributeToInput
                             attribute={input}
                             label={input?.label || ''}
-                            {...input.fieldOptions}
+                            {...input.fieldProps}
                             onChange={e => {
                                 if (options?.handleChange) {
                                     options.handleChange(e);
                                 }
-                                if (input.fieldOptions?.onChange) {
-                                    input.fieldOptions.onChange(e)
+                                if (input.fieldProps?.onChange) {
+                                    input.fieldProps.onChange(e)
                                 }
                             }}
                             resourceConfig={resourceConfig}
@@ -515,13 +515,13 @@ const AttributeToInput = (
                         //queryOptions={{ refetchOnWindowFocus: false }}
                         fullWidth
                         label={input?.label || ''}
-                        {...input.fieldOptions}
+                        {...input.fieldProps}
                         onChange={e => {
                             if (options?.handleChange) {
                                 options.handleChange(e);
                             }
-                            if (input.fieldOptions?.onChange) {
-                                input.fieldOptions.onChange(e)
+                            if (input.fieldProps?.onChange) {
+                                input.fieldProps.onChange(e)
                             }
                         }}
                     />
@@ -539,14 +539,14 @@ const AttributeToInput = (
                         fullWidth
                         label={input.label}
                         source={input.attribute}
-                        /*options={input.fieldOptions}*/
-                        {...input.fieldOptions}
+                        /*options={input.fieldProps}*/
+                        {...input.fieldProps}
                         onChange={e => {
                             if (options?.handleChange) {
                                 options.handleChange(e);
                             }
-                            if (input.fieldOptions?.onChange) {
-                                input.fieldOptions.onChange(e)
+                            if (input.fieldProps?.onChange) {
+                                input.fieldProps.onChange(e)
                             }
                         }}
                     />
@@ -568,13 +568,13 @@ const AttributeToInput = (
                             id={input.listAttribute || input.attribute}
                             label={input.label}
                             source={input.listAttribute || input.attribute}
-                            {...input.fieldOptions}
+                            {...input.fieldProps}
                             onChange={e => {
                                 if (options?.handleChange) {
                                     options.handleChange(e);
                                 }
-                                if (input.fieldOptions?.onChange) {
-                                    input.fieldOptions.onChange(e)
+                                if (input.fieldProps?.onChange) {
+                                    input.fieldProps.onChange(e)
                                 }
                             }}
                         />
@@ -583,14 +583,14 @@ const AttributeToInput = (
             );
 
         case Date:
-            return input.fieldOptions && input.fieldOptions.showTime ? (
+            return input.fieldProps && input.fieldProps.showTime ? (
                 <FunctionFieldWrapper index={index} method={mode} input={input}>
                     <DateTimeInput
                         key={index}
                         label={input.label}
                         source={input.attribute}
-                        /*options={{ ...input.fieldOptions, ampm: false }}*/
-                        {...input.fieldOptions}
+                        /*options={{ ...input.fieldProps, ampm: false }}*/
+                        {...input.fieldProps}
                     />
                 </FunctionFieldWrapper>
             ) : (
@@ -599,14 +599,14 @@ const AttributeToInput = (
                         key={index}
                         label={input.label}
                         source={input.attribute}
-                        /*options={input.fieldOptions}*/
-                        {...input.fieldOptions}
+                        /*options={input.fieldProps}*/
+                        {...input.fieldProps}
                         onChange={e => {
                             if (options?.handleChange) {
                                 options.handleChange(e);
                             }
-                            if (input.fieldOptions?.onChange) {
-                                input.fieldOptions.onChange(e)
+                            if (input.fieldProps?.onChange) {
+                                input.fieldProps.onChange(e)
                             }
                         }}
                     />
@@ -622,13 +622,13 @@ const AttributeToInput = (
                     source={input.attribute}
                     choices={enumToChoices(input.type)}
                     //queryOptions={{ refetchOnWindowFocus: false }}
-                    options={input.fieldOptions}
+                    options={input.fieldProps}
                     onChange={e => {
                         if (options?.handleChange) {
                             options.handleChange(e);
                         }
-                        if (input.fieldOptions?.onChange) {
-                            input.fieldOptions.onChange(e)
+                        if (input.fieldProps?.onChange) {
+                            input.fieldProps.onChange(e)
                         }
                     }}
                 />
@@ -643,7 +643,7 @@ const AttributeToInput = (
                     key={index}
                     label={input.label}
                     source={input.attribute}
-                /*options={input.fieldOptions}*/
+                /*options={input.fieldProps}*/
                 />
             </FunctionFieldWrapper>
         );
@@ -656,14 +656,14 @@ const AttributeToInput = (
                 key={index}
                 label={input.label}
                 source={input.listAttribute || input.attribute}
-                {...input.fieldOptions}
+                {...input.fieldProps}
                 onChange={e => {
 
                     if (options?.handleChange) {
                         options.handleChange(e);
                     }
-                    if (input.fieldOptions?.onChange) {
-                        input.fieldOptions.onChange(e)
+                    if (input.fieldProps?.onChange) {
+                        input.fieldProps.onChange(e)
                     }
                 }}
             />

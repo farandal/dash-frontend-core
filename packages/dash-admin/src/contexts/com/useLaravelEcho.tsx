@@ -94,8 +94,8 @@ const useLaravelEcho = ({
 
     }, [auth])
 
-    const isProd = getEnv('APP_ENV') === 'production';
-
+    //const isProd = getEnv('APP_ENV') === 'production';
+    const isProd = false;
     const log = (message: string, data?: any) => {
         if (debug) {
             console.log(`%c📡 ${message}`, 'color: #2196F3; font-weight: bold; font-size: 12px;', data || '');
@@ -198,12 +198,13 @@ const useLaravelEcho = ({
             } : undefined;
 
             try {
+                
                 const completeConfig = {
                     broadcaster: 'pusher',
                     key: getEnv('APP_SOCKETS_KEY') || 'dash',
+                    //wsPath:  getEnv('APP_SOCKETS_APP_PATH') || 'app',
                     wsHost: getEnv('APP_SOCKETS_HOST') || window.location.hostname,
-                    wsPort: getEnv('APP_SOCKETS_PORT') || '6001',
-                    
+                    ...(getEnv('APP_SOCKETS_PORT') ? { wsPort: getEnv('APP_SOCKETS_PORT') } : {}),                    
                     secure: isProd,
                     forceTLS: isProd,
                     encrypted: isProd,
@@ -217,6 +218,8 @@ const useLaravelEcho = ({
                     activityTimeout: 120000,
                     pongTimeout: 30000,
                 };
+
+               
 
                 if (authConfig) {
                     const baseUrl = getEnv('APP_BACKEND_URL') || window.location.origin;
@@ -232,6 +235,7 @@ const useLaravelEcho = ({
 
                 log('Initializing Echo client with config:', completeConfig);
                 const echo = new Echo(completeConfig as EchoOptions<"pusher">);
+     
 
                 if (echo.connector && echo.connector.pusher) {
                     echo.connector.pusher.bind_global((eventName, data) => {
@@ -272,6 +276,7 @@ const useLaravelEcho = ({
                 echoManager.setClient(clientId, echo);
                 setLaravelEchoClient(echo);
             } catch (error) {
+            
                 logError('Error initializing Echo client:', error);
                 cleanup();
             }

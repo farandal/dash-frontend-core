@@ -1,17 +1,17 @@
-import useLocalStorage from '../../hooks/useLocalStorage';
+import { useSelector } from 'react-redux';
 import { IGetAuth } from '../../interfaces/user/IGetAuth';
 import { IGetAuthUer } from '../../interfaces/user/IUser';
 import React, {
   FC,
   PropsWithChildren,
   useContext,
-  useState,
-  useEffect
 } from 'react';
+import { IAuthState, IDASHAppState } from 'dash-admin-state';
 
 export class AuthContextClass {
   static values: Partial<IAuthContextProps>;
 }
+
 export interface IAuthContextProps {
   authenticated: boolean;
   user: IGetAuthUer;
@@ -39,43 +39,20 @@ export interface IAuthContextProvider extends PropsWithChildren {
 }
 
 export const AuthContextProvider: FC<IAuthContextProvider> = (props) => {
-  const { children, values } = props;
+  const { children } = props;
+  const auth: IAuthState<any, any> = useSelector((state: IDASHAppState<any, any, any>) => state.auth);
 
-  // Use a regular state for the context values
-  const [contextValues, setContextValues] = useState<Partial<IAuthContextProps>>(
-    values || defaultValues
-  );
+  const contextValues: Partial<IAuthContextProps> = {
+    authenticated: auth.authenticated,
+    user: auth.user,
+    auth: auth.auth,
+    token: auth.user?.token,
+    roles: auth.user?.roles
+  };
 
-  // Use localStorage for persistence, but handle serialization/deserialization properly
-  const [serializedValues, setSerializedValues] = useLocalStorage(
-    'SerializedAuthContext',
-    JSON.stringify(values || defaultValues),
-  );
-
-  // Initialize from localStorage on mount
-  useEffect(() => {
-    try {
-      const parsedValues = typeof serializedValues === 'string'
-        ? JSON.parse(serializedValues)
-        : serializedValues;
-
-      setContextValues(parsedValues || defaultValues);
-    } catch (error) {
-      console.error('Error parsing auth context from localStorage:', error);
-      setContextValues(defaultValues);
-    }
-  }, []);
-
-  // Update function that updates both state and localStorage
   const updateValues = (newValues: Partial<IAuthContextProps>) => {
-    setContextValues(prevValues => {
-      const updatedValues = { ...prevValues, ...newValues };
-
-      // Update localStorage with serialized values
-      setSerializedValues(JSON.stringify(updatedValues));
-
-      return updatedValues;
-    });
+    // This should be handled by redux actions/reducers
+    console.warn('updateValues is deprecated. Use redux actions instead.');
   };
 
   return (
@@ -93,46 +70,21 @@ export const useAuthContext = () => {
 };
 
 export const getAuthContext = () => {
-  try {
-    const serialized = localStorage.getItem('SerializedAuthContext');
-    return serialized ? JSON.parse(serialized) as Partial<IAuthContextProps> : defaultValues;
-  } catch (error) {
-    console.error('Error getting auth context:', error);
-    return defaultValues;
-  }
+  // This should be handled by redux selectors
+  console.warn('getAuthContext is deprecated. Use redux selectors instead.');
+  return defaultValues;
 };
 
 export const updateAuthContext = (values: Partial<IAuthContextProps>) => {
-  try {
-    const prevState = getAuthContext();
-    const updatedState = { ...prevState, ...values };
-
-    localStorage.setItem(
-      'SerializedAuthContext',
-      JSON.stringify(updatedState),
-    );
-
-    return updatedState;
-  } catch (error) {
-    console.error('Error updating auth context:', error);
-    return values;
-  }
+  // This should be handled by redux actions/reducers
+  console.warn('updateAuthContext is deprecated. Use redux actions instead.');
+  return values;
 };
 
 export const setAuthContext = (values: Partial<IAuthContextProps>) => {
-  try {
-    // deprectate serialized ...
-    localStorage.setItem('SerializedAuthContext', JSON.stringify(values));
-
-    localStorage.setItem('roles', JSON.stringify(values.user.roles));
-    localStorage.setItem('authenticated', 'true');
-    localStorage.setItem('user', JSON.stringify(values.user));
-
-    return values;
-  } catch (error) {
-    console.error('Error setting auth context:', error);
-    return values;
-  }
+  // This should be handled by redux actions/reducers
+  console.warn('setAuthContext is deprecated. Use redux actions instead.');
+  return values;
 };
 
 export default AuthContext;

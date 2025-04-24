@@ -19,7 +19,7 @@ const getCSSVar = (name: string) => {
   const value = window.getComputedStyle(document.documentElement)
     .getPropertyValue(name)
     .trim();
-    console.log("getCSSVAR", name, value);
+
   return value || null;
 };
 

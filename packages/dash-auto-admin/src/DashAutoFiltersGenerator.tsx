@@ -18,7 +18,8 @@ export const generateFilter = (
 		optionText,
 		alwaysOn = true,
 		referenceComponent,
-		fieldOptions = { fullWidth: true },
+		fieldProps = {},
+        slotProps = {},
 		inputOptions = {},
 		multiple = false,
 		date = false,
@@ -38,7 +39,7 @@ export const generateFilter = (
 				label={label}
 				source={source}
 				alwaysOn={alwaysOn}
-				{...fieldOptions}
+				{...fieldProps}
 			/>
 		);
 	}
@@ -50,7 +51,7 @@ export const generateFilter = (
 				label={label}
 				source={source}
 				alwaysOn={alwaysOn}
-				{...fieldOptions}
+				{...fieldProps}
 			/>
 		);
 	}
@@ -69,7 +70,7 @@ export const generateFilter = (
 				<ReferenceComponent
 					label={label}
 					optionText={optionText}
-					{...fieldOptions}
+					{...fieldProps}
 				/>
 			</ReferenceInput>
 		);
@@ -82,7 +83,7 @@ export const generateFilter = (
 				label={label}
 				source={source}
 				alwaysOn={alwaysOn}
-				{...fieldOptions}
+				{...fieldProps}
 			/>
 		);
 	}
@@ -92,7 +93,8 @@ export const generateFilter = (
 			label={label}
 			source={source}
 			alwaysOn={alwaysOn}
-			{...fieldOptions}
+			{...fieldProps}
+            {...(slotProps ? { slotProps: slotProps } : {})}
 		/>
 	);
 };

@@ -5,7 +5,7 @@ const notificationSchema: IDashAutoAdminAttribute[] = [
 	{
 		label: 'Fecha',
 		attribute: 'created_at',
-		fieldOptions: { showTime: true, fullWidth: true},
+		fieldProps: { showTime: true, fullWidth: true},
 		type: Date,
 	},
 	,
