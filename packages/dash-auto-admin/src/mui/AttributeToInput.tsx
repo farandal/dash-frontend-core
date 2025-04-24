@@ -637,38 +637,47 @@ const AttributeToInput = (
     }
 
     if (input.isPassword) {
+        const passwordProps = {
+            key: index,
+            label: input.label,
+            source: input.attribute,
+            ...(input.slotProps ? { slotProps: input.slotProps } : {})
+        }
+
+        console.log("AttibuteToInput: Password",passwordProps)
+        
         return (
             <FunctionFieldWrapper index={index} method={mode} input={input}>
-                <PasswordInput
-                    key={index}
-                    label={input.label}
-                    source={input.attribute}
-                /*options={input.fieldProps}*/
+                <PasswordInput {...passwordProps}
+                  
                 />
             </FunctionFieldWrapper>
         );
     }
+    const textFieldProps = {
+        key: index,
+        label: input.label,
+        source: input.listAttribute || input.attribute,
+        ...input.fieldProps,
+        ...input.slotProps ? { slotProps: input.slotProps } : {},
+        onChange: (e) => {
+            if (options?.handleChange) {
+                options.handleChange(e);
+            }
+            if (input.fieldProps?.onChange) {
+                input.fieldProps.onChange(e)
+            }
+        }
+    }
 
-    return (
-        <FunctionFieldWrapper index={index} method={mode} input={input}>
+    console.log("AttibuteToInput: TextInput",textFieldProps)
+    return <FunctionFieldWrapper index={index} method={mode} input={input}>
 
             <TextInput
-                key={index}
-                label={input.label}
-                source={input.listAttribute || input.attribute}
-                {...input.fieldProps}
-                onChange={e => {
-
-                    if (options?.handleChange) {
-                        options.handleChange(e);
-                    }
-                    if (input.fieldProps?.onChange) {
-                        input.fieldProps.onChange(e)
-                    }
-                }}
+                {...textFieldProps}
             />
         </FunctionFieldWrapper>
-    );
+    
 };
 
 export default AttributeToInput;

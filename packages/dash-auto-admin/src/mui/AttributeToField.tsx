@@ -706,6 +706,22 @@ export const AttributeToField = (
         }
       />
   }*/
+const textFieldProps = {
+    ...(record && { record: record }),
+    //fullWidth
+    sortable: sortableField,
+    ...(sortableField && {
+        sortBy: input.listAttribute || input.attribute,
+    }),
+    key: index,
+    label: input.label,
+    source: input.listAttribute ? input.listAttribute : input.attribute,
+    /*options={input.fieldProps}*/
+    ...input.fieldProps,
+    ...(input.slotProps ? { slotProps: input.slotProps } : {})
+}    
+
+    console.log("AttributeToField: TextField",textFieldProps);
 
 	return (
 		<ComponentWrapper
@@ -719,18 +735,7 @@ export const AttributeToField = (
             resourceConfig={resourceConfig}
 		>
 			<TextField
-				{...(record && { record: record })}
-				//fullWidth
-				sortable={sortableField}
-				{...(sortableField && {
-					sortBy: input.listAttribute || input.attribute,
-				})}
-				key={index}
-				label={input.label}
-				source={input.listAttribute ? input.listAttribute : input.attribute}
-				/*options={input.fieldProps}*/
-				{...input.fieldProps}
-                {...(input.slotProps ? { slotProps: input.slotProps } : {})}
+				{...textFieldProps}
 			/>
 		</ComponentWrapper>
 	);

@@ -180,7 +180,7 @@ const systemResources: IAppResourceConfig[] = [
         label: 'Rut',
         type: String,
         fieldProps: { required: true/*, validate: [required()],*/, showDiv: true},
-        slotProps: {  fullWidth: true  },
+        slotProps: {   input: { fullWidth: true,  autoComplete: "off" } },
         sortable: true,
         inEdit: true,
         inCreate: true,
@@ -200,6 +200,7 @@ const systemResources: IAppResourceConfig[] = [
         attribute: 'email',
         type: String,
         tab: 'Datos Usuario',
+        slotProps: {  input: { fullWidth: true, "data-testid": "email-input" } },
         //validate: (email: string) => (email && email.indexOf('@') > 0 ? undefined : 'Invalid email')
       },
       {
@@ -207,7 +208,7 @@ const systemResources: IAppResourceConfig[] = [
         attribute: 'password',
         type: String,
         isPassword: true,
-        slotProps: { fullWidth: true },
+        slotProps: {  input: { fullWidth: true, autoComplete: "new-password" } },
         inList: false,
         tab: 'Contraseña',
         validate: (password: string) => {
@@ -221,7 +222,7 @@ const systemResources: IAppResourceConfig[] = [
         attribute: 'password_confirmation',
         type: String,
         isPassword: true,
-        slotProps: { fullWidth: true },
+        slotProps: {  input: { fullWidth: true ,  autoComplete: "new-password" } },
         inList: false,
         tab: 'Contraseña',
         validate: (password: string, values: any) => {
