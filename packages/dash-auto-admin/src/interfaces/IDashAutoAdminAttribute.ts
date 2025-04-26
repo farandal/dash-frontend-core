@@ -8,8 +8,8 @@ import IRecord from './IRecord';
  * This interface provides a way to configure various aspects of form fields,
  * such as their type, label, layout, and visibility in different views.
  */
-export default interface IDashAutoAdminAttribute {
-	/** Model attribute name, must match with the json endpoint */
+export default interface IDashAutoAdminAttribute<M = any> {	
+    /** Model attribute name, must match with the json endpoint */
 	attribute: string;
 	/** Label for the field */
 	label?: string;
@@ -97,4 +97,6 @@ export default interface IDashAutoAdminAttribute {
 	processor?: 'Blob' | 'RawFile' | 'Boolean' | 'Null' | string;
 	/** When true, forces use of default schema show field even with custom component */
 	useCustomShowField?: boolean;
+
+    metadata?: M;
 }

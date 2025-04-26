@@ -18,7 +18,7 @@ export const defaultSettings: ISettingsState = {
     loading: false,
     navStyle: AppLayoutSettings.NAV_STYLE_COLLAPSABLE,
     layoutType: AppLayoutSettings.LAYOUT_TYPE_FRAMED,
-    themeType: AppLayoutSettings.THEME_TYPE_LITE,
+    themeType: AppLayoutSettings.THEME_TYPE_LIGHT,
     themeColor: '',
     isDirectionRTL: false,
     locale: {

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Alert } from '@mui/material';
+import { Alert, LinearProgress } from '@mui/material';
 import { useRecordContext } from 'react-admin';
 import { Loading } from 'react-admin';
 import { Tenant } from '../../interfaces/Tenant';
@@ -25,16 +25,12 @@ const TenantSettingsEdit: React.FC<IDashAutoAdminCustomFieldComponent> = ({
 }) => {
   const tenant: Tenant = useRecordContext();
 
-  /*if (!tenant?.settings) return <Loading />*/
-
   const {
     data: settingFormats,
     isLoading: settingFormatsLoading,
     /* @ts-ignore non used variable */
     //error: settingFormatsError,
-  } = useGetList('system/tenant/settingFormats', {
-    pagination: null,
-  });
+  } = useGetList('system/tenant/settingFormats');
 
   const [settingFormatsSchema, setSettingFormatsSchema] = useState<any>(null);
 
@@ -53,8 +49,7 @@ const TenantSettingsEdit: React.FC<IDashAutoAdminCustomFieldComponent> = ({
           .../*method === "edit" &&*/ ((defaultValue !== null ||
             defaultValue !== undefined) && {
             fieldProps: {
-              defaultValue: defaultValue,
-              fullWidth: true,
+              metadata: { defaultValue: defaultValue },
             },
           }),
           ...(method === 'view' && {
@@ -73,6 +68,7 @@ const TenantSettingsEdit: React.FC<IDashAutoAdminCustomFieldComponent> = ({
         return <>{props.defaultValue}</>
     }*/
 
+  if (!tenant?.settings) return <LinearProgress />
   return (
     <section>
       {settingFormatsSchema ? (
@@ -106,6 +102,7 @@ const TenantSettingsView: React.FC<IDashAutoAdminCustomFieldComponent> = ({
   });
 
   const parseValue = (value) => {
+
     switch (typeof value) {
       case 'boolean':
         return value ? 'Sí' : 'No';
@@ -152,14 +149,15 @@ const TenantSettingsView: React.FC<IDashAutoAdminCustomFieldComponent> = ({
 const TenantSettings = ({
   method,
   attribute,
+  resourceConfig,
 }: IDashAutoAdminCustomFieldComponent) => {
   switch (method) {
     case 'edit':
-      return <TenantSettingsEdit attribute={attribute} method={method} />;
+      return <TenantSettingsEdit attribute={attribute} method={method} resourceConfig={resourceConfig} />;
     case 'view':
-      return <TenantSettingsView attribute={attribute} method={method} />;
+      return <TenantSettingsView attribute={attribute} method={method} resourceConfig={resourceConfig} />;
     case 'create':
-      return <TenantSettingsCreate attribute={attribute} method={method} />;
+      return <TenantSettingsCreate attribute={attribute} method={method} resourceConfig={resourceConfig} />;
   }
 };
 

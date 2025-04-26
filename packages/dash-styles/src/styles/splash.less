@@ -1,16 +1,16 @@
 .dash-splash {
   height: 100vh;
-  background-color: @main-color;
+  background-color: var(--primary-color, @primary-color);
   //opacity: 0;
   pointer-events: none;
 }
 
 .dash-splash .MuiCircularProgress-root {
-  color: @main-contrast-color;
+  color: var(--primary-contrast-color, @primary-contrast-color);
 }
 
 .dash-app-layout .MuiCircularProgress-root {
-  color: @main-color !important;
+  color: var(--primary-color, @primary-color) !important;
 }
 
 /*
@@ -20,7 +20,7 @@
   }
 
   .dash-splash.fade-out {
-    background-color: @main-color;
+    background-color: var(--primary-color, @primary-color);
     animation: fadeOut 0.5s ease-out forwards;
   }
 
@@ -29,13 +29,13 @@
       background-color: transparent;
     }
     to {
-      background-color: @main-color;
+      background-color: var(--primary-color, @primary-color);
     }
   }
 
   @keyframes fadeOut {
     from {
-      background-color: @main-color;
+      background-color: var(--primary-color, @primary-color);
     }
     to {
       background-color: transparent;

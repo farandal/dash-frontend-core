@@ -1,179 +1,49 @@
-@btn-color: @main-color;
-@btn-bg: @white-color;
+@btn-primary-bg: linear-gradient(101.98deg, var(--primary-color, @primary-color) 0%, var(--primary-contrast-color, @primary-contrast-color) 111.65%);
+@btn-primary-color: var(--text-color, @text-color);
 
-@btn-primary-bg: linear-gradient(101.98deg, @main-color 0%, @main-color-contrast 111.65%);
-@btn-primary-color: @white-color;
+@btn-tertiary-bg: var(--primary-color, @primary-color);
+@btn-tertiary-color: var(--text-contrast-color, @text-contrast-color);
 
-@btn-tertiary-bg: @main-color;
-@btn-tertiary-color: @white-color;
-
-@btn-error-bg: @dash-error;
-@btn-error-color: @white-color;
-
-.ant-btn{
-    display: inline-flex;
-    align-items: center;
-    padding: 8px 16px;
-    width: auto;
-    min-width: 89px;
-    height: auto;
-    min-height: 40px;
-    background: @btn-bg;
-    border: 1px solid @btn-color;
-    border-radius: 8px;
-    font-family: 'Montserrat';
-    font-style: normal;
-    font-weight: 400;
-    font-size: 16px;
-    line-height: 24px;
-    color: @btn-color;
-    transition: all .4s;
-    text-transform: unset;
-    > span{
-        display: inline-flex;
-        align-items: center;
-        color: @btn-color;
-        svg{
-            margin-right: 9.75px;
-        }
-    }
-    &:hover, &:focus{
-        border: 1px solid @btn-color;
-        color: @btn-color;
-        box-shadow: 0px 2px 2px rgba(@dash-purple, 0.4);
-    }
-    &.ant-btn-primary{
-        border: 1px solid transparent;
-        background: @btn-primary-bg;
-        color: @btn-primary-color;
-        > span{
-            color: @btn-primary-color;
-            svg{
-                filter: brightness(0) invert(1);
-            }
-        }
-        &:hover, &:focus{
-            border: 1px solid transparent;
-            background: @btn-primary-bg;
-            color: @btn-primary-color;
-            > span{
-                color: @btn-primary-color;
-            }
-        }
-    }
-    &.ant-btn-secondary{
-        border: 1px solid @btn-color;
-        background: @btn-bg;
-        color: @btn-color;
-        > span{
-            color: @btn-color;
-        }
-        &:hover, &:focus{
-            border: 1px solid @btn-color;
-            color: @btn-color;
-            box-shadow: 0px 2px 2px rgba(@dash-purple, 0.4);
-            > span{
-                color: @btn-color;
-            }
-        }
-    }
-    &.ant-btn-text{
-        border: 1px solid @btn-tertiary-bg;
-        background: @btn-tertiary-bg;
-        color: @btn-tertiary-color;
-        > span{
-            color: @btn-tertiary-color;
-        }
-        &:hover, &:focus{
-            border: 1px solid @btn-tertiary-bg;
-            color: @btn-tertiary-color;
-            box-shadow: 0px 2px 2px rgba(@dash-purple, 0.4);
-            > span{
-                color: @btn-tertiary-color;
-            }
-        }
-    }
-    &.ant-btn-dashed{
-        border: none;
-        background: @btn-error-bg;
-        color: @btn-error-color;
-        > span{
-            color: @btn-error-color;
-        }
-        &:hover, &:focus{
-            border: none;
-            background: @btn-error-bg;
-            color: @btn-error-color;
-            box-shadow: 0px 2px 2px rgba(@dash-error, 0.4);
-            > span{
-                color: @btn-error-color;
-            }
-        }
-    }
-    &[disabled], &[disabled]:hover, &[disabled]:focus{
-        color: @module-background;
-        background: @dash-disabled-color;
-        border: 1px solid @module-background;
-        text-shadow: none;
-        box-shadow: none;
-    }
-
-    &.btn-clean, &.btn-clean:hover, &.btn-clean:focus{
-        background: none;
-        border: transparent;
-        color: @btn-color;
-        padding: 0;
-        width: auto;
-        min-width: auto;
-        min-height: auto;
-        height: auto;
-        > span{
-            color: @btn-color;
-        }
-        svg{
-            width: 15.75px;
-            height: 15.75px;
-        }
-    }
-}
+@btn-error-bg: var(--dash-alert-error-bg, @dash-alert-error-bg);
+@btn-error-color: var(--text-contrast-color, @text-contrast-color);
 
 .MuiButton-root{
-    background: @btn-bg;
-    border: 1px solid @btn-color;
+    background: var(--component-background, @component-background);
+    border: 1px solid var(--component-border-color, @component-border-color);
     border-radius: 8px !important;
     font-family: 'Montserrat' !important;
     font-style: normal !important;
     font-weight: 400 !important;
     font-size: 16px !important;
     line-height: 24px !important;
-    color: @btn-color;
+    color: var(--text-color, @text-color);
     transition: all .4s;
     text-transform: unset !important;
     > span{
         display: inline-flex;
         align-items: center;
-        color: @btn-color;
+        //color: var(--component-text-color, @component-text-color);
         svg{
             margin-right: 9.75px;
         }
     }
     &.MuiButton-containedPrimary{
         border: 1px solid transparent;
-        background: @btn-primary-bg;
-        color: @btn-primary-color;
+        background: var(--btn-primary-bg, @btn-primary-bg);
+        //color: var(--btn-primary-color, @btn-primary-color);
         > span{
-            color: @btn-primary-color;
+            //color: var(--btn-primary-color, @btn-primary-color);
             svg{
                 filter: brightness(0) invert(1);
             }
         }
     }
     &.MuiButton-outlinedPrimary{
-        border: 1px solid @btn-color;
-        background: @btn-bg;
-        color: @btn-color;
+        border: 1px solid var(--component-border-color, @component-border-color);
+        background: var(--component-background, @component-background);
+        //color: var(--component-text-color, @component-text-color);
         > span{
-            color: @btn-color;
+            //color: var(--component-text-color, @component-text-color);
             svg{
                 filter: brightness(0) invert(1);
             }
@@ -227,7 +97,7 @@
 
     &-detail{
         &-link{
-            background-color: @dash-purple !important;
+            background-color: var(--primary-color, @primary-color) !important;
             border-radius: 4px !important;
             height: 28px !important;
             justify-content: center !important;
@@ -235,7 +105,7 @@
             width: 28px !important;
             svg{
                 path{
-                    fill: @white-color;
+                    fill: var(--text-contrast-color, @text-contrast-color);
                 }
             }
         }

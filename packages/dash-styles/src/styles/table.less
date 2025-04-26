@@ -1,15 +1,15 @@
 .MuiTableCell-root.MuiTableCell-head{
     //padding: 16px;
-    background-color: @main-color !important;
+    background-color: var(--primary-color, @primary-color) !important;
     span{
         font-style: normal;
         font-weight: 600;
         font-size: 14px;
         line-height: 22px;
-        color: @white;
+        color: var(--text-color, @text-color);
     }
     svg{
-        color: @white !important;
+        color: var(--text-color, @text-color) !important;
     }
 }
 
@@ -36,8 +36,8 @@
 }
 .MuiTableCell-root.MuiTableCell-body{
   //text-align: center;
-  border-bottom: 1px solid rgba(224, 224, 224, 1);
-  padding: 2px 16px;
+  border-bottom: 1px solid @primary-contrast-color;
+  padding: 2px 8px;
 }
 
 
@@ -78,26 +78,27 @@
   overflow: auto;
 }
 
+/*
 .RaBulkActionsToolbar-topToolbar{
   .MuiButtonBase-root{
       background-color: #fff1f0;
-      border: 1px solid @pink;
+      border: 1px solid var(--pink, @pink);
       border-radius: 6px !important;
       font-family: 'Montserrat' !important;
       font-style: normal !important;
       font-weight: 700 !important;
       font-size: 16px !important;
       line-height: 24px !important;
-      color: @pink !important;
+      color: var(--pink, @pink) !important;
       min-height: auto !important;
       height: auto !important;
       padding: 4px 10px !important;
       .MuiButton-startIcon{
-          color: @pink !important;
+          color: var(--pink, @pink) !important;
           width: 18px !important;
       }
       &:hover{
-          background-color: @pink;
+          background-color: var(--pink, @pink);
           color: #fff1f0 !important;
           .MuiButton-startIcon{
               color: #fff1f0 !important;
@@ -105,6 +106,7 @@
       }
   }
 }
+*/
 
 .RaDatagrid-tableWrapper{
   //max-height: calc(100vh - 70px);
@@ -114,27 +116,26 @@
 
 .RaBulkActionsToolbar-topToolbar{
   .MuiButtonBase-root{
-      background-color: #fff1f0;
-      border: 1px solid @pink;
+      background-color: var('--primary-contrast-color',@primary-contrast-color);
+      border: 1px solid  var('--primary-color',@primary-color);;
       border-radius: 6px !important;
       font-family: 'Montserrat' !important;
       font-style: normal !important;
-      font-weight: 700 !important;
       font-size: 16px !important;
       line-height: 24px !important;
-      color: @pink !important;
+      color: var('--highlight-color',@highlight-color);
       min-height: auto !important;
       height: auto !important;
       padding: 4px 10px !important;
       .MuiButton-startIcon{
-          color: @pink !important;
+        color: var('--highlight-color',@highlight-color);
           width: 18px !important;
       }
       &:hover{
-          background-color: @pink;
-          color: #fff1f0 !important;
+          
+        color: var('--text-color',@text-color);
           .MuiButton-startIcon{
-              color: #fff1f0 !important;
+            color: var('--text-color',@text-color);
           }
       }
   }

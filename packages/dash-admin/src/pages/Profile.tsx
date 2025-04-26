@@ -1,7 +1,7 @@
 import { FC, useEffect, useState } from 'react';
 //import { Button as LoadingButton } from "@mui/material";
 
-import { Button, Card, CardContent, CardHeader, Grid } from '@mui/material';
+import { Button, Card, CardContent, CardHeader, Grid, Typography } from '@mui/material';
 
 import {
 	Form,
@@ -175,28 +175,29 @@ const Profile: FC = (_props) => {
 											urlFile: URL.createObjectURL(file),
 										});
 									}}  />
-									<h2
+									<Typography
+										variant="h2"
 										style={{
 											display: 'block',
 											textAlign: 'center',
 											fontSize: '20px',
 											fontWeight: 'bold',
-											color: '#212121',
+											
 										}}
 									>
 										{`${identity?.name || ''}`}
-									</h2>
-									<span
+									</Typography>
+									<Typography
+										variant="body2"
 										style={{
 											display: 'block',
 											textAlign: 'center',
 											fontSize: '14px',
-											color: '#000',
 											opacity: '0.54',
 										}}
 									>
 										{/* Cargo, telefono, etc. */}
-									</span>
+									</Typography>
 								</CardContent>
 							</Grid>
 							<Grid item xs={12} md={4}>

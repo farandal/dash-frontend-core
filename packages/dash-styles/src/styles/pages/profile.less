@@ -31,7 +31,7 @@
       width: 42px;
       height: 42px;
       border-radius: 50%;
-      background-color: @white !important;
+      background-color: @highlight-color !important;
       justify-content: center;
       align-items: center;
       position: absolute !important;
@@ -48,7 +48,7 @@
       .MuiAvatar-root{
           width: 65px;
           height: 65px;
-          background-color: @main-color;
+          background-color: @primary-color;
       }
   }
   &-menu{
@@ -64,7 +64,7 @@
               display: block;
               width: 12px;
               height: 12px;
-              background: @white;
+              background: var('--module-background',@module-background);
               transform: rotate(-45deg);
               position: absolute;
               top: -6px;

@@ -13,7 +13,7 @@ const tenantSystemAdminSchema: IDashAutoAdminAttribute[] = [
 		attribute: 'name',
 		type: String,
 	},
-	{
+    {
         tab: 'Genéricos',
 		label: 'Rut',
 		attribute: 'public_id',
@@ -27,6 +27,8 @@ const tenantSystemAdminSchema: IDashAutoAdminAttribute[] = [
 			return undefined;
 		},
 	},
+    /* TODO! domain spacific logic issue, can't be on the Base tenant controller */
+	/*
     {
         tab: 'Genéricos',
         label: 'Monedas Disponibles',
@@ -58,7 +60,7 @@ const tenantSystemAdminSchema: IDashAutoAdminAttribute[] = [
         //custom: true,
         component: SelectInput,
         //searchField: "subdomain"
-      },
+      },*/
 	{
 		tab: 'Configuración',
 		label: 'Configuración',

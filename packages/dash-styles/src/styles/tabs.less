@@ -6,19 +6,19 @@
 //                 padding: 8px 16px;
 //                 margin: 0 2px 0 0;
 //                 height: 40px;
-//                 background: #FAFAFA;
-//                 border: 1px solid @module-background;
+//                 background: var(--component-background, @component-background);
+//                 border: 1px solid var(--border-color-base, @border-color-base);
 //                 border-radius: 2px 2px 0px 0px;
 //                 font-style: normal;
 //                 font-weight: 400;
 //                 font-size: 16px;
 //                 line-height: 24px;
-//                 color: #262626;
+//                 color: var(--text-color, @text-color);
 //                 &.ant-tabs-tab-active{
-//                     background: @white;
-//                     border: 1px solid @module-background;
+//                     background: var(--component-active-background, @component-active-background);
+//                     border: 1px solid var(--border-color-base, @border-color-base);
 //                     border-radius: 2px 2px 0px 0px;
-//                     color: @main-color;
+//                     color: var(--primary-color, @primary-color);
 //                 }
 //             }
 
@@ -51,36 +51,22 @@
         padding: 0;
         min-height: auto;
         border: unset;
-
-
     }
 }
 
 .dash-module{
     &-top-content{
         width: 100%;
-        //padding-bottom: 15px;
-        //margin-bottom: 15px;
         overflow-y: hidden;
         overflow-x: auto;
         position: relative;
-        /*&::before{
-            content: "";
-            display: block;
-            width: 100%;
-            border-bottom: 1px solid @main-color;
-            z-index: -1;
-            position: absolute;
-            left: 0;
-            bottom: 15px;
-        }*/
     }
     &-horizontal-nav{
         display: flex;
-        //justify-content: stretch;
         flex-wrap: unset;
-        border-bottom: 1px solid @main-color;
+        border-bottom: 1px solid var(--border-color-base, @border-color-base);
         position: relative;
+        padding-top: 4px;
 
         li{
             cursor: pointer;
@@ -88,11 +74,11 @@
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                background-color: #e8e8e8;
-                border: 1px solid #e8e8e8;
+                background-color: var(--component-background, @component-background);
+                border: 1px solid var(--border-color-split, @border-color-split);
                 border-top-left-radius: 8px;
                 border-top-right-radius: 8px;
-                margin: 0 .75rem 0 0 ;
+                margin: 0 .75rem 0 0;
                 padding: 5px 15px;
                 width: max-content;
                 height: 45px;
@@ -100,7 +86,7 @@
                 font-size: 14px;
                 font-weight: 700;
                 text-align: center;
-                color: #777 !important;
+                color: var(--text-light-color, @text-light-color) !important;
                 text-decoration: none !important;
                 position: relative;
                 z-index: -1;
@@ -111,14 +97,14 @@
             }
             &:hover{
                 .dash-link{
-                    color: #333 !important;
+                    color: var(--text-color, @text-color) !important;
                 }
             }
             &.active{
                 .dash-link{
-                    background-color: @white;
-                    border-color: @main-color;
-                    border-bottom: 2px solid @white;
+                    background-color: var(--component-active-background, @component-active-background);
+                    border-color: var(--primary-color, @primary-color);
+                    border-bottom: 2px solid var(--component-active-background, @component-active-background);
                     z-index: 1;
                     transform: translateY(1px);
                 }
@@ -132,10 +118,10 @@
     }
 }
 
-
 .dash-module-action {
   display: flex;
   justify-content: flex-end;
+  margin: 4px 4px 0px 0px;
 
   button {
     z-index: 1000;
@@ -149,17 +135,13 @@
   }
 
   margin-bottom: -50px;
-
-
 }
-
 
 @media (max-width: @mq-sm){
     .dash-module{
         &-box-header{
             .dash-module{
                 &-top-content{
-                    //margin-top: 25px;
                 }
             }
         }
@@ -172,20 +154,12 @@
         height: auto;
         min-height: auto;
         padding: 2px 5px;
-
       }
     }
-
 
     .dash-module-action {
-
       @media (max-width: @mq-sm) {
-
         margin-bottom: -28px;
       }
-
     }
-
 }
-
-

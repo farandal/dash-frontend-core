@@ -92,7 +92,7 @@ const AppSidebar: React.FC<IAppSidebar> = ({
 				{navStyle ===
 				AppLayoutSettings.NAV_STYLE_DRAWER /*|| width < TAB_SIZE*/ ? (
 					<Drawer
-						//className={`dash-drawer-sidebar ${themeType !== THEME_TYPE_LITE ? 'dash-drawer-sidebar-dark' : null}`}
+						//className={`dash-drawer-sidebar ${themeType !== THEME_TYPE_LIGHT ? 'dash-drawer-sidebar-dark' : null}`}
 						className={themeType}
 						placement='left'
 						closable={false}

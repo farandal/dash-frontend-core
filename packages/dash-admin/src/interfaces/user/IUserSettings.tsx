@@ -1,10 +1,10 @@
-import { IGetAuthUer } from './IUser';
+import { IGetAuthUser } from './IUser';
 
 export interface IUserSettings {
 	accountTypes: AccountTypes
 	banks: Banks
 	communes: Communes
-	user: IGetAuthUer
+	user: IGetAuthUser
 	driverPackageStatuses: DriverPackageStatuse[]
 	noReceptionReasons: NoReceptionReason[]
 	noReturnReasons: NoReturnReason[]

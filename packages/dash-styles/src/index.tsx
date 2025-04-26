@@ -1,196 +1,167 @@
 import { defaultTheme } from 'react-admin';
 import { deepmerge } from '@mui/utils';
-import { createTheme } from '@mui/material/styles';
-
 const defaultColors = {
-  main:'#000',
-  mainContrast: '#444444',
-  white: '#ffffff',
-  textPrimary: '#000000',
-  textSecondary: '#666666',
+  main: '#F5F5F5',
+  mainContrast: '#E0E0E0',
+  white: '#FFFFFF',
+  textPrimary: '#212121',
+  textSecondary: '#757575',
   success: '#4caf50',
   error: '#f44336',
   warning: '#ff9800',
-  info: '#2196f3'
+  info: '#2196f3',
+  background: '#FAFAFA',
+  paper: '#FFFFFF'
 };
 
-
+// Dark mode colors
+const darkModeColors = {
+  main: '#121212',
+  mainContrast: '#1E1E1E',
+  white: '#E0E0E0',
+  textPrimary: '#FAFAFA',
+  textSecondary: '#9E9E9E',
+  success: '#66bb6a',
+  error: '#f44336',
+  warning: '#ffa726',
+  info: '#29b6f6',
+  background: '#0A0A0A',
+  paper: '#1A1A1A'
+};
 const getCSSVar = (name: string) => {
+
   const value = window.getComputedStyle(document.documentElement)
-    .getPropertyValue(name)
+    .getPropertyValue(`${name}`)
     .trim();
 
-  return value || null;
+  return value;
+
+};
+export const defaultOptions = () => {
+  //const isDarkMode = document.documentElement.getAttribute('data-theme') === 'dark';
+  //const themeType = document.documentElement.getAttribute('data-theme') || "light";
+  //console.log("REBUILDING MUI THEME!", themeType)
+
+  //const colors = isDarkMode ? darkModeColors : defaultColors;
+
+  return {
+    palette: {
+      background: {
+        default: getCSSVar('--body-background'),
+        paper: getCSSVar('--module-background')
+      },
+      primary: {
+        main: getCSSVar('--primary-color'),
+      },
+      secondary: {
+        main: getCSSVar('--secondary-color'),
+      },
+      text: {
+        primary: getCSSVar('--text-color'),
+        secondary: getCSSVar('--text-light-color'),
+        disabled: getCSSVar('--disabled-color'),
+      },
+      action: {
+        active: getCSSVar('--component-active-background'),
+        hover: getCSSVar('--component-hover-background'),
+        disabled: getCSSVar('--disabled-color'),
+        disabledBackground: getCSSVar('--disabled-bg'),
+      },
+      divider: getCSSVar('--border-color-split'),
+      border: getCSSVar('--border-color'),
+      error: {
+        main: getCSSVar('--dash-alert-error-bg'),
+        contrastText: getCSSVar('--dash-alert-error-title'),
+      },
+      warning: {
+        main: getCSSVar('--dash-alert-warning-bg'),
+        contrastText: getCSSVar('--dash-alert-warning-title'),
+      },
+      info: {
+        main: getCSSVar('--dash-alert-info-bg'),
+        contrastText: getCSSVar('--dash-alert-info-title'),
+      },
+      success: {
+        main: getCSSVar('--dash-alert-success-bg'),
+        contrastText: getCSSVar('--dash-alert-success-title'),
+      },
+      common: {
+        black: getCSSVar('--text-color'),
+        white: getCSSVar('--text-contrast-color'),
+      },
+
+    },
+    typography: {
+      allVariants: {
+        color: getCSSVar('--text-color')
+      },
+    },
+    components: {
+      MuiButton: {
+        styleOverrides: {
+          root: {
+            color: getCSSVar('--text-color')
+          }
+        }
+      },
+      MuiTableCell: {
+        styleOverrides: {
+          root: {
+            textWrapMode: 'nowrap'
+          }
+        }
+      },
+      MuiBox: {
+        styleOverrides: {
+          root: {
+            display: 'flex'
+          }
+        }
+      },
+      RaReferenceField: {
+        styleOverrides: {
+          root: {
+            '& .RaReferenceField-link>*': {
+              color: getCSSVar('--text-color')
+            }
+          }
+        }
+      },
+      RaSingleFieldList: {
+        styleOverrides: {
+          root: {
+            '& .RaSingleFieldList-link>*': {
+              color: getCSSVar('--text-color')
+            }
+          }
+        }
+      },
+ 
+    }
+  }
 };
 
-//const mainColor = getCSSVar('--main-color') || defaultColors.main;
-//const mainColorContrast = getCSSVar('--main-color-contrast') || defaultColors.mainContrast;
-	export const globalPallete = () => ({
-		success: {
-			main: getCSSVar('--success-color') || defaultColors.success,
-			contrastText: getCSSVar('--white-color') || defaultColors.white,
-		},
-		error: {
-			main: getCSSVar('--error-color') || defaultColors.error,
-			contrastText: getCSSVar('--white-color') || defaultColors.white,
-		},
-		warning: {
-			main: getCSSVar('--warning-color') || defaultColors.warning,
-			contrastText: getCSSVar('--white-color') || defaultColors.white,
-		},
-    info: {
-      main: getCSSVar('--info-color') || defaultColors.info,
-    },
+export const appTheme = (muiThemeOptions?: any) => {
 
-	primary: {
-		main: getCSSVar('--main-color') || defaultColors.main,
-		light: getCSSVar('--main-color') || defaultColors.main,
-		dark: getCSSVar('--main-color') || defaultColors.main,
-	},
-	secondary: {
-		main: getCSSVar('--main-color-contrast') || defaultColors.mainContrast,
-    light: getCSSVar('--main-color-contrast') || defaultColors.mainContrast,
-    dark: getCSSVar('--main-color-contrast') || defaultColors.mainContrast,
-	},
+  const themeType = document.documentElement.getAttribute('data-theme') || "light";
+  console.log("refreshing appTheme", themeType)
 
-	text: {
-		primary: getCSSVar('--text-primary-color') || defaultColors.textPrimary,
-		secondary: getCSSVar('--text-secondary-color') || defaultColors.textSecondary,
-	},
+  const theme = muiThemeOptions ? deepmerge(deepmerge(defaultTheme, {
+    mode: themeType,
+    ...defaultOptions(),
 
-	action: {
-		active: getCSSVar('--main-color-contrast') || defaultColors.mainContrast,
-	},
+  }), muiThemeOptions) : deepmerge(defaultTheme, {
+    mode: themeType,
 
-	borderRadius: 3,
-});
-export const appTheme = () => deepmerge(defaultTheme, {
+    ...defaultOptions(),
 
-	breakpoints: {
-		values: {
-			xs: 0,
-			sm: 600,
-			md: 900,
-			lg: 1200,
-			xl: 1536,
-		},
-	},
-	palette: {
-		...globalPallete(),
-	},
-	components: {
-		/*MuiInputLabel: {
-            defaultProps: { shrink: true },
-         },*/
-		MuiTextField: {
-			defaultProps: {
-				fullWidth: true,
-				variant: 'outlined',
-			},
-		},
+  });
 
-		MuiFormControl: { fullWidth: true },
+  console.log("THEME", theme);
 
-		MuiButton: {
-      defaultProps: {
-        size: 'small', // Always use small size (mobile style)
-      },
-			styleOverrides: {
-				label: {
-					padding: 'initial',
-				},
-				root: {
-					paddingLeft: 15,
-					paddingRight: 15,
-					//height: 36,
-					margin: 4,
-					textTransform: 'none',
-					color: globalPallete().primary.main,
-					backgroundColor: 'transparent',
-					'&:hover': {
-						color: getCSSVar('--white-color') || defaultColors.white,
-						backgroundColor: getCSSVar('--main-color-contrast') || defaultColors.mainContrast,
-					},
-					'&:active': {
-						color: getCSSVar('--white-color') || defaultColors.white,
-						backgroundColor: getCSSVar('--main-color-contrast') || defaultColors.mainContrast,
+  return theme;
 
-					},
-					'&.default': {
-						background: getCSSVar('--white-color') || defaultColors.white,
-						color: getCSSVar('--main-color') || defaultColors.main,
-					},
-					'&.submit': {
-						background:
-							`linear-gradient(101.98deg, ${getCSSVar('--main-color-contrast') || defaultColors.mainContrast} 0%, ${getCSSVar('--main-color') || defaultColors.main} 111.65%)`,
-						color: getCSSVar('--white-color') || defaultColors.white,
-					},
-				},
-			},
-			variants: [
+}
 
-        {
-          props: { variant: 'circular' },
-          style: {
-            borderRadius: '50px',
-            minWidth: '0',
-            padding: '8px 16px',
-            '&.MuiButton-sizeLarge': {
-              padding: '12px 24px',
-            },
-          },
-        },
-
-				{
-					defaultProps: {
-						disableRipple: false,
-					},
-
-					props: {
-						color: 'primary',
-
-						style: {
-							backgroundColor: getCSSVar('--main-color') || defaultColors.main,
-							color: getCSSVar('--white-color') || defaultColors.white,
-							'&:hover': {
-								color: getCSSVar('--white-color') || defaultColors.white,
-								backgroundColor: getCSSVar('--main-color-contrast') || defaultColors.mainContrast,
-							},
-							'&:active': {
-								color: getCSSVar('--white-color') || defaultColors.white,
-								backgroundColor: getCSSVar('--main-color') || defaultColors.main,
-							},
-						},
-					},
-				},
-			],
-		},
-		MuiDataGrid: {
-			/*styleOverrides: {
-              root: {
-                backgroundColor: '#f2f2f2',
-              },
-            },*/
-		},
-	},
-});
-
-export const darkTheme = () => deepmerge(appTheme, {
-	palette: {
-		mode: 'dark',
-		borderRadius: 0,
-	},
-});
-
-export const lightTheme = () => deepmerge(appTheme, {
-	palette: {
-		mode: 'light',
-		borderRadius: 0,
-	},
-});
-
-
-//export const dashThemeConfig = appTheme;
-//export const dashTheme = createTheme(appTheme);
 
 export default appTheme;

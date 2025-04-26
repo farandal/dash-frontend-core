@@ -62,7 +62,7 @@ const DomainTheme = <U, A>({
         document.body.classList.add(layoutType);
     
         document.body.classList.remove(layoutSettings.THEME_TYPE_DARK);
-        document.body.classList.remove(layoutSettings.THEME_TYPE_LITE);
+        document.body.classList.remove(layoutSettings.THEME_TYPE_LIGHT);
         document.body.classList.remove(layoutSettings.THEME_TYPE_LIGHT);
         document.body.classList.add(themeType);
     };

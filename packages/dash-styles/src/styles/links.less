@@ -1,5 +1,5 @@
 a, .dash-link{
-  color: @dash-principal-color;
+  color: var(--primary-color, @primary-color);
 }
 
 .link {
@@ -15,7 +15,7 @@ a, .dash-link{
   // color: $c-blue;
   transition: all .4s;
   &--dark-red{
-      color: @main-color-contrast !important;
+      color: var(--primary-contrast-color, @primary-contrast-color) !important;
   }
 
   .icon{

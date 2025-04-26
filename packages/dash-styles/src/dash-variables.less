@@ -9,109 +9,85 @@
 @font-family: 'noirpro', sans-serif;
 @class-prefix: dash;
 
-
 :root {
-    --main-color: @main-color;
-    --main-text-color: @main-text-color;
-    --main-contrast-color: @main-contrast-color;
-    --main-color-contrast: @main-color-contrast;
+
+  //LIGHT MODE
+
+    --primary-color: @primary-color;
+    --primary-contrast-color: @primary-contrast-color;
+
+    --secondary-color: @secondary-color;
+
     --module-background: @module-background;
     --module-border: @module-border;
-    --dash-principal-color: @dash-principal-color;
-    --white: @white;
-    --white-color: @white-color;
-    --black-color: @black-color;
-    --pink: @pink;
-    --primary-color: @primary-color;
-    --secondary-color: @secondary-color;
+
     --text-color: @text-color;
-    --text-color-dark: @text-color-dark;
-    --text-color-secondary: @text-color-secondary;
-    --text-color-light: @text-color-light;
+    --text-contrast-color: @text-contrast-color;
+
+    --text-light-color: @text-light-color;
+
     --heading-color: @heading-color;
+
     --body-background: @body-background;
-    --dash-framed-layout-bg: @dash-framed-layout-bg;
+
+    --dash-framed-layout-background: @dash-framed-layout-background;
     --dash-main-background: @dash-main-background;
-    --background-green: @background-green;
-    --background-active: @background-active;
-    --dash-dark-background: @dash-dark-background;
-    --nav-dark-bg: @nav-dark-bg;
-    --dark-theme-sidebar-dark-bg: @dark-theme-sidebar-dark-bg;
-    --framed-layout-background: @framed-layout-background;
+    --dash-link-color: @dash-link-color;
+
+    --nav-bg: @nav-bg;
+   
     --component-background: @component-background;
     --component-border-color: @component-border-color;
     --component-text-color: @component-text-color;
     --component-shadow: @component-shadow;
     --component-hover-background: @component-hover-background;
     --component-active-background: @component-active-background;
-    --info-color: @info-color;
-    --success-color: @success-color;
-    --processing-color: @processing-color;
-    --error-color: @error-color;
-    --highlight-color: @highlight-color;
-    --warning-color: @warning-color;
-    --normal-color: @normal-color;
-    --danger-color: @danger-color;
-    --light-color: @light-color;
-    --dark-color: @dark-color;
-    --dash-blue: @dash-blue;
-    --dash-purple: @dash-purple;
-    --dash-light-blue: @dash-light-blue;
-    --dash-green: @dash-green;
-    --dash-red: @dash-red;
-    --dash-yellow: @dash-yellow;
-    --dash-orange: @dash-orange;
-    --dash-error: @dash-error;
-    --dash-alert: @dash-alert;
-    --dash-null: @dash-null;
-    --dash-light-grey: @dash-light-grey;
-    --dash-purple-background: @dash-purple-background;
-    --dash-light-blue-background: @dash-light-blue-background;
-    --dash-green-background: @dash-green-background;
-    --dash-yellow-background: @dash-yellow-background;
-    --dash-orange-background: @dash-orange-background;
-    --dash-null-background: @dash-null-background;
+
     --dash-border-color: @dash-border-color;
     --border-color-base: @border-color-base;
     --border-color-split: @border-color-split;
     --border-color: @border-color;
-    --dash-link-color: @dash-link-color;
+   
+
     --link-color: @link-color;
-    --link-color-dark: @link-color-dark;
     --link-hover-color: @link-hover-color;
     --link-active-color: @link-active-color;
-    --link-hover-color-dark: @link-hover-color-dark;
-    --link-active-color-dark: @link-active-color-dark;
+
     --disabled-color: @disabled-color;
     --disabled-bg: @disabled-bg;
     --disabled-border: @disabled-border;
-    --disabled-color-dark: @disabled-color-dark;
-    --dash-scroll-width: @dash-scroll-width;
+
+  
     --dash-scroll-track-color: @dash-scroll-track-color;
     --dash-scroll-thumb-color: @dash-scroll-thumb-color;
-    --dash-scroll-track-color-dark: @dash-scroll-track-color-dark;
-    --dash-scroll-thumb-color-dark: @dash-scroll-thumb-color-dark;
+
     --header-background: @header-background;
-    --header-background-dark: @header-background-dark;
-    --header-fontcolor: @header-fontcolor;
-    --header-fontcolor-dark: @header-fontcolor-dark;
+    --header-font-color: @header-font-color;
     --header-badge: @header-badge;
     --header-badge-hover: @header-badge-hover;
-    --header-badge-dark: @header-badge-dark;
-    --header-badge-hover-dark: @header-badge-hover-dark;
     --header-input-background: @header-input-background;
-    --header-input-background-dark: @header-input-background-dark;
+
     --dash-sidebar-bg: @dash-sidebar-bg;
     --dash-sidebar-bg-hover: @dash-sidebar-bg-hover;
     --dash-sidebar-color: @dash-sidebar-color;
     --dash-sidebar-color-active: @dash-sidebar-color-active;
     --dash-sidebar-icon-color: @dash-sidebar-icon-color;
     --dash-sidebar-icon-color-active: @dash-sidebar-icon-color-active;
-    --dash-sidebar-bg-dark: @dash-sidebar-bg-dark;
-    --dash-sidebar-color-dark: @dash-sidebar-color-dark;
-    --dash-sidebar-color-active-dark: @dash-sidebar-color-active-dark;
-    --dash-sidebar-icon-color-dark: @dash-sidebar-icon-color-dark;
-    --dash-sidebar-icon-color-active-dark: @dash-sidebar-icon-color-active-dark;
+
+    --dash-sidebar-color-primary: @dash-sidebar-color-primary;
+    --dash-sidebar-color-contrast: @dash-sidebar-color-contrast;
+    --dash-sidebar-icon-color-primary: @dash-sidebar-icon-color-primary;
+    --dash-sidebar-icon-color-secondary: @dash-sidebar-icon-color-secondary;
+    --dash-sidebar-bg-primary: @dash-sidebar-bg-primary;
+    --dash-sidebar-bg-contrast: @dash-sidebar-bg-contrast;
+    --dash-sidebar-submenu-bg-primary: @dash-sidebar-submenu-bg-primary;
+    --dash-sidebar-submenu-bg-contrast: @dash-sidebar-submenu-bg-contrast;
+    --dash-sidebar-submenu-color-primary: @dash-sidebar-submenu-color-primary;
+    --dash-sidebar-submenu-color-contrast: @dash-sidebar-submenu-color-contrast;
+    --dash-sidebar-handle-primary: @dash-sidebar-handle-primary;
+    --dash-sidebar-handle-contrast: @dash-sidebar-handle-contrast;
+
+
     --dash-alert-info-bg: @dash-alert-info-bg;
     --dash-alert-info-border: @dash-alert-info-border;
     --dash-alert-info-color: @dash-alert-info-color;
@@ -132,6 +108,8 @@
     --dash-alert-success-color: @dash-alert-success-color;
     --dash-alert-success-title: @dash-alert-success-title;
     --dash-alert-success-link: @dash-alert-success-link;
+
+
     --btn-bg: @btn-bg;
     --btn-color: @btn-color;
     --btn-border-color: @btn-border-color;
@@ -153,7 +131,391 @@
     --btn-info-color: @btn-info-color;
     --btn-light-bg: @btn-light-bg;
     --btn-light-color: @btn-light-color;
-    --btn-dark-bg: @btn-dark-bg;
-    --btn-dark-color: @btn-dark-color;
+
+
+// LIGHT MODE
+
+
+--primary-color--light: @primary-color;
+--primary-contrast-color--light: @primary-contrast-color;
+
+--secondary-color--light: @secondary-color;
+
+--module-background--light: @module-background;
+--module-border--light: @module-border;
+
+--text-color--light: @text-color;
+--text-contrast-color--light: @text-contrast-color;
+
+--text-light-color--light: @text-light-color;
+
+--heading-color--light: @heading-color;
+
+--body-background--light: @body-background;
+
+--dash-framed-layout-background--light: @dash-framed-layout-background;
+--dash-main-background--light: @dash-main-background;
+--dash-link-color--light: @dash-link-color;
+
+--nav-bg--light: @nav-bg;
+
+--component-background--light: @component-background;
+--component-border-color--light: @component-border-color;
+--component-text-color--light: @component-text-color;
+--component-shadow--light: @component-shadow;
+--component-hover-background--light: @component-hover-background;
+--component-active-background--light: @component-active-background;
+
+--dash-border-color--light: @dash-border-color;
+--border-color-base--light: @border-color-base;
+--border-color-split--light: @border-color-split;
+--border-color--light: @border-color;
+
+
+--link-color--light: @link-color;
+--link-hover-color--light: @link-hover-color;
+--link-active-color--light: @link-active-color;
+
+--disabled-color--light: @disabled-color;
+--disabled-bg--light: @disabled-bg;
+--disabled-border--light: @disabled-border;
+
+
+--dash-scroll-track-color--light: @dash-scroll-track-color;
+--dash-scroll-thumb-color--light: @dash-scroll-thumb-color;
+
+--header-background--light: @header-background;
+--header-font-color--light: @header-font-color;
+--header-badge--light: @header-badge;
+--header-badge-hover--light: @header-badge-hover;
+--header-input-background--light: @header-input-background;
+
+--dash-sidebar-bg--light: @dash-sidebar-bg;
+--dash-sidebar-bg-hover--light: @dash-sidebar-bg-hover;
+--dash-sidebar-color--light: @dash-sidebar-color;
+--dash-sidebar-color-active--light: @dash-sidebar-color-active;
+--dash-sidebar-icon-color--light: @dash-sidebar-icon-color;
+--dash-sidebar-icon-color-active--light: @dash-sidebar-icon-color-active;
+
+--dash-sidebar-color-primary--light: @dash-sidebar-color-primary;
+--dash-sidebar-color-contrast--light: @dash-sidebar-color-contrast;
+--dash-sidebar-icon-color-primary--light: @dash-sidebar-icon-color-primary;
+--dash-sidebar-icon-color-secondary--light: @dash-sidebar-icon-color-secondary;
+--dash-sidebar-bg-primary--light: @dash-sidebar-bg-primary;
+--dash-sidebar-bg-contrast--light: @dash-sidebar-bg-contrast;
+--dash-sidebar-submenu-bg-primary--light: @dash-sidebar-submenu-bg-primary;
+--dash-sidebar-submenu-bg-contrast--light: @dash-sidebar-submenu-bg-contrast;
+--dash-sidebar-submenu-color-primary--light: @dash-sidebar-submenu-color-primary;
+--dash-sidebar-submenu-color-contrast--light: @dash-sidebar-submenu-color-contrast;
+--dash-sidebar-handle-primary--light: @dash-sidebar-handle-primary;
+--dash-sidebar-handle-contrast--light: @dash-sidebar-handle-contrast;
+
+--dash-alert-info-bg--light: @dash-alert-info-bg;
+--dash-alert-info-border--light: @dash-alert-info-border;
+--dash-alert-info-color--light: @dash-alert-info-color;
+--dash-alert-info-title--light: @dash-alert-info-title;
+--dash-alert-info-link--light: @dash-alert-info-link;
+--dash-alert-error-bg--light: @dash-alert-error-bg;
+--dash-alert-error-border--light: @dash-alert-error-border;
+--dash-alert-error-color--light: @dash-alert-error-color;
+--dash-alert-error-title--light: @dash-alert-error-title;
+--dash-alert-error-link--light: @dash-alert-error-link;
+--dash-alert-warning-bg--light: @dash-alert-warning-bg;
+--dash-alert-warning-border--light: @dash-alert-warning-border;
+--dash-alert-warning-color--light: @dash-alert-warning-color;
+--dash-alert-warning-title--light: @dash-alert-warning-title;
+--dash-alert-warning-link--light: @dash-alert-warning-link;
+--dash-alert-success-bg--light: @dash-alert-success-bg;
+--dash-alert-success-border--light: @dash-alert-success-border;
+--dash-alert-success-color--light: @dash-alert-success-color;
+--dash-alert-success-title--light: @dash-alert-success-title;
+--dash-alert-success-link--light: @dash-alert-success-link;
+
+
+--btn-bg--light: @btn-bg;
+--btn-color--light: @btn-color;
+--btn-border-color--light: @btn-border-color;
+--btn-hover-bg--light: @btn-hover-bg;
+--btn-active-bg--light: @btn-active-bg;
+--btn-disabled-bg--light: @btn-disabled-bg;
+--btn-disabled-color--light: @btn-disabled-color;
+--btn-primary-bg--light: @btn-primary-bg;
+--btn-primary-color--light: @btn-primary-color;
+--btn-secondary-bg--light: @btn-secondary-bg;
+--btn-secondary-color--light: @btn-secondary-color;
+--btn-success-bg--light: @btn-success-bg;
+--btn-success-color--light: @btn-success-color;
+--btn-danger-bg--light: @btn-danger-bg;
+--btn-danger-color--light: @btn-danger-color;
+--btn-warning-bg--light: @btn-warning-bg;
+--btn-warning-color--light: @btn-warning-color;
+--btn-info-bg--light: @btn-info-bg;
+--btn-info-color--light: @btn-info-color;
+--btn-light-bg--light: @btn-light-bg;
+--btn-light-color--light: @btn-light-color;
+
+// DARK MODE
+
+
+--primary-color--dark: @primary-color--dark;
+--primary-contrast-color--dark: @primary-contrast-color--dark;
+
+--secondary-color--dark: @secondary-color--dark;
+
+--module-background--dark: @module-background--dark;
+--module-border--dark: @module-border--dark;
+
+--text-color--dark: @text-color--dark;
+--text-contrast-color--dark: @text-contrast-color--dark;
+
+--text-light-color--dark: @text-light-color--dark;
+
+--heading-color--dark: @heading-color--dark;
+
+--body-background--dark: @body-background--dark;
+
+--dash-framed-layout-background--dark: @dash-framed-layout-background--dark;
+--dash-main-background--dark: @dash-main-background--dark;
+--dash-link-color--dark: @dash-link-color--dark;
+
+--nav-bg--dark: @nav-bg--dark;
+
+--component-background--dark: @component-background--dark;
+--component-border-color--dark: @component-border-color--dark;
+--component-text-color--dark: @component-text-color--dark;
+--component-shadow--dark: @component-shadow--dark;
+--component-hover-background--dark: @component-hover-background--dark;
+--component-active-background--dark: @component-active-background--dark;
+
+--dash-border-color--dark: @dash-border-color--dark;
+--border-color-base--dark: @border-color-base--dark;
+--border-color-split--dark: @border-color-split--dark;
+--border-color--dark: @border-color--dark;
+
+
+--link-color--dark: @link-color--dark;
+--link-hover-color--dark: @link-hover-color--dark;
+--link-active-color--dark: @link-active-color--dark;
+
+--disabled-color--dark: @disabled-color--dark;
+--disabled-bg--dark: @disabled-bg--dark;
+--disabled-border--dark: @disabled-border--dark;
+
+
+--dash-scroll-track-color--dark: @dash-scroll-track-color--dark;
+--dash-scroll-thumb-color--dark: @dash-scroll-thumb-color--dark;
+
+--header-background--dark: @header-background--dark;
+--header-font-color--dark: @header-font-color--dark;
+--header-badge--dark: @header-badge--dark;
+--header-badge-hover--dark: @header-badge-hover--dark;
+--header-input-background--dark: @header-input-background--dark;
+
+--dash-sidebar-bg--dark: @dash-sidebar-bg--dark;
+--dash-sidebar-bg-hover--dark: @dash-sidebar-bg-hover--dark;
+--dash-sidebar-color--dark: @dash-sidebar-color--dark;
+--dash-sidebar-color-active--dark: @dash-sidebar-color-active--dark;
+--dash-sidebar-icon-color--dark: @dash-sidebar-icon-color--dark;
+--dash-sidebar-icon-color-active--dark: @dash-sidebar-icon-color-active--dark;
+
+--dash-sidebar-color-primary--dark: @dash-sidebar-color-primary--dark;
+--dash-sidebar-color-contrast--dark: @dash-sidebar-color-contrast--dark;
+--dash-sidebar-icon-color-primary--dark: @dash-sidebar-icon-color-primary--dark;
+--dash-sidebar-icon-color-secondary--dark: @dash-sidebar-icon-color-secondary--dark;
+--dash-sidebar-bg-primary--dark: @dash-sidebar-bg-primary--dark;
+--dash-sidebar-bg-contrast--dark: @dash-sidebar-bg-contrast--dark;
+--dash-sidebar-submenu-bg-primary--dark: @dash-sidebar-submenu-bg-primary--dark;
+--dash-sidebar-submenu-bg-contrast--dark: @dash-sidebar-submenu-bg-contrast--dark;
+--dash-sidebar-submenu-color-primary--dark: @dash-sidebar-submenu-color-primary--dark;
+--dash-sidebar-submenu-color-contrast--dark: @dash-sidebar-submenu-color-contrast--dark;
+--dash-sidebar-handle-primary--dark: @dash-sidebar-handle-primary--dark;
+--dash-sidebar-handle-contrast--dark: @dash-sidebar-handle-contrast--dark;
+
+--dash-alert-info-bg--dark: @dash-alert-info-bg--dark;
+--dash-alert-info-border--dark: @dash-alert-info-border--dark;
+--dash-alert-info-color--dark: @dash-alert-info-color--dark;
+--dash-alert-info-title--dark: @dash-alert-info-title--dark;
+--dash-alert-info-link--dark: @dash-alert-info-link--dark;
+--dash-alert-error-bg--dark: @dash-alert-error-bg--dark;
+--dash-alert-error-border--dark: @dash-alert-error-border--dark;
+--dash-alert-error-color--dark: @dash-alert-error-color--dark;
+--dash-alert-error-title--dark: @dash-alert-error-title--dark;
+--dash-alert-error-link--dark: @dash-alert-error-link--dark;
+--dash-alert-warning-bg--dark: @dash-alert-warning-bg--dark;
+--dash-alert-warning-border--dark: @dash-alert-warning-border--dark;
+--dash-alert-warning-color--dark: @dash-alert-warning-color--dark;
+--dash-alert-warning-title--dark: @dash-alert-warning-title--dark;
+--dash-alert-warning-link--dark: @dash-alert-warning-link--dark;
+--dash-alert-success-bg--dark: @dash-alert-success-bg--dark;
+--dash-alert-success-border--dark: @dash-alert-success-border--dark;
+--dash-alert-success-color--dark: @dash-alert-success-color--dark;
+--dash-alert-success-title--dark: @dash-alert-success-title--dark;
+--dash-alert-success-link--dark: @dash-alert-success-link--dark;
+
+
+--btn-bg--dark: @btn-bg--dark;
+--btn-color--dark: @btn-color--dark;
+--btn-border-color--dark: @btn-border-color--dark;
+--btn-hover-bg--dark: @btn-hover-bg--dark;
+--btn-active-bg--dark: @btn-active-bg--dark;
+--btn-disabled-bg--dark: @btn-disabled-bg--dark;
+--btn-disabled-color--dark: @btn-disabled-color--dark;
+--btn-primary-bg--dark: @btn-primary-bg--dark;
+--btn-primary-color--dark: @btn-primary-color--dark;
+--btn-secondary-bg--dark: @btn-secondary-bg--dark;
+--btn-secondary-color--dark: @btn-secondary-color--dark;
+--btn-success-bg--dark: @btn-success-bg--dark;
+--btn-success-color--dark: @btn-success-color--dark;
+--btn-danger-bg--dark: @btn-danger-bg--dark;
+--btn-danger-color--dark: @btn-danger-color--dark;
+--btn-warning-bg--dark: @btn-warning-bg--dark;
+--btn-warning-color--dark: @btn-warning-color--dark;
+--btn-info-bg--dark: @btn-info-bg--dark;
+--btn-info-color--dark: @btn-info-color--dark;
+--btn-light-bg--dark: @btn-light-bg--dark;
+--btn-light-color--dark: @btn-light-color--dark;
+
+
+
+// BASE COLORS
+
+
+    --info-color: @info-color;
+    --success-color: @success-color;
+    --processing-color: @processing-color;
+    --error-color: @error-color;
+    --highlight-color: @highlight-color;
+    --warning-color: @warning-color;
+    --normal-color: @normal-color;
+    --danger-color: @danger-color;
+    --light-color: @light-color;
+  
+    --dash-blue: @dash-blue;
+    --dash-purple: @dash-purple;
+    --dash-light-blue: @dash-light-blue;
+    --dash-green: @dash-green;
+    --dash-red: @dash-red;
+    --dash-yellow: @dash-yellow;
+    --dash-orange: @dash-orange;
+    --dash-error: @dash-error;
+    --dash-alert: @dash-alert;
+    --dash-null: @dash-null;
+    --dash-light-grey: @dash-light-grey;
+    --dash-purple-background: @dash-purple-background;
+    --dash-light-blue-background: @dash-light-blue-background;
+    --dash-green-background: @dash-green-background;
+    --dash-yellow-background: @dash-yellow-background;
+    --dash-orange-background: @dash-orange-background;
+    --dash-null-background: @dash-null-background;
+ 
+    --highlight-color: @highlight-color;
+    --black: @black;
+
+    --dash-scroll-width: @dash-scroll-width;
+    // Sizes
+    --size-8: @size-8;
+    --size-10: @size-10;
+    --size-20: @size-20;
+    --size-30: @size-30;
+    --size-36: @size-36;
+    --size-40: @size-40;
+    --size-50: @size-50;
+    --size-60: @size-60;
+    --size-80: @size-80;
+    --size-100: @size-100;
+    --size-120: @size-120;
+    --size-150: @size-150;
+    --size-175: @size-175;
+    --size-200: @size-200;
+    --layout-header-height: @layout-header-height;
+    --layout-header-height-res: @layout-header-height-res;
+    --layout-header-padding: @layout-header-padding;
+    --layout-header-padding-res: @layout-header-padding-res;
+    --layout-footer-padding: @layout-footer-padding;
+    --layout-footer-padding-res: @layout-footer-padding-res;
+    --layout-trigger-height: @layout-trigger-height;
+    --layout-zero-trigger-width: @layout-zero-trigger-width;
+    --layout-zero-trigger-height: @layout-zero-trigger-height;
+    --layout-main-content-padding: @layout-main-content-padding;
+    --layout-main-content-padding-res: @layout-main-content-padding-res;
+    --font-size-base: @font-size-base;
+    --font-size-lg: @font-size-lg;
+    --font-size-sm: @font-size-sm;
+    --line-height-base: @line-height-base;
+    --h1-font-size: @h1-font-size;
+    --h2-font-size: @h2-font-size;
+    --h3-font-size: @h3-font-size;
+    --h4-font-size: @h4-font-size;
+    --h5-font-size: @h5-font-size;
+    --h6-font-size: @h6-font-size;
+    --headings-font-weight: @headings-font-weight;
+    --headings-line-height: @headings-line-height;
+    --font-weight-light: @font-weight-light;
+    --font-weight-normal: @font-weight-normal;
+    --font-weight-medium: @font-weight-medium;
+    --font-weight-semi-bold: @font-weight-semi-bold;
+    --font-weight-bold: @font-weight-bold;
+    --font-weight-heavy: @font-weight-heavy;
+    --letter-spacing-base: @letter-spacing-base;
+    --letter-spacing-lg: @letter-spacing-lg;
+    --letter-spacing-xl: @letter-spacing-xl;
+    --menu-inline-toplevel-item-height: @menu-inline-toplevel-item-height;
+    --menu-item-height: @menu-item-height;
+    --menu-expanded-width: @menu-expanded-width;
+    --form-item-margin-bottom: @form-item-margin-bottom;
+    --form-vertical-label-padding: @form-vertical-label-padding;
+    --form-vertical-label-margin: @form-vertical-label-margin;
+    --border-width-base: @border-width-base;
+    --border-style-base: @border-style-base;
+    --dragndrop-paddding-tb: @dragndrop-paddding-tb;
+    --dragndrop-paddding-lr: @dragndrop-paddding-lr;
+    --dash-customizer-width: @dash-customizer-width;
+    --dash-customizer-base: @dash-customizer-base;
+    --framed-layout-base: @framed-layout-base;
+    --custom-padding: @custom-padding;
+    --content-horizontal-padding: @content-horizontal-padding;
+    --sidebar-padding-lr: @sidebar-padding-lr;
+    --min-body-width: @min-body-width;
+    --sidebar-width: @sidebar-width;
+    --sidebar-mini-drawer-width: @sidebar-mini-drawer-width;
+    --dash-sidebar-width-large: @dash-sidebar-width-large;
+    --dash-sidebar-width-small: @dash-sidebar-width-small;
+    --app-sidebar-width: @app-sidebar-width;
+    --app-chat-sidebar-width: @app-chat-sidebar-width;
+    --scroll-bar-margin: @scroll-bar-margin;
+    --scroll-bar-expanded-margin: @scroll-bar-expanded-margin;
+    --dash-sidebar-submenu-padding: @dash-sidebar-submenu-padding;
+    --card-head-padding: @card-head-padding;
+    --card-inner-head-padding: @card-inner-head-padding;
+    --card-padding-base: @card-padding-base;
+    --card-padding-wider: @card-padding-wider;
+    --dash-card-padding-base: @dash-card-padding-base;
+    --dash-card-padding-sm: @dash-card-padding-sm;
+    --dash-card-margin-base: @dash-card-margin-base;
+    --dash-card-margin-base-res: @dash-card-margin-base-res;
+    --grid-gutter-width: @grid-gutter-width;
+    --border-radius-xxl: @border-radius-xxl;
+    --border-radius-circle: @border-radius-circle;
+    --input-height-base: @input-height-base;
+    --input-height-lg: @input-height-lg;
+    --input-height-sm: @input-height-sm;
+    --input-height-base-sm: @input-height-base-sm;
+    --btn-height-base: @btn-height-base;
+    --btn-height-lg: @btn-height-lg;
+    --btn-height-sm: @btn-height-sm;
+    --btn-height-base-sm: @btn-height-base-sm;
+    --btn-font-size-lg: @btn-font-size-lg;
+    --btn-font-size-sm: @btn-font-size-sm;
+    --btn-font-size-xs: @btn-font-size-xs;
+    --btn-padding-xs: @btn-padding-xs;
+    --btn-border-radius-base: @btn-border-radius-base;
+    --btn-border-radius-sm: @btn-border-radius-sm;
+    --btn-padding-base: @btn-padding-base;
+    --btn-padding-lg: @btn-padding-lg;
+    --btn-padding-sm: @btn-padding-sm;
+    --border-radius-base: @border-radius-base;
+    --border-radius-sm: @border-radius-sm;
+    --border-radius-lg: @border-radius-lg;
+    
 
 }

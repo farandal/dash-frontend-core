@@ -11,9 +11,9 @@ import { IDASHAppState, DASH_REDUX_ACTIONS } from 'dash-admin-state';
 import { Box, Button } from '@mui/material';
 import { AppMenu } from '../components/menu/AppMenu';
 import { LaravelEchoProvider } from '../contexts/com/LaravelEchoContext';
-import MenuToggleMode from '../components/menu/MenuToggleMode';
+//import MenuToggleMode from '../components/menu/DarkToggleMode';
 
-import GlobalErrorsHandler from '../components/misc/GlobalErrorsHandler';
+//import GlobalErrorsHandler from '../components/misc/GlobalErrorsHandler';
 import { DialogServiceProvider } from 'dash-dialog';
 
 export interface IAppLayout extends React.PropsWithChildren {}
@@ -28,6 +28,7 @@ const CustomAppLayout: React.FC<IAppLayout> = (props) => {
 	const [resourceConfig] = useStore('resourceConfig');
 	const navigate = useNavigate();
 
+    /*
 	const DASHHeaderActions = () => (
 		<div className='dash-header-actions'>
 			<Button
@@ -40,17 +41,21 @@ const CustomAppLayout: React.FC<IAppLayout> = (props) => {
 			</Button>
 		</div>
 	);
+    */
 
+    // @deprecated
+    /*
 	useEffect(() => {
 		dispatch(
 			DASH_REDUX_ACTIONS.setHeaderComponents([
 				<MenuToggleMode />,
-				/*<NotificationsWidget key={1} />,*/
-				/*<DASHUserInfo key={2} />*/
-				/*<DASHHeaderActions key={4} />*/
+				//<NotificationsWidget key={1} />
+				//<DASHUserInfo key={2} />
+				//<DASHHeaderActions key={4} />
 			]),
 		);
 	}, []);
+    */
 
 	useEffect(() => {
 		dispatch(
@@ -64,13 +69,14 @@ const CustomAppLayout: React.FC<IAppLayout> = (props) => {
 
 	/*const resources:IDashAutoAdminResourceConfig[] = useSelector((state: IDASHAppState) => state.settings.resources);*/
 
-
+ 
 	return (
 		<>
 			<DialogServiceProvider>
 				{authenticated ? (
 					<LaravelEchoProvider>
 						<ToastContainer style={{ width: '520px' }} />
+                       
 						<Box key={1} ref={contentRef} className={'dash-layout-content'}>
 						{children}
 						</Box>

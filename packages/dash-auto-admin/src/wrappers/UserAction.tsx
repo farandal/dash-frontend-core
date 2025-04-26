@@ -5,7 +5,6 @@ import ActionCallback from '../types/ActionCallback';
 
 import React from 'react';
 import isFC from '../utils/isFC';
-import IDashAutoAdminResourceConfig from '../interfaces/IDashAutoAdminResourceConfig';
 
 /**
  * A React functional component that renders a user action based on the provided attribute.
@@ -25,6 +24,7 @@ const UserAction: React.FC<IDashAutoAdminCustomFieldComponent> = ({ method, attr
     if (attribute.component && isFC(attribute.component)) {
      
         const Action = attribute.component as React.FC<IDashAutoAdminCustomFieldComponent>;
+
         return <Action
                 method={method}
                 attribute={attribute}
@@ -36,6 +36,7 @@ const UserAction: React.FC<IDashAutoAdminCustomFieldComponent> = ({ method, attr
     }
 
     if (typeof attribute.action === 'function') {
+        
         const callback = attribute.action as ActionCallback;
         return (
             <WithRecord

@@ -34,7 +34,7 @@ const AppSidebarLogo: React.FC<IAppSidebarLogo> = ({
 			{/*<Link to="/" className="dash-site-logo">
         {navStyle === NAV_STYLE_NO_HEADER_MINI_SIDEBAR && width >= TAB_SIZE ?
           <img alt="lo" src={("/assets/images/w-logo.png")}/> :
-          themeType === THEME_TYPE_LITE ?
+          themeType === THEME_TYPE_LIGHT ?
             <img alt="logo1" src={("/assets/images/logo-white.png")}/> :
             <img alt="logo2" src={("/assets/images/logo.png")}/>}
       </Link>*/}

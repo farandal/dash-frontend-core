@@ -13,7 +13,7 @@ import Profile from './pages/Profile';
 
 import { useDispatch, useSelector } from 'react-redux';
 import { getCookie, setCookie } from './utils/cookies';
-import { AuthContext, IAuthContext } from './contexts/auth';
+import { AuthContext, IAuthContext, useAuthContext } from './contexts/auth';
 import { IDASHAppState } from 'dash-admin-state';
 import { Error } from './components/error/Error';
 //import { lightTheme } from './themes';
@@ -141,7 +141,7 @@ import {
 } from './contexts/dictionary/DictionaryContext';
 import { IDashAutoAdminResourceConfig } from 'dash-auto-admin';
 import ResourceTemplate from './templates/ResourceTemplate';
-import { JSX } from 'react';
+import { JSX, useEffect } from 'react';
 import RADashComponent from './react-admin-dash/RADashComponent';
 import { createTheme } from '@mui/material';
 
@@ -189,8 +189,8 @@ const DASHAdminApp: React.FC<IDASHAdmin<unknown, unknown, unknown, unknown, unkn
   //const currentAppLocale = AppLocale[locale.locale];
 
   // Theme
-  const appThemeConfig = customThemeConfig || createTheme(appTheme()); // Matetial UI light theme
-  const [themeConfig] = useTheme(appThemeConfig);
+  //const appThemeConfig = customThemeConfig || createTheme(appTheme()); // Matetial UI light theme
+  //const [themeConfig] = useTheme(appThemeConfig);
 
   //Roles
   const _checkRole = (permissions, roles) => {
@@ -199,8 +199,8 @@ const DASHAdminApp: React.FC<IDASHAdmin<unknown, unknown, unknown, unknown, unkn
 
   //const a = useSelector((state: IDASHAppState) => state.settings.locale);
   /** The auth context watches for auth changes */
-  const { authenticated, user }: IAuthContext = React.useContext(AuthContext);
-
+  //const { authenticated, user }: IAuthContext = React.useContext(AuthContext);
+  const { authenticated, user } = useAuthContext();
   // Concatenate default system resources (coreResources) with the AppResouces (customResources):
   const calculateResources = () => {
     const _resources = !children
@@ -216,17 +216,20 @@ const DASHAdminApp: React.FC<IDASHAdmin<unknown, unknown, unknown, unknown, unkn
   };
 
   /** When the application loads, process the resources, and dispatch the redux setter. */
-  React.useEffect(() => {
+  /*React.useEffect(() => {
+    console.log("calculateResources on refresh")
     calculateResources();
-  }, []);
+  }, []);*/
 
   /** When the authcontext changes, update the resources; this is necessary to render different menus, if the user log out, then log in with a different role. */
   React.useEffect(() => {
+    //console.log("calculateResources on auth")
     calculateResources();
   }, [authenticated]);
 
   /** When the redux resources are updated, store them in an ES6 Class, in order to be accessible in the data-provider without redux */
   React.useEffect(() => {
+    //console.log("updating resources")
     // DASHStorageClass is required to be access the current Resources in the dataProvider;
     // TODO: store just a simplified serialized version.
     DASHStorageClass.resources = resources;
@@ -297,7 +300,7 @@ const DASHAdminApp: React.FC<IDASHAdmin<unknown, unknown, unknown, unknown, unkn
           {authenticated ? getCustomAuthRoutes()
           .filter(route => !route.props['data-layout']?.toString().includes('no-layout'))
           .map((route, index) => {
-            console.log('Auth Route Key:', route.props.get)
+            //console.log('Auth Route Key:', route.props.get)
             return <Route key={`auth-route-${index}`} {...route.props} />
           }) : <></>}
 
@@ -310,7 +313,7 @@ const DASHAdminApp: React.FC<IDASHAdmin<unknown, unknown, unknown, unknown, unkn
                 return !route.props['data-layout']?.toString().includes('no-layout')
             })
             .map((route, index) => {
-                console.log('Normal Route Key:', route.props)
+                //console.log('Normal Route Key:', route.props)
                 return <Route key={`custom-auth-route-${index}`} {...route.props}>
                     {route.props.children || <></>}
                 </Route>
@@ -346,7 +349,7 @@ const DASHAdminApp: React.FC<IDASHAdmin<unknown, unknown, unknown, unknown, unkn
          {authenticated ? getCustomAuthRoutes()
           .filter(route => route.props['data-layout']?.toString().includes('no-layout'))
           .map((route, index) => {
-            console.log('No layout Auth Route Key:', route.props.get)
+            //console.log('No layout Auth Route Key:', route.props.get)
             return <Route key={`auth-route-${index}`} {...route.props} />
           }) : <></>}
 
@@ -358,7 +361,7 @@ const DASHAdminApp: React.FC<IDASHAdmin<unknown, unknown, unknown, unknown, unkn
                 return route.props['data-layout']?.toString().includes('no-layout')
             })
             .map((route, index) => {
-                console.log('No layout Normal Route Key:', route.props)
+                //console.log('No layout Normal Route Key:', route.props)
                 return <Route key={`custom-auth-route-${index}`} {...route.props}>
                     {route.props.children || <></>}
                 </Route>
@@ -383,7 +386,7 @@ const DASHAdminApp: React.FC<IDASHAdmin<unknown, unknown, unknown, unknown, unkn
         dataProvider={customDataProvider || dataProvider}
         i18nProvider={customI18nProvider || i18nProvider}
         authProvider={customAuthProvider || authProvider}
-        theme={customThemeConfig || themeConfig}
+        {...(customThemeConfig && { theme:customThemeConfig })}
         {...(customQueryClient && { queryClient: customQueryClient as QueryClient })}
         {...((history !== null || history !== undefined) && { history })}
       //store={store} //TODO implement the store override
@@ -414,7 +417,7 @@ const DASHAdminApp: React.FC<IDASHAdmin<unknown, unknown, unknown, unknown, unkn
         dataProvider={customDataProvider || dataProvider}
         i18nProvider={customI18nProvider || i18nProvider}
         authProvider={customAuthProvider || authProvider}
-        theme={customThemeConfig || themeConfig}
+        {...(customThemeConfig && { theme:customThemeConfig })}
         {...(customQueryClient && { queryClient: customQueryClient as QueryClient })}
         {...(history && { history: history })}
       // error={{ errorComponent: Error }} // TODO how to customize the error page

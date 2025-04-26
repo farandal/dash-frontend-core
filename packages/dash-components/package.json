@@ -42,6 +42,7 @@
 		"dash-styles": "*",
 		"query-string": "latest",
 		"react-admin": "latest",
+		"react-color": "^2.19.3",
 		"react-custom-scrollbars-2": "latest",
 		"react-hook-form": "latest",
 		"react-loading-overlay-ts": "latest",

@@ -1,6 +1,6 @@
 import useLocalStorage from '../../hooks/useLocalStorage';
 import { IGetAuth } from '../../interfaces/user/IGetAuth';
-import { IGetAuthUer } from '../../interfaces/user/IUser';
+import { IGetAuthUser } from '../../interfaces/user/IUser';
 import React, {
   FC,
   PropsWithChildren,
@@ -14,7 +14,7 @@ export class AuthContextClass {
 }
 export interface IAuthContextProps {
   authenticated: boolean;
-  user: IGetAuthUer;
+  user: IGetAuthUser;
   auth: IGetAuth;
   token: string;
   roles: any;

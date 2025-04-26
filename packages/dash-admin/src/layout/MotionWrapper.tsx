@@ -13,7 +13,7 @@ const MotionWrapper: React.FC<IMotionWrapper> = (props) => {
     //return <Outlet />;
     const [show, setShow] = useState(true);
     useEffect(() => {
-        console.log("MotionWrapper Loaded/updated");
+        //console.log("MotionWrapper Loaded/updated");
 
         setShow(true);
 
@@ -22,7 +22,7 @@ const MotionWrapper: React.FC<IMotionWrapper> = (props) => {
         }, maxTimeOut);
 
         return () => {
-            console.log("MotionWrapper Unmounted");
+            //console.log("MotionWrapper Unmounted");
             clearTimeout(timer);
         }
     }, [maxTimeOut]);

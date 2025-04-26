@@ -16,3 +16,8 @@ export { default as SortableDatagrid } from './components/SortableDataGrid/Sorta
 export { default as SearchableSelectCheckboxes } from './components/SearchableSelects/SearchableSelectCheckboxes';
 export { default as SingleImageUploader } from './components/Upload/SingleImageUploader' 
 export { default as ListActive } from './components/ListActive/ListActive';
+
+// Custom Components
+
+export { default as JsonColorSelector } from './components/JsonColorSelector/JsonColorSelector'
+export { default as Json } from './components/Json/Json'

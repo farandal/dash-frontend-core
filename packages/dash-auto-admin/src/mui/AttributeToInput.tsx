@@ -20,7 +20,7 @@ import {
 } from 'react-admin';
 import { ErrorMessage } from "@hookform/error-message"
 
-import { InputAdornment, InputLabel, Typography } from '@mui/material';
+import { InputAdornment, InputLabel, TextField, Typography } from '@mui/material';
 import Visibility from '@mui/icons-material/Visibility';
 
 import IDashAutoAdminAttribute from '../interfaces/IDashAutoAdminAttribute';
@@ -42,6 +42,7 @@ import { IDASHAppState } from 'dash-admin-state';
 import { useEditContext } from 'react-admin';
 import { useFormContext } from 'react-hook-form';
 
+import { Json, JsonColorSelector } from 'dash-components';
 
 //export type ICustomRAButton<T extends RaRecord> = ShowButtonProps;
 export interface IGroupExtraData {
@@ -97,7 +98,7 @@ const FunctionFieldWrapper = ({
                         return error ? <Typography className='dash-admin-field-error' color="error" >{typeof error.message === 'string' ? error.message : typeof (error as any).message?.message === 'string' ? (error as any).message?.message : JSON.stringify(error)}</Typography> : null;
                     }}
                 />}
-               
+
             </div>
         );
     }
@@ -121,6 +122,19 @@ const FunctionFieldWrapper = ({
  * 
  * The function returns a JSX element that represents the input field, wrapped in a `FunctionFieldWrapper` component. The `FunctionFieldWrapper` component handles the rendering of the input field based on the current operation mode.
 */
+
+const typeComponentMap: Record<string, React.FC<IDashAutoAdminCustomFieldComponent>> = {
+    "Json": Json,
+    "JsonColorSelector": JsonColorSelector
+}
+const typeComponentMapper = (type: string) => {
+    const component = typeComponentMap[type]
+    if (component) {
+        return { custom: true, type: "component", component }
+    }
+    return { custom: true, type: "component", component: () => <>No component for {type}</> }
+}
+
 const AttributeToInput = (
     method: 'list' | 'view' | 'create' | 'edit',
     resourceConfig: IDashAutoAdminResourceConfig,
@@ -134,7 +148,7 @@ const AttributeToInput = (
   filter.searchField = input.searchField;*/
 
     //const sortableField = input.sortable === true ? true : false;
-
+ 
     const mode = options?.mode || 'view';
 
     const record = options?.mode === 'edit' ? useEditContext() : useRecordContext();
@@ -154,40 +168,54 @@ const AttributeToInput = (
                 children,
             }: IDashAutoAdminCustomFieldComponent) => children;
 
+    /* 
+            input.type != 'custom'
+            input.type does not contains dots
+            input.type dies not represents an Enum or Array.
+    */
+    if (typeof input.type === "string" && !input.type.includes(".") && !Array.isArray(input.type)) {
 
-    switch (input.type) {
-        case 'string':
-            input.type = String;
-            input.fieldProps = {
-                ...(input.fieldProps || {}),
-                fullWidth: input?.fieldProps?.fullWidth ?? true,
-            };
-            break;
-        case 'textarea':
+        switch (input.type) {
+            case 'string':
+            case 'text':
+            case 'String':
+                input.type = String;
+                input.slotProps = {
+                    fullWidth: input?.fieldProps?.fullWidth ?? true,
+                };
+                break;
+            case 'textarea':
+                input.type = String;
+                input.multiple = true;
 
-            input.type = String;
-            input.multiple = true;
-            input.fieldProps = {
-                ...(input.fieldProps || {}),
-                multiline: input?.fieldProps?.multiline ?? true,
-                rows: input?.fieldProps?.rows ?? 4,
-                fullWidth: input?.fieldProps?.fullWidth ?? true,
-            };
+                input.slotProps = {
+                    fullWidth: input?.fieldProps?.fullWidth ?? true,
+                };
 
+                input.fieldProps = {
+                    ...(input.fieldProps || {}),
+                    multiline: input?.fieldProps?.multiline ?? true,
+                    rows: input?.fieldProps?.rows ?? 4,
 
-
-            //input.variant = "textarea";
-            break;
-        case 'number':
-        case 'integer':
-            input.type = Number;
-            break;
-        case 'boolean':
-            input.type = Boolean;
-            break;
-        case 'date':
-            input.type = Date;
-            break;
+                };
+                //input.variant = "textarea";
+                break;
+            case 'number':
+            case 'Number':
+            case 'integer':
+                input.type = Number;
+                break;
+            case 'boolean':
+            case 'Boolean':
+                input.type = Boolean;
+                break;
+            case 'date':
+            case 'Date':
+                input.type = Date;
+                break;
+            default:
+                input = { ...input, ...typeComponentMapper(input.type) };
+        }
     }
 
     if (options && options.useReadOnlyInputAsTextField && input.readOnly) {
@@ -644,12 +672,12 @@ const AttributeToInput = (
             ...(input.slotProps ? { slotProps: input.slotProps } : {})
         }
 
-        console.log("AttibuteToInput: Password",passwordProps)
-        
+        //console.log("AttibuteToInput: Password",passwordProps)
+
         return (
             <FunctionFieldWrapper index={index} method={mode} input={input}>
                 <PasswordInput {...passwordProps}
-                  
+
                 />
             </FunctionFieldWrapper>
         );
@@ -670,14 +698,14 @@ const AttributeToInput = (
         }
     }
 
-    console.log("AttibuteToInput: TextInput",textFieldProps)
+    //console.log("AttibuteToInput: TextInput",textFieldProps)
     return <FunctionFieldWrapper index={index} method={mode} input={input}>
 
-            <TextInput
-                {...textFieldProps}
-            />
-        </FunctionFieldWrapper>
-    
+        <TextInput
+            {...textFieldProps}
+        />
+    </FunctionFieldWrapper>
+
 };
 
 export default AttributeToInput;

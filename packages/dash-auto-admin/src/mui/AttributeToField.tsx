@@ -387,8 +387,10 @@ export const AttributeToField = (
 					source: input.listAttribute ? input.listAttribute : input.attribute,
 					reference: reference
 				}			
-                console.log("AttributeToField: ReferenceField",componentProps);                                                                                                                                                               return (
-				<ComponentWrapper
+                
+                //console.log("AttributeToField: ReferenceField",componentProps);                                                                                                                                                               return (
+				
+                return <ComponentWrapper
 					{...componentWrapperProps}
 				>
 					<ReferenceField
@@ -400,7 +402,7 @@ export const AttributeToField = (
 						/>
 					</ReferenceField>*/}
 				</ComponentWrapper>
-			);
+			
 		}
 
         const componentWrapperProps = {
@@ -427,7 +429,7 @@ export const AttributeToField = (
 			source: input.listAttribute ? input.listAttribute : input.attribute,
 			reference: reference
 		}
-        console.log("AttributeToField: ReferenceArrayField",componentProps);       
+        //console.log("AttributeToField: ReferenceArrayField",componentProps);       
 		return (
 			<ComponentWrapper {...componentWrapperProps} >
 			<ReferenceArrayField {...componentProps} >
@@ -721,7 +723,7 @@ const textFieldProps = {
     ...(input.slotProps ? { slotProps: input.slotProps } : {})
 }    
 
-    console.log("AttributeToField: TextField",textFieldProps);
+    //console.log("AttributeToField: TextField",textFieldProps);
 
 	return (
 		<ComponentWrapper

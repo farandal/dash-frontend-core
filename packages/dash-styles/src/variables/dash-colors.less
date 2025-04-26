@@ -1,207 +1,46 @@
 @import './colors.less';
 
-// Colors - Main Theme
-@main-color: #4caf50;
-@main-color-contrast: #004f0c;
-@main-text-color: #000000;
-@module-background: #F6F7FC;
-@module-border: #D9D9D9;
-@dash-principal-color: @main-color-contrast;
-
-// Colors - Basic
-@white: #FFFFFF;
-@white-color: #ffffff;
-@black-color: #000000;
-@pink: #FFA39E;
-
-// Colors - Theme
-@primary-color: #4caf50;
-@secondary-color: #4caf50;
-@text-color: #ffffff;
-@text-color-dark: #666666;
-@text-color-secondary: #595959;
-@text-color-light: #000000;
-@heading-color: #535353;
-
-
-@dash-link-color: #4caf50;
-@dash-light-grey: #757380;
-@dash-blue: #121857;
-@dash-white-100: #FFFFFF;
-@dash-main-background: #ffffff;
-@dash-border-color: #CCE0FF;
-@dash-purple: #7982E3;
-@dash-purple-background: #EAEBFB;
-@dash-light-blue: #66A2FF;
-@dash-light-blue-background: #DBE9FF;
-@dash-green: #800080;
-@dash-green-background: #CEF3DD;
-@dash-disabled-color: #EEEEEE;
-@dash-red: #DD7373;
-@dash-yellow: #FFCB2F;
-@dash-yellow-background: #FFF0C2;
-@dash-orange: #F98D51;
-@dash-orange-background: #FDD8C4;
-@dash-error: #FF6047;
-@dash-alert: #FF6047;
-@dash-null: #808191;
-@dash-null-background: #EFEFF1;
-@dash-dark-background: #333333;
-
-
-// Colors - Background
-@body-background: #cccccc;
-@dash-framed-layout-bg: #cccccc;
-@dash-main-background: #ffffff;
-@background-green: #73DD9D;
-@background-active: #99F4BD;
-@dash-dark-background: #333333;
-@nav-dark-bg: #2b343b;
-@dark-theme-sidebar-dark-bg: #0a0a0a;
-@framed-layout-background: #1e272e;
-
-// Colors - Components
-@component-background: #ffffff;
-@component-border-color: #dee2e6;
-@component-text-color: #212529;
-@component-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-@component-hover-background: #f8f9fa;
-@component-active-background: #e2e6ea;
+/* This are default base colors for dash */
+/* Overwrite this variables in the domain dash-variables.less */
+@import './dash-colors-light.less';
+@import './dash-colors-dark.less';
 
 // Colors - Status
-@info-color: @dash-blue;
-@success-color: @grey-6;
-@processing-color: @primary-color;
-@error-color: @grey-6;
-@highlight-color: @grey-6;
-@warning-color: @grey-6;
+@info-color: #1890ff;
+@success-color: #52c41a;
+@processing-color: #1890ff;
+@error-color: #f5222d;
+@highlight-color: #f5222d;
+@warning-color: #faad14;
 @normal-color: #d9d9d9;
-@danger-color: #f44336;
-@light-color: #e8eaf6;
-@dark-color: @grey-9;
+@danger-color: #ff4d4f;
+@light-color: #e8e8e8;
+
+// Colors - Basic
+@highlight-color: #FFFFFF;
+@highlight-color: #ffffff;
+@black: #000000;
+@pink: #E6E6E6;
 
 // Colors - Brand
-@dash-blue: #121857;
-@dash-purple: #7982E3;
-@dash-light-blue: #66A2FF;
-@dash-green: #800080;
-@dash-red: #DD7373;
-@dash-yellow: #FFCB2F;
-@dash-orange: #F98D51;
-@dash-error: #FF6047;
-@dash-alert: #FF6047;
-@dash-null: #808191;
-@dash-light-grey: #757380;
+@dash-blue: #4D4D4D;
+@dash-purple: #808080;
+@dash-light-blue: #999999;
+@dash-green: #666666;
+@dash-red: #808080;
+@dash-yellow: #999999;
+@dash-orange: #666666;
+@dash-error: #808080;
+@dash-alert: #808080;
+@dash-null: #808080;
+@dash-light-grey: #757575;
 
 // Colors - Background Variants
-@dash-purple-background: #EAEBFB;
-@dash-light-blue-background: #DBE9FF;
-@dash-green-background: #CEF3DD;
-@dash-yellow-background: #FFF0C2;
-@dash-orange-background: #FDD8C4;
+@dash-purple-background: #F2F2F2;
+@dash-light-blue-background: #E6E6E6;
+@dash-green-background: #D9D9D9;
+@dash-yellow-background: #E6E6E6;
+@dash-orange-background: #D9D9D9;
 @dash-null-background: #EFEFF1;
 
-// Colors - Border
-@dash-border-color: #CCE0FF;
-@border-color-base: hsv(0, 0, 85%);
-@border-color-split: hsv(0, 0, 91%);
-@border-color: @border-color-split;
-
-// Colors - Link
-@dash-link-color: #0062FF;
-@link-color: @dash-dark-background;
-@link-color-dark: @dash-white-100;
-@link-hover-color: @grey-4;
-@link-active-color: @grey-2;
-@link-hover-color-dark: @grey-6;
-@link-active-color-dark: @grey-9;
-
-// Colors - Disabled
-@disabled-color: #808191;
-@disabled-bg: #eeeeee;
-@disabled-border: #eeeeee;
-@disabled-color-dark: #6c757d;
-
-// Colors - Scroll
 @dash-scroll-width: 6px;
-@dash-scroll-track-color: #808080;
-@dash-scroll-thumb-color: #ffa500;
-@dash-scroll-track-color-dark: #222222;
-@dash-scroll-thumb-color-dark: #800080;
-
-// Colors - Header
-@header-background: #ffffff;
-@header-background-dark: #2b343b;
-@header-fontcolor: #333333;
-@header-fontcolor-dark: #FFFFFF;
-@header-badge: @grey-4;
-@header-badge-hover: #F1F6FF;
-@header-badge-dark: @dash-light-grey;
-@header-badge-hover-dark: #F1F6FF;
-@header-input-background: @nav-dark-bg;
-@header-input-background-dark: @nav-dark-bg;
-
-// Colors - Sidebar
-@dash-sidebar-bg: #9A65E0;
-@dash-sidebar-bg-hover: #F0E4FF;
-@dash-sidebar-color: #ffffff;
-@dash-sidebar-color-active: @dash-sidebar-bg;
-@dash-sidebar-icon-color: @dash-sidebar-color;
-@dash-sidebar-icon-color-active: @dash-sidebar-color-active;
-@dash-sidebar-bg-dark: #2b343b;
-@dash-sidebar-color-dark: #808191;
-@dash-sidebar-color-active-dark: #ffffff;
-@dash-sidebar-icon-color-dark: #808191;
-@dash-sidebar-icon-color-active-dark: #ffffff;
-
-// Colors - Alert
-@dash-alert-info-bg: #CCE0FF;
-@dash-alert-info-border: @dash-alert-info-bg;
-@dash-alert-info-color: #121857;
-@dash-alert-info-title: @dash-alert-info-color;
-@dash-alert-info-link: rgba(18, 24, 87, 0.4);
-
-@dash-alert-error-bg: #DD7373;
-@dash-alert-error-border: @dash-alert-error-bg;
-@dash-alert-error-color: #535353;
-@dash-alert-error-title: @dash-alert-error-color;
-@dash-alert-error-link: rgba(18, 24, 87, 0.4);
-
-@dash-alert-warning-bg: #FFCB2F;
-@dash-alert-warning-border: @dash-alert-warning-bg;
-@dash-alert-warning-color: #121857;
-@dash-alert-warning-title: @dash-alert-warning-color;
-@dash-alert-warning-link: rgba(18, 24, 87, 0.4);
-
-@dash-alert-success-bg: #99F4BD;
-@dash-alert-success-border: @dash-alert-success-bg;
-@dash-alert-success-color: #121857;
-@dash-alert-success-title: @dash-alert-success-color;
-@dash-alert-success-link: rgba(18, 24, 87, 0.4);
-
-// Colors - Button
-@btn-bg: #007bff;
-@btn-color: #ffffff;
-@btn-border-color: @btn-bg;
-@btn-hover-bg: darken(@btn-bg, 10%);
-@btn-active-bg: darken(@btn-bg, 15%);
-@btn-disabled-bg: #6c757d;
-@btn-disabled-color: #ffffff;
-
-// Colors - Button Variants
-@btn-primary-bg: @btn-bg;
-@btn-primary-color: @btn-color;
-@btn-secondary-bg: #6c757d;
-@btn-secondary-color: #ffffff;
-@btn-success-bg: #28a745;
-@btn-success-color: #ffffff;
-@btn-danger-bg: #dc3545;
-@btn-danger-color: #ffffff;
-@btn-warning-bg: #ffc107;
-@btn-warning-color: #212529;
-@btn-info-bg: #17a2b8;
-@btn-info-color: #ffffff;
-@btn-light-bg: #f8f9fa;
-@btn-light-color: #212529;
-@btn-dark-bg: #343a40;
-@btn-dark-color: #ffffff;

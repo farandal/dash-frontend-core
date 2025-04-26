@@ -1,4 +1,4 @@
-import { JSX, PropsWithChildren } from 'react';
+import { JSX, PropsWithChildren, useEffect, useState } from 'react';
 import { Children } from 'react';
 import { useSelector } from 'react-redux';
 import { useDispatch } from 'react-redux';
@@ -44,7 +44,7 @@ const DomainHeader = <U, A>({
     const onToggleExpandedNav = () => {
         dispatch(DASH_REDUX_ACTIONS.toggleExpandedSideNav(!navExpanded));
     };
-
+  
     const HeaderComponentInline = () => (
         <div className='dash-header-inline'>
             <span className='dash-header-inline-title'>

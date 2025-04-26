@@ -52,3 +52,6 @@ export type {
 export * from "./contexts/auth"
 
 export * from "./utils"
+
+
+export { default as DarkToggleMode } from "./components/menu/DarkToggleMode"

@@ -7,8 +7,8 @@ export interface ISettingsState {
 	layoutType: string;
 	themeType: string | any;
 	themeColor: string;
-  layoutSettings: {[x: string]: any};
-  groupIcons: IDASHResourceGroupsIcons;
+  layoutSettings?: {[x: string]: any};
+  groupIcons?: IDASHResourceGroupsIcons;
 	isDirectionRTL: boolean;
 	// resources: IDashAutoAdminResourceConfig[]
 	locale: {

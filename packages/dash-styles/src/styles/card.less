@@ -1,15 +1,14 @@
-
 .card-title{
     display: block;
     font-weight: 800;
     font-size: 20px;
     line-height: 22px;
-    color: #000000;
+    color: var(--heading-color, @heading-color);
 }
 
 .card-subtitle{
     display: block;
-    color: #1E1E1E;
+    color: var(--text-contrast-color, @text-contrast-color);
     font-style: normal;
     font-weight: 700;
     font-size: 16px;
@@ -22,10 +21,8 @@
     font-weight: 400;
     font-size: 14px;
     line-height: 22px;
-    color: #262626;
+    color: var(--text-color, @text-color);
 }
-
-
 
 .dash-card{
     &-prod{
@@ -34,16 +31,14 @@
         flex-direction: row;
         flex-wrap: wrap;
         align-items: center;
-
         padding: 15px;
-        background: @white;
+        background: var(--component-background, @component-background);
         border-radius: 5px;
         box-shadow: 0 0 5px 2px rgba(0, 0, 0, 0.02);
         .ant-tag{
             margin: 0 0 0 auto;
         }
     }
-
     &-icon{
         width: 30px !important;
         height: 30px !important;
@@ -83,7 +78,7 @@
         }
 
         &.blue{
-            background-color: #E9F5FE !important;
+            background-color: var(--dash-alert-info-bg, @dash-alert-info-bg) !important;
         }
         &.empty{
             background-color: transparent !important;
@@ -91,7 +86,7 @@
 
         .ant-progress-text{
             font-size: 12px;
-            color: rgba(#000000, .6);
+            color: var(--text-contrast-color, @text-contrast-color);
             opacity: .54;
         }
 
@@ -112,91 +107,91 @@
 }
 
 .card-history{
-	&-steps{
-		margin-top: 30px;
-		width: 100%;
-	}
-	&-step{
-		padding: 0;
-		background: #EBDFF9;
-		border-radius: 10px;
-		margin-bottom: 20px;
-		.ant-card-body{
-			padding: 0;
-			background: #EBDFF9;
-		}
-	}
-	&-content{
-		background: #EBDFF9;
-		padding: 14px 24px;
-		display: grid;
-		grid-template-columns: 14px 1fr;
-		gap: 0 17px;
-	}
-	&-icon{
-		width: 14px;
-		height: 100%;
-		margin-right: 17px;
-		grid-column: 1/2;
-		grid-row: 1/2;
-		&::before, &::after{
-			content: "";
-			display: block;
-			width: 2px;
-			background-color: @main-color;
-			margin: 0 auto;
-		}
-		svg{
-			display: block;
-			width: 14px;
-			height: 14px;
-			object-fit: contain;
-			margin: 3px auto;
-		}
-		&::before{
-			height: 2px;
-		}
-		&::after{
-			height: calc(100% - 2px - 14px - 6px);
-		}
-	}
-	&-text{
-		grid-column: 2/3;
-		grid-row: 1/2;
-		> span, > label{
-			display: block;
-			font-family: 'Montserrat';
-			font-style: normal;
-			font-weight: 400;
-			font-size: 14px;
-			line-height: 22px;
-			color: #262626;
-			margin-bottom: 0;
-		}
+    &-steps{
+        margin-top: 30px;
+        width: 100%;
+    }
+    &-step{
+        padding: 0;
+        background: var(--component-background, @component-background);
+        border-radius: 10px;
+        margin-bottom: 20px;
+        .ant-card-body{
+            padding: 0;
+            background: var(--component-background, @component-background);
+        }
+    }
+    &-content{
+        background: var(--component-background, @component-background);
+        padding: 14px 24px;
+        display: grid;
+        grid-template-columns: 14px 1fr;
+        gap: 0 17px;
+    }
+    &-icon{
+        width: 14px;
+        height: 100%;
+        margin-right: 17px;
+        grid-column: 1/2;
+        grid-row: 1/2;
+        &::before, &::after{
+            content: "";
+            display: block;
+            width: 2px;
+            background-color: var(--primary-color, @primary-color);
+            margin: 0 auto;
+        }
+        svg{
+            display: block;
+            width: 14px;
+            height: 14px;
+            object-fit: contain;
+            margin: 3px auto;
+        }
+        &::before{
+            height: 2px;
+        }
+        &::after{
+            height: calc(100% - 2px - 14px - 6px);
+        }
+    }
+    &-text{
+        grid-column: 2/3;
+        grid-row: 1/2;
+        > span, > label{
+            display: block;
+            font-family: 'Montserrat';
+            font-style: normal;
+            font-weight: 400;
+            font-size: 14px;
+            line-height: 22px;
+            color: var(--component-text-color, @component-text-color);
+            margin-bottom: 0;
+        }
 
-		> .card-history-state{
-			display: inline-block;
-		}
-	}
+        > .card-history-state{
+            display: inline-block;
+        }
+    }
 
-	&-date{
-		display: flex;
-		align-items: center;
-	}
+    &-date{
+        display: flex;
+        align-items: center;
+    }
 
-	&-separator{
-		display: inline-block;
-		width: 14px !important;
-		height: 14px !important;
-		object-fit: contain;
-		margin: 0 10px;
-		transform: translateY(2px);
-		pointer-events: none;
-	}
+    &-separator{
+        display: inline-block;
+        width: 14px !important;
+        height: 14px !important;
+        object-fit: contain;
+        margin: 0 10px;
+        transform: translateY(2px);
+        pointer-events: none;
+    }
 }
 
 .dash-widget-white {
-    background: white !important;
+    background: var(--component-background, @component-background) !important;
     border-radius: 12px !important;
     box-shadow: unset !important;
     padding: 1rem !important;
@@ -204,19 +199,17 @@
 }
 
 .dash-widget, .dash-card-content{
-    background: @module-background !important;
+    background: var(--module-background, @module-background) !important;
     border-radius: 12px !important;
     box-shadow: unset !important;
-    //padding: 1rem !important;
     padding:1rem;
-    //padding-bottom: 0px;
     position: relative;
 }
 
 .dash-widget, .dash-widget-white {
     .MuiCardHeader-root{
         padding: 16px 22.37px 16px 24px;
-        border-bottom: 1px solid @module-border;
+        border-bottom: 1px solid var(--border-color-split, @border-color-split);
         align-items: center;
         .MuiTypography-root{
             font-family: 'Montserrat';
@@ -224,7 +217,7 @@
             font-weight: 600;
             font-size: 14px;
             line-height: 22px;
-            color: #262626;
+            color: var(--heading-color, @heading-color);
         }
         .MuiCardHeader-action{
             display: flex;
@@ -233,7 +226,7 @@
             align-self: center;
             margin: 0;
             .MuiSvgIcon-root{
-                color: @main-color;
+                color: var(--primary-color, @primary-color);
                 width: 16px;
                 height: 16px;
             }
@@ -243,11 +236,11 @@
                 height: 40px;
                 padding: 0;
                 border-radius: 4px !important;
-                color: @white;
+                color: var(--btn-primary-color, @btn-primary-color);
                 svg{
-                    color: @primary-color;
+                    color: var(--primary-color, @primary-color);
                     path{
-                        fill: @primary-color;
+                        fill: var(--primary-color, @primary-color);
                     }
                 }
             }
@@ -259,17 +252,17 @@
         font-weight: 400;
         font-size: 20px;
         line-height: 22px;
-        color: @main-color;
+        color: var(--primary-color, @primary-color);
     }
 
     &.dash-widget-inner{
-        background-color: @white !important;
+        background-color: var(--component-background, @component-background) !important;
         .MuiCardHeader-root{
             display: inline-flex;
             align-items: center;
             width: 100%;
             min-height: 56px;
-            border-bottom: 1px solid @module-border;
+            border-bottom: 1px solid var(--border-color-split, @border-color-split);
             padding: 8px 12px;
         }
         .MuiCardContent-root{
@@ -279,27 +272,25 @@
             font-weight: 600;
             font-size: 14px;
             line-height: 22px;
-            color: @main-color;
+            color: var(--primary-color, @primary-color);
         }
     }
 }
 
 .dash-widget-inner{
-	padding: 0 !important;
-	background-color: @white;
-    border: 1px solid @module-background;
+    padding: 0 !important;
+    background-color: var(--component-background, @component-background);
+    border: 1px solid var(--border-color-base, @border-color-base);
     border-radius: 10px !important;
     box-shadow: unset !important;
-	.ant-card-head, .ant-card-body{
-		background-color: @white;
-	}
+    .ant-card-head, .ant-card-body{
+        background-color: var(--component-background, @component-background);
+    }
 }
 
-
 .dash-widget-purple {
-
     .dash-widget, .dash-card-content{
-        background: @light-color !important;
+        background: var(--component-hover-background, @component-hover-background) !important;
     }
     span {
         font-size: 3rem;
@@ -309,14 +300,13 @@
     }
 }
 
-
 .dash-form{
     width: 100%;
 }
 
 .dash-card-profile{
     .MuiGrid-item{
-        border-right: 1px solid rgba(0, 0, 0, 0.1);
+        border-right: 1px solid var(--border-color-split, @border-color-split);
         &:last-child{
             border-right: unset;
         }
@@ -330,7 +320,7 @@
     height: 130px;
     position: relative;
     margin: 0 auto 2rem;
-    background-color: @main-color;
+    background-color: var(--primary-color, @primary-color);
     img{
         width: 100%;
         height: 100%;
@@ -338,20 +328,4 @@
         border-radius: 50%;
         overflow: hidden;
     }
-    // .css-5ro7hy-MuiButtonBase-root-MuiIconButton-root{
-    //     position: absolute;
-    //     top: 0%;
-    //     right: 0%;
-    //     background-color: #242943;
-    //     color: @white;
-    //     transition: all .4s;
-    //     svg path{
-    //         fill: @white !important;
-    //     }
-    //     &:hover{
-    //         opacity: 1;
-    //         background-color: rgba(#242943, .9);
-    //     }
-    // }
-
 }

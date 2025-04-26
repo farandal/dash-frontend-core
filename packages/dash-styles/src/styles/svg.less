@@ -1,30 +1,30 @@
 .svg-icon-regular{
   svg{
-      fill: #233044;
+      fill: var(--text-color, #233044);
   }
-  color: #233044;
+  color: var(--text-color, #233044);
 }
 .svg-icon-red{
   svg{
-      fill: -color;
+      fill: var(--danger-color, @danger-color);
   }
-  color: @danger-color;
+  color: var(--danger-color, @danger-color);
 }
 .svg-icon-green{
   svg{
-      fill: #4CAF50;
+      fill: var(--success-color, #4CAF50);
   }
-  color: #4CAF50;
+  color: var(--success-color, #4CAF50);
 }
 .svg-icon-blue{
   svg{
-      fill: #1976D2;
+      fill: var(--primary-color, #1976D2);
   }
-  color: #1976D2;
+  color: var(--primary-color, #1976D2);
 }
 .svg-icon-yellow{
   svg{
-      fill: #FF9800;
+      fill: var(--warning-color, #FF9800);
   }
-  color: #FF9800;
+  color: var(--warning-color, #FF9800);
 }

@@ -1,5 +1,6 @@
 import { IconButton } from '@mui/material';
 import { FC, useState } from 'react';
+import { Upload } from '@mui/icons-material';
 
 import React from 'react';
 export interface ISingleImageUploader {
@@ -27,6 +28,8 @@ const SingleImageUploader:FC<ISingleImageUploader> = (props) => {
 			component='label'
 			className={`${classNamePrefix}-edit`}
 		>
+            <Upload style={{ opacity: '0.6' }} />
+
 			<input
 				hidden
 				accept='image/*'

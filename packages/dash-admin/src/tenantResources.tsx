@@ -186,15 +186,18 @@ const tenantResources: IAppResourceConfig[] = [
       redirect: '/system/user/create',
     },
     mutationMode: 'pessimistic',
-    isFormData: true,
+    //isFormData: true,
+    isFormData: false,
     dataGridProps: { stickyHeader: true },
     dataGridWrapper: (props: any) => (
       <TableContainer sx={{ maxHeight: 800 }}>{props.children}</TableContainer>
     ),
     formPostFormatter: (params, form) => {
+        debugger;
       return form;
     },
     postFormatter: (params, method) => {
+        debugger;
       /* if (!params.meta) {
         params.meta = {
           method: "PUT",
@@ -202,6 +205,7 @@ const tenantResources: IAppResourceConfig[] = [
       } else {
         params.meta.method = "PUT";
       }*/
+     
       if (method === 'update') {
         params._method = 'PUT';
       }

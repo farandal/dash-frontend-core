@@ -61,8 +61,8 @@ const SidebarContent: React.FC<IAppSidebarContent> = ({
 					<div className='dash-linebar'>
 						<div className='dash-sidebar-icon'>
 							<i
-								// className={`dash-icon-btn icon icon-${!sidebarExpanded ? 'menu-unfold' : 'menu-fold'} ${themeType !== THEME_TYPE_LITE ? 'dash-text-white' : ''}`}
-								// className={`dash-sidebar-menu ${themeType !== THEME_TYPE_LITE ? 'dash-text-white' : ''}`}
+								// className={`dash-icon-btn icon icon-${!sidebarExpanded ? 'menu-unfold' : 'menu-fold'} ${themeType !== THEME_TYPE_LIGHT ? 'dash-text-white' : ''}`}
+								// className={`dash-sidebar-menu ${themeType !== THEME_TYPE_LIGHT ? 'dash-text-white' : ''}`}
 								className={`dash-sidebar-menu`}
 								onClick={() => {
 									setSidebarExpanded(!sidebarExpanded);

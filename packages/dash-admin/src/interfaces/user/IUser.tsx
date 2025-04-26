@@ -18,7 +18,7 @@ export interface IRole {
 	created_at: string
 	updated_at: string
 }
-export interface IGetAuthUer {
+export interface IGetAuthUser {
 	tenant_id?: number;
 	id: number
 	name: string
@@ -29,6 +29,8 @@ export interface IGetAuthUer {
 	public_id: string
 	phone: string
 	avatar: string
+    avatar_path: string
+    image_path: string
 	image_url: string
 	active: boolean
 	account_type_id: any

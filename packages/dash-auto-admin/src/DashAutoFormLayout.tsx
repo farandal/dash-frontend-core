@@ -1,3 +1,4 @@
+import { JSX } from 'react';
 import { DashAutoFormTabs } from '.';
 import IDashAutoAdminAttribute from './interfaces/IDashAutoAdminAttribute';
 import IDashAutoAdminFormOptions from './interfaces/IDashAutoAdminFormOptions';
@@ -53,8 +54,8 @@ const DashAutoFormLayout = (
 				!resourceConfig.createLayout ||
 				typeof resourceConfig.createLayout !== 'function'
 			) {
-				console.error(
-					'createLayout must be present and be a function in the resource definition when using formGroupMode layout, fallback to tabs',
+				console.warn(
+					'⚠️ createLayout must be present and be a function in the resource definition when using formGroupMode layout, fallback to tabs',
 				);
 
 				return DashAutoFormTabs({
@@ -71,9 +72,10 @@ const DashAutoFormLayout = (
 				!resourceConfig.editLayout ||
 				typeof resourceConfig.editLayout !== 'function'
 			) {
-				console.error(
-					'editLayout must be present and be a function in the resource definition when using formGroupMode layout, fallback to tabs',
+				console.warn(
+					'⚠️ createLayout must be present and be a function in the resource definition when using formGroupMode layout, fallback to tabs',
 				);
+
 				return DashAutoFormTabs({
 					schema: schema,
 					resource: resourceConfig,
@@ -98,7 +100,7 @@ const DashAutoFormLayout = (
     */
 
 		default:
-			return <>options.mode not allowed</>;
+			return <>mode not allowed</>;
 	}
 };
 

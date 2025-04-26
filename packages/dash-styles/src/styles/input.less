@@ -1,4 +1,4 @@
-@input-color: @main-color;
+@input-color: @primary-color;
 
 input:-webkit-autofill,
 input:-webkit-autofill:hover,
@@ -12,39 +12,38 @@ input:-webkit-autofill:active {
 }
 
 .MuiInputBase-colorPrimary{
-    background-color: @white;
-    border-color: @input-color;
-    color: @input-color;
+    background-color: var(--component-background, @component-background);
+    border-color: var(--component-border-color, @component-border-color);
+    color: var(--component-text-color, @component-text-color);
     fieldset{
         border-radius: 6px;
-        border-color: @input-color !important;
+        border-color: var(--component-border-color, @component-border-color) !important;
         border-width: 1px !important;
-        box-shadow: 2px 2px rgba(154, 101, 224, 0);
+        box-shadow: 2px 2px var(--component-shadow, @component-shadow);
         transition: all 0.4s;
     }
     input, .MuiSelect-select{
         width: 100%;
         min-width: 0;
-        //min-height: 45px;
         border-radius: 6px;
         font-family: 'Montserrat';
         font-style: normal;
         font-weight: 400;
         font-size: 16px;
         line-height: 24px;
-        color: #8C8C8C;
+        color: var(--text-light-color, @text-light-color);
     }
     &:hover{
         fieldset{
-            box-shadow: 2px 2px rgba(154, 101, 224, 0.4);
+            box-shadow: 2px 2px var(--component-hover-background, @component-hover-background);
         }
     }
 }
 
 .MuiFormLabel-colorPrimary{
-    color: #8C8C8C;
+    color: var(--text-light-color, @text-light-color);
     &.Mui-focused{
-        color: @input-color !important;
+        color: var(--primary-color, @primary-color) !important;
     }
 }
 
@@ -57,7 +56,7 @@ input:-webkit-autofill:active {
         font-weight: 400;
         font-size: 14px;
         line-height: 22px;
-        color: #262626;
+        color: var(--text-color, @text-color);
     }
     > .MuiInputBase-root{
         fieldset{
@@ -86,16 +85,16 @@ input:-webkit-autofill:active {
         font-weight: 400;
         font-size: 16px;
         line-height: 24px;
-        color: #8C8C8C;
+        color: var(--text-light-color, @text-light-color);
     }
 }
 
 .MuiCheckbox-root{
-    color: @main-color !important;
+    color: var(--primary-color, @primary-color) !important;
 }
 
 .MuiFormLabel-asterisk{
-    color: #FF0000 !important;
+    color: var(--dash-alert-error-color, @dash-alert-error-color) !important;
 }
 
 .MuiFormControlLabel-label{
@@ -104,5 +103,5 @@ input:-webkit-autofill:active {
     font-weight: 400;
     font-size: 14px;
     line-height: 22px;
-    color: #262626;
+    color: var(--text-color, @text-color);
 }

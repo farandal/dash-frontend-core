@@ -3,7 +3,6 @@ class AppLayoutSettings {
 	static MOBILE_SIZE = 575;
 	static THEME_TYPE = 'THEME_TYPE';
 	static THEME_TYPE_LIGHT = 'light';
-	static THEME_TYPE_LITE = 'lite';
 	static THEME_TYPE_DARK = 'dark';
 	static THEME_TYPE_DASH_DEFAULT = 'light';
 	static THEME_TYPE_SEMI_DARK = 'THEME_TYPE_SEMI_DARK';

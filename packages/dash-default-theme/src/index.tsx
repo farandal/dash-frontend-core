@@ -5,3 +5,4 @@ export { default as DomainTheme } from './DomainTheme';
 export { default as DomainHeader } from './DomainHeader';
 export { default as FullLayoutMarkup } from './FullLayoutMarkup';
 export { default as StaticLayout } from './StaticLayout';
+export { default as DashThemeContext } from './DashThemeContext';

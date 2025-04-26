@@ -1,15 +1,15 @@
 .icon-fill{
     &-w{
         path{
-             fill: @white;
+             fill: var(--highlight-color, @highlight-color);
         }
     }
 }
 
 .stroke-purple{
-    stroke: @btn-color;
+    stroke: var(--btn-color, @btn-color);
     *{
-        stroke: @btn-color;
+        stroke: var(--btn-color, @btn-color);
     }
 }
 
@@ -17,7 +17,7 @@
     background-color: white;
     font-size: 12pt;
     .label {
-        color: @main-color;
+        color: var(--primary-color, @primary-color);
     }
     .field {
         color: black;
@@ -28,4 +28,3 @@
 .auto-admin-grouped-form {
     padding: 0;
 }
-

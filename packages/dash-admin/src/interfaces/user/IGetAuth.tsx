@@ -1,14 +1,15 @@
-import { IGetAuthUer } from './IUser';
+import { IGetAuthUser } from './IUser';
 
 export interface IGetAuth {
-	accountTypes: AccountTypes
-	banks: Banks
-	communes: Communes
-	user: IGetAuthUer
-	driverPackageStatuses: DriverPackageStatuse[]
-	noReceptionReasons: NoReceptionReason[]
-	noReturnReasons: NoReturnReason[]
-	notificationConfiguration: NotificationConfiguration
+	//accountTypes: AccountTypes
+	//banks: Banks
+	//communes: Communes
+	user: IGetAuthUser,
+    tenantSettings: any
+	//driverPackageStatuses: DriverPackageStatuse[]
+	//noReceptionReasons: NoReceptionReason[]
+	//noReturnReasons: NoReturnReason[]
+	//notificationConfiguration: NotificationConfiguration
 }
 
 export interface AccountTypes {

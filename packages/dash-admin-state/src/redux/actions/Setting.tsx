@@ -16,7 +16,8 @@ export function toggleExpandedSideNav(navExpanded) {
 }
 
 export function toggleThemeType(themeType) {
-	return { type: DefaultThemeSettings.THEME_TYPE, themeType };
+  document.documentElement.setAttribute('data-theme', themeType)	
+  return { type: DefaultThemeSettings.THEME_TYPE, themeType };
 }
 
 export function updateWindowWidth(width) {

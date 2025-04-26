@@ -10,7 +10,7 @@ import SidebarItem from './AppMenuComponents/expanded/SidebarItem';
 import SidebarItemCollapse from './AppMenuComponents/expanded/CollapsableSidebarMenu';
 import CollapsedSidebarItems from './AppMenuComponents/collapsed/CollapsedSidebarItems';
 import { IDashAutoAdminResourceConfig } from 'dash-auto-admin';
-import { IDomainAuth, IDomainUser } from '@app/DASHApp';
+//import { IDomainAuth, IDomainUser } from '@app/DASHApp';
 import { IDASHAppState } from 'dash-admin-state';
 import checkRole from 'dash-admin/src/helpers/checkRole';
 import { slugify } from 'dash-admin/src/utils/slugify';
@@ -56,7 +56,7 @@ const AppMaterialMenu: React.FC<IAppMenu> = (props) => {
   //const resources = useResourceDefinitions()
   const { permissions } = usePermissions();
   const { navExpanded } = useSelector(
-    (state: IDASHAppState<IDomainUser, IDomainAuth, IDashAutoAdminResourceConfig>) =>
+    (state: IDASHAppState<any, any, IDashAutoAdminResourceConfig>) =>
       state.common,
   );
 
@@ -64,7 +64,7 @@ const AppMaterialMenu: React.FC<IAppMenu> = (props) => {
 
   const resources = useSelector(
     (
-      state: IDASHAppState<IDomainUser, IDomainAuth, IDashAutoAdminResourceConfig>,
+      state: IDASHAppState<any, any, IDashAutoAdminResourceConfig>,
     ) => {
       if (debug || menu) {
         return menu;

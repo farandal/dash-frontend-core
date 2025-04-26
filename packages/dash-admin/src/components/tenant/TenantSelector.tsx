@@ -57,7 +57,7 @@ const TenantSelector = React.forwardRef<
 		isLoading,
 		error: tenantsError,
 	} = useGetList('tenant', {
-		pagination: false,
+		//pagination: false,
 		filter: { q: q },
 	});
 
