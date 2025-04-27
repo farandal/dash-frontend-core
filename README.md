@@ -2,8 +2,29 @@
 
 - This a monorepo structure
 - The main components are within apps and packages
+- Domain app : apps/dash folder must always contain the domain app. 
+- This project requires WSL in windows
 
 # Requirements
+
+- Node 20+
+
+# Setup
+- yarn install
+- yarn new
+- yarn install
+- yarn dev
+
+# Setup Windows
+- Import-Module $env:ChocolateyInstall\helpers\chocolateyProfile.psm1 
+- refreshenv
+- wsl
+- chmod +x ./new.sh
+- sh ./new.sh
+- exit
+- yarn install
+- yarn dev-win
+
 
 # use Node 20 (example with nvm)
 
@@ -21,18 +42,3 @@ make sure the package.json references it:
     "node": ">=20.18.3",
     "npm": ">=9.6.7"
 },
-
-
-# Font Aesome Icons Loader within compoments
-
-import { loadFontAwesomeIcons } from './helpers/fontAwesomeLoader';
-
-// In your component's useEffect or similar
-useEffect(() => {
-  loadFontAwesomeIcons();
-}, []);
-$#
-# Miising deps
-
-
-chartjs-plugin-datalabels

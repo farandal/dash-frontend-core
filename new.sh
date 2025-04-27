@@ -45,8 +45,10 @@ if [ "$setup_submodule" = "y" ]; then
     read -p "Do you have a remote Git repository URL? (y/n): " has_remote_url
     
     # Create temp directory to prepare the submodule content
-    temp_dir=$(mktemp -d)
+    mkdir -p ./tmp
+    temp_dir=./tmp
     echo "Copying template files to temporary directory..."
+    
     cp -r "$src_dir"/* "$temp_dir"/
     
     # Update package.json with the new app name in the temp directory

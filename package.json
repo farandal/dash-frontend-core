@@ -8,8 +8,9 @@
     "packages/**/*"
   ],
   "scripts": {
-    "new": "chmod +x ./new.sh && ./new.sh",
+    "new": "chmod +x ./new.sh && sh ./new.sh",
     "dev": "cd apps/dash && yarn dev",
+    "dev-win": "cd apps/dash && yarn dev-win",
     "build": "turbo build --filter=!./apps/demo --filter=!./packages/react-18-beautiful-dnd-grid",
     "android": "NODE_ENV=staging turbo build && cap run android",
     "android-prod": "NODE_ENV=production turbo build && cap run android",
