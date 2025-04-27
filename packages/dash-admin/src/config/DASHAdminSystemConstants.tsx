@@ -51,6 +51,15 @@ const system = {
   URL_PREFIX: getEnv('DASH_ADMIN_URL_PREFIX') || '#/',
   //PAGE_TRANSITIONS: JSON.parse(getEnv('PAGE_TRANSITIONS')) || false,
   PAGE_TRANSITIONS: false,
+
+  APP_VERSION: getEnv('VITE_APP_VERSION') || '1.0.0',
+  BUILD_TIME: getEnv('VITE_BUILD_TIME') || new Date().toISOString(),
+  IS_ELECTRON: getEnv('VITE_IS_ELECTRON') || false,
+  PLATFORM: getEnv('VITE_PLATFORM') || "unknown",
+  IS_WINDOWS: getEnv('VITE_IS_WINDOWS') || false,
+  IS_MAC: getEnv('VITE_IS_MAC') || false,
+  IS_LINUX: getEnv('VITE_IS_LINUX') || false,
+  PLATFORM_TYPE: getEnv('VITE_PLATFORM_TYPE') || "browser",
 };
 
 const panel = {

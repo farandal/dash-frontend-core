@@ -1,5 +1,8 @@
 {
   "name": "dash-frontend",
+  "description": "Frontend application for the DASH platform",
+  "author": "Francisco Aranda <farandal@gmail.com>",
+  "license": "MIT",
   "private": true,
   "version": "1.0.0",
   "main": "apps/dash/dist-electron/main/index.js",
@@ -12,10 +15,14 @@
     "dev": "cd apps/dash && yarn dev",
     "dev-win": "cd apps/dash && yarn dev-win",
     "build": "turbo build --filter=!./apps/demo --filter=!./packages/react-18-beautiful-dnd-grid",
+    "build-win": "cd apps/dash && yarn build-win",
     "android": "NODE_ENV=staging turbo build && cap run android",
     "android-prod": "NODE_ENV=production turbo build && cap run android",
-    "electron-dev": "vite build -c electron.vite.config.ts && cross-env NODE_ENV=development BUILD_ENV=dev concurrently \"cd apps/dash && yarn dev\" \"wait-on http://localhost:3006 && electron .\"",
-    "electron-prod": "cross-env NODE_ENV=production BUILD_ENV=production  && yarn build && vite build -c electron.vite.config.ts && electron-builder",
+    "electron-icons": "electron-icon-builder --input=./apps/dash/src/assets/logo.png --output=./",
+    "electron-dev": "vite build -c electron.vite.config.ts && cross-env NODE_ENV=development BUILD_ENV=dev concurrently \"cd apps/dash && yarn -silent dev &\" \"wait-on http://127.0.0.1:3006 && electron .\"",
+    "electron-dev-win": "vite build -c electron.vite.config.ts && cross-env NODE_ENV=development BUILD_ENV=dev concurrently --kill-others --raw \"cd apps/dash && yarn dev-win\" \"wait-on -v http://127.0.0.1:3006 && electron .\"",
+    "electron-prod": "cross-env NODE_ENV=production BUILD_ENV=prod yarn build && vite build -c electron.vite.config.ts && electron-builder --config electron-builder.config.js",
+    "electron-prod-win": "electron-icon-builder --input=./apps/dash/src/assets/logo.png --output=./ && cross-env NODE_ENV=production BUILD_ENV=prod yarn build-win && vite build -c electron.vite.config.ts && electron-builder --config electron-builder.config.js",
     "electron-preview": "vite preview",
     "electron-pree2e": "vite build --mode=test",
     "resources": "chmod +x ./resources.sh && ./resources.sh",
@@ -61,8 +68,10 @@
     "depcheck": "latest",
     "electron": "^35.1.5",
     "electron-builder": "^26.0.12",
+    "electron-icon-builder": "^2.0.1",
     "electron-log": "^5.3.3",
     "husky": "latest",
+    "mkdirp": "^3.0.1",
     "npm-run-all": "latest",
     "postcss": "latest",
     "prettier": "latest",
@@ -91,14 +100,19 @@
       "resources/sounds",
       "apps/dash/dist/**",
       "apps/dash/dist-electron/**",
-      "apps/dash/electron-config.prod.yaml"
+      "apps/dash/electron-config.prod.yaml",
+      "../dash-python-service/service/ws_service.exe"
     ]
   },
   "debug": {
     "env": {
-      "VITE_DEV_SERVER_URL": "http://127.0.0.1:7777/",
+      "VITE_DEV_SERVER_URL": "http://127.0.0.1:3007/",
       "BUILD_ENV": "DEV",
       "VITE_PROJECT_PATH": "apps/dash"
     }
+  },
+  "resolutions": {
+    "react": "19.1.0",
+    "react-dom": "19.1.0"
   }
 }
