@@ -126,7 +126,7 @@ const Profile: FC = (_props) => {
 					className='dash-form'
 				>
                    
-					<Card className='dash-card-content dash-card-profile'>
+					<Card className='dash-card-content dash-module dash-card-profile'>
 						<Grid container>
 							<Grid item xs={12} md={4}>
 								<CardContent

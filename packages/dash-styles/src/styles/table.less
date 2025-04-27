@@ -6,10 +6,10 @@
         font-weight: 600;
         font-size: 14px;
         line-height: 22px;
-        color: var(--text-color, @text-color);
+        color: var(--highlight-color, @highlight-color);
     }
     svg{
-        color: var(--text-color, @text-color) !important;
+        color: var(--highlight-color, @highlight-color) !important;
     }
 }
 
@@ -40,6 +40,9 @@
   padding: 2px 8px;
 }
 
+.MuiTableRow-hover:hover {
+  background-color: var('--primary-contrast-color', @primary-contrast-color);
+}
 
 /* Stikcy header */
 
@@ -132,7 +135,7 @@
           width: 18px !important;
       }
       &:hover{
-          
+
         color: var('--text-color',@text-color);
           .MuiButton-startIcon{
             color: var('--text-color',@text-color);

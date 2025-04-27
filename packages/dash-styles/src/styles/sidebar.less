@@ -209,13 +209,13 @@
       > .MuiButtonBase-root {
           > .MuiListItemIcon-root,
           > .MuiListItemText-root .MuiTypography-root {
-              color: var(--text-color, @text-color);
+              color: var(--highlight-color, @highlight-color);
           }
           > &:hover {
-              color: var(--highlight-color, @highlight-color);
+              color: var(--secondary-color, @secondary-color);
               .MuiListItemIcon-root,
               .MuiListItemText-root .MuiTypography-root {
-                  color: var(--highlight-color, @highlight-color);
+                  color: var(--secondary-color, @secondary-color);
               }
           }
       }

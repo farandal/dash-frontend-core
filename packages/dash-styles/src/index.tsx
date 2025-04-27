@@ -136,7 +136,16 @@ export const defaultOptions = () => {
           }
         }
       },
- 
+
+      MuiPaper: {
+        styleOverrides: {
+          root: {
+
+              marginBottom: 8
+
+          }
+        }
+      },
     }
   }
 };
