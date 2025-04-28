@@ -12,3 +12,4 @@ yarn.lock
 .gitmodules
 release
 icons
+apps/dash

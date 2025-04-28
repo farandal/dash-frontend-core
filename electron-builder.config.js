@@ -67,11 +67,21 @@ module.exports = {
     {
       from: path.resolve(__dirname, '../dash-python-service/service/'),
       to: 'python-service',
-      filter: ['**/*.exe', '**/*.yaml']
+      filter: ['**/*.exe']
+    },
+    {
+      from: path.resolve(__dirname, '../dash-python-service/'),
+      to: 'python-service', //config.prod.yaml
+      filter: ['*.yaml']
     },
     {
         from: path.resolve(__dirname, 'apps/dash/electron-config.prod.yaml'),
         to: './',
+      },
+      {
+        from: path.resolve(__dirname, 'icons'),
+        to: './icons',
       }
+      
   ],
 };

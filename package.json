@@ -4,7 +4,7 @@
   "author": "Francisco Aranda <farandal@gmail.com>",
   "license": "MIT",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.0.3",
   "main": "apps/dash/dist-electron/main/index.js",
   "workspaces": [
     "apps/*",
@@ -87,7 +87,8 @@
     "npm": ">=9.6.7"
   },
   "permissions": [
-    "audio"
+    "audio",
+    "notifications"
   ],
   "build": {
     "asar": false,

@@ -224,7 +224,7 @@ const DASHAdminApp: React.FC<IDASHAdmin<unknown, unknown, unknown, unknown, unkn
   /** When the authcontext changes, update the resources; this is necessary to render different menus, if the user log out, then log in with a different role. */
   React.useEffect(() => {
     //console.log("calculateResources on auth")
-    calculateResources();
+    if(authenticated && user?.id) calculateResources();
   }, [authenticated]);
 
   /** When the redux resources are updated, store them in an ES6 Class, in order to be accessible in the data-provider without redux */
@@ -240,7 +240,7 @@ const DASHAdminApp: React.FC<IDASHAdmin<unknown, unknown, unknown, unknown, unkn
    * AuthContext from RA can't be used because this happens before RA initialization
    */
   React.useEffect(() => {
-    if (authenticated && user && resources) {
+    if (authenticated && user?.id && resources) {
       if (!children) {
         try {
           if (user?.tenant_id) {
@@ -289,7 +289,7 @@ const DASHAdminApp: React.FC<IDASHAdmin<unknown, unknown, unknown, unknown, unkn
         {_resources.map((parsedResource) => parsedResource)}
 
         <CustomRoutes>
-          {authenticated && customProfilePage !== false ? (
+          {(authenticated && user?.id) && customProfilePage !== false ? (
             <Route
               key={'/profile'}
               path='/profile'
@@ -297,17 +297,17 @@ const DASHAdminApp: React.FC<IDASHAdmin<unknown, unknown, unknown, unknown, unkn
             />
           ) : <></>}
           
-          {authenticated ? getCustomAuthRoutes()
+          {(authenticated && user?.id) && getCustomAuthRoutes()
           .filter(route => !route.props['data-layout']?.toString().includes('no-layout'))
           .map((route, index) => {
             //console.log('Auth Route Key:', route.props.get)
             return <Route key={`auth-route-${index}`} {...route.props} />
-          }) : <></>}
+          })}
 
       
             {getCustomRoutes()
             .filter(route => {
-                if (authenticated && getCustomAuthRoutes().some(authRoute => authRoute.props.path === route.props.path)) {
+                if ((authenticated && user?.id) && getCustomAuthRoutes().some(authRoute => authRoute.props.path === route.props.path)) {
                 return false
                 }
                 return !route.props['data-layout']?.toString().includes('no-layout')
@@ -346,7 +346,7 @@ const DASHAdminApp: React.FC<IDASHAdmin<unknown, unknown, unknown, unknown, unkn
           )}
          
 
-         {authenticated ? getCustomAuthRoutes()
+         {authenticated && user?.id ? getCustomAuthRoutes()
           .filter(route => route.props['data-layout']?.toString().includes('no-layout'))
           .map((route, index) => {
             //console.log('No layout Auth Route Key:', route.props.get)
@@ -355,7 +355,7 @@ const DASHAdminApp: React.FC<IDASHAdmin<unknown, unknown, unknown, unknown, unkn
 
             {getCustomRoutes()
             .filter(route => {
-                if (authenticated && getCustomAuthRoutes().some(authRoute => authRoute.props.path === route.props.path)) {
+                if (authenticated && user?.id && getCustomAuthRoutes().some(authRoute => authRoute.props.path === route.props.path)) {
                 return false
                 }
                 return route.props['data-layout']?.toString().includes('no-layout')

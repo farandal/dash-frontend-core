@@ -25,12 +25,12 @@ const AvatarComponent: React.FC<{}> = ({ ...props }) => {
     const logout = useLogout();
     const handleLogout = (e: React.MouseEvent) => {
         // TODO! there should be a service or another method where this needs to be performed.
-        e.preventDefault();
+        //e.preventDefault();
         /*removeCookie('token');
         localStorage.clear();
         localStorage.setItem('authenticated', 'false');
         localStorage.setItem('roles', 'guest');*/
-
+ 
          dispatch(
                                 DASH_REDUX_ACTIONS.updateAuth({
                                     user: null,
@@ -39,7 +39,7 @@ const AvatarComponent: React.FC<{}> = ({ ...props }) => {
                                 }),
                             );
 
-        logout();
+        logout({redirectTo: '/login'});
     };
 
     const [webView,setWebView] = useState<boolean>(false);
