@@ -10,7 +10,8 @@ module.exports = {
   productName: dashPackage.name,
   asar: false,
   directories: {
-    output: 'release/'
+    output: 'release/',
+    buildResources: 'icons' 
   },
   files: [
     "electron/**/*",
@@ -27,6 +28,14 @@ module.exports = {
       {
         target: "nsis",
         arch: ["x64"]
+      },
+      {
+        target: 'dmg',
+        arch: ['x64', 'arm64']
+      },
+      {
+        target: 'zip',
+        arch: ['x64', 'arm64']
       }
     ]
   },
@@ -35,10 +44,12 @@ module.exports = {
   nsis: {
     oneClick: false,
     allowToChangeInstallationDirectory: true,
-    installerIcon: path.resolve(__dirname, './icons/win/icon.ico'),
-    uninstallerIcon: path.resolve(__dirname, './icons/win/icon.ico'),
-    installerHeaderIcon: path.resolve(__dirname, './icons/win/icon.ico'),
-
+   //installerIcon: path.resolve(__dirname, './icons/win/icon.ico'),
+    //uninstallerIcon: path.resolve(__dirname, './icons/win/icon.ico'),
+    //installerHeaderIcon: path.resolve(__dirname, './icons/win/icon.ico'),
+    installerIcon: 'icons/win/icon.ico', // Simplified path
+    uninstallerIcon: 'icons/win/icon.ico', // Simplified path
+    installerHeaderIcon: 'icons/win/icon.ico', // Simplified path
       // Add these properties for appearance customization
       differentialPackage: false,
       
@@ -56,32 +67,59 @@ module.exports = {
   },
   
   mac: {
-    icon: path.resolve(__dirname, './icons/mac/icon.icns'),
-    category: 'public.app-category.business'
+    icon: 'icons/mac/icon.icns',
+    category: 'public.app-category.business',
+    target: [
+      {
+        target: 'zip',
+        arch: ['arm64', 'x64']  // Support both architectures
+      }
+    ],
+    // Enable hardened runtime (required for notarization)
+    hardenedRuntime: true,
+    // Disable Gatekeeper assessment (for development)
+    gatekeeperAssess: false,
+    // Add entitlements
+    entitlements: 'entitlements.mac.plist',
+    entitlementsInherit: 'entitlements.mac.plist',
+    // Disable notarization for now (enable later with proper credentials)
+    notarize: false,
+    // Allow executing binaries from Resources folder
+    binaries: ['Contents/Resources/python-service/ws_service']
   },
   linux: {
-    icon: path.resolve(__dirname, './icons/png/'),
+   // icon: path.resolve(__dirname, './icons/png/'),
+   icon: 'icons/png/',
     category: 'Office'
   },
+ // Use asarUnpack for files that need to be accessed directly
+ asarUnpack: [
+    "sounds/**/*"
+  ],
+  
   extraResources: [
+    // Python service executables - platform specific
     {
-      from: path.resolve(__dirname, '../dash-python-service/service/'),
+      from: path.resolve(__dirname, '../dash-python-service/service'),
       to: 'python-service',
-      filter: ['**/*.exe']
+      filter: process.platform === 'win32' ? ['**/*.exe'] : ['**/ws_service']
     },
+    // YAML configuration files
     {
-      from: path.resolve(__dirname, '../dash-python-service/'),
-      to: 'python-service', //config.prod.yaml
+      from: path.resolve(__dirname, '../dash-python-service'),
+      to: 'python-service',
       filter: ['*.yaml']
     },
+    // Icons for runtime use
     {
-        from: path.resolve(__dirname, 'apps/dash/electron-config.prod.yaml'),
+      from: path.resolve(__dirname, 'icons'),
+      to: 'icons'
+    },
+    {
+        from: path.resolve(__dirname, 'apps/dash/'),
         to: './',
-      },
-      {
-        from: path.resolve(__dirname, 'icons'),
-        to: './icons',
-      }
-      
+        filter: ['*.yaml']
+    },
   ],
+  
 };

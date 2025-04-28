@@ -23,23 +23,20 @@ const AvatarComponent: React.FC<{}> = ({ ...props }) => {
     const dispatch = useDispatch();
     const redirect = useRedirect();
     const logout = useLogout();
-    const handleLogout = (e: React.MouseEvent) => {
-        // TODO! there should be a service or another method where this needs to be performed.
-        //e.preventDefault();
-        /*removeCookie('token');
-        localStorage.clear();
-        localStorage.setItem('authenticated', 'false');
-        localStorage.setItem('roles', 'guest');*/
- 
-         dispatch(
-                                DASH_REDUX_ACTIONS.updateAuth({
-                                    user: null,
-                                    authenticated: false,
-                                    auth: null,
-                                }),
-                            );
+    const handleLogout = async (e: React.MouseEvent) => {
+       
+       await logout({}, '/login',true);    
+       
 
-        logout({redirectTo: '/login'});
+       localStorage.clear();
+       dispatch(
+                               DASH_REDUX_ACTIONS.updateAuth({
+                                   user: null,
+                                   authenticated: false,
+                                   auth: null,
+                               }),
+                           );   
+                         
     };
 
     const [webView,setWebView] = useState<boolean>(false);

@@ -52,14 +52,14 @@ const system = {
   //PAGE_TRANSITIONS: JSON.parse(getEnv('PAGE_TRANSITIONS')) || false,
   PAGE_TRANSITIONS: false,
 
-  APP_VERSION: getEnv('VITE_APP_VERSION') || '1.0.0',
-  BUILD_TIME: getEnv('VITE_BUILD_TIME') || new Date().toISOString(),
-  IS_ELECTRON: getEnv('VITE_IS_ELECTRON') || false,
-  PLATFORM: getEnv('VITE_PLATFORM') || "unknown",
-  IS_WINDOWS: getEnv('VITE_IS_WINDOWS') || false,
-  IS_MAC: getEnv('VITE_IS_MAC') || false,
-  IS_LINUX: getEnv('VITE_IS_LINUX') || false,
-  PLATFORM_TYPE: getEnv('VITE_PLATFORM_TYPE') || "browser",
+  APP_VERSION: getEnv('APP_VERSION') || '1.0.0',
+  BUILD_TIME: getEnv('BUILD_TIME') || new Date().toISOString(),
+  IS_ELECTRON: JSON.parse(getEnv('IS_ELECTRON')) || false,
+  PLATFORM: getEnv('PLATFORM') || "unknown",
+  IS_WINDOWS: JSON.parse(getEnv('IS_WINDOWS')) || false,
+  IS_MAC: JSON.parse(getEnv('IS_MAC')) || false,
+  IS_LINUX: JSON.parse(getEnv('IS_LINUX')) || false,
+  PLATFORM_TYPE: getEnv('PLATFORM_TYPE') || "browser",
 };
 
 const panel = {
