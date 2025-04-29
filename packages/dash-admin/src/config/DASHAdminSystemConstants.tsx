@@ -20,15 +20,17 @@ const getEnvironmentVariable = (environmentVariable: string): string => {
 
 
 export const getEnv = (key: string) => {
-  /* @ts-ignore Expected access to process */
-  const PREFIX = process.env.ENV_PREFIX || process.env.NEXT_PUBLIC_ENV_PREFIX || process.env.VITE_ENV_PREFIX || process.env.REACT_ENV_PREFIX || '';
+  
+  // @ts-ignore Expected access to process 
+  const PREFIX = process.env.ENV_PREFIX || process.env.NEXT_PUBLIC_ENV_PREFIX || process.env.VITE_ENV_PREFIX || process.env.REACT_ENV_PREFIX || 'VITE_';
   //console.log('GET ENV', PREFIX, key);
 
   if (PREFIX === 'NEXT_PUBLIC_') {
     return getEnvironmentVariable(PREFIX + key);
   }
-  /* @ts-ignore Expected access to process */
+  // @ts-ignore Expected access to process 
   return process.env[PREFIX + key] || null;
+  
 };
 
 const system = {

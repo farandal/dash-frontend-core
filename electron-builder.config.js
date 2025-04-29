@@ -1,6 +1,8 @@
 const path = require('path');
 const dashPackage = require('./apps/dash/package.json');
 
+const platform = process.platform;
+
 /**
  * @type {import('electron-builder').Configuration}
  * @see https://www.electron.build/configuration/configuration
@@ -25,18 +27,18 @@ module.exports = {
   win: {
     icon: path.resolve(__dirname, './icons/win/icon.ico'),
     target: [
-      {
-        target: "nsis",
-        arch: ["x64"]
-      },
-      {
+      ...(platform === 'win32' ? [{
+        target: 'nsis',
+        arch: ['x64']
+      }] : []),
+      ...(platform === 'darwin' ? [{
         target: 'dmg',
         arch: ['x64', 'arm64']
-      },
-      {
+      }] : []),
+      /*{
         target: 'zip',
         arch: ['x64', 'arm64']
-      }
+      }*/
     ]
   },
   
