@@ -175,16 +175,10 @@ const Profile: FC = (_props) => {
 											urlFile: URL.createObjectURL(file),
 										});
 									}}  />
-									<Typography
-										variant="h2"
-										style={{
-											display: 'block',
-											textAlign: 'center',
-											fontSize: '20px',
-											fontWeight: 'bold',
-											
-										}}
-									>
+									<Typography className='dash-profile-name' variant='h2'>
+										
+										
+									
 										{`${identity?.name || ''}`}
 									</Typography>
 									<Typography

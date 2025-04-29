@@ -102,9 +102,10 @@ const AppSidebarMaterial = (props) => {
 		
 					<div className={'sidebar-logo'}>
 						{navExpanded && navSize === "large" ? 
-							logo
+							<img src={logo} alt={"logo" }/>
 						 : 
-							logoSmall
+                            <img src={logoSmall} alt={"logo" }/>
+							
 						}
 					</div>
 					<IconButton color='secondary' onClick={toggleDrawer} >

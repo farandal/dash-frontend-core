@@ -111,13 +111,7 @@ export const defaultOptions = () => {
           }
         }
       },
-      MuiBox: {
-        styleOverrides: {
-          root: {
-            display: 'flex'
-          }
-        }
-      },
+
       RaReferenceField: {
         styleOverrides: {
           root: {
@@ -136,16 +130,45 @@ export const defaultOptions = () => {
           }
         }
       },
-
-      MuiPaper: {
+      MuiInputAdornment: {
         styleOverrides: {
           root: {
-
-              marginBottom: 8
-
+            '& svg': {
+              color: getCSSVar('--highlight-color')
+            }
           }
         }
       },
+      MuiPaper: {
+        styleOverrides: {
+          root: {
+              marginBottom: 8
+          }
+        }
+      },
+      MuiToolbar: {
+        styleOverrides: {
+          root: {
+            display: 'block !important'
+          }
+        }
+      },
+      MuiGrid: {
+        styleOverrides: {
+          root: {
+            display: 'block !important'
+          }
+        }
+      },
+      MuiBox: {
+        styleOverrides: {
+          root: {
+            display: 'flex !important'
+          }
+        }
+      },
+
+
     }
   }
 };
