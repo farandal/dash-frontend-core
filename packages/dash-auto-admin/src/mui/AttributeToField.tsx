@@ -368,7 +368,7 @@ export const AttributeToField = (
 					...(record && { record: record }),
 					method,
 					attribute: input,
-					key: index,
+					//key: index,
 					label: input.label,
 					sortable: sortableField,
 					source: input.listAttribute ? input.listAttribute : input.attribute,
@@ -376,7 +376,7 @@ export const AttributeToField = (
 				}
 
 				const componentProps = {
-					key: index,
+					//key: index,
 					...(record && { record: record }),
 					sortable: sortableField,
 					...(sortableField && {
@@ -409,7 +409,7 @@ export const AttributeToField = (
             ...(record && { record: record }),
             method: method,
             attribute: input,
-            key: index,
+            //key: index,
             label: input.label,
             sortable: sortableField,
             source: input.listAttribute ? input.listAttribute : input.attribute,
@@ -417,7 +417,7 @@ export const AttributeToField = (
         }		
         
         const componentProps = {
-			key: index,
+			//key: index,
 			...(record && { record: record }),
             sortable: sortableField,
 			...(sortableField && {
@@ -715,7 +715,7 @@ const textFieldProps = {
     ...(sortableField && {
         sortBy: input.listAttribute || input.attribute,
     }),
-    key: index,
+    //key: index,
     label: input.label,
     source: input.listAttribute ? input.listAttribute : input.attribute,
     /*options={input.fieldProps}*/
@@ -733,7 +733,7 @@ const textFieldProps = {
 			{...(record && { record: record })}
 			method={method}
 			attribute={input}
-			key={index}
+			//key={index}
             resourceConfig={resourceConfig}
 		>
 			<TextField

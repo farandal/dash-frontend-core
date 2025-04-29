@@ -69,34 +69,23 @@ export const ListViewButton:FC<IToolbarButton> = (props) => {
 export const ListEditButton:FC<IToolbarButton> = (props) => {
 	const { resourceConfig } = props;
 	let Component = EditButton;
-	if (!resourceConfig) return <Component/>;
+	
+
+    if (!resourceConfig) {
+        return <Component />;
+    }
+
+
 	if ( resourceConfig.listEditButton) {
 		if ( resourceConfig.listEditButton.component ) Component = resourceConfig.listEditButton.component;
 		if (resourceConfig.listEditButton.enabled === false || resourceConfig?.edit === false) return <></>;
 	}
 
-	/*const btnProps = { 
-		...resourceConfig.listEditButton?.props || {}, 
-		...(resourceConfig.drawer === true && resourceConfig.drawerOptions?.edit !== false ? {
-			mode: 'edit',
-			navigation: 'virtualhash',
-			navigate: (record) => {
-				return 'inline/' + record.id + '/edit';
-			},
-		} : {}),
-	};*/
-
-    const btnProps = { 
-        mode: 'edit',
-        resourceConfig: resourceConfig,
-		...resourceConfig.listViewButton?.props || {},
-    }
-    
 	if (resourceConfig.drawer === true && resourceConfig.drawerOptions?.edit !== false) {
-		return <DashResourceButton {...btnProps} ><Component  /></DashResourceButton>;
+		return <DashResourceButton mode='edit' resourceConfig={resourceConfig} {...resourceConfig.listViewButton?.props || {}} ><Component  /></DashResourceButton>;
 	}
 
-	return <Component {...btnProps} />;
+	return <Component />;
 };
 
 /**

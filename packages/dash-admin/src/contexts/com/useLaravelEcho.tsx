@@ -57,7 +57,7 @@ const useLaravelEcho = ({
     //userId,
     socketId,
     pingInterval = 30000, // Default ping interval: 30 seconds
-    debug = true,
+    debug = false,
     enabled = false
 }: {
     type: 'public' | 'private';

@@ -146,20 +146,21 @@ export const defaultOptions = () => {
           }
         }
       },
-      MuiToolbar: {
+      /*MuiToolbar: {
         styleOverrides: {
           root: {
-            display: 'block !important'
+            display: 'block'
           }
         }
       },
       MuiGrid: {
         styleOverrides: {
           root: {
-            display: 'block !important'
+            display: 'block'
           }
         }
-      },
+      },*/
+
       MuiBox: {
         styleOverrides: {
           root: {
@@ -176,7 +177,7 @@ export const defaultOptions = () => {
 export const appTheme = (muiThemeOptions?: any) => {
 
   const themeType = document.documentElement.getAttribute('data-theme') || "light";
-  console.log("refreshing appTheme", themeType)
+
 
   const theme = muiThemeOptions ? deepmerge(deepmerge(defaultTheme, {
     mode: themeType,
@@ -188,8 +189,6 @@ export const appTheme = (muiThemeOptions?: any) => {
     ...defaultOptions(),
 
   });
-
-  console.log("THEME", theme);
 
   return theme;
 

@@ -85,7 +85,7 @@ const RADashComponent = () => {
         
             if (!identityLoading && identity) {
               if(!authContext.user || !authContext.authenticated) {
-                    console.log('dispatching dash user to redux store:', identity);
+                    //console.log('dispatching dash user to redux store:', identity);
                     dispatch(
                         DASH_REDUX_ACTIONS.updateAuth({
                             user: identity,

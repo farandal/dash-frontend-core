@@ -105,9 +105,9 @@ const AutoDataGrid: React.FC<IAutoDataGrid> = ({
                     .map((attribute, idx) => AttributeToField('list', resourceConfig, attribute, idx))
                 }
                 {/*<Button onClick={(e)=>{ console.log(record);  }}>Restaurar</Button>*/}
-                <ListViewButton resourceConfig={resourceConfig} />
-                <ListEditButton resourceConfig={resourceConfig} />
-                <ListDeleteButton resourceConfig={resourceConfig} />
+                <ListViewButton key={'list_view_btn'} resourceConfig={resourceConfig} />
+                <ListEditButton key={'list_edit_btn'} resourceConfig={resourceConfig} />
+                <ListDeleteButton key={'list_delete_btn'} resourceConfig={resourceConfig} />
                 {resourceConfig?.customListButtons &&
                     resourceConfig.customListButtons.map((customButtonConfig, idx) => (
                         <customButtonConfig.component

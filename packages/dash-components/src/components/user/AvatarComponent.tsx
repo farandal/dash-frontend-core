@@ -43,10 +43,10 @@ const AvatarComponent: React.FC<{}> = ({ ...props }) => {
 
     useEffect(() => {
         if(document.body.classList.contains('webview')) {
-            console.log("webview true");
+           
             setWebView(true)
         } else {
-            console.log("webview false");
+       
             setWebView(false)
         }
 

@@ -81,7 +81,7 @@ export const DashThemeProvider: React.FC<DashThemeProviderProps> = ({ extendedOp
           console.warn('Could not access stylesheet:', e);
         }
       }
-      console.log("cssVariables",cssVariables);
+     
       setCssVariablesCache(cssVariables);
       return cssVariables;
     };
