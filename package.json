@@ -19,7 +19,7 @@
     "android": "NODE_ENV=staging turbo build && cap run android",
     "android-prod": "NODE_ENV=production turbo build && cap run android",
     "electron-icons": "electron-icon-builder --input=./apps/dash/src/assets/logo.png --output=./",
-    "electron-dev": "vite build -c electron.vite.config.ts && cross-env NODE_ENV=development BUILD_ENV=dev concurrently \"cd apps/dash && yarn -silent dev &\" \"wait-on http://127.0.0.1:3006 && electron .\"",
+    "electron-dev": "vite build -c electron.vite.config.ts && cross-env NODE_ENV=development BUILD_ENV=dev concurrently \"cd apps/dash && yarn dev &\" \"wait-on http://127.0.0.1:3006 && electron .\"",
     "electron-dev-win": "vite build -c electron.vite.config.ts && cross-env NODE_ENV=development BUILD_ENV=dev concurrently --kill-others --raw \"cd apps/dash && yarn dev-win\" \"wait-on -v http://127.0.0.1:3006 && electron .\"",
     "electron-prod": "cross-env NODE_ENV=production BUILD_ENV=prod yarn build && vite build -c electron.vite.config.ts && electron-builder --config electron-builder.config.js",
     "electron-prod-win": "electron-icon-builder --input=./apps/dash/src/assets/logo.png --output=./ && cross-env NODE_ENV=production BUILD_ENV=prod yarn build-win && vite build -c electron.vite.config.ts && electron-builder --config electron-builder.config.js",
