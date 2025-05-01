@@ -4,7 +4,7 @@
   "author": "Francisco Aranda <farandal@gmail.com>",
   "license": "MIT",
   "private": true,
-  "version": "1.0.4",
+  "version": "1.0.6",
   "main": "apps/dash/dist-electron/main/index.js",
   "workspaces": [
     "apps/*",
@@ -15,8 +15,8 @@
     "dev": "cd apps/dash && yarn dev",
     "dev:prod": "cd apps/dash && yarn dev:prod",
     "dev-win": "cd apps/dash && yarn dev-win",
-    "build": "rm -rf node_modules/.turbo node_modules/.vite && turbo build --filter=!./packages/react-18-beautiful-dnd-grid --force",
-    "build-win": "cd apps/dash && yarn build-win",
+    "build": "rimraf node_modules/.turbo node_modules/.vite && turbo build --filter=!./packages/react-18-beautiful-dnd-grid --force",
+    "build-win": "rimraf node_modules/.turbo node_modules/.vite && turbo build --filter=!./packages/react-18-beautiful-dnd-grid --force",    
     "android": "NODE_ENV=staging turbo build && cap run android",
     "android-prod": "NODE_ENV=production turbo build && cap run android",
     "electron-icons": "electron-icon-builder --input=./apps/dash/src/assets/logo.png --output=./",
@@ -25,7 +25,7 @@
     "electron-dev:prod": "vite build -c electron.vite.config.ts && cross-env NODE_ENV=development BUILD_ENV=prod concurrently \"cd apps/dash && yarn dev:desktop:prod &\" \"wait-on http://127.0.0.1:3006 && electron .\"",
    
 
-    "electron-prod": "electron-icon-builder --input=./apps/dash/src/assets/logo.png --output=./ && cross-env NODE_ENV=production BUILD_ENV=prod IS_ELECTRON=true yarn build && cross-env BUILD_ENV=prod IS_ELECTRON=true vite build -c electron.vite.config.ts && electron-builder --config electron-builder.config.js",   
+    "electron-prod": "electron-icon-builder --input=./apps/dash/src/assets/logo.png --output=./  && cross-env BUILD_ENV=prod IS_ELECTRON=true vite build -c electron.vite.config.ts && cross-env NODE_ENV=production BUILD_ENV=prod IS_ELECTRON=true yarn build &&  electron-builder --config electron-builder.config.js",   
 
     "electron-dev-win": "vite build -c electron.vite.config.ts && cross-env NODE_ENV=development BUILD_ENV=dev concurrently --kill-others --raw \"cd apps/dash && yarn dev-win\" \"wait-on -v http://127.0.0.1:3006 && electron .\"",
     "electron-prod-win": "electron-icon-builder --input=./apps/dash/src/assets/logo.png --output=./ && yarn build-win &&  cross-env NODE_ENV=production BUILD_ENV=prod IS_ELECTRON=true vite build -c electron.vite.config.ts && electron-builder --config electron-builder.config.js",
