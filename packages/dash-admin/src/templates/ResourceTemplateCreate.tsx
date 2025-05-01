@@ -31,7 +31,7 @@ export const ResourceTemplateCreate: FC<IResourceTemplateController> = (props) =
 
 	const onCreate = (data: any) => {
 
-        debugger;
+
 
 		if (_showNotifyAfterSubmit) {
 			notify('Recurso Creado', { type: 'success' });
