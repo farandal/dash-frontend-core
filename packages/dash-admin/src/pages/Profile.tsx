@@ -128,7 +128,7 @@ const Profile: FC = (_props) => {
                    
 					<Card className='dash-card-content dash-module dash-card-profile'>
 						<Grid container>
-							<Grid item xs={12} md={4}>
+							<Grid  md={4}>
 								<CardContent
 									style={{
 										height: '100%',
@@ -194,7 +194,7 @@ const Profile: FC = (_props) => {
 									</Typography>
 								</CardContent>
 							</Grid>
-							<Grid item xs={12} md={4}>
+							<Grid  md={4}>
 								<CardHeader style={{ padding: '16px 25px 0' }} title='Info' />
 								<CardContent style={{ padding: '25px' }}>
 									<div className='dash-mb-4'>
@@ -232,7 +232,7 @@ const Profile: FC = (_props) => {
 									</Button>
 								</CardContent>
 							</Grid>
-							<Grid item xs={12} md={4}>
+							<Grid  md={4}>
 								<CardHeader
 									style={{ padding: '16px 25px 0' }}
 									title='Contraseñas'

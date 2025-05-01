@@ -53,7 +53,7 @@ export const echoManager = EchoClientManager.getInstance();
 const useLaravelEcho = ({
     type,
     channel,
-    events,
+    //events,
     //userId,
     socketId,
     pingInterval = 30000, // Default ping interval: 30 seconds
@@ -62,7 +62,7 @@ const useLaravelEcho = ({
 }: {
     type: 'public' | 'private';
     channel: string;
-    events: { [key: string]: (e: any) => any };
+    //events: { [key: string]: (e: any) => any };
     //userId?: number;
     socketId?: string;
     pingInterval?: number;
@@ -71,7 +71,7 @@ const useLaravelEcho = ({
 }) => {
     const [echoChannel, setEchoChannel] = useState<Channel | null>(null);
     const [laravelEchoClient, setLaravelEchoClient] = useState<Echo<"pusher"> | null>(null);
-    const [currentEvents, setCurrentEvents] = useState<string[]>([]);
+    const [lastEvent, setLastEvent] = useState<{ event: string, data: any ,channel?:string}>(null);
     const [isConnected, setIsConnected] = useState(false);
     const prevChannel = usePrevious(channel);
     const constants = useContext(ConstantsContext);
@@ -143,7 +143,7 @@ const useLaravelEcho = ({
         log('Setting Echo channel to null...');
         setEchoChannel(null);
         log('Clearing current events...');
-        setCurrentEvents([]);
+        setLastEvent(null);
         log('Setting connection status to false...');
         setIsConnected(false);
         log('Removing client from Echo manager...');
@@ -240,9 +240,10 @@ const useLaravelEcho = ({
                 if (echo.connector && echo.connector.pusher) {
                     echo.connector.pusher.bind_global((eventName, data) => {
                         log(`Global event received: ${eventName}`, data);
-                        if (typeof events[eventName] === 'function') {
+                        setLastEvent({ event: eventName, data });
+                        /*if (typeof events[eventName] === 'function') {
                             events[eventName](data);
-                        }
+                        }*/
                     });
 
                     echo.connector.pusher.connection.bind('connected', () => {
@@ -308,7 +309,7 @@ const useLaravelEcho = ({
             log(`Leaving previous channel: ${prevChannel}`);
             laravelEchoClient.leaveChannel(prevChannel);
             setEchoChannel(null);
-            setCurrentEvents([]);
+            //setCurrentEvents([]);
         }
 
         if (!echoChannel || channel !== prevChannel) {
@@ -368,25 +369,29 @@ const useLaravelEcho = ({
     }, [laravelEchoClient, isConnected, debug]);
 
     const addListener = useCallback((eventName: string, callback: (data: any) => void) => {
+      
         if (!echoChannel) return;
-
-        const formattedEventName = eventName.startsWith('.') ? eventName : `.${eventName}`;
+        console.log(`Adding listener for event: ${eventName}`);
+        //const formattedEventName = eventName.startsWith('.') ? eventName : `.${eventName}`;
+        const formattedEventName = eventName;
         echoChannel.listen(formattedEventName, callback);
-        setCurrentEvents(prev => [...prev, eventName]);
+        //setCurrentEvents(prev => [...prev, eventName]);
     }, [echoChannel]);
 
     const removeListener = useCallback((eventName: string) => {
+      
         if (!echoChannel) return;
-
-        const formattedEventName = eventName.startsWith('.') ? eventName : `.${eventName}`;
+        console.log(`Adding listener for event: ${eventName}`);
+        //const formattedEventName = eventName.startsWith('.') ? eventName : `.${eventName}`;
+        const formattedEventName = eventName;
         echoChannel.stopListening(formattedEventName);
-        setCurrentEvents(prev => prev.filter(e => e !== eventName));
+        //setCurrentEvents(prev => prev.filter(e => e !== eventName));
     }, [echoChannel]);
 
     return {
         echoChannel,
         isConnected,
-        currentEvents,
+        lastEvent,
         ping: pingConnection,
         addListener,
         removeListener

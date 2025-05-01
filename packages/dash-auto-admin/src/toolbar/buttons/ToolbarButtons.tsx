@@ -38,8 +38,9 @@ const checkIfModeEnablesButton = (modes?:IAutoGridButton['modes'], mode?:IToolba
  * @returns The rendered toolbar save button or `null` if the button should not be rendered.
  */
 export const ToolbarSaveButton:FC<IToolbarButton> = (props) => {
+
 	const { resourceConfig, mode, onError,onSubmit } = props;
-    debugger;
+
 	if (!resourceConfig) return <SaveButton/>;
 	if (resourceConfig.toolbarSaveButton) {
 		if (resourceConfig.toolbarSaveButton?.enabled) {

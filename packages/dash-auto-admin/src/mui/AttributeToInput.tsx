@@ -683,7 +683,7 @@ const AttributeToInput = (
         );
     }
     const textFieldProps = {
-        key: index,
+        //key: index,
         label: input.label,
         source: input.listAttribute || input.attribute,
         ...input.fieldProps,

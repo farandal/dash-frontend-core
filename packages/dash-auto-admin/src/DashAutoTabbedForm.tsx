@@ -111,7 +111,7 @@ const DashAutoTabbedForm: React.FC<IDashAutoTabbedForm> = ({
                     onSubmit(data);
                 }
 			} catch (error) {
-          
+                debugger;
 				if (onError) {
 					onError(error);
 				}

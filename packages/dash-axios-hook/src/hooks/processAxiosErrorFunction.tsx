@@ -60,6 +60,15 @@ const processAxiosError = (error:AxiosError<IDashAutoAdminDefaultBackendStructur
       originalError: error
   });
 
+  window.dispatchEvent(
+    new MessageEvent('global-axios-error', {
+        data: enhancedError,
+        origin: "processAxiosErrorFunction"
+    }),
+);
+
+
+
   return enhancedError;
 
 }

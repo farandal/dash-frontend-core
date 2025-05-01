@@ -1,10 +1,13 @@
 import { DASH_REDUX_ACTIONS } from 'dash-admin-state';
 import { useDispatch } from 'react-redux';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { useGetIdentity } from 'react-admin';
 import useAxios from '../hooks/axios';
 import { getEnv } from 'dash-admin/src/config/DASHAdminSystemConstants';
 import { useAuthContext } from '../contexts/auth';
+import { useDialog } from 'dash-dialog';
+import { IDashAutoAdminBackendError } from 'dash-axios-hook';
+import LaravelEchoContext, { ILaravelEchoContext } from '../contexts/com/LaravelEchoContext';
 
 
 declare global {
@@ -29,6 +32,36 @@ const RADashComponent = () => {
     const { axios } = useAxios();
     const dispatch = useDispatch();
 
+    const dialog = useDialog();
+
+    /*const { events, lastEvent } = useContext<ILaravelEchoContext>(LaravelEchoContext);
+
+    useEffect(()=> {
+     
+        console.log(lastEvent);
+
+    },[lastEvent])*/
+
+    useEffect(() => {
+            const handleGlobalAxiosError = (event) => {
+               
+                
+                dialog({
+                    variant: 'danger',
+                    title: event.data?.name || "Error",
+                    content: event.data?.message || "Error desconocido",
+                    onConfirm: () => {
+                    },
+                    onClose: () => { },
+                });
+            };
+    
+            window.addEventListener('global-axios-error', handleGlobalAxiosError);
+    
+            return () => {
+                window.removeEventListener('global-axios-error', handleGlobalAxiosError);
+            };
+    }, [dialog]);    
 
   // Only collect these values when authenticated
   //const [userId, setUserId] = useState(null);

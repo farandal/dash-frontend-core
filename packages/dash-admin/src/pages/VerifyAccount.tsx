@@ -1,64 +1,85 @@
-import React, { useEffect } from 'react';
-import { useParams } from 'react-router';
-
+import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useRedirect } from 'react-admin';
 import useAxios from '../hooks/axios';
-
-const getUrlParamsObject = (searchParams: any) => {
-	let params: Record<string, any> = {};
-	for (const entry of searchParams) {
-		const [param, value] = entry;
-		params = { ...params, [param]: value };
-	}
-	return Object.keys(params).length > 0 ? params : null;
-};
+import { Box, Typography, CircularProgress } from '@mui/material';
+import { getEnv } from '../config/DASHAdminSystemConstants';
 
 const VerifyAccount = () => {
-	let [searchParams] = useSearchParams();
+	const [searchParams] = useSearchParams();
 	const redirect = useRedirect();
 	const { axios } = useAxios();
-	const urlQuery: any = getUrlParamsObject(searchParams.entries());
+	const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
+	const [message, setMessage] = useState('Verificando cuenta...');
+
+
+	const backendUrl = getEnv('APP_BACKEND_URL') || 'http://localhost:8000';
 
 	const verify = async () => {
 		try {
-			const res = await axios.get(`${urlQuery.verification_url}`);
+			const id = searchParams.get('id');
+			const hash = searchParams.get('hash');
+
+			if (!id || !hash) {
+				setStatus('error');
+				setMessage('Link de verificación inválido.');
+				setTimeout(() => redirect('/login'), 3000);
+				return;
+			}
+
+			// Construct the verification URL for the backend
+			const verificationUrl = `${backendUrl}/api/email/verify/${id}/${hash}`;
+			
+			const res = await axios.get(verificationUrl);
+			
 			switch (res.status) {
 				case 200:
-					//alert("Cuenta verificada correctamente");
-					redirect('/login');
+					setStatus('success');
+					setMessage('Cuenta verificada correctamente. Redirigiendo al login...');
+					setTimeout(() => redirect('/login'), 3000);
 					break;
 				case 204:
-					//alert("Cuenta ya verificada");
-					redirect('/login');
-					break;
-				case 401:
-					//alert("Cuenta no verificada");
-					break;
-				case 403:
-					//alert("Cuenta no verificada");
-					break;
-				case 404:
-					//alert("Cuenta no verificada");
+					setStatus('success');
+					setMessage('Cuenta ya verificada. Redirigiendo al login...');
+					setTimeout(() => redirect('/login'), 3000);
 					break;
 				default:
-					//alert("Cuenta no verificada");
+					setStatus('error');
+					setMessage('Error al verificar la cuenta. Por favor, intente nuevamente.');
+					setTimeout(() => redirect('/login'), 3000);
 					break;
 			}
 		} catch (error) {
-			console.log(error);
+			console.error('Verification error:', error);
+			setStatus('error');
+			setMessage('Error al verificar la cuenta. Por favor, intente nuevamente.');
+			setTimeout(() => redirect('/login'), 3000);
 		}
 	};
 
 	useEffect(() => {
-		if (urlQuery?.verification_url) {
-			verify();
-		} else {
-			redirect('/login');
-		}
+		verify();
 	}, []);
 
-	return <>Verificando cuenta...</>;
+	return (
+		<Box 
+			display="flex" 
+			flexDirection="column" 
+			alignItems="center" 
+			justifyContent="center" 
+			minHeight="100vh"
+			padding={3}
+			textAlign="center"
+		>
+			{status === 'loading' && <CircularProgress size={60} thickness={4} />}
+			<Typography variant="h5" component="h1" gutterBottom marginTop={2}>
+				Verificación de Cuenta
+			</Typography>
+			<Typography variant="body1">
+				{message}
+			</Typography>
+		</Box>
+	);
 };
 
 export default VerifyAccount;

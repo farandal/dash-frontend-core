@@ -444,8 +444,11 @@ export const ResourceTemplate = (
                             if (resourceConfig.refreshAfter) {
                                 refresh();
                             }
-                        }; const onError = (error: any) => {
+                        }; 
+                        
+                        const onError = (error: any) => {
                             //notify(`Error!`);
+                            debugger;
                             showError(error);
                         };
 

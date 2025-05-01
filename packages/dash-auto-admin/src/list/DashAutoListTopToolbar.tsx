@@ -130,7 +130,7 @@ const DashAutoListTopToolbar:FC<IDashAutoListTopToolbar> = (props) => {
 
 				<Grid container spacing={0}   >
 				
-					{countFilters ? <Grid item xs={12}>
+					{countFilters ? <Grid >
 						<Collapse
 							className='toolbar-collapse'
 							orientation={'vertical'}

@@ -340,7 +340,7 @@ const DASHAdminApp: React.FC<IDASHAdmin<unknown, unknown, unknown, unknown, unkn
           {customVerifyAccount !== false && (
             <Route
               key={'verify-account'}
-              path='email/verify'
+              path='verify-email'
               element={customVerifyAccount || <VerifyAccount />}
             />
           )}
