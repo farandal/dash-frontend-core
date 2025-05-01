@@ -448,7 +448,7 @@ export const ResourceTemplate = (
                         
                         const onError = (error: any) => {
                             //notify(`Error!`);
-                            debugger;
+                           
                             showError(error);
                         };
 
