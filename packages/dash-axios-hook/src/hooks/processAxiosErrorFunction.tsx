@@ -1,8 +1,9 @@
 import { AxiosError } from 'axios';
 import { IDashAutoAdminBackendError,IDashAutoAdminDefaultBackendStructure } from '../interfaces/IDashAutoAdminBackendError';
 
-const processAxiosError = (error:AxiosError<IDashAutoAdminDefaultBackendStructure>,resource:string,method:string='update') => {
+const processAxiosError = (error:AxiosError<IDashAutoAdminDefaultBackendStructure>,resource?:string,method:string='update') => {
 
+  if(!resource) resource = ""
   // Map method to Spanish action words
   const methodMap = {
       'update': 'Actualizar',
@@ -59,13 +60,6 @@ const processAxiosError = (error:AxiosError<IDashAutoAdminDefaultBackendStructur
       validationErrors: body.errors,
       originalError: error
   });
-
-  window.dispatchEvent(
-    new MessageEvent('global-axios-error', {
-        data: enhancedError,
-        origin: "processAxiosErrorFunction"
-    }),
-);
 
 
 

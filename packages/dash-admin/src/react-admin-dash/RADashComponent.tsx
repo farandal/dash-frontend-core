@@ -44,15 +44,20 @@ const RADashComponent = () => {
 
     useEffect(() => {
             const handleGlobalAxiosError = (event) => {
-               
+              
                 
                 dialog({
                     variant: 'danger',
                     title: event.data?.name || "Error",
                     content: event.data?.message || "Error desconocido",
+                    confirmText: 'Volver',
+                    closeText: 'Cerrar',
                     onConfirm: () => {
+                        window.history.back()
                     },
-                    onClose: () => { },
+                    onClose: () => { 
+
+                    },
                 });
             };
     
