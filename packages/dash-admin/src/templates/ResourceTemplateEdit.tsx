@@ -122,7 +122,8 @@ export const ResourceTemplateEdit: FC<IResourceTemplateController> = (props) => 
 
 	const ToolBar = () => (
 		<Toolbar>
-			<DashAutoAdminSaveButton resourceConfig={resourceConfig} onSubmit={onEdit} onError={onError} />
+           
+			<DashAutoAdminSaveButton resourceConfig={resourceConfig} />
 		</Toolbar>
 	);
 

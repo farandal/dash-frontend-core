@@ -85,6 +85,7 @@ const DashAutoTabbedForm: React.FC<IDashAutoTabbedForm> = ({
 
 	const onCreateSave = useCallback(
 		async (values) => {
+          
             if (debug) console.log('onCreateSave called with values:', values);
             if (!resource) {
                 throw new Error('Resource is required');
@@ -111,7 +112,7 @@ const DashAutoTabbedForm: React.FC<IDashAutoTabbedForm> = ({
                     onSubmit(data);
                 }
 			} catch (error) {
-                debugger;
+             
 				if (onError) {
 					onError(error);
 				}
@@ -132,6 +133,7 @@ const DashAutoTabbedForm: React.FC<IDashAutoTabbedForm> = ({
 
 	const onUpdateSave = useCallback(
 		async (values) => {
+        
             if (debug) console.log('onUpdateSave called with values:', values);
 			try {
 				if (beforeSubmit) {
@@ -161,7 +163,8 @@ const DashAutoTabbedForm: React.FC<IDashAutoTabbedForm> = ({
 		[resource, record, beforeSubmit, dataProvider, onSubmit, onError]
 	);
 
-	let onSave = onCreateSave;	switch (mode) {
+	let onSave = onCreateSave;	
+    switch (mode) {
 		case 'edit':
 			onSave = onUpdateSave;
 			break;

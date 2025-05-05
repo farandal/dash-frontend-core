@@ -200,7 +200,8 @@ export const processPostData = (
 const dataProvider = {
 	getList: async (resource, params, _options) => {
         const tenant_id = getCookie('tenant_id');
-  
+        
+        debugger;
 
         let payload = processPostData(
             resource,

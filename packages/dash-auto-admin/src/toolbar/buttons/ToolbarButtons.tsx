@@ -39,7 +39,7 @@ const checkIfModeEnablesButton = (modes?:IAutoGridButton['modes'], mode?:IToolba
  */
 export const ToolbarSaveButton:FC<IToolbarButton> = (props) => {
 
-	const { resourceConfig, mode, onError,onSubmit } = props;
+	const { resourceConfig, mode } = props;
 
 	if (!resourceConfig) return <SaveButton/>;
 	if (resourceConfig.toolbarSaveButton) {
@@ -49,7 +49,7 @@ export const ToolbarSaveButton:FC<IToolbarButton> = (props) => {
 					...(resourceConfig.toolbarSaveButton?.props || {}),
 					alwaysEnable: resourceConfig?.saveButtonAlwaysEnabled === true ? true : false,
 				};
-				return resourceConfig.toolbarSaveButton?.component ? <resourceConfig.toolbarSaveButton.component {...buttonProps} />  : <DashAutoAdminSaveButton {...buttonProps} onError={onError} onSubmit={onSubmit} />;
+				return resourceConfig.toolbarSaveButton?.component ? <resourceConfig.toolbarSaveButton.component {...buttonProps} />  : <DashAutoAdminSaveButton {...buttonProps} />;
 			}
 		}
 	}

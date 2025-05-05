@@ -72,6 +72,7 @@ const DashAutoEdit: React.FC<IAutoForm> = ({
    
 	return (
 		<Edit
+            
 			{...(id && { id })}
 			actions={actions || <EditActions />}
 			mutationMode={resourceConfig.mutationMode}
@@ -89,6 +90,7 @@ const DashAutoEdit: React.FC<IAutoForm> = ({
 				onCancel={onCancel}
                
 			/>
+         
 		</Edit>
 	);
 };

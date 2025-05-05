@@ -332,8 +332,7 @@ export const ResourceTemplate = (
                                                 ? true
                                                 : false
                                         }
-                                        onSubmit={onEdit}
-                                        onError={onError}
+                                       
                                     />
                                 </Toolbar>
                             );
@@ -468,8 +467,7 @@ export const ResourceTemplate = (
                                                 ? true
                                                 : false
                                         }
-                                        onSubmit={onCreate}
-                                        onError={onError}
+                                      
                                     />
                                 </Toolbar>
                             );

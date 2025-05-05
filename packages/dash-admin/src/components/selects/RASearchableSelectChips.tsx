@@ -157,9 +157,13 @@ export const SearchableSelectChipsControl: React.FC<
 
 	useEffect(() => {
 		if (resourceSearchResults /*&& !isResourceSearchLoading*/) {
-			const _parsedOptions = resourceSearchResults.map((ele) => {
-				return { ...ele, key: 'option' + ele.id };
-			});
+            const resultsArray = Array.isArray(resourceSearchResults) 
+      ? resourceSearchResults 
+      : Object.values(resourceSearchResults);
+    
+    const _parsedOptions = resultsArray.map((ele) => {
+      return { ...ele, key: "option" + ele.id };
+    });
 			setParsedOptions(_parsedOptions);
 			//updateFieldValue(_parsedOptions);
 		}

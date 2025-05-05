@@ -53,7 +53,7 @@ const RADashComponent = () => {
                     confirmText: 'Volver',
                     closeText: 'Cerrar',
                     onConfirm: () => {
-                        window.history.back()
+                        //window.history.back()
                     },
                     onClose: () => { 
 

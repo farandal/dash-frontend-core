@@ -112,6 +112,7 @@ const DashAutoList: React.FC<IDashAutoList> = ({
 	//bulkActionButtons: BulkActions || DefaultBulkActions,
 };
 
+
 	if (!finalListProps) return <></>;
 	return resourceConfig.listComponent ? (
 		resourceConfig.listComponent(resourceConfig, onSubmit, onError)

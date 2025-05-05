@@ -134,8 +134,7 @@ const DashAutoDrawer: React.FC<IDashAutoDrawer> = ({
                         }
                         label='Guardar'
                         resourceConfig={resourceConfig}
-                        onSubmit={_onSubmit}
-                        onError={onError}
+                      
                 
                     />
                 )}
@@ -146,8 +145,7 @@ const DashAutoDrawer: React.FC<IDashAutoDrawer> = ({
                             resourceConfig?.saveButtonAlwaysEnabled === true ? true : false
                         }
                         label='Crear'
-                        onSubmit={_onSubmit}
-                        onError={onError}
+                       
                     />
                 )}
                 {/*resourceConfig?.listDeleteButton?.enabled && (

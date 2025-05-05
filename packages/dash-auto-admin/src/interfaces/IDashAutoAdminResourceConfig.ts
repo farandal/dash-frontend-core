@@ -328,5 +328,6 @@ export default interface IDashAutoAdminResourceConfig {
 	) => React.ReactElement;
 
     // Extended Resource Props from reactAdmin:
-    recordRepresentation?: string
+    recordRepresentation?: string;
+
 }
