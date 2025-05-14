@@ -28,13 +28,13 @@ const darkModeColors = {
   background: '#0A0A0A',
   paper: '#1A1A1A'
 };
-const getCSSVar = (name: string) => {
+const getCSSVar = (name: string, defaultColor?: string) => {
 
   const value = window.getComputedStyle(document.documentElement)
     .getPropertyValue(`${name}`)
     .trim();
 
-  return value;
+  return value || defaultColor || '#000000';
 
 };
 export const defaultOptions = () => {
@@ -139,6 +139,23 @@ export const defaultOptions = () => {
           }
         }
       },
+      MuiTab: {
+              styleOverrides: {
+                root: {
+                  '&.MuiButtonBase-root': {
+                    '&.Mui-selected': {
+                      color: getCSSVar('--highlight-color'),
+                      backgroundColor: getCSSVar('--tab-selected-bg'),
+                    },
+                    '&.MuiTab-textColorPrimary': {
+                      color: getCSSVar('--text-color'),
+                    },
+
+                  }
+                }
+              }
+            },
+
       MuiPaper: {
         styleOverrides: {
           root: {
@@ -160,6 +177,29 @@ export const defaultOptions = () => {
           }
         }
       },*/
+
+
+      MuiAccordion: {
+        styleOverrides: {
+          root: {
+            backgroundColor: getCSSVar('--module-background'), // Or any specific color you want
+            // You can add more styles here as needed
+            '&.MuiPaper-root': {
+              backgroundColor: getCSSVar('--module-background'),
+            }
+          }
+        }
+      },
+      MuiAccordionSummary: {
+        styleOverrides: {
+          expandIconWrapper: {
+            color: 'inherit', // This makes the color inherited from parent
+            '& .MuiSvgIcon-root': {
+              color: 'inherit' // Also ensure the SVG icon inherits color
+            }
+          }
+        }
+      },
 
       MuiBox: {
         styleOverrides: {

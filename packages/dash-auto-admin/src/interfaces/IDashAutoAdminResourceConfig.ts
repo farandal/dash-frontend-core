@@ -281,7 +281,7 @@ export default interface IDashAutoAdminResourceConfig {
 	//toolbarList?: boolean | ((resourceConfig: IDashAutoAdminResourceConfig) => boolean);
 	//toolbarDelete?: boolean | ((resourceConfig: IDashAutoAdminResourceConfig) => boolean);
 	//toolbarSave?: boolean | ((resourceConfig: IDashAutoAdminResourceConfig) => boolean);
-
+    bulkActionButtons?:  (props: any) => JSX.Element;
 	/** */
 	customRoutes?: (resourceConfig: IDashAutoAdminResourceConfig) => React.ReactElement;
 	/** */

@@ -47,7 +47,7 @@ const PermissionsSelectorView: React.FC<IDashAutoAdminCustomFieldComponent> = ({
 				>
 					<AccordionSummary expandIcon={<ExpandMoreIcon />}>
 						<Typography>
-							<b>Recurso: {tab[0]?.group.charAt(0).toUpperCase() + tab[0]?.group.slice(1)}</b>
+							<b>{tab[0]?.group.charAt(0).toUpperCase() + tab[0]?.group.slice(1)}</b>
 						</Typography>
 					</AccordionSummary>
 					<AccordionDetails>
@@ -75,46 +75,59 @@ interface IPermissionItem {
 	value?: string;
 }
 
-	const PermissionsSelectorBase: React.FC<IDashAutoAdminCustomFieldComponent> = ({
-		_method,
-		_attribute,
-		_resourceConfig,
-		record = null
-	}) => {
-		const [permissionsData, setPermissionsData] = useState<IPermissions[][]>([]);
-		const [parsedValues, setParsedValues] = useState([]);
-		const axios = useAxios();
-		const refresh = useRefresh();
-	
-		const form = useFormContext();
-		const formState = useFormState();
-	
-		const permissionObjectsController = useController({ 
-			name: 'permission_objects',
-		});
+const PermissionsSelectorBase: React.FC<IDashAutoAdminCustomFieldComponent> = ({
+    _method,
+    _attribute,
+    _resourceConfig,
+    record = null
+}) => {
+    const [permissionsData, setPermissionsData] = useState<IPermissions[][]>([]);
+    const [parsedValues, setParsedValues] = useState([]);
+    const axios = useAxios();
+    const refresh = useRefresh();
 
-		const groupPermissionsData = useCallback((permissionItems: IPermissionItem[]) => {
-			return permissionItems.reduce((acc, item) => {
-				const group = acc.find(g => g[0].group === item.group);
-				if (group) {
-					const nameExists = group.some(existingItem => existingItem.name === item.name);
-					if (!nameExists) {
-						group.push(item);
-					}
-				} else {
-					acc.push([item]);
-				}
-				return acc;
-			}, [] as IPermissionItem[][]);          
-		}, []);
-	
-		const getPermissions = async () => {
-			const { data } = await axios.get(
-				'system/permissions/availablePermissions',
-			);
-			setPermissionsData(groupPermissionsData(data));
-		};
+    const form = useFormContext();
+    const formState = useFormState();
 
+    const permissionObjectsController = useController({ 
+        name: 'permission_objects',
+    });
+
+    // Memoize the groupPermissionsData function
+    const groupPermissionsData = useCallback((permissionItems: IPermissionItem[]) => {
+        return permissionItems.reduce((acc, item) => {
+            const group = acc.find(g => g[0].group === item.group);
+            if (group) {
+                const nameExists = group.some(existingItem => existingItem.name === item.name);
+                if (!nameExists) {
+                    group.push(item);
+                }
+            } else {
+                acc.push([item]);
+            }
+            return acc;
+        }, [] as IPermissionItem[][]);          
+    }, []);
+
+    // Memoize the getPermissions function with useCallback
+    const getPermissions = useCallback(async () => {
+        try {
+            const { data } = await axios.get(
+                'system/permissions/availablePermissions',
+            );
+            setPermissionsData(groupPermissionsData(data));
+        } catch (error) {
+            console.error('Failed to fetch permissions:', error);
+        }
+    }, [axios, groupPermissionsData]);
+
+    useEffect(() => {
+        if (formState.isSubmitSuccessful) {
+            refresh();
+        }
+    }, [formState.isSubmitSuccessful, refresh]);
+
+    // Use the memoized getPermissions in useEffect with proper dependencies
 		useEffect(() => {
 			if (formState.isSubmitSuccessful) {
 				refresh();
@@ -177,7 +190,7 @@ interface IPermissionItem {
 					>
 						<AccordionSummary expandIcon={<ExpandMoreIcon />}>
 							<Typography>
-								<b>Recurso: {tab[0]?.group.charAt(0).toUpperCase() + tab[0]?.group.slice(1)}</b>
+								<b>{tab[0]?.group.charAt(0).toUpperCase() + tab[0]?.group.slice(1)}</b>
 							</Typography>
 						</AccordionSummary>
 						<AccordionDetails>

@@ -142,6 +142,15 @@ const AttributeToInput = (
     index?: number,
     options?: IDashAutoAdminFormOptions,
 ) => {
+
+       // Move all hook calls to the top level, before any conditional logic
+       const mode = options?.mode || 'view';
+       const editContext = useEditContext();
+       const recordContext = useRecordContext();
+       const record = options?.mode === 'edit' ? editContext : recordContext;
+       const location = useLocation();
+       const params = useParams();
+     
     //export const AttributeToInput: React.FC<IAttributeToInput> = ({ input }) => {
     /*let filter: any = {};
   filter.pagination = input.pagination;
@@ -149,12 +158,6 @@ const AttributeToInput = (
 
     //const sortableField = input.sortable === true ? true : false;
  
-    const mode = options?.mode || 'view';
-
-    const record = options?.mode === 'edit' ? useEditContext() : useRecordContext();
-    const location = useLocation();
-
-    const params = useParams();
 
     const ComponentWrapper =
         resourceConfig?.fieldWrapper &&

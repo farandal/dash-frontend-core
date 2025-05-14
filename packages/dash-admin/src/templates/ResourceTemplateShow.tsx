@@ -22,10 +22,12 @@ import DashAutoShow from 'dash-auto-admin/src/DashAutoShow';
 //import { useForm } from 'react-hook-form';
 import React from 'react';
 import ResourceLayout from '../layout/ResoureLayout';
+import { useDashResource } from '../contexts/DashResourceContext';
+import { IResourceTemplate } from './ResourceTemplate';
 
 
-export const ResourceTemplateShow: FC<IResourceTemplateController> = (props) => {
-	const { resourceConfig } = props;
+export const ResourceTemplateShow: FC<IResourceTemplate> = (props) => {
+	const {resourceConfig} = useDashResource()
 
 	/*const ShowActions = ({ edit }) => (
     <TopToolbar>{edit !== false && <EditButton />}</TopToolbar>

@@ -4,12 +4,14 @@ import { useDispatch, useSelector } from 'react-redux';
 const useGlobalLoaderMgr = () => {
 	const useLoader = useState<boolean>(false);
 	React.useEffect(() => {
-		window.addEventListener('ra-auto-global-loader', (e: any) =>
-			useLoader[1](e.data.value),
-		);
+ 
+		window.addEventListener('dash-global-loader', (e: any) => {
+            
+			return useLoader[1](e.data)
+        });
 		return () => {
-			window.removeEventListener('ra-auto-global-loader', (e: any) =>
-				useLoader[1](e.data.value),
+			window.removeEventListener('dash-global-loader', (e: any) =>
+				useLoader[1](e.data),
 			);
 		};
 	}, []);

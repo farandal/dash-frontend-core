@@ -15,13 +15,13 @@ import { useDialog } from 'dash-dialog';
 import { initAxios } from '../hooks/axios';
 import ApplicationLayout from '../layout/ApplicationLayout';
 import { ResourceTemplateList } from './ResourceTemplateList';
+import { useDashResource } from '../contexts/DashResourceContext';
+import { IResourceTemplate } from './ResourceTemplate';
 
-export interface TrashTemplateProps {
-  resourceConfig: IDashAutoAdminResourceConfig
-}
 
-const TrashTemplate: React.FC<TrashTemplateProps> = ({ resourceConfig }) => {	
+const TrashTemplate: React.FC<IResourceTemplate> = (props) => {	
     
+    const {resourceConfig} = useDashResource()
     const TrashBulkActions = () => {
 		const axios = initAxios();
 		const dialog = useDialog();
@@ -135,9 +135,8 @@ const TrashTemplate: React.FC<TrashTemplateProps> = ({ resourceConfig }) => {
 		customListButtons: null,
         dataGridProps: {
             ...resourceConfig.dataGridProps,
-            //bulkActionButtons: <TrashBulkActions />
+            bulkActionButtons: <TrashBulkActions />
         },
-		BulkActions: <TrashBulkActions />, // TD: there is an unnecesary complex logic implemented for this. it should be simplified, by passing the bulk actions in the dataGriProps. 
 	};
    
 	return (

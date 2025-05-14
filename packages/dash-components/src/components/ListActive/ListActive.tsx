@@ -34,7 +34,7 @@ const ListActive = ({
     const onChange = useCallback(
         async (value: boolean) => {
             window.dispatchEvent(
-                new MessageEvent('ra-auto-global-loader', { data: true })
+                new MessageEvent('dash-global-loader', { data: true })
             );
             
             try {
@@ -53,7 +53,7 @@ const ListActive = ({
                         onSettled: (data, error) => {
                             if (error) onError(error);
                             window.dispatchEvent(
-                                new MessageEvent('ra-auto-global-loader', { data: false })
+                                new MessageEvent('dash-global-loader', { data: false })
                             );
                         },
                     }

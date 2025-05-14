@@ -24,7 +24,6 @@ const AutoReferenceFormTab = (reference: IDashAutoAdminReference) => {
 					{/* TODO: replace AutoDataGrid to DashAutoList */}
 					<AutoDataGrid
 						schema={reference.schema}
-						bulkActions={reference?.BulkActions}
 					/>
 				</ReferenceManyField>
 			)}

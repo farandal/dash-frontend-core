@@ -133,7 +133,10 @@ const TrashTemplate = (resourceConfig: IAppResourceConfig) => {
 		listEditButton: { enabled: false },
 		listViewButton: { enabled: false },
 		customListButtons: null,
-		BulkActions: TrashBulkActions,
+        dataGridProps: {
+            bulkActionButtons: <TrashBulkActions/>,
+        }
+		
 	};
 
 	return (

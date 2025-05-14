@@ -30,387 +30,388 @@ const TableContainer = lazy(() => import('@mui/material/TableContainer'));
  */
 
 const drawerSettings = {
-  drawer: true,
-  drawerOptions: {
-    view: true,
-    edit: false,
-    create: false,
-  },
-  listViewButton: { props: { buttonProps: { variant: 'text', size: 'small' }, label: '' } },
-  listEditButton: { props: { buttonProps: { variant: 'text', size: 'small' }, label: '' } },
-  listDeleteButton: { confirm: true, props: { buttonProps: { variant: 'text', size: 'small' }, label: '' } },
+    drawer: true,
+    drawerOptions: {
+        view: true,
+        edit: false,
+        create: false,
+    },
+    listViewButton: { props: { buttonProps: { variant: 'text', size: 'small' }, label: '' } },
+    listEditButton: { props: { buttonProps: { variant: 'text', size: 'small' }, label: '' } },
+    listDeleteButton: { confirm: true, props: { buttonProps: { variant: 'text', size: 'small' }, label: '' } },
 };
 
 const systemResources: IAppResourceConfig[] = [
-  {
-    roles: [DASHAppConstants.system.SYSTEM_ROLE],
-    component: ResourceTemplate,
-    model: 'system/permissions',
-    label: 'Permisos',
-    schema: permissionSchema,
-    icon: <Https />,
-    group: 'Recursos de sistema',
+    {
+        roles: [DASHAppConstants.system.SYSTEM_ROLE],
+        component: ResourceTemplate,
+        model: 'system/permissions',
+        label: 'Permisos',
+        schema: permissionSchema,
+        icon: <Https />,
+        group: 'Recursos de sistema',
 
-    menu: [
-      {
-        title: 'Permisos',
-        redirect: '/system/permissions',
-      },
-    ],
-    /*mainAction: {
-        title: 'Crear permiso',
-        // type: "ghost",
-        redirect: '/system/permissions/create',
-    },*/
-    search: true,
-    mutationMode: 'pessimistic',
-    dataGridProps: { stickyHeader: true },
-    dataGridWrapper: (props: any) => (
-      <TableContainer sx={{ maxHeight: 800 }}>{props.children}</TableContainer>
-    ),
-    postFormatter: (params, _) => {
-      return params;
-    },
-    ...drawerSettings,
-    edit: false,
-    listEditButton: { enabled: false },
-    delete: false,
-    listDeleteButton: { enabled: false },
-  },
-  {
-    roles: [DASHAppConstants.system.SYSTEM_ROLE],
-    component: ResourceTemplate,
-    model: 'system/role',
-    label: 'roles',
-    icon: <SystemUpdateAlt />,
-    group: 'Recursos de sistema',
-    menu: [
-      {
-        title: 'Roles',
-        redirect: '/system/role',
-      },
-    ],
-    mainAction: {
-      title: 'Agregar Rol',
-      // type: "ghost",
-      redirect: '/system/role/create',
-    },
-    schema: roleSchema,
-    mutationMode: 'pessimistic',
-    redirectAfterUpdate: false,
-
-    dataGridProps: { stickyHeader: true },
-    listEditButton: { enabled: true },
-    listViewButton: { enabled: false },
-    toolbarCreateButton: { enabled: false },
-    toolbarDeleteButton: { enabled: false },
-    toolbarListButton: { enabled: false },
-    toolbarSaveButton: { enabled: true },
-    toolbarExportButton: { enabled: false },
-    toolbarEditButton: { enabled: false },
-
-
-    formGroupMode: 'groups',
-
-    dataGridWrapper: (props: any) => (
-      <TableContainer sx={{ maxHeight: 800 }}>{props.children}</TableContainer>
-    ),
-    /* references: [
-         { reference: 'permission', tab: 'Permisos', target: 'role_id', schema: permissionSchema, type: "ReferenceManyField" },
-     ],*/
-    postFormatter: (params, _) => {
-      /*if(method === "update") {
-  params._method = "PUT";
-}*/
-      return params;
-    },
-    ...drawerSettings,
-  },
-  {
-    roles: [DASHAppConstants.system.SYSTEM_ROLE],
-    component: ResourceTemplate,
-    trash: true,
-    model: 'system/user',
-    group: 'Recursos de sistema',
-    label: 'Usuarios',
-    referenceFilters: [
-      // TODO: Cuando se cambia el cliente se debn mostrar sólo los CP de este filtro
-      {
-        id: 'search',
-        label: 'Buscar',
-        source: 'q',
-        reference: null,
-        optionText: '', // field from the model
-        alwaysOn: true,
-      },
-    ],
-    schema: [
-      {
-        tab: 'Datos Usuario',
-        attribute: 'avatar',
-        listAttribute: 'image_path',
-        label: 'Imágen Usuario',
-        type: String,
-        sortable: true,
-        inEdit: true,
-        inCreate: true,
-        inShow: true,
-        inList: false,
-        custom: true,
-        component: Avatar,
-        processor: 'File',
-      },
-      {
-        label: 'Nombre',
-        attribute: 'name',
-        type: String,
-        tab: 'Datos Usuario',
-        //validate: (name: string) => (name && name.length >= 3 ? undefined : <div>Name is too short</div>)
-      },
-      {
-        label: "Apellido",
-        attribute: "lastname",
-        type: String,
-        tab: "Datos Usuario",
-        //validate: (name: string) => (name && name.length >= 3 ? undefined : <div>Name is too short</div>)
-      },
-      {
-        tab: 'Datos Usuario',
-        attribute: 'public_id',
-        label: 'Rut',
-        type: String,
-        fieldProps: { required: true/*, validate: [required()],*/, showDiv: true},
-        slotProps: {   input: { fullWidth: true,  autoComplete: "off" } },
-        sortable: true,
-        inEdit: true,
-        inCreate: true,
-        inShow: true,
-        inList: false,
-        validate: (value) => {
-
-          if (!value) throw Error('El campo es requerido');
-
-          if (!RutValidator(value)) {
-            throw Error('El Rut es inválido');
-          }
-        }
-      },
-      {
-        label: 'Email',
-        attribute: 'email',
-        type: String,
-        tab: 'Datos Usuario',
-        slotProps: {  input: { fullWidth: true, "data-testid": "email-input" } },
-        //validate: (email: string) => (email && email.indexOf('@') > 0 ? undefined : 'Invalid email')
-      },
-      {
-        label: 'Contraseña',
-        attribute: 'password',
-        type: String,
-        isPassword: true,
-        slotProps: {  input: { fullWidth: true, autoComplete: "new-password" } },
-        inList: false,
-        tab: 'Contraseña',
-        validate: (password: string) => {
-          if (password && password.length < 6 && password.length > 1) {
-            throw Error('Min 6 caracteres');
-          }
+        menu: [
+            {
+                title: 'Permisos',
+                redirect: '/system/permissions',
+            },
+        ],
+        /*mainAction: {
+            title: 'Crear permiso',
+            // type: "ghost",
+            redirect: '/system/permissions/create',
+        },*/
+        search: true,
+        mutationMode: 'pessimistic',
+        dataGridProps: { stickyHeader: true },
+        dataGridWrapper: (props: any) => (
+            <TableContainer sx={{ maxHeight: 800 }}>{props.children}</TableContainer>
+        ),
+        postFormatter: (params, _) => {
+            return params;
         },
-      },
-      {
-        label: 'Confirmar Contraseña',
-        attribute: 'password_confirmation',
-        type: String,
-        isPassword: true,
-        slotProps: {  input: { fullWidth: true ,  autoComplete: "new-password" } },
-        inList: false,
-        tab: 'Contraseña',
-        validate: (password: string, values: any) => {
-           
-          if (values.password !== "" && (values.password !== password)) {
-            throw Error('Contraseñas no coinciden.');
-          }
-        },
-      },
-      {
-        // @TODO Solo mostrar cuando se está creando:
-        label: 'Genear Contraseña Aleatorea Automáticamente',
-        attribute: 'generate_password',
-        type: Boolean,
-        inList: false,
-        tab: 'Contraseña',
-      },
-      {
-        tab: 'Datos Usuario',
-        label: 'Roles',
-        attribute: 'roles',
-        listAttribute: 'role_ids',
-        type: 'system/role.name',
-        //type: Object,
-        // TODO Agregar un filtro, solo para traer los roles de cliente.
-        //pagination: false,
-        multiple: true,
-        inList: false,
-        inShow: false,
-        //custom: true,
-        //componentProps:{ options: {fullwidth: true} },
-        //component: SelectArrayInput,
-        //searchField: "subdomain"
-      },
-      {
-        tab: 'Datos Usuario',
-        label: 'Roles',
-        attribute: 'roles',
-        listAttribute: 'role_ids',
-        type: 'system/role.name',
-        //type: Object,
-        // TODO Agregar un filtro, solo para traer los roles de cliente.
-        //pagination: false,
-        multiple: true,
-        inEdit: false,
-        inCreate: false,
-        
-        //custom: true,
-        //componentProps:{ options: {fullwidth: true} },
-        //component: ReferenceArrayField,
-        //searchField: "subdomain"
-      },
-      {
-        tab: 'Datos Usuario',
-        label: 'Cliente',
-        attribute: 'tenant_id',
-        //listAttribute: 'name',
-        type: 'system/tenant.name',
-        //type: Object,
-        // TODO Agregar un filtro, solo para traer los roles de cliente.
-        pagination: false,
-        multiple: false,
-        //custom: true,
-        //componentProps: {multiple:false},
-        //componentProps: { options: {fullwidth: true} },
-        component: SelectInput,
-        //searchField: "subdomain"
-        processor: 'Null',
-      },
-      {
-        attribute: 'active',
-        type: Boolean,
-        inList: true,
-        label: 'Activo',
-        tab: 'Datos Usuario',
-        processor: 'Boolean',
-      },
-        /*{
-          attribute: 'avatar',
-          listAttribute: 'system/userclients.avatar',
-          type: ImageInput, // TODO: el componente no muestra la imágen
-          inList: false,
-          label: 'Imágen',
-          tab: 'Datos Usuario',
-          processor: 'RawFile',
-          //validate: (password: string) => (password && password.length >= 6 ? undefined : <div>Password is too short</div>)
-      },*/
-    ],
-    //references: [{ reference: 'roles', target: 'role', schema: rolesSchema }]
-    //references: [{ reference: 'roles', target: 'id', schema: roleSchema }],
-    icon: <Person />,
-    redirectAfterUpdate: false,
-    showDialogAfterSubmit: true,
-    showNotifyAfterSubmit: true,
-    menu: [
-      {
-        title: 'Usuarios',
-        redirect: '/system/user',
-      },
-    ],
-    //{
-    //    title: "Papelera",
-    //    redirect: "/trash/admin/user",
-    //}],
-    mainAction: {
-      title: 'Crear usuario',
-      // type: "ghost",
-      redirect: '/system/user/create',
-    },
-    mutationMode: 'pessimistic',
-    isFormData: true,
-    dataGridProps: { stickyHeader: true },
-    dataGridWrapper: (props: any) => (
-      <TableContainer sx={{ maxHeight: 800 }}>{props.children}</TableContainer>
-    ),
-    formPostFormatter: (params, form) => {
-      return form;
-    },
-    postFormatter: (params, method) => {
-      /* if (!params.meta) {
-  params.meta = {
-    method: "PUT",
-  };
-} else {
-  params.meta.method = "PUT";
-}*/
-      if (method === 'update') {
-        params._method = 'PUT';
-      }
-      params.role_id = params.role_ids ? params.role_ids[0] : null;
-
-      return params;
-    },
-    ...drawerSettings,
-  },
-  {
-    roles: [DASHAppConstants.system.SYSTEM_ROLE],
-    component: ResourceTemplate,
-    customRoutes: (resourceConfig) => TenantImpersonateResource(resourceConfig),
-    model: 'system/tenant',
-    label: 'Clientes',
-    schema: tenantSystemAdminSchema,
-    //references: [{ reference: 'roles', target: 'role', schema: rolesSchema }]
-    //references: [{ reference: 'roles', target: 'gitid', schema: roleSchema }],
-    icon: <Person />,
-    group: 'Recursos de sistema',
-    menu: [{
-      title: 'Clientes',
-      redirect: '/system/tenant',
+        ...drawerSettings,
+        edit: false,
+        listEditButton: { enabled: false },
+        delete: false,
+        listDeleteButton: { enabled: false },
     },
     {
-      title: 'Impersonar',
-      redirect: '/system/tenant/impersonate',
+        roles: [DASHAppConstants.system.SYSTEM_ROLE],
+        component: ResourceTemplate,
+        model: 'system/role',
+        label: 'roles',
+        icon: <SystemUpdateAlt />,
+        group: 'Recursos de sistema',
+        menu: [
+            {
+                title: 'Roles',
+                redirect: '/system/role',
+            },
+        ],
+        mainAction: {
+            title: 'Agregar Rol',
+            // type: "ghost",
+            redirect: '/system/role/create',
+        },
+        schema: roleSchema,
+        mutationMode: 'pessimistic',
+        redirectAfterUpdate: false,
+
+        dataGridProps: { stickyHeader: true },
+        listEditButton: { enabled: true },
+        listViewButton: { enabled: false },
+        toolbarCreateButton: { enabled: false },
+        toolbarDeleteButton: { enabled: false },
+        toolbarListButton: { enabled: false },
+        toolbarSaveButton: { enabled: true },
+        toolbarExportButton: { enabled: false },
+        toolbarEditButton: { enabled: false },
+
+
+        formGroupMode: 'groups',
+
+        dataGridWrapper: (props: any) => (
+            <TableContainer sx={{ maxHeight: 800 }}>{props.children}</TableContainer>
+        ),
+        /* references: [
+             { reference: 'permission', tab: 'Permisos', target: 'role_id', schema: permissionSchema, type: "ReferenceManyField" },
+         ],*/
+        postFormatter: (params, _) => {
+            /*if(method === "update") {
+                params._method = "PUT";
+            }*/
+            delete params.permissions
+            return params
+        },
+        ...drawerSettings,
     },
+    {
+        roles: [DASHAppConstants.system.SYSTEM_ROLE],
+        component: ResourceTemplate,
+        trash: true,
+        model: 'system/user',
+        group: 'Recursos de sistema',
+        label: 'Usuarios',
+        referenceFilters: [
+            // TODO: Cuando se cambia el cliente se debn mostrar sólo los CP de este filtro
+            {
+                id: 'search',
+                label: 'Buscar',
+                source: 'q',
+                reference: null,
+                optionText: '', // field from the model
+                alwaysOn: true,
+            },
+        ],
+        schema: [
+            {
+                tab: 'Datos Usuario',
+                attribute: 'avatar',
+                listAttribute: 'image_path',
+                label: 'Imágen Usuario',
+                type: String,
+                sortable: true,
+                inEdit: true,
+                inCreate: true,
+                inShow: true,
+                inList: false,
+                custom: true,
+                component: Avatar,
+                processor: 'File',
+            },
+            {
+                label: 'Nombre',
+                attribute: 'name',
+                type: String,
+                tab: 'Datos Usuario',
+                //validate: (name: string) => (name && name.length >= 3 ? undefined : <div>Name is too short</div>)
+            },
+            {
+                label: "Apellido",
+                attribute: "lastname",
+                type: String,
+                tab: "Datos Usuario",
+                //validate: (name: string) => (name && name.length >= 3 ? undefined : <div>Name is too short</div>)
+            },
+            {
+                tab: 'Datos Usuario',
+                attribute: 'public_id',
+                label: 'Rut',
+                type: String,
+                fieldProps: { required: true/*, validate: [required()],*/, showDiv: true },
+                slotProps: { input: { fullWidth: true, autoComplete: "off" } },
+                sortable: true,
+                inEdit: true,
+                inCreate: true,
+                inShow: true,
+                inList: false,
+                validate: (value) => {
 
-    ],
-    create: true,
+                    if (!value) throw Error('El campo es requerido');
 
-    mainAction: {
-      title: 'Crear cliente',
-      redirect: '/system/tenant/create',
-      //mode: 'create',
-      //fn: 'redirect'
+                    if (!RutValidator(value)) {
+                        throw Error('El Rut es inválido');
+                    }
+                }
+            },
+            {
+                label: 'Email',
+                attribute: 'email',
+                type: String,
+                tab: 'Datos Usuario',
+                slotProps: { input: { fullWidth: true, "data-testid": "email-input" } },
+                //validate: (email: string) => (email && email.indexOf('@') > 0 ? undefined : 'Invalid email')
+            },
+            {
+                label: 'Contraseña',
+                attribute: 'password',
+                type: String,
+                isPassword: true,
+                slotProps: { input: { fullWidth: true, autoComplete: "new-password" } },
+                inList: false,
+                tab: 'Contraseña',
+                validate: (password: string) => {
+                    if (password && password.length < 6 && password.length > 1) {
+                        throw Error('Min 6 caracteres');
+                    }
+                },
+            },
+            {
+                label: 'Confirmar Contraseña',
+                attribute: 'password_confirmation',
+                type: String,
+                isPassword: true,
+                slotProps: { input: { fullWidth: true, autoComplete: "new-password" } },
+                inList: false,
+                tab: 'Contraseña',
+                validate: (password: string, values: any) => {
+
+                    if (values.password !== "" && (values.password !== password)) {
+                        throw Error('Contraseñas no coinciden.');
+                    }
+                },
+            },
+            {
+                // @TODO Solo mostrar cuando se está creando:
+                label: 'Genear Contraseña Aleatorea Automáticamente',
+                attribute: 'generate_password',
+                type: Boolean,
+                inList: false,
+                tab: 'Contraseña',
+            },
+            {
+                tab: 'Datos Usuario',
+                label: 'Roles',
+                attribute: 'roles',
+                listAttribute: 'role_ids',
+                type: 'system/role.name',
+                //type: Object,
+                // TODO Agregar un filtro, solo para traer los roles de cliente.
+                //pagination: false,
+                multiple: true,
+                inList: false,
+                inShow: false,
+                //custom: true,
+                //componentProps:{ options: {fullwidth: true} },
+                //component: SelectArrayInput,
+                //searchField: "subdomain"
+            },
+            {
+                tab: 'Datos Usuario',
+                label: 'Roles',
+                attribute: 'roles',
+                listAttribute: 'role_ids',
+                type: 'system/role.name',
+                //type: Object,
+                // TODO Agregar un filtro, solo para traer los roles de cliente.
+                //pagination: false,
+                multiple: true,
+                inEdit: false,
+                inCreate: false,
+
+                //custom: true,
+                //componentProps:{ options: {fullwidth: true} },
+                //component: ReferenceArrayField,
+                //searchField: "subdomain"
+            },
+            {
+                tab: 'Datos Usuario',
+                label: 'Cliente',
+                attribute: 'tenant_id',
+                //listAttribute: 'name',
+                type: 'system/tenant.name',
+                //type: Object,
+                // TODO Agregar un filtro, solo para traer los roles de cliente.
+                pagination: false,
+                multiple: false,
+                //custom: true,
+                //componentProps: {multiple:false},
+                //componentProps: { options: {fullwidth: true} },
+                component: SelectInput,
+                //searchField: "subdomain"
+                processor: 'Null',
+            },
+            {
+                attribute: 'active',
+                type: Boolean,
+                inList: true,
+                label: 'Activo',
+                tab: 'Datos Usuario',
+                processor: 'Boolean',
+            },
+            /*{
+              attribute: 'avatar',
+              listAttribute: 'system/userclients.avatar',
+              type: ImageInput, // TODO: el componente no muestra la imágen
+              inList: false,
+              label: 'Imágen',
+              tab: 'Datos Usuario',
+              processor: 'RawFile',
+              //validate: (password: string) => (password && password.length >= 6 ? undefined : <div>Password is too short</div>)
+          },*/
+        ],
+        //references: [{ reference: 'roles', target: 'role', schema: rolesSchema }]
+        //references: [{ reference: 'roles', target: 'id', schema: roleSchema }],
+        icon: <Person />,
+        redirectAfterUpdate: false,
+        showDialogAfterSubmit: true,
+        showNotifyAfterSubmit: true,
+        menu: [
+            {
+                title: 'Usuarios',
+                redirect: '/system/user',
+            },
+        ],
+        //{
+        //    title: "Papelera",
+        //    redirect: "/trash/admin/user",
+        //}],
+        mainAction: {
+            title: 'Crear usuario',
+            // type: "ghost",
+            redirect: '/system/user/create',
+        },
+        mutationMode: 'pessimistic',
+        isFormData: true,
+        dataGridProps: { stickyHeader: true },
+        dataGridWrapper: (props: any) => (
+            <TableContainer sx={{ maxHeight: 800 }}>{props.children}</TableContainer>
+        ),
+        formPostFormatter: (params, form) => {
+            return form;
+        },
+        postFormatter: (params, method) => {
+            /* if (!params.meta) {
+        params.meta = {
+          method: "PUT",
+        };
+      } else {
+        params.meta.method = "PUT";
+      }*/
+            if (method === 'update') {
+                params._method = 'PUT';
+            }
+            params.role_id = params.role_ids ? params.role_ids[0] : null;
+
+            return params;
+        },
+        ...drawerSettings,
     },
+    {
+        roles: [DASHAppConstants.system.SYSTEM_ROLE],
+        component: ResourceTemplate,
+        customRoutes: (resourceConfig) => TenantImpersonateResource(resourceConfig),
+        model: 'system/tenant',
+        label: 'Clientes',
+        schema: tenantSystemAdminSchema,
+        //references: [{ reference: 'roles', target: 'role', schema: rolesSchema }]
+        //references: [{ reference: 'roles', target: 'gitid', schema: roleSchema }],
+        icon: <Person />,
+        group: 'Recursos de sistema',
+        menu: [{
+            title: 'Clientes',
+            redirect: '/system/tenant',
+        },
+        {
+            title: 'Impersonar',
+            redirect: '/system/tenant/impersonate',
+        },
 
-    search: false,
-    exporter: false,
-    postFormatter: (params) => {
-      if (params.systemMarketplaces) {
-        params.system_marketplace_ids = params.systemMarketplaces.map((item) => item.id);
-      }
-      return params;
+        ],
+        create: true,
+
+        mainAction: {
+            title: 'Crear cliente',
+            redirect: '/system/tenant/create',
+            //mode: 'create',
+            //fn: 'redirect'
+        },
+
+        search: false,
+        exporter: false,
+        postFormatter: (params) => {
+            if (params.systemMarketplaces) {
+                params.system_marketplace_ids = params.systemMarketplaces.map((item) => item.id);
+            }
+            return params;
+        },
+        redirectAfterUpdate: false,
+
+        mutationMode: 'pessimistic',
+        dataGridProps: { stickyHeader: true },
+        dataGridWrapper: (props: any) => <TableContainer sx={{ maxHeight: 800 }} >{props.children}</TableContainer>,
+        //listEditButton: { enabled: true },
+
+        ...drawerSettings,
+        redirectAfterCreate: true,
+
+        //toolbarCreateButton: { enabled: true },
+        //listEditButton: { enabled: true, component: QuickEditButton, props: { icon: <Bolt />, label: "", resource: "tenant/inline", navigation:"virtualhash", navigate: (id) => id, size: "small", color: "secondary" }},
+
+
     },
-    redirectAfterUpdate: false,
-
-    mutationMode: 'pessimistic',
-    dataGridProps: { stickyHeader: true },
-    dataGridWrapper: (props: any) => <TableContainer sx={{ maxHeight: 800 }} >{props.children}</TableContainer>,
-    //listEditButton: { enabled: true },
-
-    ...drawerSettings,
-    redirectAfterCreate: true,
-
-    //toolbarCreateButton: { enabled: true },
-    //listEditButton: { enabled: true, component: QuickEditButton, props: { icon: <Bolt />, label: "", resource: "tenant/inline", navigation:"virtualhash", navigate: (id) => id, size: "small", color: "secondary" }},
-
-
-  },
 ];
 
 

@@ -5,7 +5,7 @@ import { PaginationProps, useUnselectAll } from 'react-admin/src';
 import { List } from 'react-admin';
 
 import IDashAutoAdminResourceConfig from './interfaces/IDashAutoAdminResourceConfig';
-import { FC, JSX, useEffect, useState } from 'react';
+import { FC, Fragment, JSX, useEffect, useState } from 'react';
 import ExtendedPagination from './mui/components/ExtendedPagination';
 
 import DashAutoListDefaultListActionsWrapper from './list/DashAutoListDefaultActionsWrapper';
@@ -22,7 +22,7 @@ export interface IDashAutoList {
 	dataGridProps?: any;
 	children?: any;
 	Pagination?: FC<PaginationProps>;
-	stickyHeader?: boolean;
+	//stickyHeader?: boolean;
 }
 
 const DashAutoList: React.FC<IDashAutoList> = ({
@@ -34,7 +34,7 @@ const DashAutoList: React.FC<IDashAutoList> = ({
 	Pagination,
 	children,
 	// eslint-disable-next-line no-unused-vars
-	stickyHeader = false,
+	//stickyHeader = false,
 	dataGridProps,
 	...listProps
 }) => {
@@ -55,12 +55,12 @@ const DashAutoList: React.FC<IDashAutoList> = ({
 	const [, setHandleLoading] = useState<boolean>(false);
 
 	useEffect(() => {
-		window.addEventListener('ra-auto-global-loader', (e: any) => {
+		window.addEventListener('dash-global-loader', (e: any) => {
 			if (resourceConfig.model === e.data.resource)
 				setHandleLoading(e.data.value);
 		});
 		return () => {
-			window.removeEventListener('ra-auto-global-loader', (e: any) => {
+			window.removeEventListener('dash-global-loader', (e: any) => {
 				if (resourceConfig.model === e.data.resource)
 					setHandleLoading(e.data.value);
 			});
@@ -82,13 +82,16 @@ const DashAutoList: React.FC<IDashAutoList> = ({
 
 	// No need to pass any filters to the list anymore, as the <PostFilterForm> component will display them.
 	//const [finalListProps, setFinalListProps] = useState(null);
+
+
 	const finalListProps = 
 {
 	/* default storeKey */
     sort: { field: 'id', order: 'ASC' },
 	storeKey: resourceConfig?.model,
-	...listProps,
-	...(resourceConfig.listProps && resourceConfig.listProps),
+
+    ...listProps,
+    ...(resourceConfig.listProps || {}),
 	/** If resourceConfig toolbar disabled, then disable the default react-admin toolbar by setting actions:null */
 	...(resourceConfig.toolbar === false || ((autoFilters && autoFilters.length < 1) && !resourceConfig.toolbar === true)
 		? { actions: null }
@@ -108,8 +111,8 @@ const DashAutoList: React.FC<IDashAutoList> = ({
 			) }),
 	pagination: Pagination ? <Pagination {...resourceConfig.paginationProps} /> : <ExtendedPagination {...resourceConfig.paginationProps} />,
 	...(exporter && { exporter: exporter }),
-
-	//bulkActionButtons: BulkActions || DefaultBulkActions,
+    ...(resourceConfig.bulkActionButtons && { bulkActionButtons: resourceConfig.bulkActionButtons }),
+	
 };
 
 
@@ -117,11 +120,12 @@ const DashAutoList: React.FC<IDashAutoList> = ({
 	return resourceConfig.listComponent ? (
 		resourceConfig.listComponent(resourceConfig, onSubmit, onError)
 	) : (
-		<List  {...finalListProps}>
+		<List {...finalListProps} >
 			{resourceConfig.dataGridComponent ? (
 				<resourceConfig.dataGridComponent
 					resourceConfig={resourceConfig}
 					dataGridProps={_dataGridProps}
+                    
 				/>
 			) : (
 				<DashAutoListDataGridWrapper

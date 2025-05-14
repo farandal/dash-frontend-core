@@ -1,4 +1,4 @@
-import { PropsWithChildren } from "react";
+import { PropsWithChildren, useEffect, useState } from "react";
 import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
 import DASHAdminSystemConstants from "./config/DASHAdminSystemConstants";
 import { AnimatePresence } from "framer-motion";
@@ -35,36 +35,51 @@ const RoutingWrapper: React.FC<IDASHRoutingWrapper> = ({Wrapper,BrowserRouterCom
 
 export const AnimatedRoutesWrapper: React.FC<PropsWithChildren> = ({ children }) => {
     const location = useLocation();
-
-    //let method = DASHAdminSystemConstants.system.PAGE_TRANSITIONS ? "wait" : "sync";
-    //let transitionEnabled = DASHAdminSystemConstants.system.PAGE_TRANSITIONS;
     let method = "wait";
     let transitionEnabled = true;
     const pathParts = location.pathname.split('/');
     const lastPart = pathParts[pathParts.length - 1];
+    const [show, setShow] = useState(false);
+
     if (!isNaN(parseInt(lastPart))) { method = 'sync'; }
-    // WORK IN PROGRESS, It works, but when editing forms is can be annoying for the user moving around tabs.
-    return transitionEnabled ? <AnimatePresence
 
-        mode={method as "wait" | "sync" | "popLayout"}
-        onExitComplete={() => {
-            // This ensures animations complete properly
-        }}
+    useEffect(() => {
+        // Set show to true when location changes
+        setShow(true);
+        
+        // Clean up animation when component unmounts
+        return () => {
+            setShow(false);
+        };
+    }, [location.pathname]);
 
-    >
-        <Routes location={location} key={location.pathname}>
-            <Route
-                element={
-                    <MotionWrapper
-                        pageTransition={false}
-                        loadingSpinner={true}
-                        transitionDuration={0.5}
-                    />
-                }
-            >
-                {children}
-            </Route>
-        </Routes>
-    </AnimatePresence> : <Routes location={location} key={location.pathname}>{children}</Routes>;
+    return transitionEnabled ? (
+        <AnimatePresence
+            mode={method as "wait" | "sync" | "popLayout"}
+            onExitComplete={() => {
+                console.log('AnimatedRoutesWrapper onExitComplete');
+                // Don't set show to false immediately - let MotionWrapper handle this
+            }}
+        >
+            <Routes location={location} key={location.pathname}>
+                <Route
+                    element={
+                        <MotionWrapper
+                            pageTransition={true}
+                            loadingSpinner={true}
+                            transitionDuration={0.5}
+                            initialShow={show}
+                            maxTimeOut={8000} // Match this with your animation needs
+                        />
+                    }
+                >
+                    {children}
+                </Route>
+            </Routes>
+        </AnimatePresence>
+    ) : (
+        <Routes location={location} key={location.pathname}>{children}</Routes>
+    );
 }
+
 export default RoutingWrapper;

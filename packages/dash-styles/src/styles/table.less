@@ -46,10 +46,6 @@
 
 /* Stikcy header */
 
-.sticky-header-wrapper .RaDatagrid-tableWrapper {
-  max-height: calc(~"100vh - 90px"); // minus the floating paginator size
-  box-sizing: border-box;
-}
 /*
 .sticky-header-wrapper.sortable-datagrid .RaDatagrid-thead {
   display: inline;
@@ -142,4 +138,58 @@
           }
       }
   }
+}
+
+
+
+/* Sticky header updated */
+.dash-sticky-header {
+
+.RaDatagrid-tableWrapper {
+  max-height: calc(~"100vh - 90px"); // minus the floating paginator size
+  box-sizing: border-box;
+}
+
+.RaDatagrid-root {
+  // Make sure the table container has a defined height and scrolling
+  .RaDatagrid-tableWrapper {
+    max-height: 70vh; // Adjust this value based on your needs
+    overflow-y: auto;
+    position: relative;
+  }
+
+  // Enhance the sticky header
+  .MuiTable-stickyHeader {
+    .MuiTableHead-root {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      //background-color: #fff; // Match your theme background
+
+      // Add shadow to make the header stand out
+      &::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: 2px;
+        background: rgba(0, 0, 0, 0.1);
+      }
+    }
+  }
+
+  // Ensure header cells have proper background
+  .MuiTableCell-stickyHeader {
+    //background-color: #fff; // Match your theme background
+    font-weight: bold;
+  }
+}
+
+// Add responsive styles for smaller screens
+@media (max-width: 768px) {
+  .RaDatagrid-tableWrapper {
+    max-height: 60vh;
+  }
+}
 }

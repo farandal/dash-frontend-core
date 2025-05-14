@@ -18,7 +18,7 @@ interface AutoDataGridProps {
     /** Schema,(optional) resolves from resourceConfig, but in some cases without schema could work, not tested. */
     schema?: IDashAutoAdminAttribute[];
     /** BulkActions,(optional) resolves from resourceConfig, but in some cases without schema could work, not tested. */
-    bulkActions?: any;
+    //bulkActionButtons?: any;
     resourceConfig?: IDashAutoAdminResourceConfig;
     className?: string;
 }
@@ -28,7 +28,7 @@ export type IAutoDataGrid = AutoDataGridProps /* & typeof Datagrid*/;
 const AutoDataGrid: React.FC<IAutoDataGrid> = ({
     resourceConfig,
     schema,
-    bulkActions,
+    //bulkActionButtons,
     ...dataGridProps
 }) => {
     const _schema: IDashAutoAdminAttribute[] = resourceConfig?.schema || schema;
@@ -44,8 +44,8 @@ const AutoDataGrid: React.FC<IAutoDataGrid> = ({
     const processedDataGridProps = {
         ...resourceConfig.dataGridProps,
         ...dataGridProps,
-        ...(!!resourceConfig.BulkActions || !!bulkActions) ? { bulkActionButtons: resourceConfig.BulkActions || bulkActions } : { bulkActionButtons: false },
-    };
+        //...bulkActionButtons ? {bulkActionButtons: bulkActionButtons} : {}
+    }
 
     /*
     const _edit = evalActionPermission(resourceConfig, resourceConfig?.edit);
@@ -64,11 +64,12 @@ const AutoDataGrid: React.FC<IAutoDataGrid> = ({
     */
 
     // TODO gridWrapperProps
-    const DefaultGridWrapper = ({ children, ...gridWrapperProps }) => {
+    const DefaultGridWrapper = (props) => {
+        const { children, className, gridWrapperProps } = props;
         return (
             <TableContainer
                 sx={{ mt: 1 }}
-                className={'dash-datagrid-wrapper'}
+                className={'dash-datagrid-wrapper '+(className || '')}
                 {...gridWrapperProps}
             >
                 {children}
@@ -79,10 +80,9 @@ const AutoDataGrid: React.FC<IAutoDataGrid> = ({
     const DataGridWrapper = resourceConfig.dataGridWrapper || DefaultGridWrapper;
     const DataGridRootComponent: typeof Datagrid =
         resourceConfig.dataGridRootComponent || Datagrid;
-
+      
     return (
-        <DataGridWrapper>
-
+        <DataGridWrapper className={resourceConfig?.dataGridProps?.stickyHeader ? 'dash-sticky-header' : ''}>
             <DataGridRootComponent {...processedDataGridProps}>
                 {!schemaIncludesId && !(resourceConfig.hideSchemaId === true) && (
                     <TextField

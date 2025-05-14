@@ -5,6 +5,7 @@ import { Loading } from 'react-admin';
 import { ErrorBoundary } from 'react-error-boundary';
 import LoaderAnimation from 'react-spinners/PuffLoader';
 
+
 const ErrorFallback = ({ error, resetErrorBoundary }) => {
 	return <Loading loadingPrimary='Error' loadingSecondary={error.message} />;
 };
@@ -30,16 +31,10 @@ const AppAsyncWrapper: React.FC<any> = () => {
 					<AppComponent />
 				</Suspense>
 			</ErrorBoundary>
-			<GlobalLoader overlayBackground='rgba(255, 255, 255, 0.0)'>
-				<LoaderAnimation
-					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-					// @ts-ignore
-					size={20}
-					color={'#222'}
-					//loading={loading}
-					// css={spinnerStyle}
-				/>
-			</GlobalLoader>
+            <GlobalLoader>
+                {/*<SlideInSpinner transitionDuration={0.5}  isSlideIn={true} />*/}
+                ...
+            </GlobalLoader>
 		</>
 	);
 };

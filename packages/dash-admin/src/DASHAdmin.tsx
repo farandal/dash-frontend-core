@@ -268,7 +268,7 @@ const DASHAdminApp: React.FC<IDASHAdmin<unknown, unknown, unknown, unknown, unkn
   const AsyncResources: React.FC<IAsyncResources> = (p) => {
     const { resources: res, ...rest } = p;
 
-    const _resources = res.map((originalResource) => {
+    const _resources = res.map((originalResource:any /*IDashAutoAdminResourceConfig)*/) => {
 
       /* Deprecated 
 

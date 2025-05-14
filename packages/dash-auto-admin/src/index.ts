@@ -22,7 +22,6 @@ export type { IDashAutoLayoutRenderFunction } from './DashAutoLayout';
 export type { IDashAutoAdminDataGrid } from './list/DashAutoListDatagridWrapper';
 export type { IDashAutoList } from './DashAutoList';
 
-export { default as ResourceTemplate } from './ResourceTemplate';
 /** Utils */
 export { default as isComponent } from './utils/isComponent';
 export { default as isFC } from './utils/isFC';
@@ -31,6 +30,8 @@ export { default as invertMap } from './utils/invertMap';
 export { default as enumToChoices } from './utils/enumToChoices';
 export { default as groupByTabs } from './utils/groupByTabs';
 export { default as validate } from './utils/validate';
+
+export { default as DashRedirect } from './DashRedirect';
 
 export { default as evalActionPermission } from './utils/evalActionPermission';
 

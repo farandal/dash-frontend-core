@@ -14,6 +14,7 @@
     "new": "chmod +x ./new.sh && sh ./new.sh",
     "dev": "cd apps/dash && yarn dev",
     "dev:prod": "cd apps/dash && yarn dev:prod",
+    "dev:ngrok": "cd apps/dash && yarn dev:ngrok",
     "dev-win": "cd apps/dash && yarn dev-win",
     "build": "rimraf node_modules/.turbo node_modules/.vite && turbo build --filter=!./packages/react-18-beautiful-dnd-grid --force",
     "build-win": "rimraf node_modules/.turbo node_modules/.vite && turbo build --filter=!./packages/react-18-beautiful-dnd-grid --force",    
@@ -24,7 +25,6 @@
     "electron-dev:local": "vite build -c electron.vite.config.ts && cross-env NODE_ENV=development BUILD_ENV=dev concurrently \"cd apps/dash && yarn dev:desktop:local &\" \"wait-on http://127.0.0.1:3006 && electron .\"",
     "electron-dev:prod": "vite build -c electron.vite.config.ts && cross-env NODE_ENV=development BUILD_ENV=prod concurrently \"cd apps/dash && yarn dev:desktop:prod &\" \"wait-on http://127.0.0.1:3006 && electron .\"",
    
-
     "electron-prod": "electron-icon-builder --input=./apps/dash/src/assets/logo.png --output=./  && cross-env BUILD_ENV=prod IS_ELECTRON=true vite build -c electron.vite.config.ts && cross-env NODE_ENV=production BUILD_ENV=prod IS_ELECTRON=true yarn build &&  electron-builder --config electron-builder.config.js",   
 
     "electron-dev-win": "vite build -c electron.vite.config.ts && cross-env NODE_ENV=development BUILD_ENV=dev concurrently --kill-others --raw \"cd apps/dash && yarn dev-win\" \"wait-on -v http://127.0.0.1:3006 && electron .\"",

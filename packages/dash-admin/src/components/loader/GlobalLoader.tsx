@@ -5,44 +5,52 @@
  * @desc @farandal React Boilerplate Framework - 2020
  */
 
-import React, { PropsWithChildren } from 'react';
+import { deepmerge } from '@mui/utils';
+
+import React, { PropsWithChildren, useEffect } from 'react';
 import LoadingOverlay from 'react-loading-overlay-ts';
 import useGlobalLoaderMgr from '../../hooks/useGlobalLoaderMgr';
 
 interface IGlobalLoader extends PropsWithChildren {
-	color?: string;
-	size?: number;
-	overlayBackground?: string;
+	styles?: any;
 }
 
 const GlobalLoader: React.FC<IGlobalLoader> = ({
-	color = '#222',
-	size = 30,
-	overlayBackground,
-	children,
+	styles,
+    children,
 	...props
 }) => {
 	const [loading, setLoading] = useGlobalLoaderMgr();
-	return loading ? (
-		<LoadingOverlay
-			className='loadingOverlay'
-			active={loading}
-			styles={{
-				wrapper: {
-					width: '100%',
-					height: '100%',
-					overflow: loading ? 'hidden' : 'scroll',
-				},
-				overlay: (base) => ({
-					...base,
-					background: overlayBackground || 'rgba(255, 255, 255, 0.0)',
-				}),
-			}}
-			spinner={children}
-		/>
-	) : (
-		<></>
-	);
+
+  
+    
+    	useEffect(() => {
+    		console.log('GlobalLoader loading state changed:', loading);
+    1	}, [loading]);
+    
+
+    const _styles = deepmerge(
+        {
+            wrapper: {
+                width: '100%',
+                height: '100%',
+                overflow: loading ? 'hidden' : 'scroll',
+            },
+            overlay: (base) => ({
+                ...base,
+            }),
+        },
+        styles
+    );
+
+   
+    return loading ? <LoadingOverlay
+        className='loadingOverlay'
+        active={loading}
+        styles={_styles}
+        spinner={children}
+    /> : <></>
+
 };
 
 export default GlobalLoader;

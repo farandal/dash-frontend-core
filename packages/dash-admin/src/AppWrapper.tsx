@@ -3,6 +3,7 @@ import { GlobalLoader } from 'dash-admin';
 import { Loading } from 'react-admin';
 import { ErrorBoundary } from 'react-error-boundary';
 import LoaderAnimation from 'react-spinners/PuffLoader';
+//import { SlideInSpinner } from './layout/MotionWrapper';
 
 const ErrorFallback = ({ error, resetErrorBoundary }) => {
     return <Loading loadingPrimary='Error' loadingSecondary={error.message} />;
@@ -32,14 +33,9 @@ const AppWrapper: React.FC<PropsWithChildren> = (props) => {
                     {children}
                 </Suspense>
             </ErrorBoundary>
-            <GlobalLoader overlayBackground='rgba(255, 255, 255, 0.0)'>
-                <LoaderAnimation
-                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                    // @ts-ignore
-                    size={20}
-                    color={'#222'}
-                    loading={isPending || isInitialRender}
-                />
+            <GlobalLoader>
+                {/*<SlideInSpinner transitionDuration={3} />*/}
+                ...
             </GlobalLoader>
             <div className={!isPending && !isInitialRender ? 'dash-splash fade-out' : 'dash-splash'}></div>
         </>

@@ -47,7 +47,7 @@ const DashAutoAdminForm: React.FC<IDashAutoAdminForm> = ({
 		async (values) => {
 			if (debug) console.log('onCreateSave called with values:', values);
 			window.dispatchEvent(
-				new MessageEvent('ra-auto-global-loader', { data: true }),
+				new MessageEvent('dash-global-loader', { data: true }),
 			);
 			try {
 				if (beforeSubmit) {
@@ -72,7 +72,7 @@ const DashAutoAdminForm: React.FC<IDashAutoAdminForm> = ({
 				}
 			} finally {
 				window.dispatchEvent(
-					new MessageEvent('ra-auto-global-loader', { data: false }),
+					new MessageEvent('dash-global-loader', { data: false }),
 				);
 			}
 		};
@@ -81,7 +81,7 @@ const DashAutoAdminForm: React.FC<IDashAutoAdminForm> = ({
 		async (values) => {
 			if (debug) console.log('onUpdateSave called with values:', values);
 			window.dispatchEvent(
-				new MessageEvent('ra-auto-global-loader', { data: true }),
+				new MessageEvent('dash-global-loader', { data: true }),
 			);
 
 			try {
@@ -107,7 +107,7 @@ const DashAutoAdminForm: React.FC<IDashAutoAdminForm> = ({
 				}
 			} finally {
 				window.dispatchEvent(
-					new MessageEvent('ra-auto-global-loader', { data: false }),
+					new MessageEvent('dash-global-loader', { data: false }),
 				);
 			}
 		};

@@ -7,7 +7,7 @@ import {
     IDashAutoAdminResourceConfig,
     evalActionPermission,
 } from 'dash-auto-admin';
-import React from 'react';
+import React, { PropsWithChildren } from 'react';
 import MotionWrapper from '../layout/MotionWrapper';
 import Redirect from '../components/Redirect';
 import { ResourceTemplateCreate } from './ResourceTemplateCreate';
@@ -16,16 +16,14 @@ import { ResourceTemplateList } from './ResourceTemplateList';
 import { ResourceTemplateShow } from './ResourceTemplateShow';
 import DASHAdminSystemConstants from '../config/DASHAdminSystemConstants';
 import TrashTemplate from './TrashTemplate';
+import { DashResourceProvider } from '../contexts/DashResourceContext';
 
-export interface IResourceTemplateController {
+export interface IResourceTemplate {
     resourceConfig: IDashAutoAdminResourceConfig;
 }
 
-export const ResourceTemplate = (
-    resourceConfig: IDashAutoAdminResourceConfig,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
-    children = null,
-) => {
+export const ResourceTemplate = (resourceConfig:IDashAutoAdminResourceConfig) => {
+  
     const debug = false;
 
     const _create = evalActionPermission(resourceConfig, resourceConfig?.create);
@@ -67,14 +65,14 @@ export const ResourceTemplate = (
                         <Route
                             path={URL_PREFIX + resourceConfig.model + '/create'}
                             element={
-                                <Redirect
+                                <DashResourceProvider resourceConfig={resourceConfig}><Redirect
                                     stateHashPattern={
                                         URL_PREFIX + resourceConfig.model + '/inline/create'
                                     }
                                     method='list'
                                     drawerMethod='create'
                                     resourceConfig={resourceConfig}
-                                />
+                                /></DashResourceProvider>
                             }
                         />
                     )}
@@ -82,12 +80,12 @@ export const ResourceTemplate = (
                         <Route
                             path={URL_PREFIX + resourceConfig.model + '/inline'}
                             element={
-                                <Redirect
+                                <DashResourceProvider resourceConfig={resourceConfig}><Redirect
                                     stateHashPattern={URL_PREFIX + resourceConfig.model + '/inline'}
                                     method='list'
                                     drawerMethod='edit'
                                     resourceConfig={resourceConfig}
-                                />
+                                /></DashResourceProvider>
                             }
                         />
                     )}
@@ -95,7 +93,7 @@ export const ResourceTemplate = (
                         <Route
                             path={URL_PREFIX + resourceConfig.model + '/inline/:' + idParamName}
                             element={
-                                <Redirect
+                                <DashResourceProvider resourceConfig={resourceConfig}><Redirect
                                     stateHashPattern={
                                         URL_PREFIX +
                                         resourceConfig.model +
@@ -106,7 +104,7 @@ export const ResourceTemplate = (
                                     method='list'
                                     drawerMethod='edit'
                                     resourceConfig={resourceConfig}
-                                />
+                                /></DashResourceProvider>
                             }
                         />
                     )}
@@ -114,7 +112,7 @@ export const ResourceTemplate = (
                         <Route
                             path={URL_PREFIX + resourceConfig.model + '/inline/:' + idParamName + '/edit'}
                             element={
-                                <Redirect
+                                <DashResourceProvider resourceConfig={resourceConfig}><Redirect
                                     stateHashPattern={
                                         URL_PREFIX +
                                         resourceConfig.model +
@@ -125,7 +123,7 @@ export const ResourceTemplate = (
                                     method='list'
                                     drawerMethod='edit'
                                     resourceConfig={resourceConfig}
-                                />
+                                /></DashResourceProvider>
                             }
                         />
                     )}
@@ -133,7 +131,7 @@ export const ResourceTemplate = (
                         <Route
                             path={URL_PREFIX + resourceConfig.model + '/inline/:' + idParamName + '/show'}
                             element={
-                                <Redirect
+                                <DashResourceProvider resourceConfig={resourceConfig}><Redirect
                                     stateHashPattern={
                                         URL_PREFIX +
                                         resourceConfig.model +
@@ -144,7 +142,7 @@ export const ResourceTemplate = (
                                     method='list'
                                     drawerMethod='show'
                                     resourceConfig={resourceConfig}
-                                />
+                                /></DashResourceProvider>
                             }
                         />
                     )}
@@ -152,12 +150,12 @@ export const ResourceTemplate = (
                         <Route
                             path={URL_PREFIX + resourceConfig.model + '/inline/create'}
                             element={
-                                <Redirect
+                                <DashResourceProvider resourceConfig={resourceConfig}><Redirect
                                     stateHashPattern={URL_PREFIX + resourceConfig.model + '/inline/create'}
                                     method='list'
                                     drawerMethod='create'
                                     resourceConfig={resourceConfig}
-                                />
+                                /></DashResourceProvider>
                             }
                         />
                     )}
@@ -174,11 +172,11 @@ export const ResourceTemplate = (
                 icon={resourceConfig?.icon || <></>}
             >
 
-                <Route path="trash/*" element={<TrashTemplate resourceConfig={resourceConfig} />} />
-                {_list && <Route path={`/*`} element={<ResourceTemplateList resourceConfig={resourceConfig} />} />}
-                {_create && <Route path={`create/*`} element={<ResourceTemplateCreate resourceConfig={resourceConfig} />} />}
-                {_view && <Route path={`:id/show/*`}  element={<ResourceTemplateShow resourceConfig={resourceConfig} />} />}
-                {_edit && <Route path={`:id/*`} element={<ResourceTemplateEdit resourceConfig={resourceConfig} />} />}
+                <Route path="trash/*" element={ <DashResourceProvider resourceConfig={resourceConfig}><TrashTemplate resourceConfig={resourceConfig} /></DashResourceProvider>} />
+                {_list && <Route path={`/*`} element={ <DashResourceProvider resourceConfig={resourceConfig}><ResourceTemplateList resourceConfig={resourceConfig} /></DashResourceProvider>} />}
+                {_create && <Route path={`create/*`} element={ <DashResourceProvider resourceConfig={resourceConfig}><ResourceTemplateCreate resourceConfig={resourceConfig} /></DashResourceProvider>} />}
+                {_view && <Route path={`:id/show/*`}  element={ <DashResourceProvider resourceConfig={resourceConfig}><ResourceTemplateShow resourceConfig={resourceConfig} /></DashResourceProvider>} />}
+                {_edit && <Route path={`:id/*`} element={<DashResourceProvider resourceConfig={resourceConfig}><ResourceTemplateEdit resourceConfig={resourceConfig} /></DashResourceProvider>} />}
               
             </Resource>
         </>

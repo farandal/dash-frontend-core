@@ -79,6 +79,16 @@ const resources: IAppResourceConfig[] = [
     dataGridWrapper: (props: any) => (
       <TableContainer sx={{ maxHeight: 800 }}>{props.children}</TableContainer>
     ),
+    postFormatter: (data: any) => {
+       
+      delete data.permissions
+      return data
+    },
+    formPostFormatter: (data: any) => {
+      
+      delete data.permissions
+      return data
+    }
     /* references: [
              { reference: 'permission', tab: 'Permisos', target: 'role_id', schema: permissionSchema, type: "ReferenceManyField" },
          ],*/

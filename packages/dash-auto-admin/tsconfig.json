@@ -19,6 +19,6 @@
 		//"dash-types/types/src/index.d.ts",
 		"index.d.ts",
 		"src/index.d.ts"
-		//"rollup.config.ts"
+, "../dash-admin/src/contexts/DashResourceContext.tsx"		//"rollup.config.ts"
 	]
 }

@@ -449,7 +449,7 @@ const dataProvider = {
                 return response;
             } catch (e: any) {
                 window.dispatchEvent(
-                    new MessageEvent('ra-auto-global-loader', { data: false }),
+                    new MessageEvent('dash-global-loader', { data: false }),
                 );
                 window.dispatchEvent(new MessageEvent('GlobalError', { data: { error: e } }));
             }
@@ -533,7 +533,7 @@ const dataProvider = {
             return results;
         } catch (e: any) {
             window.dispatchEvent(
-                new MessageEvent('ra-auto-global-loader', { data: false }),
+                new MessageEvent('dash-global-loader', { data: false }),
             );
             window.dispatchEvent(new MessageEvent('GlobalError', { data: { error: e } }));
         }
@@ -600,7 +600,7 @@ const dataProvider = {
             };
        /* } catch (e: any) {
             window.dispatchEvent(
-                new MessageEvent('ra-auto-global-loader', { data: false }),
+                new MessageEvent('dash-global-loader', { data: false }),
             );
             window.dispatchEvent(new MessageEvent('GlobalError', { data: { error: e } }));
         } */
@@ -627,7 +627,7 @@ const dataProvider = {
             return data;
         /*} catch (e: any) {
             window.dispatchEvent(
-                new MessageEvent('ra-auto-global-loader', { data: false }),
+                new MessageEvent('dash-global-loader', { data: false }),
             );
             window.dispatchEvent(new MessageEvent('GlobalError', { data: { error: e } }));
         }*/

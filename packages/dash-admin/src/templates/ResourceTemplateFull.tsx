@@ -21,20 +21,23 @@ import {
 } from 'react-admin';
 import {
     DashAutoCreate,
+    DashAutoDrawer,
     DashAutoEdit,
     DashAutoList,
     DashAutoReferenceTab,
     DashAutoTabs,
     DashAutoTitle,
-} from './';
-import DashAutoDrawer from './DashAutoDrawer';
-import IDashAutoAdminResourceConfig from './interfaces/IDashAutoAdminResourceConfig';
-import evalActionPermission from './utils/evalActionPermission';
-import DashRedirect from './DashRedirect';
-import DashAutoAdminSaveButton from './DashAutoAdminSaveButton';
+    DashRedirect,
+    evalActionPermission,
+    IDashAutoAdminResourceConfig,
+} from 'dash-auto-admin';
+
+
+import { DashResourceProvider } from 'dash-admin/src/contexts/DashResourceContext';
+import DashAutoAdminSaveButton from 'dash-auto-admin/src/DashAutoAdminSaveButton';
 // TODO: The following dependencies shpuld not depend on @dashboard
 
-export const ResourceTemplate = (
+export const ResourceTemplateFull = (
     resourceConfig: IDashAutoAdminResourceConfig,
     ResourceLayout: React.FC<PropsWithChildren<{ resourceConfig: IDashAutoAdminResourceConfig }>>,
     dashConstants: IDASHAppConstants,
@@ -77,7 +80,7 @@ export const ResourceTemplate = (
     };
 
     return (
-        <>
+        <DashResourceProvider resourceConfig={resourceConfig}>
             <CustomRoutes>
                 {typeof resourceConfig.customRoutes === 'function' &&
                     resourceConfig.customRoutes(resourceConfig)}
@@ -225,7 +228,7 @@ export const ResourceTemplate = (
                                     onSubmit={onSubmit}
                                     onError={onError}
                                     // custom form Domain project:
-                                    stickyHeader={true}
+                                    //stickyHeader={true}
                                     {...(resourceConfig.Pagination && {
                                         Pagination: resourceConfig.Pagination,
                                     })}
@@ -567,9 +570,10 @@ export const ResourceTemplate = (
                         </ResourceLayout>
                     );
                 }}
+                /* @ts-ignore */
                 icon={resourceConfig.icon}
             />
-        </>
+        </DashResourceProvider>
     );
 };
-export default ResourceTemplate;
+export default ResourceTemplateFull;

@@ -15,13 +15,13 @@ import { useDialog } from 'dash-dialog';
 import DashAutoAdminSaveButton from 'dash-auto-admin/src/DashAutoAdminSaveButton';
 import React from 'react';
 import ResourceLayout from '../layout/ResoureLayout';
-import { IResourceTemplateController } from './ResourceTemplate';
+import { IResourceTemplate } from './ResourceTemplate';
 import { parseAxiosError } from '../helpers/parseAxiosError';
+import { useDashResource } from '../contexts/DashResourceContext';
 
 
-export const ResourceTemplateEdit: FC<IResourceTemplateController> = (props) => {
-	const { resourceConfig } = props;
-
+export const ResourceTemplateEdit: FC<IResourceTemplate> = (props) => {
+	const {resourceConfig} = props;
 	const notify = useNotify();
 
 	const redirect = useRedirect();

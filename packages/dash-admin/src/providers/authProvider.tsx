@@ -66,7 +66,7 @@ export default {
 		const errorStatus = error?.response?.status;
 		
 		window.dispatchEvent(
-			new MessageEvent('ra-auto-global-loader', { data: false }),
+			new MessageEvent('dash-global-loader', { data: false }),
 		);
 		if (errorStatus) {
 			switch (errorStatus) {

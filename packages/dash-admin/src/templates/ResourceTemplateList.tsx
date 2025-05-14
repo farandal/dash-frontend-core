@@ -10,12 +10,13 @@ import {
 import { useDialog } from 'dash-dialog';
 import React from 'react';
 import ResourceLayout from '../layout/ResoureLayout';
-import { IResourceTemplateController } from './ResourceTemplate';
+import { IResourceTemplate } from './ResourceTemplate';
 import { parseAxiosError } from '../helpers/parseAxiosError';
+import { useDashResource } from '../contexts/DashResourceContext';
 
-export const ResourceTemplateList: FC<IResourceTemplateController> = (props) => {
+export const ResourceTemplateList: FC<IResourceTemplate> = (props) => {
   
-	const { resourceConfig } = props;
+	const {resourceConfig} = useDashResource()
 	const notify = useNotify();
 	const redirect = useRedirect();
 	const dialog = useDialog();
@@ -101,7 +102,7 @@ export const ResourceTemplateList: FC<IResourceTemplateController> = (props) => 
 				resourceConfig={resourceConfig}
 				onSubmit={onSubmit}
 				onError={onError}
-				stickyHeader={true}
+				//stickyHeader={true}
 				{...(resourceConfig.Pagination && {
 					Pagination: resourceConfig.Pagination,
 				})}
