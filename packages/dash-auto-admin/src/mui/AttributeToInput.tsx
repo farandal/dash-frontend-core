@@ -41,10 +41,8 @@ import { useSelector } from 'react-redux';
 import { IDASHAppState } from 'dash-admin-state';
 import { useEditContext } from 'react-admin';
 import { useFormContext } from 'react-hook-form';
+import { useComponentRegistry } from '../DashAutoAdminComponentRegistry';
 
-import { Json, JsonColorSelector } from 'dash-components';
-
-//export type ICustomRAButton<T extends RaRecord> = ShowButtonProps;
 export interface IGroupExtraData {
     name: string;
     icon?: JSX.Element;
@@ -68,9 +66,7 @@ const FunctionFieldWrapper = ({
     const sortable = input?.sortable === true ? true : false;
 
     const {
-
         formState: { errors },
-
     } = useFormContext()
 
 
@@ -86,7 +82,6 @@ const FunctionFieldWrapper = ({
                     sortable={sortable}
                     {...(sortable && { sortBy: input.listAttribute || input.attribute })}
                     render={(record) => {
-
                         return React.cloneElement(children, { record: record });
                     }}
                 />
@@ -123,18 +118,6 @@ const FunctionFieldWrapper = ({
  * The function returns a JSX element that represents the input field, wrapped in a `FunctionFieldWrapper` component. The `FunctionFieldWrapper` component handles the rendering of the input field based on the current operation mode.
 */
 
-const typeComponentMap: Record<string, React.FC<IDashAutoAdminCustomFieldComponent>> = {
-    "Json": Json,
-    "JsonColorSelector": JsonColorSelector
-}
-const typeComponentMapper = (type: string) => {
-    const component = typeComponentMap[type]
-    if (component) {
-        return { custom: true, type: "component", component }
-    }
-    return { custom: true, type: "component", component: () => <>No component for {type}</> }
-}
-
 const AttributeToInput = (
     method: 'list' | 'view' | 'create' | 'edit',
     resourceConfig: IDashAutoAdminResourceConfig,
@@ -142,22 +125,24 @@ const AttributeToInput = (
     index?: number,
     options?: IDashAutoAdminFormOptions,
 ) => {
+    // Get the component registry
+    const { components } = useComponentRegistry();
 
-       // Move all hook calls to the top level, before any conditional logic
-       const mode = options?.mode || 'view';
-       const editContext = useEditContext();
-       const recordContext = useRecordContext();
-       const record = options?.mode === 'edit' ? editContext : recordContext;
-       const location = useLocation();
-       const params = useParams();
-     
-    //export const AttributeToInput: React.FC<IAttributeToInput> = ({ input }) => {
-    /*let filter: any = {};
-  filter.pagination = input.pagination;
-  filter.searchField = input.searchField;*/
+    // Move all hook calls to the top level, before any conditional logic
+    const mode = options?.mode || 'view';
+    const editContext = method === 'edit' ? useEditContext() : undefined;       
+    const recordContext = useRecordContext();
+    const record = options?.mode === 'edit' ? editContext : recordContext;
+    const location = useLocation();
+    const params = useParams();
 
-    //const sortableField = input.sortable === true ? true : false;
- 
+    const typeComponentMapper = (type: string) => {
+        const component = components[type];
+        if (component) {
+            return { custom: true, type: "component", component };
+        }
+        return { custom: true, type: "component", component: () => <>No component for {type}</> };
+    };
 
     const ComponentWrapper =
         resourceConfig?.fieldWrapper &&
@@ -177,7 +162,6 @@ const AttributeToInput = (
             input.type dies not represents an Enum or Array.
     */
     if (typeof input.type === "string" && !input.type.includes(".") && !Array.isArray(input.type)) {
-
         switch (input.type) {
             case 'string':
             case 'text':
@@ -199,9 +183,7 @@ const AttributeToInput = (
                     ...(input.fieldProps || {}),
                     multiline: input?.fieldProps?.multiline ?? true,
                     rows: input?.fieldProps?.rows ?? 4,
-
                 };
-                //input.variant = "textarea";
                 break;
             case 'number':
             case 'Number':
@@ -216,8 +198,10 @@ const AttributeToInput = (
             case 'Date':
                 input.type = Date;
                 break;
+            case 'custom':
             default:
-                input = { ...input, ...typeComponentMapper(input.type) };
+                // Check if the component exists in the registry
+                input = { ...input, ...typeComponentMapper(typeof input?.component === "string" ? input.component : input.type) };
         }
     }
 
@@ -234,7 +218,6 @@ const AttributeToInput = (
                     resourceConfig={resourceConfig}
                 >
                     <TextInput
-
                         fullWidth
                         {...(record && { record: record })}
                         key={index}
@@ -252,8 +235,6 @@ const AttributeToInput = (
                                 ),
                             },
                         }}
-
-                    /*options={{...input.fieldProps,editable:false, InputProps:{readOnly: true}}}*/
                     />
                 </ComponentWrapper>
             </FunctionFieldWrapper>
@@ -282,7 +263,6 @@ const AttributeToInput = (
                             editable: false,
                             InputProps: { readOnly: true },
                         }}
-                    /*options={{...input.fieldProps,editable:false, InputProps:{readOnly: true}}}*/
                     />
                 </ComponentWrapper>
             </FunctionFieldWrapper>
@@ -296,7 +276,6 @@ const AttributeToInput = (
         (input.custom && input.component) ||
         (input.type === 'component' && input.component)
     ) {
-
         return (
             <FunctionFieldWrapper index={index} method={mode} input={input}>
                 <UserAction
@@ -306,7 +285,6 @@ const AttributeToInput = (
                     attribute={input}
                     resourceConfig={resourceConfig}
                 />
-
             </FunctionFieldWrapper>
         );
     }
@@ -332,7 +310,6 @@ const AttributeToInput = (
                                 input.fieldProps.onChange(e)
                             }
                         }}
-
                     />
                 </FunctionFieldWrapper>
             );
@@ -340,7 +317,6 @@ const AttributeToInput = (
         /* Recurse */
 
         if (typeof inputType === 'string') {
-
             const _params = {
                 ...params, ...(location.hash.match(/\d+/g) || []).map(Number).reduce((acc, curr, currentIndex) => {
                     acc[currentIndex] = curr;
@@ -353,9 +329,6 @@ const AttributeToInput = (
             const safeIfNull = (choice: any) =>
                 (choice ? choice[sourceName] : '?') || '??';
 
-            //   let filter:any = {};
-            //   if(input.pagination) filter.pagination = input.pagination;
-            //   if(input.searchField) filter.searchField = input.searchField;
             if (input && input.multiple === false && input.component) {
                 const CustomComponent = input.component;
                 return (
@@ -364,18 +337,15 @@ const AttributeToInput = (
                             key={index}
                             fullWidth
                             allowEmpty
-                            //sort={{ field: 'name', order: 'asc' }}
                             filter
                             pagination={false}
                             label={input.label}
                             reference={reference}
                             source={input.attribute}
-                            //queryOptions={{ refetchOnWindowFocus: false }}
                             {...input.componentProps}
                         >
                             <CustomComponent
                                 optionText={safeIfNull}
-                                //queryOptions={{ refetchOnWindowFocus: false }}
                                 method={'edit'} // edit because its AttributeToInput
                                 attribute={input}
                                 onChange={e => {
@@ -399,20 +369,15 @@ const AttributeToInput = (
                         key={index}
                         fullWidth
                         filter
-                        /*allowEmpty*/
                         pagination={false}
                         label={input.label}
                         reference={reference}
                         source={input.attribute}
                         {...input.componentProps}
-                    //queryOptions={{ refetchOnWindowFocus: false }}
                     >
-                        {/*input.component === 'AutocompleteInput'  ? <AutocompleteInput  optionText={safeIfNull} /> : <SelectInput optionText={safeIfNull}  />*/}
-
-                        <SingleFieldList /*link='show'*/>
-                            <ChipField source={sourceName} /*link='show'*/ />
+                        <SingleFieldList>
+                            <ChipField source={sourceName} />
                         </SingleFieldList>
-                        {/* <input.component  optionText={safeIfNull} /> */}
                     </ReferenceArrayInput>
                 </FunctionFieldWrapper>
             );
@@ -423,10 +388,8 @@ const AttributeToInput = (
                 <FunctionFieldWrapper index={index} method={mode} input={input}>
                     <ArrayInput
                         key={index}
-                        //fullWidth
                         label={input.label}
                         source={input.attribute}
-                    //queryOptions={{ refetchOnWindowFocus: false }}
                     >
                         <SimpleFormIterator>
                             {inputTypeArray.map((attribute, idx) =>
@@ -449,8 +412,6 @@ const AttributeToInput = (
                     label={input.label}
                     accept='image/*'
                     {...input.fieldProps}
-                //queryOptions={{ refetchOnWindowFocus: false }}
-
                 >
                     <ImageField source='src' title='title' />
                 </ImageInput>
@@ -472,12 +433,8 @@ const AttributeToInput = (
         </FunctionFieldWrapper>;
     }
 
-
     /* Special cases – Passing strings, passing enums */
     if (typeof input.type === 'string') {
-
-        /* table.field */
-
         const _params = {
             ...params, ...(location.pathname.match(/\d+/g) || []).map(Number).reduce((acc, curr, currentIndex) => {
                 acc[currentIndex] = curr;
@@ -485,12 +442,9 @@ const AttributeToInput = (
             }, {})
         };
 
-
         const _inputType = replaceParams(_params, input.type);
         const [reference, sourceName] = _inputType.split('.');
         const CustomComponent = input.component || SelectInput;
-
-
 
         if (input && input.multiple === false) {
             return (
@@ -503,12 +457,10 @@ const AttributeToInput = (
                         source={input.listAttribute || input.attribute}
                         reference={reference}
                         sort={{ field: sourceName, order: 'ASC' }}
-                        //queryOptions={{ refetchOnWindowFocus: false }}
                         {...input.componentProps}
                     >
                         <CustomComponent
                             optionText={sourceName}
-                            //queryOptions={{ refetchOnWindowFocus: false }}
                             method={'edit'} // edit because its AttributeToInput
                             attribute={input}
                             label={input?.label || ''}
@@ -534,16 +486,10 @@ const AttributeToInput = (
                     key={index}
                     reference={reference}
                     source={input.listAttribute || input.attribute}
-                    //queryOptions={{ refetchOnWindowFocus: false }}
                     {...input.componentProps}
                 >
-                    {/*<input.component optionText={sourceName} />*/}
-                    {/*<SingleFieldList >
-              <ChipField source={sourceName}  />
-         </SingleFieldList>*/}
                     <SelectArrayInput
                         optionText={sourceName}
-                        //queryOptions={{ refetchOnWindowFocus: false }}
                         fullWidth
                         label={input?.label || ''}
                         {...input.fieldProps}
@@ -570,7 +516,6 @@ const AttributeToInput = (
                         fullWidth
                         label={input.label}
                         source={input.attribute}
-                        /*options={input.fieldProps}*/
                         {...input.fieldProps}
                         onChange={e => {
                             if (options?.handleChange) {
@@ -620,7 +565,6 @@ const AttributeToInput = (
                         key={index}
                         label={input.label}
                         source={input.attribute}
-                        /*options={{ ...input.fieldProps, ampm: false }}*/
                         {...input.fieldProps}
                     />
                 </FunctionFieldWrapper>
@@ -630,7 +574,6 @@ const AttributeToInput = (
                         key={index}
                         label={input.label}
                         source={input.attribute}
-                        /*options={input.fieldProps}*/
                         {...input.fieldProps}
                         onChange={e => {
                             if (options?.handleChange) {
@@ -652,7 +595,6 @@ const AttributeToInput = (
                     label={input.label}
                     source={input.attribute}
                     choices={enumToChoices(input.type)}
-                    //queryOptions={{ refetchOnWindowFocus: false }}
                     options={input.fieldProps}
                     onChange={e => {
                         if (options?.handleChange) {
@@ -675,18 +617,13 @@ const AttributeToInput = (
             ...(input.slotProps ? { slotProps: input.slotProps } : {})
         }
 
-        //console.log("AttibuteToInput: Password",passwordProps)
-
         return (
             <FunctionFieldWrapper index={index} method={mode} input={input}>
-                <PasswordInput {...passwordProps}
-
-                />
+                <PasswordInput {...passwordProps} />
             </FunctionFieldWrapper>
         );
     }
     const textFieldProps = {
-        //key: index,
         label: input.label,
         source: input.listAttribute || input.attribute,
         ...input.fieldProps,
@@ -701,14 +638,11 @@ const AttributeToInput = (
         }
     }
 
-    //console.log("AttibuteToInput: TextInput",textFieldProps)
     return <FunctionFieldWrapper index={index} method={mode} input={input}>
-
         <TextInput
             {...textFieldProps}
         />
     </FunctionFieldWrapper>
-
 };
 
 export default AttributeToInput;

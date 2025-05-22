@@ -321,7 +321,7 @@ const DashAutoTabbedForm: React.FC<IDashAutoTabbedForm> = ({
                 {/* The downside, is can't implement hooks within the DashAutoFormTabs component */}
 				{DashAutoFormTabs({
 					schema: resourceConfig.schema,
-					resource: resourceConfig,
+					resourceConfig: resourceConfig,
 					options: { mode: mode, isDrawer: isDrawer },
 				})}
 			</TabbedForm>
@@ -360,10 +360,10 @@ const DashAutoTabbedForm: React.FC<IDashAutoTabbedForm> = ({
                     }
                 }}*/
 			>
-				{DashAutoFormGroups(resourceConfig.schema, resourceConfig, {
+				{DashAutoFormGroups({schema:resourceConfig.schema, resourceConfig, options:{
 					mode: mode,
 					isDrawer: isDrawer,
-				})}
+				}})}
 			</SimpleForm>
 		);
 	}

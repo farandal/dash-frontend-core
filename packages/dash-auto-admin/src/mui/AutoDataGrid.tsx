@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo, memo } from 'react';
 
 import {
     TextField,
@@ -7,28 +7,29 @@ import {
 
 import IDashAutoAdminAttribute from '../interfaces/IDashAutoAdminAttribute';
 import IDashAutoAdminResourceConfig from '../interfaces/IDashAutoAdminResourceConfig';
-//import IAutoGridButton from '../interfaces/IAutoGridButton';
 
 import { AttributeToField } from './AttributeToField';
 import { TableContainer } from '@mui/material';
-//import evalActionPermission from '../utils/evalActionPermission';
 import { ListDeleteButton, ListEditButton, ListViewButton } from '../toolbar/buttons/ListButtons';
 
 interface AutoDataGridProps {
     /** Schema,(optional) resolves from resourceConfig, but in some cases without schema could work, not tested. */
     schema?: IDashAutoAdminAttribute[];
     /** BulkActions,(optional) resolves from resourceConfig, but in some cases without schema could work, not tested. */
-    //bulkActionButtons?: any;
     resourceConfig?: IDashAutoAdminResourceConfig;
     className?: string;
 }
 
-export type IAutoDataGrid = AutoDataGridProps /* & typeof Datagrid*/;
+export type IAutoDataGrid = AutoDataGridProps;
+
+// Memoize the buttons to prevent unnecessary re-renders
+const MemoizedListViewButton = memo(ListViewButton);
+const MemoizedListEditButton = memo(ListEditButton);
+const MemoizedListDeleteButton = memo(ListDeleteButton);
 
 const AutoDataGrid: React.FC<IAutoDataGrid> = ({
     resourceConfig,
     schema,
-    //bulkActionButtons,
     ...dataGridProps
 }) => {
     const _schema: IDashAutoAdminAttribute[] = resourceConfig?.schema || schema;
@@ -38,33 +39,24 @@ const AutoDataGrid: React.FC<IAutoDataGrid> = ({
             'Schema must be present as prop or as an attribute of resourceConfig object, and must be iterable',
         );
 
-    const schemaIncludesId =
-        _schema.filter((attribute) => attribute.attribute === 'id').length !== 0;
+    // Memoize schema processing
+    const schemaIncludesId = useMemo(() => 
+        _schema.filter((attribute) => attribute.attribute === 'id').length !== 0
+    , [_schema]);
 
-    const processedDataGridProps = {
+    // Memoize processed dataGridProps
+    const processedDataGridProps = useMemo(() => ({
         ...resourceConfig.dataGridProps,
         ...dataGridProps,
-        //...bulkActionButtons ? {bulkActionButtons: bulkActionButtons} : {}
-    }
+    }), [resourceConfig.dataGridProps, dataGridProps]);
 
-    /*
-    const _edit = evalActionPermission(resourceConfig, resourceConfig?.edit);
-    const _view = evalActionPermission(resourceConfig, resourceConfig?.view);
-    const _delete = evalActionPermission(resourceConfig, resourceConfig?.delete);
+    // Memoize the filtered schema for list display
+    const filteredSchema = useMemo(() => 
+        _schema.filter((attribute) => attribute.inList !== false)
+    , [_schema]);
 
-    // Defaults list buttons:
-    const listViewButton: IAutoGridButton = resourceConfig.listViewButton || {
-        enabled: _view,
-    };
-    const listEditButton: IAutoGridButton = resourceConfig.listEditButton || {
-        enabled: _edit,
-    };
-    const listDeleteButton: IAutoGridButton =
-        resourceConfig?.listDeleteButton || { enabled: _delete };
-    */
-
-    // TODO gridWrapperProps
-    const DefaultGridWrapper = (props) => {
+    // Default grid wrapper component
+    const DefaultGridWrapper = memo((props: { children: React.ReactNode, className?: string, gridWrapperProps?: any }) => {
         const { children, className, gridWrapperProps } = props;
         return (
             <TableContainer
@@ -75,49 +67,44 @@ const AutoDataGrid: React.FC<IAutoDataGrid> = ({
                 {children}
             </TableContainer>
         );
-    };
+    });
 
     const DataGridWrapper = resourceConfig.dataGridWrapper || DefaultGridWrapper;
     const DataGridRootComponent: typeof Datagrid =
         resourceConfig.dataGridRootComponent || Datagrid;
+    
+    // Memoize the custom list buttons
+    const customListButtons = useMemo(() => {
+        if (!resourceConfig?.customListButtons) return null;
+        
+        return resourceConfig.customListButtons.map((customButtonConfig, idx) => (
+            <customButtonConfig.component
+                key={'list_custom_buttton' + idx}
+                {...customButtonConfig.props}
+            />
+        ));
+    }, [resourceConfig?.customListButtons]);
       
-    return (
-        <DataGridWrapper className={resourceConfig?.dataGridProps?.stickyHeader ? 'dash-sticky-header' : ''}>
+    return <DataGridWrapper className={resourceConfig?.dataGridProps?.stickyHeader ? 'dash-sticky-header' : ''}>
             <DataGridRootComponent {...processedDataGridProps}>
                 {!schemaIncludesId && !(resourceConfig.hideSchemaId === true) && (
                     <TextField
                         key={'default_id_field_0'}
-                        //fullWidth
                         source='id'
                         sortable={true}
-                    //  todo: link a recurso
-                    //   onClick={
-                    //     (record &&
-                    //       (() => {
-                    //         linkToRecord2(record);
-                    //       })) ||
-                    //     undefined
-                    //   }
                     />
                 )}
-                {_schema
-                    .filter((attribute) => attribute.inList !== false)
-                    .map((attribute, idx) => AttributeToField('list', resourceConfig, attribute, idx))
-                }
-                {/*<Button onClick={(e)=>{ console.log(record);  }}>Restaurar</Button>*/}
-                <ListViewButton key={'list_view_btn'} resourceConfig={resourceConfig} />
-                <ListEditButton key={'list_edit_btn'} resourceConfig={resourceConfig} />
-                <ListDeleteButton key={'list_delete_btn'} resourceConfig={resourceConfig} />
-                {resourceConfig?.customListButtons &&
-                    resourceConfig.customListButtons.map((customButtonConfig, idx) => (
-                        <customButtonConfig.component
-                            key={'list_custom_buttton' + idx}
-                            {...customButtonConfig.props}
-                        />
-                    ))}
+                {filteredSchema.map((attribute, idx) => 
+                    AttributeToField('list', resourceConfig, attribute, idx)
+                )}
+                <MemoizedListViewButton key={'list_view_btn'} resourceConfig={resourceConfig} />
+                <MemoizedListEditButton key={'list_edit_btn'} resourceConfig={resourceConfig} />
+                <MemoizedListDeleteButton key={'list_delete_btn'} resourceConfig={resourceConfig} />
+                {customListButtons}
             </DataGridRootComponent>
         </DataGridWrapper>
-    );
+    
 };
 
-export default AutoDataGrid;
+// Export a memoized version of the component
+export default memo(AutoDataGrid);

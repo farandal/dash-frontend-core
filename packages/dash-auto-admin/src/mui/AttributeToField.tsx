@@ -31,6 +31,7 @@ import IDashAutoAdminCustomFieldComponent from '../interfaces/IDashAutoAdminCust
 import isEnum from '../utils/isEnum';
 import replaceParams from '../utils/replaceParams';
 import { useParams } from 'react-router';
+import { useComponentRegistry } from '../DashAutoAdminComponentRegistry';
 
 export const AttributeToField = (
 	method: 'view' | 'list' | 'create' | 'edit',
@@ -41,10 +42,20 @@ export const AttributeToField = (
 	resource?: string,
 	record?: IRecord,
 ) => {
-
+	// Get the component registry
+	const { components } = useComponentRegistry();
+	
 	const params = useParams();
 	
 	const sortableField = input.sortable === true ? true : false;
+
+	const typeComponentMapper = (type: string) => {
+		const component = components[type];
+		if (component) {
+			return { custom: true, type: "component", component };
+		}
+		return { custom: true, type: "component", component: () => <>No component for {type}</> };
+	};
 
 	const ComponentWrapper =
 		resourceConfig?.fieldWrapper &&
@@ -54,33 +65,13 @@ export const AttributeToField = (
 					_record,
 					_method,
 					_attribute,
-                    _resourceConfig,
+					_resourceConfig,
 					children,
 			  }: IDashAutoAdminCustomFieldComponent) => {
 					return children;
 			  };
 
 	record = options?.record ? options.record : record;
-	/*if(typeof resourceConfig.customShowField === "function" && ["view"].includes(method) && input.useCustomShowField === true ) {
-    return <FunctionField
-        key={`function_field_${index}`}
-        label={input.label}
-        sortable={sortableField}
-        {...(sortableField && { sortBy: input.listAttribute || input.attribute })}
-        render={record => {
-          return <resourceConfig.customShowField
-            key={`custom_component_${index}`}
-            {...(record && { record: record })}
-            method={method}
-            attribute={input}
-          />
-        }
-        }
-      />
-  }*/
-
-	//export const AttributeToField: React.FC<IAttributeToField> = ({ input }) => {
-	// @TODO: Ningun componente de input se puede dibujar en el metodo view, porque no hay un formulario (react hook controller)
 
 	if (
 		options &&
@@ -99,7 +90,6 @@ export const AttributeToField = (
                 resourceConfig={resourceConfig}
 			>
 				<TextField
-					//fullWidth
 					{...(record && { record: record })}
 					sortable={sortableField}
 					{...(sortableField && {
@@ -114,7 +104,6 @@ export const AttributeToField = (
 						InputProps: { readOnly: true },
 					}}
 					disabled
-					/*options={{...input.fieldProps,editable:false, InputProps:{readOnly: true}}}*/
 				/>
 			</ComponentWrapper>
 		);
@@ -131,7 +120,6 @@ export const AttributeToField = (
                 resourceConfig={resourceConfig}
 			>
 				<options.readOnlyComponent
-					// fullWidth
 					key={index}
 					{...(record && { record: record })}
 					sortable={sortableField}
@@ -146,10 +134,38 @@ export const AttributeToField = (
 						editable: false,
 						InputProps: { readOnly: true },
 					}}
-					/*options={{...input.fieldProps,editable:false, InputProps:{readOnly: true}}}*/
 				/>
 			</ComponentWrapper>
 		);
+	}
+
+	// Check if input type is a string and not an array or enum
+	if (typeof input.type === "string" && !input.type.includes(".") && !Array.isArray(input.type)) {
+		switch (input.type) {
+			case 'string':
+			case 'text':
+			case 'String':
+				input.type = String;
+				break;
+			case 'number':
+			case 'Number':
+			case 'integer':
+				input.type = Number;
+				break;
+			case 'boolean':
+			case 'Boolean':
+				input.type = Boolean;
+				break;
+			case 'date':
+			case 'Date':
+				input.type = Date;
+				break;
+            case 'custom':
+            default:
+                // Check if the component exists in the registry
+                input = { ...input, ...typeComponentMapper(typeof input?.component === "string" ? input.component : input.type) };
+				break;
+		}
 	}
 
     // CUSTOM COMPONENT
@@ -157,36 +173,6 @@ export const AttributeToField = (
 		(input.custom && input.component) ||
 		(input.type === 'component' && input.component)
 	) {
-
-        if(method === "create") {
-         
-            console.log("input.custom", input.custom);
-        }
-		/*if (options?.mode === "edit") {
-      
-      return record ?
-        
-        <UserAction 
-            key={index}
-            {...(record && { record: record })}  
-            method={"edit"} 
-            attribute={input} 
-        />
-
-        : 
-        
-        <FunctionField
-          key={index}
-          label={input.label}
-          sortable={input.sortable === true ? true : false}
-          render={record => {
-              return <UserAction record={record} method={"edit"} attribute={input} />
-            }
-          }
-        />
-
-    }*/
-     
 		return (
 			<FunctionField
 				key={`function_field_${index}`}
@@ -253,7 +239,6 @@ export const AttributeToField = (
 		}
 
 		if (typeof inputType === 'string') {
-
 			const _params = {...params,...(location.hash.match(/\d+/g) || []).map(Number).reduce((acc, curr, index) => {
 				acc[index] = curr;
 				return acc;
@@ -276,20 +261,19 @@ export const AttributeToField = (
 				>
 					<>
 						<ReferenceArrayField
-							//fullWidth
 							key={index}
 							sortable={sortableField}
 							{...(sortableField && {
 								sortBy: input.listAttribute || input.attribute,
 							})}
-							label={input.label} /*link='show'*/
+							label={input.label}
 							source={
 								input.listAttribute ? input.listAttribute : input.attribute
 							}
 							reference={reference}
 						>
-							<SingleFieldList /*link='show'*/>
-								<ChipField source={sourceName} /*link='show'*/ />
+							<SingleFieldList>
+								<ChipField source={sourceName} />
 							</SingleFieldList>
 						</ReferenceArrayField>
 					</>
@@ -311,7 +295,6 @@ export const AttributeToField = (
 					<>
 						<ArrayField
 							key={index}
-							//fullWidth
 							sortable={sortableField}
 							{...(sortableField && {
 								sortBy: input.listAttribute || input.attribute,
@@ -340,76 +323,50 @@ export const AttributeToField = (
 	}
 
 	if (typeof input.type === 'string') {
-
 		const _params = {...params,...(location.hash.match(/\d+/g) || []).map(Number).reduce((acc, curr, index) => {
 			acc[index] = curr;
 			return acc;
 		}, {})};
 
-        
-		const  _inputType = replaceParams(_params,input.type);
+		const _inputType = replaceParams(_params,input.type);
 		const [reference, sourceName] = _inputType.split('.');
 
-        // TODO: pagination in ra was moved, and searchField must be optional, its being appended in all field. 
-        // filters function deprecated for now.
-		/*
-        
-        const filter: any = {};
-		filter.pagination = input.pagination;
-		filter.searchField = input.searchField;
-
-        */
-
-
-		// console.log("input pagination", input.pagination, input);
 		if (input && input.multiple === false) {
+			const componentWrapperProps = {
+				...(record && { record: record }),
+				method,
+				attribute: input,
+				label: input.label,
+				sortable: sortableField,
+				source: input.listAttribute ? input.listAttribute : input.attribute,
+				resourceConfig
+			}
 
-				const componentWrapperProps = {
-					...(record && { record: record }),
-					method,
-					attribute: input,
-					//key: index,
-					label: input.label,
-					sortable: sortableField,
-					source: input.listAttribute ? input.listAttribute : input.attribute,
-					resourceConfig
-				}
-
-				const componentProps = {
-					//key: index,
-					...(record && { record: record }),
-					sortable: sortableField,
-					...(sortableField && {
-						sortBy: input.listAttribute || input.attribute,
-					}),
-					label: input.label,
-					link: 'show',
-					source: input.listAttribute ? input.listAttribute : input.attribute,
-					reference: reference
-				}			
-                
-                //console.log("AttributeToField: ReferenceField",componentProps);                                                                                                                                                               return (
-				
-                return <ComponentWrapper
-					{...componentWrapperProps}
-				>
-					<ReferenceField
-						{...componentProps}
-					/>
-					{/*<TextField
-							{...(record && { record: record })}
-							source={sourceName}
-						/>
-					</ReferenceField>*/}
-				</ComponentWrapper>
+			const componentProps = {
+				...(record && { record: record }),
+				sortable: sortableField,
+				...(sortableField && {
+					sortBy: input.listAttribute || input.attribute,
+				}),
+				label: input.label,
+				link: 'show',
+				source: input.listAttribute ? input.listAttribute : input.attribute,
+				reference: reference
+			}			
 			
+			return <ComponentWrapper
+				{...componentWrapperProps}
+			>
+				<ReferenceField
+					{...componentProps}
+				/>
+			</ComponentWrapper>
 		}
 
         const componentWrapperProps = {
             ...(record && { record: record }),
             method: method,
             attribute: input,
-            //key: index,
             label: input.label,
             sortable: sortableField,
             source: input.listAttribute ? input.listAttribute : input.attribute,
@@ -417,25 +374,21 @@ export const AttributeToField = (
         }		
         
         const componentProps = {
-			//key: index,
 			...(record && { record: record }),
             sortable: sortableField,
 			...(sortableField && {
 				sortBy: input.listAttribute || input.attribute,
 			}),
-			//pagination: filter.pagination,
-			//filter: filter,
 			label: input.label,
 			source: input.listAttribute ? input.listAttribute : input.attribute,
 			reference: reference
 		}
-        //console.log("AttributeToField: ReferenceArrayField",componentProps);       
 		return (
 			<ComponentWrapper {...componentWrapperProps} >
 			<ReferenceArrayField {...componentProps} >
-                            <SingleFieldList /*link='show'*/>
-								<ChipField source={sourceName} /*link='show'*/ />
-							</SingleFieldList>
+                <SingleFieldList>
+					<ChipField source={sourceName} />
+				</SingleFieldList>
             </ReferenceArrayField>	
 			</ComponentWrapper>
 		);
@@ -443,8 +396,6 @@ export const AttributeToField = (
 
 	switch (input.type) {
 		case Number:
-			//console.log("Number",input);
-
 			return (
 				<FunctionField
 					label={input.label}
@@ -471,12 +422,10 @@ export const AttributeToField = (
 									key={`number_field_${index}`}
 									label={input.label}
 									{...(record && { record: record })}
-									//fullWidth
 									sortable={input.sortable === true ? true : false}
 									source={
 										input.listAttribute ? input.listAttribute : input.attribute
 									}
-									/*options={input.fieldProps}*/
 									{...input.fieldProps}
 								/>
 							</ComponentWrapper>
@@ -484,35 +433,8 @@ export const AttributeToField = (
 					}}
 				/>
 			);
-		/*return record ?
-        <NumberField 
-          fullWidth 
-          record={record} 
-          sortable={input.sortable === true ? true : false} 
-          key={index} 
-          label={input.label} 
-          source={input.listAttribute ? input.listAttribute : input.attribute} 
-          {...input.fieldProps} 
-       />
-    : 
-      
-    <FunctionField
-          label={input.label}
-          sortable={input.sortable === true ? true : false}
-          render={(record) => <NumberField 
-                                    record={record} 
-                                    fullWidth 
-                                    sortable={input.sortable === true ? true : false} 
-                                    key={index} 
-                                    label={input.label} 
-                                    source={input.listAttribute ? input.listAttribute : input.attribute} 
-                                    {...input.fieldProps} 
-                                />
-                  }
-      />*/
 
-		case Boolean: // LIST
-			//console.log("Boolean",input);
+		case Boolean:
 			return record ? (
 				<>
 					{input?.showLabel !== false && (
@@ -559,7 +481,6 @@ export const AttributeToField = (
 							source={
 								input.listAttribute ? input.listAttribute : input.attribute
 							}
-							/*options={input.fieldProps}*/
 							{...input.fieldProps}
 						/>
 					</ComponentWrapper>
@@ -573,7 +494,6 @@ export const AttributeToField = (
 					})}
 					render={(r) => (
 						<>
-							{/*input?.showLabel !== false && <InputLabel htmlFor={input.listAttribute ? input.listAttribute : input.attribute}>{input.label}</InputLabel>*/}
 							<ComponentWrapper
 								{...(r && { record: r })}
 								method={method}
@@ -588,7 +508,6 @@ export const AttributeToField = (
 							>
 								<BooleanField
 									record={record}
-									/*sortable={false}*/
 									key={index}
 									id={
 										input.listAttribute ? input.listAttribute : input.attribute
@@ -597,7 +516,6 @@ export const AttributeToField = (
 									source={
 										input.listAttribute ? input.listAttribute : input.attribute
 									}
-									/*options={input.fieldProps}*/
 									{...input.fieldProps}
 								/>
 							</ComponentWrapper>
@@ -631,7 +549,6 @@ export const AttributeToField = (
 							(input.fieldProps && input.fieldProps.showTime) || false
 						}
 						source={input.listAttribute ? input.listAttribute : input.attribute}
-						/*options={input.fieldProps}*/
 						{...input.fieldProps}
 					/>
 				</ComponentWrapper>
@@ -655,7 +572,6 @@ export const AttributeToField = (
 						{...(sortableField && {
 							sortBy: input.listAttribute || input.attribute,
 						})}
-						//fullWidth
 						key={index}
 						source={input.attribute}
 						label={input.label}
@@ -681,7 +597,6 @@ export const AttributeToField = (
 						{...(sortableField && {
 							sortBy: input.listAttribute || input.attribute,
 						})}
-						//fullWidth
 						key={index}
 						source={input.listAttribute ?? input.attribute}
 						title={input.listAttribute}
@@ -691,39 +606,17 @@ export const AttributeToField = (
 			);
 	}
 
-	/* if(typeof resourceConfig.customShowField === "function" && ["view"].includes(method) ) {
-    return <FunctionField
-        key={`function_field_${index}`}
-        label={input.label}
-        sortable={sortableField}
-        {...(sortableField && { sortBy: input.listAttribute || input.attribute })}
-        render={record => {
-          return <resourceConfig.customShowField
-            key={`custom_component_${index}`}
-            {...(record && { record: record })}
-            method={method}
-            attribute={input}
-          />
-        }
-        }
-      />
-  }*/
-const textFieldProps = {
-    ...(record && { record: record }),
-    //fullWidth
-    sortable: sortableField,
-    ...(sortableField && {
-        sortBy: input.listAttribute || input.attribute,
-    }),
-    //key: index,
-    label: input.label,
-    source: input.listAttribute ? input.listAttribute : input.attribute,
-    /*options={input.fieldProps}*/
-    ...input.fieldProps,
-    ...(input.slotProps ? { slotProps: input.slotProps } : {})
-}    
-
-    //console.log("AttributeToField: TextField",textFieldProps);
+    const textFieldProps = {
+        ...(record && { record: record }),
+        sortable: sortableField,
+        ...(sortableField && {
+            sortBy: input.listAttribute || input.attribute,
+        }),
+        label: input.label,
+        source: input.listAttribute ? input.listAttribute : input.attribute,
+        ...input.fieldProps,
+        ...(input.slotProps ? { slotProps: input.slotProps } : {})
+    }    
 
 	return (
 		<ComponentWrapper
@@ -733,7 +626,6 @@ const textFieldProps = {
 			{...(record && { record: record })}
 			method={method}
 			attribute={input}
-			//key={index}
             resourceConfig={resourceConfig}
 		>
 			<TextField

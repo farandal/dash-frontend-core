@@ -1,5 +1,5 @@
 
-import { PropsWithChildren } from 'react';
+import { JSX, PropsWithChildren } from 'react';
 import {
 	Card,
 } from '@mui/material';
@@ -15,7 +15,8 @@ const DashAutoListDefaultListActionsWrapper: React.FC<IDashAutoListActionsWrappe
 	autoFilters,
 	children,
 }) => {
-	const hasToolbarItems: boolean =
+	
+    const hasToolbarItems: boolean =
 		(autoFilters && autoFilters.length) ||
 		resourceConfig.create ||
 		resourceConfig.exporter ||
@@ -23,9 +24,11 @@ const DashAutoListDefaultListActionsWrapper: React.FC<IDashAutoListActionsWrappe
 			? true
 			: false;
 
-	if (!hasToolbarItems) return <>{children}</>;
-	/* @ts-ignore : TODO Children type mismatch */
-	return <Card className='top-toolbar-default'>{children}</Card>;
+	if (!hasToolbarItems) return children;
+	
+	return <div className='top-toolbar-default'>{children}</div>;
+
+
 };
 
 export default DashAutoListDefaultListActionsWrapper;

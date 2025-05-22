@@ -10,10 +10,10 @@ import { CLEAR_FORM_DATA, SET_FORM_DATA } from 'dash-admin-state/src/redux/actio
 import { useEffect } from 'react';
 import { useFormContext } from 'react-hook-form';
 
-interface IAutoFormTabs {
-    schema: IDashAutoAdminAttribute[];
-    resource: IDashAutoAdminResourceConfig;
-    options?: IDashAutoAdminFormOptions;
+interface IAutoForm {
+	schema: IDashAutoAdminAttribute[],
+	resourceConfig: IDashAutoAdminResourceConfig,
+	options?: IDashAutoAdminFormOptions,
 }
 
 /** 
@@ -25,10 +25,9 @@ interface IAutoFormTabs {
 
 const DashAutoFormTabs = ({
     schema,
-    resource,
-    options,
-    ..._props
-}: IAutoFormTabs) => {
+    resourceConfig,
+    options
+}: IAutoForm) => {
 
     const isDrawer = options.isDrawer === true ? true : false;
     const dispatch = useDispatch();
@@ -91,7 +90,7 @@ const DashAutoFormTabs = ({
                         >
                             {grouppedAttributes.map((attribute, i) => (
                                 <div key={`input-${i}`}>
-                                    {AttributeToInput('create', resource, attribute, i, options)}
+                                    {AttributeToInput('create', resourceConfig, attribute, i, options)}
                                 </div>
                             ))}
 
@@ -122,7 +121,7 @@ const DashAutoFormTabs = ({
                         >
                             {grouppedAttributes.map((attribute, i) => (
                                 <div key={`input-${i}`}>
-                                    {AttributeToInput('edit', resource, attribute, i, options)}
+                                    {AttributeToInput('edit', resourceConfig, attribute, i, options)}
                                 </div>
                             ))}
 
@@ -154,7 +153,7 @@ const DashAutoFormTabs = ({
                         >
                             {grouppedAttributes.map((attribute, i) => (
                                 <div key={`input-${i}`}>
-                                    {AttributeToInput('view', resource, attribute, i, options)}
+                                    {AttributeToInput('view', resourceConfig, attribute, i, options)}
                                 </div>
                             ))}
                         </FormTab>

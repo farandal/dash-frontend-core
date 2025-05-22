@@ -8,11 +8,17 @@ import React from 'react';
 
 // TODO: DEFAULT_TAB_LABEL should be get from a React Auto Admin config class.
 
-const DashAutoFormGroups = (
+interface IAutoForm {
 	schema: IDashAutoAdminAttribute[],
 	resourceConfig: IDashAutoAdminResourceConfig,
 	options?: IDashAutoAdminFormOptions,
-) => {
+}
+
+const DashAutoFormGroups = ({
+    schema,
+    resourceConfig,
+    options
+}: IAutoForm) => {
 	const DEFAULT_TAB_LABEL = AutoAdminSettings?.defaultTabName || resourceConfig.label;
   
 	const isDrawer = options.isDrawer === true ? true : false;

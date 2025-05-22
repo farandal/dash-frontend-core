@@ -35,6 +35,15 @@ export { default as DashRedirect } from './DashRedirect';
 
 export { default as evalActionPermission } from './utils/evalActionPermission';
 
+export { 
+  ComponentRegistryProvider, 
+  useComponentRegistry 
+} from './DashAutoAdminComponentRegistry';
+export type { 
+  ComponentRegistryContextType, 
+  ComponentRegistryProviderProps 
+} from './DashAutoAdminComponentRegistry';
+
 export interface IDashAutoAdminSettings {
 	/** */
 	library: 'mui';

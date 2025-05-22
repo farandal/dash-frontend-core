@@ -26,7 +26,7 @@ export default interface IDashAutoAdminAttribute<M = any> {
 	 * it is possible to wrap a react router param name to the resource path '{}'
 	 */
 	type:
-	| 'component'
+	| 'custom'
 	| React.FC<IRecord>
 	| string
 	| string[]
@@ -86,7 +86,7 @@ export default interface IDashAutoAdminAttribute<M = any> {
 	/** Whether field is sortable */
 	sortable?: boolean;
 	/** Custom component for rendering the field */
-	component?: React.FC<IDashAutoAdminCustomFieldComponent> | ((props:IDashAutoAdminCustomFieldComponent) => JSX.Element) | ((props:any) => JSX.Element);
+	component?: string | (React.FC<IDashAutoAdminCustomFieldComponent> | ((props:IDashAutoAdminCustomFieldComponent) => JSX.Element) | ((props:any) => JSX.Element));
 	/** Field to use for search functionality */
 	searchField?: string;
 	/** Attribute to use for list display */
