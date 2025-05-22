@@ -22,7 +22,7 @@ const DomainHeader = <U, A>({
 
     const navExpanded = useSelector(
         (state: IDASHAppState<U, A, IDashAutoAdminResourceConfig>) =>
-            state.common.navExpanded,
+            state.menu.navExpanded,
     );
     const headerComponents = useSelector(
         (state: IDASHAppState<U, A, IDashAutoAdminResourceConfig>) =>
@@ -42,7 +42,10 @@ const DomainHeader = <U, A>({
     const logoSmall = panelSettings?.logoSmall || <>🖥</>;
 
     const onToggleExpandedNav = () => {
-        dispatch(DASH_REDUX_ACTIONS.toggleExpandedSideNav(!navExpanded));
+        // Use the toggleNavExpanded action instead
+        dispatch(DASH_REDUX_ACTIONS.setNavExpanded(!navExpanded));
+        // Save to localStorage directly here as a backup
+        //localStorage.setItem('dashNavExpanded', String(!navExpanded));
     };
   
     const HeaderComponentInline = () => (

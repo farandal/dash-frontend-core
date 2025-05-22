@@ -3,6 +3,7 @@ import ICommonState from './ICommonState';
 import IPageState from './IPage';
 import ISettingsState from './ISettings';
 import IFormDataState from './IFormDataState';
+import { IMenuState } from '../reducers/Menu';
 /**
  * Represents the overall state of the DASH application.
  *
@@ -35,6 +36,12 @@ export interface IDASHAppState<U, A, R> {
    * The state of the current dirty form in the DASH application.
    */
   formData: IFormDataState;
+
+  /**
+   * The menu state of the DASH application.
+  */
+  menu?: IMenuState;
+
 }
 
 export default IDASHAppState;

@@ -21,112 +21,114 @@ const drawerWidth = 256;
 const drawerWidthMobile = 60;
 
 const openedMixin = (theme: Theme): CSSObject => ({
-	width: drawerWidth,
-	transition: theme.transitions.create('width', {
-		easing: theme.transitions.easing.sharp,
-		duration: theme.transitions.duration.enteringScreen,
-	}),
-	overflowX: 'hidden',
+    width: drawerWidth,
+    transition: theme.transitions.create('width', {
+        easing: theme.transitions.easing.sharp,
+        duration: theme.transitions.duration.enteringScreen,
+    }),
+    overflowX: 'hidden',
 });
 
 const closedMixin = (theme: Theme): CSSObject => ({
-	transition: theme.transitions.create('width', {
-		easing: theme.transitions.easing.sharp,
-		duration: theme.transitions.duration.leavingScreen,
-	}),
-	overflowX: 'hidden',
-	width: drawerWidthMobile,
-	[theme.breakpoints.up('sm')]: {
-		width: drawerWidthMobile,
-	},
+    transition: theme.transitions.create('width', {
+        easing: theme.transitions.easing.sharp,
+        duration: theme.transitions.duration.leavingScreen,
+    }),
+    overflowX: 'hidden',
+    width: drawerWidthMobile,
+    [theme.breakpoints.up('sm')]: {
+        width: drawerWidthMobile,
+    },
 });
 
 const Drawer = styled(MuiDrawer, {
-	shouldForwardProp: (prop) => prop !== 'open',
+    shouldForwardProp: (prop) => prop !== 'open',
 })(({ theme, open }) => ({
-	width: drawerWidth,
-	...(open && {
-		...openedMixin(theme),
-		'& .MuiDrawer-paper': openedMixin(theme),
-	}),
-	...(!open && {
-		...closedMixin(theme),
-		'& .MuiDrawer-paper': closedMixin(theme),
-	}),
+    width: drawerWidth,
+    ...(open && {
+        ...openedMixin(theme),
+        '& .MuiDrawer-paper': openedMixin(theme),
+    }),
+    ...(!open && {
+        ...closedMixin(theme),
+        '& .MuiDrawer-paper': closedMixin(theme),
+    }),
 }));
 
 const AppSidebarMaterial = (props) => {
 
     const { logo, logoSmall } = props;
 
-	const { navExpanded } = useSelector(
-		(state: IDASHAppState<any, any, IDashAutoAdminResourceConfig>) =>
-			state.common,	);
+    const { navExpanded } = useSelector(
+        (state: IDASHAppState<any, any, IDashAutoAdminResourceConfig>) =>
+            state.menu);
 
-	const dispatch = useDispatch();
-
-
-	const windowSize = useWindowSize();
+    const dispatch = useDispatch();
 
 
-	const toggleDrawer = () => {
-		//setShowDrawer(value => !value);
-		dispatch(DASH_REDUX_ACTIONS.toggleExpandedSideNav(!navExpanded));
-	};
-
-	const [navSize,setNavSize] = useState<"large" | "small">(windowSize.width < 769 ? "small" : "large");
-	React.useEffect(() => {
-		setNavSize(windowSize.width < 769 ? "small" : "large");
-		if(windowSize.width < 769) {
-			dispatch(DASH_REDUX_ACTIONS.toggleExpandedSideNav(false));
-		
-		}
-		if(windowSize.width > 1024) {
-			dispatch(DASH_REDUX_ACTIONS.toggleExpandedSideNav(true));
-		}
-       
-
-	},[windowSize])
+    const windowSize = useWindowSize();
 
 
+    const toggleDrawer = () => {
+        //setShowDrawer(value => !value);
 
-	return (
-		<Box sx={{ display: 'flex' }}>
-		
-			<Drawer
-				variant='permanent'
-				open={navExpanded}
-				className={'sidebar-drawer ' + (navExpanded ? 'expanded' : 'collapsed')+ ' '+(navSize)}
-			>
-				<div className='sidebar-header'>
-		
-					<div className={'sidebar-logo'}>
-						{navExpanded && navSize === "large" ? 
-							<img src={logo} alt={"logo" }/>
-						 : 
-                            <img src={logoSmall} alt={"logo" }/>
-							
-						}
-					</div>
-					<IconButton color='secondary' onClick={toggleDrawer} >
-						{navExpanded ? (
-							<KeyboardDoubleArrowLeftIcon />
-						) : (
-							<KeyboardDoubleArrowRightIcon />
-						)}
-					</IconButton>
-				</div>
-				<AppMaterialMenu navSize={navSize} />
-			</Drawer>
-		</Box>
-	);
+        dispatch(DASH_REDUX_ACTIONS.setNavExpanded(!navExpanded));
+    };
+
+    const [navSize, setNavSize] = useState<"large" | "small">(windowSize.width < 769 ? "small" : "large");
+
+    React.useEffect(() => {
+        const prevWidth = windowSize.width;
+        if (prevWidth !== windowSize.width) {
+            setNavSize(windowSize.width < 769 ? "small" : "large");
+            if (windowSize.width < 769) {
+                dispatch(DASH_REDUX_ACTIONS.setNavExpanded(false));
+            }
+            if (windowSize.width > 1024) {
+                dispatch(DASH_REDUX_ACTIONS.setNavExpanded(true));
+            }
+        }
+    }, [windowSize.width])
+
+
+
+    return (
+        <Box sx={{ display: 'flex' }}>
+
+            <Drawer
+                variant='permanent'
+                open={navExpanded}
+                className={'sidebar-drawer ' + (navExpanded ? 'expanded' : 'collapsed') + ' ' + (navSize)}
+            >
+                <div className='sidebar-header'>
+
+                    <div className={'sidebar-logo'}>
+                        {navExpanded && navSize === "large" ?
+                            <img src={logo} alt={"logo"} />
+                            :
+                            <img src={logoSmall} alt={"logo"} />
+
+                        }
+                    </div>
+                    <IconButton color='secondary' onClick={toggleDrawer} >
+                        {navExpanded ? (
+                            <KeyboardDoubleArrowLeftIcon />
+                        ) : (
+                            <KeyboardDoubleArrowRightIcon />
+                        )}
+                    </IconButton>
+                </div>
+                <AppMaterialMenu navSize={navSize} />
+            </Drawer>
+        </Box>
+    );
 };
 
 
 export default React.memo(
-	AppSidebarMaterial,
-	(props, nextProps) =>
-		props === nextProps
+    AppSidebarMaterial,
+    (props, nextProps) =>
+        props === nextProps
 ) as typeof AppSidebarMaterial;
 
 //export default AppSidebarMaterial;

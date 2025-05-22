@@ -5,6 +5,8 @@ import CommonReducer from './Common';
 import PageReducer from './Page';
 import ResourcesReducer from './Resources';
 import FormDataReducer from './FormData';
+import MenuReducer from './Menu';
+
 
 export const createRootReducer = (/*history*/) =>
 	combineReducers({
@@ -15,6 +17,7 @@ export const createRootReducer = (/*history*/) =>
 		common: CommonReducer,
 		resources: ResourcesReducer,
     formData: FormDataReducer,
+    menu: MenuReducer
 	});
 
 export default createRootReducer;

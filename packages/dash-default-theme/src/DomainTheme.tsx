@@ -1,8 +1,8 @@
 import { JSX, PropsWithChildren, useEffect, useRef, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { IDashAutoAdminResourceConfig } from 'dash-auto-admin';
 import { Box } from '@mui/material';
-import { IDASHAppState } from 'dash-admin-state';
+import { DASH_REDUX_ACTIONS, IDASHAppState } from 'dash-admin-state';
 import { useLocation } from 'react-router';
 import AppSidebarMaterial from './menu/AppSidebarMaterial';
 
@@ -20,23 +20,43 @@ const DomainTheme = <U, A>({
     ...props
   }: IDomainTheme<U, A>): JSX.Element => {
 
-	const location = useLocation();
+    const location = useLocation();
+    const dispatch = useDispatch();
 
-	const { navStyle, layoutType, themeType, layoutSettings } = useSelector(
-		(state: IDASHAppState<U, A, IDashAutoAdminResourceConfig>) =>
-			state.settings,
-	);
-	const { navExpanded } = useSelector(
-		(state: IDASHAppState<U, A, IDashAutoAdminResourceConfig>) =>
-			state.common,
-	);
-	const panelSettings = useSelector(
-		(state: IDASHAppState<U, A, IDashAutoAdminResourceConfig>) =>
-			state.common.panelSettings,
-	);
+    const { navStyle, layoutType, themeType, layoutSettings } = useSelector(
+        (state: IDASHAppState<U, A, IDashAutoAdminResourceConfig>) =>
+            state.settings,
+    );
+    
+    // Get the current navigation state from Redux
+    const navExpanded = useSelector((state: IDASHAppState<any, any, any>) => 
+        state.menu.navExpanded
+    );
+    
+    // Load the navigation state from localStorage on component mount
+    useEffect(() => {
+        try {
+            const savedNavState = localStorage.getItem('dashNavExpanded');
+            if (savedNavState !== null) {
+                const isExpanded = savedNavState === 'true';
+                // Only dispatch if different from current state to avoid loops
+                if (isExpanded !== navExpanded) {
+                    dispatch(DASH_REDUX_ACTIONS.setNavExpanded(isExpanded));
+                }
+            }
+        } catch (e) {
+            console.error('Error accessing localStorage:', e);
+        }
+    }, []);  // Empty dependency array - only run once on mount
+    
 
-	const logo = panelSettings?.logo || <>🖥 DASH</>;
-	const logoSmall = panelSettings?.logoSmall || <>🖥</>;
+    const panelSettings = useSelector(
+        (state: IDASHAppState<U, A, IDashAutoAdminResourceConfig>) =>
+            state.common.panelSettings,
+    );
+
+    const logo = panelSettings?.logo || <>🖥 DASH</>;
+    const logoSmall = panelSettings?.logoSmall || <>🖥</>;
 
     const getContainerClass = (navStyle) => {
         switch (navStyle) {
@@ -83,53 +103,49 @@ const DomainTheme = <U, A>({
         }
     };
     
+    useEffect(() => {
+        setBodyClasses(layoutType, themeType);
+        setNavStyle(navStyle);
+    }, [layoutType, navStyle, themeType]);
+
+    const [previousLocationPath, setPreviousLocationPath] = useState(null);
     
+    function formatSlashes(str) {
+        // Remove the first and last slash
+        str = str.replace(/^\/|\/$/g, '');
+        // Replace the rest of the slashes for a dash
+        str = str.replace(/\//g, '-');
+        return str;
+    }
 
-	useEffect(() => {
-		setBodyClasses(layoutType, themeType);
-		setNavStyle(navStyle);
-	}, [layoutType, navStyle, themeType]);
+    useEffect(() => {
+        if(previousLocationPath) {
+            document.body.classList.remove(previousLocationPath);
+        }
+        if(formatSlashes(location.pathname)) {
+            setPreviousLocationPath(formatSlashes(location.pathname));
+            document.body.classList.add(formatSlashes(location.pathname));
+        }
+    }, [location]);
 
-	const [previousLocationPath,setPreviousLocationPath] = useState(null);
-	
-	function formatSlashes(str) {
-		// Remove the first and last slash
-		str = str.replace(/^\/|\/$/g, '');
-		// Replace the rest of the slashes for a dash
-		str = str.replace(/\//g, '-');
-		return str;
-	 }
+    const [currentNavStyle, setCurrentNavStyle] = useState(navStyle);
 
-	useEffect(() => {
-		if(previousLocationPath) {
-			document.body.classList.remove(previousLocationPath);
-		}
-		if(formatSlashes(location.pathname)) {
-		setPreviousLocationPath(formatSlashes(location.pathname));
-		document.body.classList.add(formatSlashes(location.pathname));
-		}
-	}, [location]);
-
-
-	// const contentRef = useRef(null)
-	const [currentNavStyle, setCurrentNavStyle] = useState(navStyle);
-
-	return (
-		<div className={themeType}>
-			<AppSidebarMaterial logo={logo} logoSmall={logoSmall} />
-			<Box
-				className={`dash-app-layout ${
-					navExpanded
-						? 'dash-app-layout-sidebar-expanded'
-						: 'dash-app-layout-sidebar-collapsed'
-				} `}
-			>
-				{headerComponent}
-				{children}
-				{footerComponent && footerComponent}
-			</Box>
-		</div>
-	);
+    return (
+        <div className={themeType}>
+            <AppSidebarMaterial logo={logo} logoSmall={logoSmall} />
+            <Box
+                className={`dash-app-layout ${
+                    navExpanded
+                        ? 'dash-app-layout-sidebar-expanded'
+                        : 'dash-app-layout-sidebar-collapsed'
+                } `}
+            >
+                {headerComponent}
+                {children}
+                {footerComponent && footerComponent}
+            </Box>
+        </div>
+    );
 };
 
 export default DomainTheme;

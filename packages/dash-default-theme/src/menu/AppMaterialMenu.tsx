@@ -14,7 +14,7 @@ import { IDashAutoAdminResourceConfig } from 'dash-auto-admin';
 import { IDASHAppState } from 'dash-admin-state';
 import checkRole from 'dash-admin/src/helpers/checkRole';
 import { slugify } from 'dash-admin/src/utils/slugify';
-import DASHGroupIcons from '@app/DASHGroupIcons';
+
 import Scrollbar from 'dash-admin/src/components/scrollbar/Scrollbar';
 
 // Group icons
@@ -57,7 +57,7 @@ const AppMaterialMenu: React.FC<IAppMenu> = (props) => {
   const { permissions } = usePermissions();
   const { navExpanded } = useSelector(
     (state: IDASHAppState<any, any, IDashAutoAdminResourceConfig>) =>
-      state.common,
+      state.menu,
   );
 
   const [items, setItems] = React.useState<IMenuItem[]>(null);
@@ -72,6 +72,12 @@ const AppMaterialMenu: React.FC<IAppMenu> = (props) => {
       return state.resources.items;
     },
   );
+
+    const groupIcons = useSelector(
+    (state: IDASHAppState<any, any, IDashAutoAdminResourceConfig>) =>
+      state.settings.groupIcons
+  );
+
 
   useEffect(() => {
     const groups = [
@@ -122,7 +128,7 @@ const AppMaterialMenu: React.FC<IAppMenu> = (props) => {
       const _item: IMenuItem = {
         label: group[0].group,
         key: slugify(group[0].group),
-        icon: group[0].icon || DASHGroupIcons[group[0].group],
+        icon: group[0].icon || groupIcons[group[0].group],
         group: slugify(group[0].group),
         model: group[0].model,
         to: group[0].redirect ? `/${group[0].redirect}` : `/${group[0].model}`,

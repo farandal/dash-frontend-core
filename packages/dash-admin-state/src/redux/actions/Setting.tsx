@@ -3,20 +3,12 @@ import {
 	CONTENT_HEIGHT,
 	CONTENT_WIDTH,
 	UPDATE_THEME_SETTINGS,
-	SET_RESOURCES,
 	SWITCH_LANGUAGE,
-	SWITCH_THEME_TYPE,
-	TOGGLE_COLLAPSED_NAV,
-	WINDOW_HEIGHT,
 	WINDOW_WIDTH,
 } from './ActionTypes';
 
-export function toggleExpandedSideNav(navExpanded) {
-	return { type: TOGGLE_COLLAPSED_NAV, navExpanded };
-}
-
 export function toggleThemeType(themeType) {
-  document.documentElement.setAttribute('data-theme', themeType)	
+  document.documentElement.setAttribute('data-theme', themeType)
   return { type: DefaultThemeSettings.THEME_TYPE, themeType };
 }
 
