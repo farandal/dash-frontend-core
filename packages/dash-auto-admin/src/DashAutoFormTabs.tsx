@@ -85,7 +85,7 @@ const DashAutoFormTabs = ({
                             key={`tab-${groupOfAttributes[0].tab || idx}`}
                             value={idx}
 							/*icon={IconResolver(groupOfAttributes[0].tab)}*/ label={
-                                groupOfAttributes[0].tab || options?.label || ''
+                                groupOfAttributes[0].tab || options?.label || resourceConfig?.label
                             }
                         >
                             {grouppedAttributes.map((attribute, i) => (
@@ -116,7 +116,7 @@ const DashAutoFormTabs = ({
                             key={`tab-${groupOfAttributes[0].tab || idx}`}
                             value={idx}
 							/*icon={IconResolver(groupOfAttributes[0].tab)}*/ label={
-                                groupOfAttributes[0].tab || options?.label || ''
+                                groupOfAttributes[0].tab || options?.label || resourceConfig?.label
                             }
                         >
                             {grouppedAttributes.map((attribute, i) => (
@@ -148,7 +148,7 @@ const DashAutoFormTabs = ({
                             key={`tab-${groupOfAttributes[0].tab || idx}`}
                             value={idx}
 							/*key={idx} icon={IconResolver(groupOfAttributes[0].tab)}*/ label={
-                                groupOfAttributes[0].tab || options?.label || ''
+                                groupOfAttributes[0].tab || options?.label || resourceConfig?.label
                             }
                         >
                             {grouppedAttributes.map((attribute, i) => (

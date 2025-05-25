@@ -162,6 +162,7 @@ export const AttributeToField = (
 				break;
             case 'custom':
             default:
+                debugger;
                 // Check if the component exists in the registry
                 input = { ...input, ...typeComponentMapper(typeof input?.component === "string" ? input.component : input.type) };
 				break;
