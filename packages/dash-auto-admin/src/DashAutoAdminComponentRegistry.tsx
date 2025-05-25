@@ -1,12 +1,11 @@
 import React, { createContext, useContext, ReactNode } from 'react';
 
-import { Json, JsonColorSelector } from 'dash-components';
+
 import IDashAutoAdminCustomFieldComponent from './interfaces/IDashAutoAdminCustomFieldComponent';
 
 // Default components that are always available
 const defaultComponentMap: Record<string, React.FC<IDashAutoAdminCustomFieldComponent>> = {
-  "Json": Json,
-  "JsonColorSelector": JsonColorSelector,
+
 };
 
 export interface ComponentRegistryContextType {
