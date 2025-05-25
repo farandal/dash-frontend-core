@@ -156,6 +156,22 @@ export const defaultOptions = () => {
               }
             },
 
+      MuiAlert: {
+        styleOverrides: {
+          root: {
+            '&.MuiAlert-standardInfo': {
+              backgroundColor: getCSSVar('--module-background'),
+              color: getCSSVar('--text-color'),
+              '& .MuiAlert-icon': {
+                color: getCSSVar('--highlight-color')
+              },
+              '& .MuiAlertTitle-root': {
+                color: getCSSVar('--text-color')
+              }
+            }
+          }
+        }
+      },
       MuiPaper: {
         styleOverrides: {
           root: {

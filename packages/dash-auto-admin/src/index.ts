@@ -7,6 +7,7 @@ export { default as DashAutoFormGroups } from './DashAutoFormGroups';
 export { default as DashAutoFormLayout } from './DashAutoFormLayout';
 export { default as DashAutoAdminForm } from './DashAutoAdminForm';
 export { default as DashAutoFormTabs } from './DashAutoFormTabs';
+export { default as DashAutoFormMuiTabs } from './DashAutoFormMuiTabs';
 export { default as DashAutoReferenceTab } from './DashAutoReferenceTab';
 export { default as DashAutoTabs } from './DashAutoTabs';
 export { default as DashAutoLayout } from './DashAutoLayout';
