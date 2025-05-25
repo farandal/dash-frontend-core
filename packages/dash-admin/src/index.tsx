@@ -56,5 +56,6 @@ export * from "./contexts/auth"
 
 export * from "./utils"
 
+export * from "./providers/i18n/languages"
 
 export { default as DarkToggleMode } from "./components/menu/DarkToggleMode"

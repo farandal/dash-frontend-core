@@ -1,27 +1,186 @@
-import englishMessages from 'ra-language-english';
+import raEnglish from 'ra-language-english';
 
-export const messages = {
+const dashEnglish = {
+	ra: {
+		action: {
+			add: 'Add',
+			add_filter: 'Add filter',
+			back: 'Go back',
+			bulk_actions:
+				'1 item selected |||| %{smart_count} items selected',
+			cancel: 'Cancel',
+			clear_input_value: 'Clear value',
+			clone: 'Clone',
+			close: 'Close',
+			close_menu: 'Close menu',
+			confirm: 'Confirm',
+			create: 'Create',
+			create_item: 'Create %{item}',
+			delete: 'Delete',
+			edit: 'Edit',
+			expand: 'Expand',
+			export: 'Export',
+			list: 'List',
+			move_up: 'Move up',
+			move_down: 'Move down',
+			open_menu: 'Open menu',
+			refresh: 'Refresh',
+			remove: 'Remove',
+			remove_filter: 'Remove filter',
+			save: 'Save',
+			search: 'Search',
+			select_all: 'Select all',
+			select_row: 'Select this row',
+			show: 'Show',
+			sort: 'Sort',
+			undo: 'Undo',
+			unselect: 'Unselect',
+			update: 'Update',
+		},
+		auth: {
+			auth_check_error: 'Please login to continue',
+			logout: 'Logout',
+			password: 'Password',
+			sign_in: 'Sign in',
+			sign_in_error: 'Authentication failed, please try again',
+			user_menu: 'Profile',
+			username: 'Username',
+		},
+		boolean: {
+			true: 'Yes',
+			false: 'No',
+			null: ' ',
+		},
+		input: {
+			file: {
+				upload_several:
+					'Drop some files to upload, or click to select them.',
+				upload_single:
+					'Drop a file to upload, or click to select it.',
+			},
+			image: {
+				upload_several:
+					'Drop some images to upload, or click to select them.',
+				upload_single:
+					'Drop an image to upload, or click to select it.',
+			},
+			references: {
+				all_missing: 'Unable to find reference data.',
+				many_missing:
+					'At least one of the associated references appears to be unavailable.',
+				single_missing: 'Associated reference appears to be unavailable.',
+			},
+			password: {
+				toggle_visible: 'Hide password',
+				toggle_hidden: 'Show password',
+			},
+		},
+		message: {
+			about: 'About',
+			are_you_sure: 'Are you sure?',
+			bulk_delete_content:
+				'Are you sure you want to delete this %{name}? |||| Are you sure you want to delete these %{smart_count} items?',
+			bulk_delete_title:
+				'Delete %{name} |||| Delete %{smart_count} %{name} items',
+			bulk_update_content:
+				'Are you sure you want to update this %{name}? |||| Are you sure you want to update these %{smart_count} items?',
+			bulk_update_title:
+				'Update %{name} |||| Update %{smart_count} %{name} items',
+			delete_content: 'Are you sure you want to delete this item?',
+			delete_title: 'Delete %{name} #%{id}',
+			details: 'Details',
+			error:
+				'A client error occurred and your request could not be completed',
+			invalid_form:
+				'The form is not valid. Please check for errors',
+			loading: 'The page is loading, please wait',
+			no: 'No',
+			not_found:
+				'Either you typed a wrong URL or you followed a bad link.',
+			yes: 'Yes',
+			unsaved_changes:
+				'Some of your changes were not saved. Are you sure you want to ignore them?',
+		},
+		navigation: {
+			next: 'Next',
+			no_more_results:
+				'Page number %{page} is out of boundaries. Try the previous page.',
+			no_results: 'No results found',
+			page_out_from_begin: 'Cannot go before page 1',
+			page_out_from_end: 'Cannot go after last page',
+			page_out_of_boundaries: 'Page number %{page} is out of boundaries',
+			page_range_info: '%{offsetBegin} - %{offsetEnd} of %{total}',
+			page_rows_per_page: 'Rows per page:',
+			prev: 'Previous',
+			skip_nav: 'Skip to content',
+		},
+		sort: {
+			sort_by: 'Sort by %{field} %{order}',
+			asc: 'ascending',
+			desc: 'descending',
+			DESC: 'descending',
+			ASC: 'ascending',
+		},
+		notification: {
+			bad_item: 'Incorrect element',
+			canceled: 'Action canceled',
+			created: 'Element created',
+			data_provider_error:
+				'Data provider error. Check the console for details.',
+			deleted: 'Element deleted |||| %{smart_count} elements deleted',
+			http_error: 'Server communication error',
+			item_doesnt_exist: 'Element does not exist',
+			logged_out: 'Your session has ended, please reconnect.',
+			updated:
+				'Element updated |||| %{smart_count} elements updated',
+			i18n_error:
+				'Could not load translations for the specified language',
+			not_authorized: 'You are not authorized to access this resource.',
+		},
+		page: {
+			create: 'Create %{name}',
+			dashboard: 'Dashboard',
+			edit: '%{name} #%{id}',
+			empty: 'No %{name} yet.',
+			error: 'Something went wrong',
+			invite: 'Would you like to add one?',
+			list: '%{name} List',
+			loading: 'Loading',
+			not_found: 'Not Found',
+			show: '%{name} #%{id}',
+		},
+		validation: {
+			email: 'Must be a valid email',
+			maxLength: 'Must be %{max} characters or less',
+			maxValue: 'Must be %{max} or less',
+			minLength: 'Must be at least %{min} characters',
+			minValue: 'Must be at least %{min}',
+			number: 'Must be a number',
+			oneOf: 'Must be one of: %{options}',
+			regex: 'Must match a specific format (regexp): %{pattern}',
+			required: 'Required',
+		},
+	},
 	simple: {
 		action: {
 			close: 'Close',
-			resetViews: 'Reset views',
+			resetViews: 'Reset',
 		},
-		'create-post': 'New post',
+		'create-post': 'New Post',
 	},
-	...englishMessages,
 	resources: {
 		posts: {
 			name: 'Post |||| Posts',
 			fields: {
 				average_note: 'Average note',
-				body: 'Body',
+				body: 'Content',
 				comments: 'Comments',
 				commentable: 'Commentable',
 				commentable_short: 'Com.',
 				created_at: 'Created at',
-				notifications: 'Notifications recipients',
-				nb_view: 'Nb views',
-				password: 'Password (if protected post)',
+				notifications: 'Notification recipients',
+				nb_view: 'Num views',
+				password: 'Password (if post is protected)',
 				pictures: 'Related Pictures',
 				published_at: 'Published at',
 				teaser: 'Teaser',
@@ -34,7 +193,7 @@ export const messages = {
 		comments: {
 			name: 'Comment |||| Comments',
 			fields: {
-				body: 'Body',
+				body: 'Content',
 				created_at: 'Created at',
 				post_id: 'Posts',
 				author: {
@@ -56,7 +215,7 @@ export const messages = {
 		},
 		form: {
 			summary: 'Summary',
-			body: 'Body',
+			body: 'Content',
 			miscellaneous: 'Miscellaneous',
 			comments: 'Comments',
 		},
@@ -93,4 +252,7 @@ export const messages = {
 	},
 };
 
-export default messages;
+export default {
+    ...raEnglish,
+	...dashEnglish,
+};

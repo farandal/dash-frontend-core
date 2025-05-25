@@ -1,6 +1,6 @@
-import { TranslationMessages } from 'react-admin';
+import raSpanish from 'ra-language-spanish';
 
-const spanishMessages = {
+const dashSpanish = {
 	ra: {
 		action: {
 			add: 'Añadir',
@@ -49,7 +49,7 @@ const spanishMessages = {
 		boolean: {
 			true: 'Sí',
 			false: 'No',
-			null: ' ',
+			null: ' ',
 		},
 		input: {
 			file: {
@@ -118,6 +118,8 @@ const spanishMessages = {
 			sort_by: 'Ordenar por %{field} %{order}',
 			asc: 'ascendente',
 			desc: 'descendente',
+			DESC: 'descendente',
+			ASC: 'ascendente',
 		},
 		notification: {
 			bad_item: 'Elemento incorrecto',
@@ -159,10 +161,6 @@ const spanishMessages = {
 			required: 'Requerido',
 		},
 	},
-};
-
-export default {
-	...spanishMessages,
 	simple: {
 		action: {
 			close: 'Cerrar',
@@ -170,4 +168,91 @@ export default {
 		},
 		'create-post': 'Neuvo Post',
 	},
+	resources: {
+		posts: {
+			name: 'Post |||| Posts',
+			fields: {
+				average_note: 'Nota promedio',
+				body: 'Contenido',
+				comments: 'Comentarios',
+				commentable: 'Comentable',
+				commentable_short: 'Com.',
+				created_at: 'Creado el',
+				notifications: 'Destinatarios de notificaciones',
+				nb_view: 'Num vistas',
+				password: 'Contraseña (si el post está protegido)',
+				pictures: 'Imágenes relacionadas',
+				published_at: 'Publicado el',
+				teaser: 'Avance',
+				tags: 'Etiquetas',
+				title: 'Título',
+				views: 'Vistas',
+				authors: 'Autores',
+			},
+		},
+		comments: {
+			name: 'Comentario |||| Comentarios',
+			fields: {
+				body: 'Contenido',
+				created_at: 'Creado el',
+				post_id: 'Posts',
+				author: {
+					name: 'Autor',
+				},
+			},
+		},
+		users: {
+			name: 'Usuario |||| Usuarios',
+			fields: {
+				name: 'Nombre',
+				role: 'Rol',
+			},
+		},
+	},
+	post: {
+		list: {
+			search: 'Buscar',
+		},
+		form: {
+			summary: 'Resumen',
+			body: 'Contenido',
+			miscellaneous: 'Otros',
+			comments: 'Comentarios',
+		},
+		edit: {
+			title: 'Post "%{title}"',
+		},
+		action: {
+			save_and_edit: 'Guardar y Editar',
+			save_and_add: 'Guardar y Añadir',
+			save_and_show: 'Guardar y Mostrar',
+			save_with_average_note: 'Guardar con Nota',
+		},
+	},
+	comment: {
+		list: {
+			about: 'Acerca de',
+		},
+	},
+	user: {
+		list: {
+			search: 'Buscar',
+		},
+		form: {
+			summary: 'Resumen',
+			security: 'Seguridad',
+		},
+		edit: {
+			title: 'Usuario "%{title}"',
+		},
+		action: {
+			save_and_add: 'Guardar y Añadir',
+			save_and_show: 'Guardar y Mostrar',
+		},
+	},
+};
+
+export default {
+    ...raSpanish,
+	...dashSpanish
 };
