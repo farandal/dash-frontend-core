@@ -1,8 +1,5 @@
 
 import { JSX, PropsWithChildren } from 'react';
-import {
-	Card,
-} from '@mui/material';
 import IDashAutoAdminResourceConfig from '../interfaces/IDashAutoAdminResourceConfig';
 
 

@@ -51,6 +51,8 @@ export const AttributeToField = (
 
 	const typeComponentMapper = (type: string) => {
 		const component = components[type];
+      
+
 		if (component) {
 			return { custom: true, type: "component", component };
 		}
@@ -162,9 +164,10 @@ export const AttributeToField = (
 				break;
             case 'custom':
             default:
-                debugger;
-                // Check if the component exists in the registry
-                input = { ...input, ...typeComponentMapper(typeof input?.component === "string" ? input.component : input.type) };
+                input.custom = true;
+                if(typeof input?.component === "string") {
+                    input = { ...input, ...typeComponentMapper( input.component ) };
+                }
 				break;
 		}
 	}

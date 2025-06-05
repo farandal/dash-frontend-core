@@ -2,7 +2,7 @@ import Badge, { BadgeProps } from '@mui/material/Badge';
 import styled from '@emotion/styled';
 import {Settings, Error, Warning }from '@mui/icons-material';
 
-import { FC, cloneElement } from 'react';
+import { FC, JSX, cloneElement } from 'react';
 import { Fab } from '@mui/material';
 
 const StyledBadge = styled(Badge)<BadgeProps>(({ theme: _theme }) => ({

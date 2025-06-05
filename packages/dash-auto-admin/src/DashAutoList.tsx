@@ -24,7 +24,6 @@ export interface IDashAutoList {
 	Pagination?: FC<PaginationProps>;
 	//stickyHeader?: boolean;
 }
-
 const DashAutoList: React.FC<IDashAutoList> = ({
 	resourceConfig,
 	customToolbarElements,
@@ -33,8 +32,6 @@ const DashAutoList: React.FC<IDashAutoList> = ({
 	onError,
 	Pagination,
 	children,
-	// eslint-disable-next-line no-unused-vars
-	//stickyHeader = false,
 	dataGridProps,
 	...listProps
 }) => {
@@ -49,7 +46,6 @@ const DashAutoList: React.FC<IDashAutoList> = ({
 		resourceConfig.listProps?.storeKey || resourceConfig.model,
 	);
 
-	//const { dataGridProps } = listProps;
 	const _dataGridProps = { ...resourceConfig.dataGridProps, ...dataGridProps };
 
 	const [, setHandleLoading] = useState<boolean>(false);
@@ -67,56 +63,68 @@ const DashAutoList: React.FC<IDashAutoList> = ({
 		};
 	}, []);
 
-	const ListActionsWrapper =
-		resourceConfig.listActionsWrapper || DashAutoListDefaultListActionsWrapper;
+	const ListActionsWrapper = resourceConfig.listActionsWrapper || DashAutoListDefaultListActionsWrapper;
 
 	useEffect(() => {
 		if (resourceConfig.resetSelectedIdsOnLoad) {
-			//unselectAll();
 			unselectAll();
 		}
 	}, []);
 
-	//const location = useLocation();
-	//const [currentLocation, setCurrentLocation] = useState(location.pathname);
+	// Check if we should show actions
+	const shouldShowActions = () => {
+		if (resourceConfig.toolbar === false) {
+			return false;
+		}
+		
+		// Check if there are any actual toolbar items
+		const hasToolbarItems = 
+			(autoFilters && autoFilters.length > 0) ||
+			resourceConfig.create ||
+			resourceConfig.exporter ||
+			resourceConfig.customToolbarElements;
+			
+		return hasToolbarItems;
+	};
 
-	// No need to pass any filters to the list anymore, as the <PostFilterForm> component will display them.
-	//const [finalListProps, setFinalListProps] = useState(null);
+	const renderActions = () => {
+		if (!shouldShowActions()) {
+			return null; // Return null instead of false to avoid empty spans
+		}
 
-
-	const finalListProps = 
-{
-	/* default storeKey */
-    sort: { field: 'id', order: 'ASC' },
-	storeKey: resourceConfig?.model,
-
-    ...listProps,
-    ...(resourceConfig.listProps || {}),
-	/** If resourceConfig toolbar disabled, then disable the default react-admin toolbar by setting actions:null */
-	...(resourceConfig.toolbar === false || ((autoFilters && autoFilters.length < 1) && !resourceConfig.toolbar === true)
-		? { actions: null }
-		: {
-			actions: (
-				<ListActionsWrapper
-					autoFilters={autoFilters}
+		return (
+			<ListActionsWrapper
+				autoFilters={autoFilters}
+				resourceConfig={resourceConfig}
+			>
+				<DashAutoListActions
+					filters={autoFilters}
 					resourceConfig={resourceConfig}
-				>
-					<DashAutoListActions
-						filters={autoFilters}
-						resourceConfig={resourceConfig}
-						autoFilters={autoFilters}
-						listProps={listProps}
-					/>
-				</ListActionsWrapper>
-			) }),
-	pagination: Pagination ? <Pagination {...resourceConfig.paginationProps} /> : <ExtendedPagination {...resourceConfig.paginationProps} />,
-	...(exporter && { exporter: exporter }),
-    ...(resourceConfig.bulkActionButtons && { bulkActionButtons: resourceConfig.bulkActionButtons }),
-	
-};
+					autoFilters={autoFilters}
+					listProps={listProps}
+				/>
+			</ListActionsWrapper>
+		);
+	};
 
+	const finalListProps = {
+		/* default storeKey */
+		sort: { field: 'id', order: 'ASC' },
+		storeKey: resourceConfig?.model,
+
+		...listProps,
+		...(resourceConfig.listProps || {}),
+		
+		// Set actions to null if no actions should be shown, otherwise render actions
+		actions: renderActions(),
+		
+		pagination: Pagination ? <Pagination {...resourceConfig.paginationProps} /> : <ExtendedPagination {...resourceConfig.paginationProps} />,
+		...(exporter && { exporter: exporter }),
+		...(resourceConfig.bulkActionButtons && { bulkActionButtons: resourceConfig.bulkActionButtons }),
+	};
 
 	if (!finalListProps) return <></>;
+	
 	return resourceConfig.listComponent ? (
 		resourceConfig.listComponent(resourceConfig, onSubmit, onError)
 	) : (
@@ -125,7 +133,6 @@ const DashAutoList: React.FC<IDashAutoList> = ({
 				<resourceConfig.dataGridComponent
 					resourceConfig={resourceConfig}
 					dataGridProps={_dataGridProps}
-                    
 				/>
 			) : (
 				<DashAutoListDataGridWrapper

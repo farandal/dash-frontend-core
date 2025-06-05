@@ -138,6 +138,7 @@ const AttributeToInput = (
 
     const typeComponentMapper = (type: string) => {
         const component = components[type];
+       
         if (component) {
             return { custom: true, type: "component", component };
         }
@@ -200,8 +201,11 @@ const AttributeToInput = (
                 break;
             case 'custom':
             default:
-                // Check if the component exists in the registry
-                input = { ...input, ...typeComponentMapper(typeof input?.component === "string" ? input.component : input.type) };
+                input.custom = true;
+                if(typeof input?.component === "string") {
+                    input = { ...input, ...typeComponentMapper( input.component ) };
+                }
+               
         }
     }
 
@@ -276,6 +280,7 @@ const AttributeToInput = (
         (input.custom && input.component) ||
         (input.type === 'component' && input.component)
     ) {
+      
         return (
             <FunctionFieldWrapper index={index} method={mode} input={input}>
                 <UserAction

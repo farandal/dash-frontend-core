@@ -1,27 +1,12 @@
 import FabButton from '../common/components/FabButton';
-import {  SavedQueriesList, useListContext, useUnselectAll } from 'react-admin/src';
-
-import {
-	TopToolbar,
-	FilterForm,
-} from 'react-admin/src';
-
-
+import { SavedQueriesList, useListContext, useUnselectAll } from 'react-admin/src';
+import { TopToolbar, FilterForm } from 'react-admin/src';
 import IDashAutoAdminResourceConfig from '../interfaces/IDashAutoAdminResourceConfig';
 import { FC, ReactNode } from 'react';
-import {
-	Box,
-	Button,
-	Collapse,
-	Fab,
-	Grid,
-} from '@mui/material';
-
-
+import { Box, Button, Collapse, Fab, Grid } from '@mui/material';
 import FilterAltOffIcon from '@mui/icons-material/FilterAltOff';
 import DashAutoListFilterFormWithButton, { IToolbarFiltersHandler } from './DashAutoListFilterFormWithButton';
 import React from 'react';
-
 import KeyboardArrowUp from '@mui/icons-material/KeyboardArrowUp';
 import KeyboardArrowDown from '@mui/icons-material/KeyboardArrowDown';
 import Search from '@mui/icons-material/Search';
@@ -33,20 +18,13 @@ export interface IToolbarFilters {
 	filterButtonText?: string;
 }
 
-/*const ToolbarFilters:React.ForwardRefRenderFunction<IToolbarFiltersHandler, IToolbarFilters> = (
-  props,
-  forwardedRef,
-) => {
-*/
-
-//const ToolbarFilters:React.FC<IToolbarFilters> = React.forwardRef((props ,forwardedRef: React.Ref<IToolbarFiltersHandler>)=> {
 const ToolbarFilters = React.forwardRef<IToolbarFiltersHandler, IToolbarFilters>((props, forwardedRef) => {
 	const handleSubmit = () => {
 		console.error('handleSubmit at ToolbarFilters not implemented');
 	};
 
 	const reset = () => {
-		console.error('handleSubmit at ToolbarFilters not implemented');
+		console.error('reset at ToolbarFilters not implemented');
 	};
 
 	React.useImperativeHandle(forwardedRef, () => ({
@@ -60,8 +38,10 @@ const ToolbarFilters = React.forwardRef<IToolbarFiltersHandler, IToolbarFilters>
 
 	const { resourceConfig, filters } = props;
 	return resourceConfig.hideDefaultFilters !== true ? <FilterForm filters={filters} /> : <></>;
+});
 
-}) as  React.ForwardRefRenderFunction<IToolbarFiltersHandler, IToolbarFilters>;
+// Add display name for debugging
+ToolbarFilters.displayName = 'ToolbarFilters';
 
 export interface IDashAutoListTopToolbar {
 	resourceConfig: IDashAutoAdminResourceConfig,
@@ -69,137 +49,164 @@ export interface IDashAutoListTopToolbar {
 	filters: ReactNode[],
 	countFilters: number,
 	collapsed: boolean,
-	setCollapsed: any,
+	setCollapsed: (collapsed: boolean) => void, // Better typing
 	filterCountToCollapse?: number,
 	collapsedSize?: number | string,
 }
 
-const DashAutoListTopToolbar:FC<IDashAutoListTopToolbar> = (props) => {
-
-	const { resourceConfig, autoFilters, filters, countFilters, collapsed, setCollapsed, filterCountToCollapse = 5, collapsedSize = '60px' } = props;
+const DashAutoListTopToolbar: FC<IDashAutoListTopToolbar> = (props) => {
+	const { 
+		resourceConfig, 
+		autoFilters, 
+		filters, 
+		countFilters, 
+		collapsed, 
+		setCollapsed, 
+		filterCountToCollapse = 5, 
+		collapsedSize = '60px' 
+	} = props;
 	
 	const { setFilters } = useListContext();
-	const unselectAll = useUnselectAll((resourceConfig.listProps?.storeKey || resourceConfig.model) );
+	const unselectAll = useUnselectAll(resourceConfig.listProps?.storeKey || resourceConfig.model);
 	
-
-	const FilterComponent = resourceConfig.FilterFormComponent ? resourceConfig.FilterFormComponent : (resourceConfig.filterWithSubmit === true ? DashAutoListFilterFormWithButton : ToolbarFilters);
+	const FilterComponent = resourceConfig.FilterFormComponent 
+		? resourceConfig.FilterFormComponent 
+		: (resourceConfig.filterWithSubmit === true ? DashAutoListFilterFormWithButton : ToolbarFilters);
 
 	type FilterComponentHandle = React.ElementRef<React.ForwardRefExoticComponent<IToolbarFilters & React.RefAttributes<IToolbarFiltersHandler>>>;
 
-	const ref = React.useRef<FilterComponentHandle>(); 
+	const ref = React.useRef<FilterComponentHandle>(null); 
 
 	const clearFilters = () => {
 		unselectAll();
 		setFilters({}, []);
-		ref.current.reset();
+		ref.current?.reset();
 	};
+    
 
-	return (
-		<>
-			{countFilters && autoFilters ? (
+	return  <div>
+
+
+
+            <div
+									style={{
+										display: 'flex',
+										justifyContent: 'flex-start',
+										flexWrap: 'wrap',
+									}}
+									className='toolbar-actions'
+								>
+	                                <ToolbarCreateButton mode='create' resourceConfig={resourceConfig}/>
+									<ToolbarExportButton mode='create' resourceConfig={resourceConfig}/>
+
+									{typeof resourceConfig.customToolbarElements === 'function'
+										? resourceConfig.customToolbarElements(filters)
+										: resourceConfig.customToolbarElements}
+
+									{typeof resourceConfig.customToolbarActions === 'function'
+										? resourceConfig.customToolbarActions(filters)
+										: resourceConfig.customToolbarActions}
+							
+									{!!resourceConfig.showSavedQueries && <SavedQueriesList />}
+
+						
+								</div>
+
+
+
+						
+							{countFilters ? (
+								<div>
+									<Collapse
+										className='toolbar-collapse'
+										orientation='vertical'
+										collapsedSize={collapsedSize}
+										in={collapsed}
+										timeout='auto'
+									>
+										<div className='toolbar-filters'>
+											<FilterComponent ref={ref} resourceConfig={resourceConfig} filters={filters} />
+										</div>
+									</Collapse>
+								</div>
+							) : null}
+					
+							
+						
+								
+	                    
+
+									{countFilters && resourceConfig?.filterWithSubmit === true && resourceConfig?.filterButtonPosition !== 'filters-container' &&
+                                      <div
+									style={{
+										display: 'flex',
+										justifyContent: 'flex-end',
+										flexWrap: 'wrap',
+									}}
+									className='toolbar-buttons'
+								>
+										<Button 
+											endIcon={<Search/>}
+											variant='contained'
+											onClick={() => { 
+												ref.current?.submit();
+											}}
+										>
+											Filtrar
+										</Button>
+									</div>}
+							
+
+
+        <Box sx={{ 
+				position: 'absolute',
+				top: 0,
+				right: 0,
+				display: 'flex',
+				gap: 1,
+                padding: 1
+			}}>
+            {countFilters && autoFilters ? (
 				<FabButton
-					onClick={() => clearFilters()}
+					onClick={clearFilters}
 					size='small'
 					aria-label='refresh'
 					color='primary'
-					icon={<FilterAltOffIcon />}
+					icon={<FilterAltOffIcon sx={{ fontSize: '1rem' }} />}
 					tooltip={'Borrar filtros'}
+                    style={{
+						width: '30px',
+						height: '30px',
+						minHeight: '30px'
+					}}
 				/>
-			) : <></>}
+			) : null}
 
-			{countFilters > (Number(filterCountToCollapse) || 5) ? (
+			{countFilters/*> (Number(filterCountToCollapse) || 3)*/ ? (
 				<Fab
 					size='small'
-					aria-label='collpase'
+					aria-label='collapse'
 					color='primary'
 					onClick={() => setCollapsed(!collapsed)}
 					style={{
-						position: 'absolute',
+						width: '30px',
+						height: '30px',
+						minHeight: '30px'
 					}}
 					className='toolbar-collapse-button'
 				>
-					{collapsed ? (
-						<KeyboardArrowUp />
-					) : (
-						<KeyboardArrowDown />
-					)}
+					{collapsed ? <KeyboardArrowUp sx={{ fontSize: '1rem' }} /> : <KeyboardArrowDown sx={{ fontSize: '1rem' }} />}
 				</Fab>
-			) : <></>}
+			) : null}
 
-			<TopToolbar >
 
-				<Grid container spacing={0}   >
-				
-					{countFilters ? <Grid >
-						<Collapse
-							className='toolbar-collapse'
-							orientation={'vertical'}
-							collapsedSize={collapsedSize}
-							in={collapsed}
-							timeout='auto'
-						>
-							<Box className='toolbar-filters'>
-								<FilterComponent ref={ref} resourceConfig={resourceConfig} filters={filters} />
-							</Box>
-						</Collapse>
-					</Grid> : <></>}
-					<Grid sx={{
-						display: 'flex',
-						justifyContent: 'space-between',
-					}} item xs={12}>
 
-						<Box
-							sx={{
-								display: 'flex',
-								justifyContent: 'flex-start',
-								flexWrap: 'wrap',
-							}}
-							className='toolbar-buttons'
-						>
+
+            </Box>	
+
 						
-							<ToolbarCreateButton mode={'create'} resourceConfig={resourceConfig}/>
-							<ToolbarExportButton mode={'create'} resourceConfig={resourceConfig}/>
-
-							{typeof resourceConfig.customToolbarElements === 'function'
-								? resourceConfig.customToolbarElements(filters)
-								: resourceConfig.customToolbarElements}
-							{/*<SavedQueriesList /> */}
-
-						</Box>
-
-						<Box
-							sx={{
-								display: 'flex',
-								justifyContent: 'flex-end',
-								flexWrap: 'wrap',
-							}}
-							className='toolbar-actions'
-						>
-
-							{typeof resourceConfig.customToolbarActions === 'function'
-								? resourceConfig.customToolbarActions(filters)
-								: resourceConfig.customToolbarActions}
-							
-							{/* TODO: not tested */}
-							{!!resourceConfig.showSavedQueries && <SavedQueriesList /> }
-
-							{ countFilters && resourceConfig?.filterWithSubmit === true && resourceConfig?.filterButtonPosition !== 'filters-container' ?
-								<Button 
-									endIcon={<Search/>}
-									variant={'contained'}
-									onClick={() => { 
-										ref.current.submit();
-									}}>Filtrar</Button> : <></>}
-						</Box>
-						
-					</Grid>
-				</Grid>
-			</TopToolbar>
-			
-			
-		</>
-	);
+					</div>
+	
 };
-
 
 export default DashAutoListTopToolbar;

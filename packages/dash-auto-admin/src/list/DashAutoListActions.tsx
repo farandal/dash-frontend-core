@@ -18,14 +18,9 @@ export interface IDashAutoListActions {
 	autoFilters: any;
 	listProps: any;
 }
-
 const DashAutoListActions: FC<IDashAutoListActions> = (props) => {
 	const { filters, resourceConfig, autoFilters, listProps } = props;
-	//const { data, isLoading } = useListContext();
-	//const [collapsed, setCollapsed] = useState<boolean>(false);
 	const [collapsed, setCollapsed] = useStore('DashAutoList.collapsed', true);
-
-	//const [countFilters] = useState(resourceConfig.referenceFilters.length || 0);
 
 	const countFilters = resourceConfig.referenceFilters && resourceConfig.referenceFilters.length ? resourceConfig.referenceFilters.length : 0;
 
@@ -41,37 +36,10 @@ const DashAutoListActions: FC<IDashAutoListActions> = (props) => {
 		hasToolbarItems = false;
 	}
 
-
-
-	/*
-		https://marmelab.com/react-admin/FilteringTutorial.html#custom-filter-form
-		TODO Tip: No need to pass any filters to the list anymore, as the <PostFilterForm> component will display them.
-	*/
-	//return <></>;
-	if (!hasToolbarItems) return <></>;
+	// Return null instead of empty JSX to avoid rendering empty elements
+	if (!hasToolbarItems) return null;
 	
-	return resourceConfig.customListActions ? 
-	
-		<resourceConfig.customListActions
-			resourceConfig={resourceConfig}
-			listProps={listProps}
-			//isLoading={isLoading}
-			//data={data}
-		>
-			<DashAutoListTopToolbar
-				resourceConfig={resourceConfig}
-				autoFilters={autoFilters}
-				filters={filters}
-				countFilters={countFilters}
-				collapsed={collapsed}
-				setCollapsed={setCollapsed}
-				filterCountToCollapse={FILTERS_COLLAPSE_COUNT}
-				collapsedSize={FILTERS_COLLAPSE_SIZE}
-			/>
-		</resourceConfig.customListActions>
-	
-		:
-	
+	const toolbarComponent = (
 		<DashAutoListTopToolbar
 			resourceConfig={resourceConfig}
 			autoFilters={autoFilters}
@@ -81,8 +49,19 @@ const DashAutoListActions: FC<IDashAutoListActions> = (props) => {
 			setCollapsed={setCollapsed}
 			filterCountToCollapse={FILTERS_COLLAPSE_COUNT}
 			collapsedSize={FILTERS_COLLAPSE_SIZE}
-		/>;
+		/>
+	);
 
+	return resourceConfig.customListActions ? (
+		<resourceConfig.customListActions
+			resourceConfig={resourceConfig}
+			listProps={listProps}
+		>
+			{toolbarComponent}
+		</resourceConfig.customListActions>
+	) : (
+		toolbarComponent
+	);
 };
 
 export default DashAutoListActions;
