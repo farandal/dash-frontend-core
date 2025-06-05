@@ -4,6 +4,7 @@ import IPageState from './IPage';
 import ISettingsState from './ISettings';
 import IFormDataState from './IFormDataState';
 import { IMenuState } from '../reducers/Menu';
+import IComponentDataState from './IComponentData';
 /**
  * Represents the overall state of the DASH application.
  *
@@ -41,6 +42,11 @@ export interface IDASHAppState<U, A, R> {
    * The menu state of the DASH application.
   */
   menu?: IMenuState;
+
+  /**
+   * Generic store for DASH component.
+  */
+  componentData: IComponentDataState;
 
 }
 

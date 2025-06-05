@@ -8,6 +8,7 @@ export type { default as ICommonState } from './redux/interfaces/ICommonState';
 export type { default as ISettingsState } from './redux/interfaces/ISettings';
 export type { default as IPageState } from './redux/interfaces/IPage';
 export type { default as IDASHAppState } from './redux/interfaces/IDASHAppState';
+export type { default as IComponentDataState } from './redux/interfaces/IComponentData'; // Add this line
 
 export { default as defaultAuth } from './defaults/defaultAuth';
 export { default as defaultCommon } from './defaults/defaultCommon';
@@ -17,4 +18,3 @@ export { default as defaultSettings } from './defaults/defaultSettings';
 
 export * as DASH_REDUX_ACTIONS from './redux/actions';
 
-//export {default as DASH_REDUX_INITIAL_STATE} from "./redux"
