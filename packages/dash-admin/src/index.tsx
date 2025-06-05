@@ -52,6 +52,10 @@ export type {
     INotificationFormat
 } from "./contexts/com/components/notificationFormats"
 
+export {default as LogFileById} from "./components/logs/LogFileById"
+export {default as LogFile} from "./components/logs/LogFile"
+
+
 export * from "./contexts/auth"
 
 export * from "./utils"

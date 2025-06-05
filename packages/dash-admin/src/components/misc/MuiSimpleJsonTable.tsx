@@ -121,7 +121,7 @@ const MUISimpleJsonTable: FC<MUISimpleJsonTable> = ({
             //console.log(`Parsing value for key "${key}":`, value, typeof value);
             
             if (value === undefined || value === null) {
-                return "n/a";´
+                return "n/a";
             }
 
             // Check for plain objects FIRST, before other checks

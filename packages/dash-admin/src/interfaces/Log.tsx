@@ -12,5 +12,5 @@ export interface ILogTxtFileComponent {
 }
 
 export interface IProductImportLogComponent {
-	log: ILog;
+	logs: ILog[];
 }

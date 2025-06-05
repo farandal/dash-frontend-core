@@ -26,7 +26,7 @@ export const LogTxtFileComponent: React.FC<ILogTxtFileComponent> = ({
   };
   const preLoadLog = async (logID) => {
     if (log?.filepath) {
-      const { data: file } = await axios.get(`/log/${log.id}/download`, {
+      const { data: file } = await axios.get(`/system/log/${log.id}/download`, {
         responseType: 'blob',
       });
 

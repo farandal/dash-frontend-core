@@ -42,7 +42,60 @@ const drawerSettings = {
 };
 
 const systemResources: IAppResourceConfig[] = [
-    {
+     {
+        roles: [DASHAppConstants.system.SYSTEM_ROLE],
+        component: ResourceTemplate,
+        customRoutes: (resourceConfig) => TenantImpersonateResource(resourceConfig),
+        model: 'system/tenant',
+        label: 'Clientes',
+        schema: tenantSystemAdminSchema,
+        //references: [{ reference: 'roles', target: 'role', schema: rolesSchema }]
+        //references: [{ reference: 'roles', target: 'gitid', schema: roleSchema }],
+        icon: <Person />,
+        group: 'Recursos de sistema',
+        menu: [{
+            title: 'Clientes',
+            redirect: '/system/tenant',
+        },
+        {
+            title: 'Impersonar',
+            redirect: '/system/tenant/impersonate',
+        },
+
+        ],
+        create: true,
+
+        mainAction: {
+            title: 'Crear cliente',
+            redirect: '/system/tenant/create',
+            //mode: 'create',
+            //fn: 'redirect'
+        },
+
+        search: false,
+        exporter: false,
+        postFormatter: (params) => {
+            if (params.systemMarketplaces) {
+                params.system_marketplace_ids = params.systemMarketplaces.map((item) => item.id);
+            }
+            return params;
+        },
+        redirectAfterUpdate: false,
+
+        mutationMode: 'pessimistic',
+        dataGridProps: { stickyHeader: true },
+        dataGridWrapper: (props: any) => <TableContainer sx={{ maxHeight: 800 }} >{props.children}</TableContainer>,
+        //listEditButton: { enabled: true },
+
+        ...drawerSettings,
+        redirectAfterCreate: true,
+
+        //toolbarCreateButton: { enabled: true },
+        //listEditButton: { enabled: true, component: QuickEditButton, props: { icon: <Bolt />, label: "", resource: "tenant/inline", navigation:"virtualhash", navigate: (id) => id, size: "small", color: "secondary" }},
+
+
+    },
+    /*{
         roles: [DASHAppConstants.system.SYSTEM_ROLE],
         component: ResourceTemplate,
         model: 'system/permissions',
@@ -57,11 +110,11 @@ const systemResources: IAppResourceConfig[] = [
                 redirect: '/system/permissions',
             },
         ],
-        /*mainAction: {
-            title: 'Crear permiso',
-            // type: "ghost",
-            redirect: '/system/permissions/create',
-        },*/
+        //mainAction: {
+        //    title: 'Crear permiso',
+        //    // type: "ghost",
+        //    redirect: '/system/permissions/create',
+        //},
         search: true,
         mutationMode: 'pessimistic',
         dataGridProps: { stickyHeader: true },
@@ -76,7 +129,7 @@ const systemResources: IAppResourceConfig[] = [
         listEditButton: { enabled: false },
         delete: false,
         listDeleteButton: { enabled: false },
-    },
+    },*/
     {
         roles: [DASHAppConstants.system.SYSTEM_ROLE],
         component: ResourceTemplate,
@@ -359,59 +412,7 @@ const systemResources: IAppResourceConfig[] = [
         },
         ...drawerSettings,
     },
-    {
-        roles: [DASHAppConstants.system.SYSTEM_ROLE],
-        component: ResourceTemplate,
-        customRoutes: (resourceConfig) => TenantImpersonateResource(resourceConfig),
-        model: 'system/tenant',
-        label: 'Clientes',
-        schema: tenantSystemAdminSchema,
-        //references: [{ reference: 'roles', target: 'role', schema: rolesSchema }]
-        //references: [{ reference: 'roles', target: 'gitid', schema: roleSchema }],
-        icon: <Person />,
-        group: 'Recursos de sistema',
-        menu: [{
-            title: 'Clientes',
-            redirect: '/system/tenant',
-        },
-        {
-            title: 'Impersonar',
-            redirect: '/system/tenant/impersonate',
-        },
-
-        ],
-        create: true,
-
-        mainAction: {
-            title: 'Crear cliente',
-            redirect: '/system/tenant/create',
-            //mode: 'create',
-            //fn: 'redirect'
-        },
-
-        search: false,
-        exporter: false,
-        postFormatter: (params) => {
-            if (params.systemMarketplaces) {
-                params.system_marketplace_ids = params.systemMarketplaces.map((item) => item.id);
-            }
-            return params;
-        },
-        redirectAfterUpdate: false,
-
-        mutationMode: 'pessimistic',
-        dataGridProps: { stickyHeader: true },
-        dataGridWrapper: (props: any) => <TableContainer sx={{ maxHeight: 800 }} >{props.children}</TableContainer>,
-        //listEditButton: { enabled: true },
-
-        ...drawerSettings,
-        redirectAfterCreate: true,
-
-        //toolbarCreateButton: { enabled: true },
-        //listEditButton: { enabled: true, component: QuickEditButton, props: { icon: <Bolt />, label: "", resource: "tenant/inline", navigation:"virtualhash", navigate: (id) => id, size: "small", color: "secondary" }},
-
-
-    },
+   
 ];
 
 

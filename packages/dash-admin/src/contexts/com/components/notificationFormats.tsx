@@ -89,7 +89,7 @@ export function formatNotification<T extends INotificationPayloadBase>(
 ): IFormattedNotification {
     const _notificationFormat: INotificationFormat<T> = notificationsFormats.find(
         (notificationFormat) =>
-            notificationFormat.class === notification.notificationPayload.class,
+            notificationFormat.class === (notification.notificationPayload?.class || ""),
     );
     return {
         class: notification.notificationPayload.class,
