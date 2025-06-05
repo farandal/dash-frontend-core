@@ -8,7 +8,7 @@ import { IDASHAppState } from 'dash-admin-state';
 import MenuOpenIcon from '@mui/icons-material/MenuOpen'
 import { IconButton } from '@mui/material';
 import { IDashAutoAdminResourceConfig } from 'dash-auto-admin';
-import { AvatarComponent } from 'dash-components';
+import { AvatarComponent,DarkModeSwitcher,LanguageSwitcher } from 'dash-components';
 
 export interface IDomainHeader<U = any, A = any> extends PropsWithChildren {
 
@@ -51,7 +51,7 @@ const DomainHeader = <U, A>({
     const HeaderComponentInline = () => (
         <div className='dash-header-inline'>
             <span className='dash-header-inline-title'>
-                {pageSettings.title || 'Dashboard'}
+                {pageSettings.title || ''}
             </span>
             <span className='dash-header-inline-subtitle'>
                 {pageSettings.subTitle}
@@ -74,8 +74,12 @@ const DomainHeader = <U, A>({
                             {typeof logoSmall === 'string' ? <img src={logoSmall} /> : logoSmall}
                         </span>
                     </div>
-                    <div className='dash-header-subheader-avatar'>
+                    <div className='dash-header-subheader-user'>
                         <AvatarComponent />
+                    </div>
+                    <div className='dash-header-subheader-actions'>
+                        <LanguageSwitcher />
+                        <DarkModeSwitcher/>
                     </div>
                 </div>
 

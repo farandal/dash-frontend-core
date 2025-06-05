@@ -126,7 +126,7 @@ const AvatarComponent: React.FC<{}> = ({ ...props }) => {
                     label='Cerrar sesión'
                     className='dash-user-item'
                 />
-                 <DarkToggleMode/>
+       
             </Menu>
         </>
     );

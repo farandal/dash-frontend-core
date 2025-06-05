@@ -14,6 +14,7 @@ export interface INotificationPayloadBase {
     targetRoles?: string[];
     notify: "dialog" | "toast" | "none";
     type?:string
+    data?:any
 }
 
 export interface INotificationPayload<T> extends INotificationPayloadBase {
