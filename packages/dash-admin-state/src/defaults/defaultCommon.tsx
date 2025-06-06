@@ -13,8 +13,8 @@ const defaultCommon: ICommonState = {
 	componentsState: [],
 	headerComponents: [],
 	panelSettings: {
-		logo: <>🖥</>,
-		logoSmall: <>🖥</>,
+		horizontalLogo: <>🖥</>,
+		squaredLogo: <>🖥</>,
 	},
 };
 

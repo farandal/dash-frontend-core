@@ -16,7 +16,7 @@ const FullLayoutMarkup = <U, A>({
 	);
 
 	const logo = panelSettings?.logo || <>🖥 DASH</>;
-	const logoSmall = panelSettings?.logoSmall || <>🖥</>;
+	const squaredLogo = panelSettings?.squaredLogo || <>🖥</>;
     const loginBackground = panelSettings?.loginBackground || <> Welcome to Dash Panel </>;
 
 	return (

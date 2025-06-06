@@ -55,8 +55,8 @@ const DomainTheme = <U, A>({
             state.common.panelSettings,
     );
 
-    const logo = panelSettings?.logo || <>🖥 DASH</>;
-    const logoSmall = panelSettings?.logoSmall || <>🖥</>;
+    const horizontalLogo = panelSettings?.horizontalLogo || <>🖥 DASH</>;
+    const squaredLogo = panelSettings?.squaredLogo || <>🖥</>;
 
     const getContainerClass = (navStyle) => {
         switch (navStyle) {
@@ -132,7 +132,7 @@ const DomainTheme = <U, A>({
 
     return (
         <div className={themeType}>
-            <AppSidebarMaterial logo={logo} logoSmall={logoSmall} />
+            <AppSidebarMaterial horizontalLogo={horizontalLogo} squaredLogo={squaredLogo} />
             <Box
                 className={`dash-app-layout ${
                     navExpanded

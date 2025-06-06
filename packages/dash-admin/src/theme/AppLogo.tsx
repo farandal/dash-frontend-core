@@ -1,13 +1,13 @@
-import React, { FC } from 'react';
+import React, { FC, JSX } from 'react';
 
 export interface IAppLogo {
-	type?: 'iso' | 'logo';
-	logoBig: JSX.Element;
-	logoSmall: JSX.Element;
+	type?: 'logo';
+	horizontalLogo: JSX.Element;
+	squaredLogo: JSX.Element;
 }
 
-const AppLogo: FC<IAppLogo> = ({ type = 'logo', logoBig, logoSmall }) => {
-	return type === 'logo' ? logoBig : logoSmall;
+const AppLogo: FC<IAppLogo> = ({ type = 'logo', horizontalLogo, squaredLogo }) => {
+	return type === 'logo' ? horizontalLogo : squaredLogo;
 };
 
 export default AppLogo;

@@ -15,8 +15,8 @@ export interface IAppSidebarContent {
 	setSidebarExpanded: any;
 	navStyle: any;
 	themeType: any;
-	logo: JSX.Element;
-	logoSmall?: JSX.Element;
+	horizontalLogo: JSX.Element;
+	squaredLogo?: JSX.Element;
 	children?: ReactNode;
 }
 
@@ -26,7 +26,7 @@ const SidebarContent: React.FC<IAppSidebarContent> = ({
 	navStyle,
 	themeType,
 	logo,
-	logoSmall,
+	squaredLogo,
 	children,
 	...props
 }) => {
@@ -51,7 +51,7 @@ const SidebarContent: React.FC<IAppSidebarContent> = ({
 				sidebarExpanded={sidebarExpanded}
 				setSidebarExpanded={setSidebarExpanded}
 				logo={logo}
-				logoSmall={logoSmall}
+				squaredLogo={squaredLogo}
 			/>
 
 			<div className='dash-sidebar-content'>

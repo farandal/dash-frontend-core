@@ -16,7 +16,7 @@ const StaticLayout = <U, A>({
 	);
 
 	//const logo = panelSettings?.logo || <>🖥 DASH</>;
-	const logoSmall = panelSettings?.logoSmall || <>🖥</>;
+	const squaredLogo = panelSettings?.squaredLogo || <>🖥</>;
     //const loginBackground = panelSettings?.loginBackground || <> Welcome to Dash Panel </>;
 
 	return (
@@ -24,10 +24,10 @@ const StaticLayout = <U, A>({
 			<div className='dash-app-static-wrapper'>
 				<div className='dash-app-static-content'>
 					<a href='/'>
-											{typeof logoSmall === 'string' ? (
-												<img alt='logo' className='dash-app-static-logo' src={logoSmall} />
+											{typeof squaredLogo === 'string' ? (
+												<img alt='logo' className='dash-app-static-logo' src={squaredLogo} />
 											) : (
-												<div className='dash-app-static-logo'>{logoSmall}</div>
+												<div className='dash-app-static-logo'>{squaredLogo}</div>
 											)}
 					</a>
 

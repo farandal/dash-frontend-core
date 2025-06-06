@@ -39,7 +39,7 @@ const DomainHeader = <U, A>({
     );
 
     const logo = panelSettings?.logo || <>🖥 DASHAdmin</>;
-    const logoSmall = panelSettings?.logoSmall || <>🖥</>;
+    const squaredLogo = panelSettings?.squaredLogo || <>🖥</>;
 
     const onToggleExpandedNav = () => {
         // Use the toggleNavExpanded action instead
@@ -71,7 +71,7 @@ const DomainHeader = <U, A>({
                     </div>
                     <div className='dash-header-subheader-logo'>
                         <span className='dash-page-header-heading-img'>
-                            {typeof logoSmall === 'string' ? <img src={logoSmall} /> : logoSmall}
+                            {typeof squaredLogo === 'string' ? <img src={squaredLogo} /> : squaredLogo}
                         </span>
                     </div>
                     <div className='dash-header-subheader-user'>

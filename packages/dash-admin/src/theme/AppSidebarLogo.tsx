@@ -3,15 +3,15 @@ import { useSelector } from 'react-redux';
 
 import AppLogo from './AppLogo';
 export interface IAppSidebarLogo {
-	logo: JSX.Element;
-	logoSmall?: JSX.Element;
+	horizontalLogo: JSX.Element;
+	squaredLogo?: JSX.Element;
 	setSidebarExpanded?: Function;
 	sidebarExpanded: boolean;
 }
 const AppSidebarLogo: React.FC<IAppSidebarLogo> = ({
 	logo,
 	sidebarExpanded,
-	logoSmall,
+	squaredLogo,
 	setSidebarExpanded,
 	...props
 }) => {
@@ -26,9 +26,9 @@ const AppSidebarLogo: React.FC<IAppSidebarLogo> = ({
 	return (
 		<div className='dash-layout-sider-header'>
 			{!sidebarExpanded ? (
-				<AppLogo type='logo' logoBig={logo} logoSmall={logoSmall} />
+				<AppLogo type='logo' logoBig={logo} squaredLogo={squaredLogo} />
 			) : (
-				<AppLogo type='iso' logoBig={logo} logoSmall={logoSmall} />
+				<AppLogo type='iso' logoBig={logo} squaredLogo={squaredLogo} />
 			)}
 
 			{/*<Link to="/" className="dash-site-logo">

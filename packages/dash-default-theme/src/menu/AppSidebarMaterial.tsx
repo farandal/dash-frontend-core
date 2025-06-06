@@ -57,7 +57,7 @@ const Drawer = styled(MuiDrawer, {
 
 const AppSidebarMaterial = (props) => {
 
-    const { logo, logoSmall } = props;
+    const { horizontalLogo, squaredLogo } = props;
 
     const { navExpanded } = useSelector(
         (state: IDASHAppState<any, any, IDashAutoAdminResourceConfig>) =>
@@ -104,9 +104,9 @@ const AppSidebarMaterial = (props) => {
 
                     <div className={'sidebar-logo'}>
                         {navExpanded && navSize === "large" ?
-                            <img src={logo} alt={"logo"} />
+                            <img src={squaredLogo} alt={"logo"} />
                             :
-                            <img src={logoSmall} alt={"logo"} />
+                            <img src={horizontalLogo} alt={"logo"} />
 
                         }
                     </div>
