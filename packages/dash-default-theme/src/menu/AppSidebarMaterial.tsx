@@ -91,7 +91,6 @@ const AppSidebarMaterial = (props) => {
     }, [windowSize.width])
 
 
-
     return (
         <Box sx={{ display: 'flex' }}>
 
@@ -104,19 +103,21 @@ const AppSidebarMaterial = (props) => {
 
                     <div className={'sidebar-logo'}>
                         {navExpanded && navSize === "large" ?
-                            <img src={squaredLogo} alt={"logo"} />
-                            :
                             <img src={horizontalLogo} alt={"logo"} />
+                            :
+                            <img src={squaredLogo} alt={"logo"} />
 
                         }
                     </div>
-                    <IconButton color='secondary' onClick={toggleDrawer} >
+
+                    <IconButton className='drawer-toggler' color='secondary' onClick={toggleDrawer} >
                         {navExpanded ? (
                             <KeyboardDoubleArrowLeftIcon />
                         ) : (
                             <KeyboardDoubleArrowRightIcon />
                         )}
                     </IconButton>
+
                 </div>
                 <AppMaterialMenu navSize={navSize} />
             </Drawer>

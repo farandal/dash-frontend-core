@@ -55,8 +55,8 @@ const DomainTheme = <U, A>({
             state.common.panelSettings,
     );
 
-    const horizontalLogo = panelSettings?.horizontalLogo || <>🖥 DASH</>;
-    const squaredLogo = panelSettings?.squaredLogo || <>🖥</>;
+    const horizontalLogo = panelSettings?.horizontalLogo || <>🖥 DASH.</>;
+    const squaredLogo = panelSettings?.squaredLogo || <>🖥..</>;
 
     const getContainerClass = (navStyle) => {
         switch (navStyle) {

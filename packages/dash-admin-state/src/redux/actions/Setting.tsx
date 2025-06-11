@@ -9,6 +9,7 @@ import {
 
 export function toggleThemeType(themeType) {
   document.documentElement.setAttribute('data-theme', themeType)
+  localStorage.setItem('theme', themeType)
   return { type: DefaultThemeSettings.THEME_TYPE, themeType };
 }
 

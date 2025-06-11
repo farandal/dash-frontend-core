@@ -23,10 +23,7 @@ const initialState: IMenuState = {
 const saveNavExpandedState = (state: boolean): void => {
   try {
     localStorage.setItem('dashNavExpanded', String(state));
-    console.log(
-      `Saved navigation state to localStorage: ${state}`,
-      new Error().stack
-    )
+    console.log( `Saved navigation state to localStorage: ${state}`)
   } catch (e) {
     console.error('Failed to save navigation state to localStorage:', e);
   }

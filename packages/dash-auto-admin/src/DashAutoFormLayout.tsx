@@ -7,12 +7,18 @@ import IDashAutoAdminResourceConfig from './interfaces/IDashAutoAdminResourceCon
 import { default as AttributeToInput } from './mui/AttributeToInput';
 import hashedGroupByTabs from './utils/hashedGroupByTabs';
 
-const DashAutoFormLayout = (
+interface IAutoForm {
 	schema: IDashAutoAdminAttribute[],
 	resourceConfig: IDashAutoAdminResourceConfig,
 	options?: IDashAutoAdminFormOptions,
-) => {
-	const groupedTabs = hashedGroupByTabs(schema);
+}
+
+const DashAutoFormLayout = ({
+    schema,
+    resourceConfig,
+    options
+}: IAutoForm) => {
+	const groupedTabs = hashedGroupByTabs(schema || []);
 
 	const renderEdit = (tab: string): JSX.Element[] => {
 		const groupedAttributesByTab = groupedTabs[tab] ? groupedTabs[tab] : [];
@@ -51,7 +57,7 @@ const DashAutoFormLayout = (
 	switch (options.mode) {
 		case 'create':
 			if (
-				!resourceConfig.createLayout ||
+				!resourceConfig?.createLayout ||
 				typeof resourceConfig.createLayout !== 'function'
 			) {
 				console.warn(
@@ -60,7 +66,7 @@ const DashAutoFormLayout = (
 
 				return DashAutoFormTabs({
 					schema: schema,
-					resource: resourceConfig,
+					resourceConfig: resourceConfig,
 					options: options,
 				});
 			}
@@ -69,7 +75,7 @@ const DashAutoFormLayout = (
 
 		case 'edit':
 			if (
-				!resourceConfig.editLayout ||
+				!resourceConfig?.editLayout ||
 				typeof resourceConfig.editLayout !== 'function'
 			) {
 				console.warn(
@@ -78,7 +84,7 @@ const DashAutoFormLayout = (
 
 				return DashAutoFormTabs({
 					schema: schema,
-					resource: resourceConfig,
+					resourceConfig: resourceConfig,
 					options: options,
 				});
 			}

@@ -15,7 +15,9 @@ export default interface IAutoGridButton {
 		edit?: boolean;
 		/** */
 		show?: boolean;
-	}
+	};
+    size?: 'small' | 'medium' | 'large';
+
 }
 
 

@@ -18,10 +18,13 @@ import { DASH_REDUX_ACTIONS } from 'dash-admin-state';
 import React from 'react';
 import useAxios from '../hooks/axios';
 import SingleImageUploader from './SingleImageUploader';
+import { useAuthContext } from '../contexts/auth';
 
 const Profile: FC = (_props) => {
 	const [currTab, setCurrTab] = useState('auth/update/info');
-	const { identity, isLoading: identityLoading } = useGetIdentity();
+	//const { identity, isLoading: identityLoading } = useGetIdentity();
+    
+    const { user } = useAuthContext();
 	const [avatar, setAvatar] = useState({ rawFile: null, urlFile: '' });
 	const notify = useNotify();
 	
@@ -118,11 +121,11 @@ const Profile: FC = (_props) => {
       </Row>
       */}
 
-			{!identityLoading && identity ? (
+			{user ? (
 				<Form
 					onSubmit={handleSubmit}
 					validate={validateUserCreation}
-					defaultValues={{ name: identity.name, email: identity.email }}
+					defaultValues={{ name: user?.name, email: user?.email }}
 					className='dash-form'
 				>
                    
@@ -169,7 +172,7 @@ const Profile: FC = (_props) => {
 										</IconButton>
 											</div>*/}
                                    
-									<SingleImageUploader currentUrl={identity.image_path} onChange={(file:File) => {
+									<SingleImageUploader currentUrl={user?.image_path} onChange={(file:File) => {
 										setAvatar({
 											rawFile: file,
 											urlFile: URL.createObjectURL(file),
@@ -179,7 +182,7 @@ const Profile: FC = (_props) => {
 										
 										
 									
-										{`${identity?.name || ''}`}
+										{`${user?.name || ''}`}
 									</Typography>
 									<Typography
 										variant="body2"

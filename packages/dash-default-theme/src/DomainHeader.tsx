@@ -6,9 +6,8 @@ import { IPageState } from 'dash-admin-state';
 import { DASH_REDUX_ACTIONS } from 'dash-admin-state';
 import { IDASHAppState } from 'dash-admin-state';
 import MenuOpenIcon from '@mui/icons-material/MenuOpen'
-import { IconButton } from '@mui/material';
+import { Box, IconButton } from '@mui/material';
 import { IDashAutoAdminResourceConfig } from 'dash-auto-admin';
-import { AvatarComponent,DarkModeSwitcher,LanguageSwitcher } from 'dash-components';
 
 export interface IDomainHeader<U = any, A = any> extends PropsWithChildren {
 
@@ -63,7 +62,7 @@ const DomainHeader = <U, A>({
         <div className='dash-header'>
             <div className='dash-header-container'>
 
-                <div className='dash-header-subheader'>
+                <Box className='dash-header-subheader' sx={{ display: { xs: 'block', sm: 'block', md: 'none' } }}>
                     <div className='dash-header-subheader-action'>
                         <IconButton onClick={() => onToggleExpandedNav()}>
                             <MenuOpenIcon sx={{ color: 'white', fontSize: 27 }} />
@@ -74,14 +73,7 @@ const DomainHeader = <U, A>({
                             {typeof squaredLogo === 'string' ? <img src={squaredLogo} /> : squaredLogo}
                         </span>
                     </div>
-                    <div className='dash-header-subheader-user'>
-                        <AvatarComponent />
-                    </div>
-                    <div className='dash-header-subheader-actions'>
-                        <LanguageSwitcher />
-                        <DarkModeSwitcher/>
-                    </div>
-                </div>
+                </Box>
 
                 <div className='dash-header-content'>
                     <HeaderComponentInline />
@@ -95,7 +87,6 @@ const DomainHeader = <U, A>({
                         })}
                     </ul>
                 </div>
-
 
             </div>
         </div>

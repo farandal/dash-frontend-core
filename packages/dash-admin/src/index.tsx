@@ -40,6 +40,8 @@ export { default as getEnv } from "./config/DASHAdminSystemConstants";
 export { default as RoutingWrapper, AnimatedRoutesWrapper } from './RoutingWrapper';
 export type { IDASHRoutingWrapper } from './RoutingWrapper';
 
+export { useAuthContext } from "./contexts/auth/AuthContext";
+
 export {default as LaravelEchoContext} from "./contexts/com/LaravelEchoContext"
 export type {ILaravelEchoContext} from "./contexts/com/LaravelEchoContext"
 

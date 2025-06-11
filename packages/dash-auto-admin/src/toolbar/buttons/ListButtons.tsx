@@ -25,7 +25,10 @@ export const ListViewButton:FC<IToolbarButton> = (props) => {
 	if ( resourceConfig.listViewButton) {
 		if ( resourceConfig.listViewButton.component ) Component = resourceConfig.listViewButton.component;
 		if (resourceConfig.listViewButton.enabled === false || resourceConfig?.view === false) return <></>;
+        if(!resourceConfig.listViewButton?.size) { resourceConfig.listViewButton.size = 'small' };
+        
 	}
+
 
 	/*const btnProps = { 
 		...resourceConfig.listViewButton?.props || {}, 
@@ -46,11 +49,14 @@ export const ListViewButton:FC<IToolbarButton> = (props) => {
        
     }
 
-	if (resourceConfig.drawer === true && resourceConfig.drawerOptions?.view !== false) {
-		return <DashResourceButton {...btnProps} ><Component /></DashResourceButton>;
-	}
+	//if (resourceConfig.drawer === true && resourceConfig.drawerOptions?.view !== false) {
+		//return <DashResourceButton {...btnProps} ><Component /></DashResourceButton>;
+	//}
     
-	return <Component {...btnProps} />;
+	//return <Component {...btnProps} />;
+
+     return <DashResourceButton {...btnProps}  resourceConfig={resourceConfig} {...resourceConfig.listDeleteButton?.props || {}} />;
+
 };
 
 
@@ -79,13 +85,16 @@ export const ListEditButton:FC<IToolbarButton> = (props) => {
 	if ( resourceConfig.listEditButton) {
 		if ( resourceConfig.listEditButton.component ) Component = resourceConfig.listEditButton.component;
 		if (resourceConfig.listEditButton.enabled === false || resourceConfig?.edit === false) return <></>;
+        if(!resourceConfig.listViewButton?.size) { resourceConfig.listViewButton.size = 'small' };
 	}
 
-	if (resourceConfig.drawer === true && resourceConfig.drawerOptions?.edit !== false) {
-		return <DashResourceButton mode='edit' resourceConfig={resourceConfig} {...resourceConfig.listViewButton?.props || {}} ><Component  /></DashResourceButton>;
-	}
+    return <DashResourceButton mode='edit' resourceConfig={resourceConfig} {...resourceConfig.listViewButton?.props || {}} />;
 
-	return <Component />;
+	//if (resourceConfig.drawer === true && resourceConfig.drawerOptions?.edit !== false) {
+		//return <DashResourceButton mode='edit' resourceConfig={resourceConfig} {...resourceConfig.listViewButton?.props || {}} ><Component  /></DashResourceButton>;
+	//}
+
+	//return <Component />;
 };
 
 /**
@@ -108,15 +117,21 @@ export const ListDeleteButton:FC<IToolbarButton> = (props) => {
 	if ( resourceConfig.listDeleteButton) {
 		if ( resourceConfig.listDeleteButton.component ) Component = resourceConfig.listDeleteButton.component;
 		if (resourceConfig.listDeleteButton.enabled === false || resourceConfig?.delete === false) return <></>;
+        if(!resourceConfig.listViewButton?.size) { resourceConfig.listViewButton.size = 'small' };
 	}
 
   
-	if (resourceConfig.listDeleteButton?.confirm) {
+	/*if (resourceConfig.listDeleteButton?.confirm) {
 		return <WithRecord
 			render={(record) => (
 				<DeleteWithConfirmButton  {...resourceConfig.listDeleteButton?.props || {}} record={record} />
 			)}
 		/>;
 	}
-	return <DeleteButton {...resourceConfig.listDeleteButton?.props || {}} />;
+	return <DeleteButton {...resourceConfig.listDeleteButton?.props || {}} />;*/
+
+    //return <DashResourceButton mode='destroy' resourceConfig={resourceConfig} {...resourceConfig.listDeleteButton?.props || {}} ><Component  /></DashResourceButton>;
+
+    return <DashResourceButton mode='destroy' resourceConfig={resourceConfig} {...resourceConfig.listDeleteButton?.props || {}} />;
+
 };

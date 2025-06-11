@@ -16,7 +16,7 @@ const StaticLayout = <U, A>({
 	);
 
 	//const logo = panelSettings?.logo || <>🖥 DASH</>;
-	const squaredLogo = panelSettings?.squaredLogo || <>🖥</>;
+	const squaredLogo = panelSettings?.squaredLogo || <>🖥.</>;
     //const loginBackground = panelSettings?.loginBackground || <> Welcome to Dash Panel </>;
 
 	return (

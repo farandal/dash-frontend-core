@@ -244,10 +244,10 @@ const DashAutoTabbedForm: React.FC<IDashAutoTabbedForm> = ({
 				className={'auto-admin-grouped-form'}
                 
 			>
-				{DashAutoFormLayout(resourceConfig.schema, resourceConfig, {
+				{DashAutoFormLayout({schema:resourceConfig.schema, resourceConfig:resourceConfig, options:{
 					mode: mode,
 					isDrawer: isDrawer,
-				})}
+				}})}
 			</SimpleForm>
 		);
 	}

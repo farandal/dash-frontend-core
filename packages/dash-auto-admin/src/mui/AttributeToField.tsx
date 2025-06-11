@@ -56,6 +56,7 @@ export const AttributeToField = (
 		if (component) {
 			return { custom: true, type: "component", component };
 		}
+        debugger;
 		return { custom: true, type: "component", component: () => <>No component for {type}</> };
 	};
 
@@ -142,6 +143,7 @@ export const AttributeToField = (
 	}
 
 	// Check if input type is a string and not an array or enum
+
 	if (typeof input.type === "string" && !input.type.includes(".") && !Array.isArray(input.type)) {
 		switch (input.type) {
 			case 'string':
@@ -164,6 +166,7 @@ export const AttributeToField = (
 				break;
             case 'custom':
             default:
+               
                 input.custom = true;
                 if(typeof input?.component === "string") {
                     input = { ...input, ...typeComponentMapper( input.component ) };
@@ -177,6 +180,7 @@ export const AttributeToField = (
 		(input.custom && input.component) ||
 		(input.type === 'component' && input.component)
 	) {
+      
 		return (
 			<FunctionField
 				key={`function_field_${index}`}

@@ -8,9 +8,7 @@ import {
 	useState,
 	ReactNode,
 } from 'react';
-import debounce from 'lodash/debounce';
-import get from 'lodash/get';
-import isEqual from 'lodash/isEqual';
+import { isEqual , get, debounce} from  'lodash';
 import clsx from 'clsx';
 import {
 	Autocomplete,

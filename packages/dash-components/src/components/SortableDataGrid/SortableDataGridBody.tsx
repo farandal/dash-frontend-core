@@ -60,7 +60,7 @@ const SortableDatagridBody: FC<ISortableDatagridBodyProps> = forwardRef(
         };
 
         const getItemStyle = (isDragging, draggableStyle) => ({
-            background: isDragging ? '#F8f8f8' : 'white',
+            border: isDragging ? '1px dashed #ccc' : 'none',
             ...draggableStyle,
         });
 

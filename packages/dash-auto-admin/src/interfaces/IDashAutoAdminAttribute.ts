@@ -99,4 +99,5 @@ export default interface IDashAutoAdminAttribute<M = any> {
 	useCustomShowField?: boolean;
 
     metadata?: M;
+    default_value?: any;
 }

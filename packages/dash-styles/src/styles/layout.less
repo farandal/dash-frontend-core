@@ -32,7 +32,7 @@
 
 body.framed-layout{
   padding: 8px;
-  background-color: var(--body-background, @body-background);
+  //background-color: var(--body-background, @body-background);
 }
 
 
@@ -52,31 +52,33 @@ body.framed-layout{
   }
 
 }
-.dash-layout-content{
-  padding: 0 8px 0 240px;
-  transition: all .4s;
-  .dash-app-module{
-      margin: 0;
-      padding: 0 0 0 12px;
+
+.dash-app-layout {
+  .dash-layout-content{
+    padding: 0 8px 5px 240px;
+    transition: all .4s;
+    .dash-app-module{
+        margin: 0;
+       //padding: 0 0 0 12px;
+        width: 100%;
+        .dash-module-box-content{
+            padding: 0;
+        }
+    .dash-box{
       width: 100%;
-      .dash-module-box-content{
-          padding: 0;
-      }
-  .dash-box{
-    width: 100%;
-  }
+    }
+    }
   }
 }
-
 .dash-app-layout-sidebar-collapsed{
   .dash-header, .dash-layout-content{
-      padding: 0 15px 0 45px;
+      padding: 0 15px 5px 45px;
   }
 }
 
 /* Adds the default header padding for the expanded menu */
 .dash-header{
-  padding: 0 0px 0 263px;
+  padding: 0 0px 0 243px;
 }
 
 

@@ -7,8 +7,14 @@ import {
     useResourceContext,
     useRecordContext,
     useRedirect,
-    RaRecord,
+   
 } from 'react-admin';
+
+import {
+    RaRecord
+} from 'react-admin/src';
+
+
 
 
 import useVirtualHash from '../../hooks/useVirtualHash';
@@ -27,6 +33,7 @@ interface Props<RecordType extends RaRecord = any> {
     navigate?: (record?: RecordType) => string;
     navigation?: 'redirect' | 'virtualhash';
     mode: 'show' | 'create' | 'edit' | 'destroy';
+    size?: 'small' | 'medium' | 'large';
     scrollToTop?: boolean;
     resourceConfig?: IDashAutoAdminResourceConfig;
     children?: React.JSX.Element;
@@ -64,6 +71,7 @@ const DashResourceButton = <RecordType extends RaRecord = any>(
         navigate,
         scrollToTop,
         mode,
+        size,
         navigation,
         resourceConfig,
         record: _inputRecord,
@@ -73,6 +81,7 @@ const DashResourceButton = <RecordType extends RaRecord = any>(
 
     const resource = _inputResource || useResourceContext();
     const record = _inputRecord || useRecordContext();
+    if(!size) { size = 'small' }
 
     /*if(navigate && !mode) {
         mode = inferModeFromUrl(navigate(record));
@@ -106,8 +115,6 @@ const DashResourceButton = <RecordType extends RaRecord = any>(
         e.preventDefault();
         e.stopPropagation();
 
-
-
         if (navigation === 'virtualhash') {
 
             const vhash = navigate(record);
@@ -128,30 +135,38 @@ const DashResourceButton = <RecordType extends RaRecord = any>(
 
     };
 
-    return (<>
-        {mode === "destroy" ? <DeleteWithConfirmButton sx={{
+    const _styles = size === 'small' ? {
             '& .MuiButton-startIcon': { margin: 0 },
-            '& .MuiButton-text': { padding: '4px' },
+            '& .MuiButton-text': { paddingLeft: '4px' },
             borderRadius: '50% !important',
             padding: 0,
             minWidth: '35px',
             width: '35px',
             height: '35px',
             overflow: 'hidden'
-        }} label={null} {...resourceConfig.listDeleteButton?.props || {}} record={record} /> :
-            <ComponentType
+    } : {}
+
+    const _label = size === 'small' ? '' : props?.label;
+
+    if(mode === "destroy") {
+        return <><DeleteWithConfirmButton label={_label} sx={{ ..._styles }}  size={size} record={record} /></>
+    } else {
+        return <ComponentType
                 onClick={(e) => handleOnClick(e)}
                 state={scrollStates[String(scrollToTop)]}
+                size={size}
                 {...(rest as any)}
             //alt={`${navigation} to ${mode}`}
             >
-                {mode === 'edit' ? <Edit fontSize='small' /> :
-                    mode === 'show' ? <Visibility fontSize='small' /> :
-                        mode === 'create' ? <Add fontSize='small' /> :
+               
+                {mode === 'edit' ? <Edit/>:
+                    mode === 'show' ? <Visibility/> :
+                        mode === 'create' ? <Add/> :
                             mode}
 
-            </ComponentType>}
-    </>);
+            </ComponentType>
+    }
+
 };
 
 DashResourceButton.propTypes = {

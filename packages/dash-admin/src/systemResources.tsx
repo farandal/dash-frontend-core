@@ -42,7 +42,7 @@ const drawerSettings = {
 };
 
 const systemResources: IAppResourceConfig[] = [
-     {
+    {
         roles: [DASHAppConstants.system.SYSTEM_ROLE],
         component: ResourceTemplate,
         customRoutes: (resourceConfig) => TenantImpersonateResource(resourceConfig),
@@ -343,8 +343,38 @@ const systemResources: IAppResourceConfig[] = [
                 //componentProps: {multiple:false},
                 //componentProps: { options: {fullwidth: true} },
                 component: SelectInput,
-                //searchField: "subdomain"
-                processor: 'Null',
+                    fieldProps: {
+                        allowEmpty: true,  // Allow empty selection
+                        emptyText: 'Sin cliente', // Text for empty option
+                    },
+                    componentProps: {
+                        parse: (value: any) => {
+                            console.log('Parsing tenant_id value:', value); // Debug log
+                            // Convert empty string or falsy values to null
+                            if (value === '' || value === undefined || value === 'null') {
+                                console.log('Converting to null');
+                                return null;
+                            }
+                            // Convert string numbers to actual numbers
+                            if (typeof value === 'string' && !isNaN(Number(value))) {
+                                const numValue = Number(value);
+                                console.log('Converting to number:', numValue);
+                                return numValue;
+                            }
+                            console.log('Returning original value:', value);
+                            return value;
+                        },
+                        format: (value: any) => {
+                            console.log('Formatting tenant_id value:', value); // Debug log
+                            // Format null/undefined as empty string for display
+                            if (value === null || value === undefined) {
+                                return '';
+                            }
+                            return value;
+                        }
+                    },
+                    processor: 'Null',
+                
             },
             {
                 attribute: 'active',
@@ -395,24 +425,31 @@ const systemResources: IAppResourceConfig[] = [
         formPostFormatter: (params, form) => {
             return form;
         },
-        postFormatter: (params, method) => {
-            /* if (!params.meta) {
-        params.meta = {
-          method: "PUT",
-        };
-      } else {
-        params.meta.method = "PUT";
-      }*/
+        /*postFormatter: (params, method) => {
+          
             if (method === 'update') {
                 params._method = 'PUT';
             }
             params.role_id = params.role_ids ? params.role_ids[0] : null;
 
+            // Handle tenant_id properly - ensure it's null when not selected
+            if (params.tenant_id === '' || params.tenant_id === undefined || params.tenant_id === 'null') {
+                params.tenant_id = null;
+            } else if (params.tenant_id && typeof params.tenant_id === 'string') {
+                // Convert string to number if it's a valid number
+                const numValue = Number(params.tenant_id);
+                if (!isNaN(numValue)) {
+                    params.tenant_id = numValue;
+                }
+            }
+
+            console.log('Processed params:', params); // Debug log
+
             return params;
-        },
+        },*/
         ...drawerSettings,
     },
-   
+
 ];
 
 

@@ -19,6 +19,7 @@ import { Store } from 'redux';
 import { DashThemeProvider, useDashThemeContext } from './DashThemeContext';
 import { ComponentRegistryProvider, IDashAutoAdminCustomFieldComponent } from 'dash-auto-admin';
 
+
 export interface IDomainAppProviders<U, A, R> extends React.PropsWithChildren {
     wsMessagesManager?: typeof WSMessagesManager
     theme?: Partial<Theme> | ((outerTheme: Partial<Theme>) => Partial<Theme>)
@@ -26,6 +27,7 @@ export interface IDomainAppProviders<U, A, R> extends React.PropsWithChildren {
     store?: Store<IDASHAppState<U, A, R>>
     extendedThemeOptions?: any
     dashAutoAdminComponents?: Record<string, React.FC<IDashAutoAdminCustomFieldComponent>>
+
 }
 
 // Inner component that uses the theme context
@@ -47,10 +49,12 @@ const DomainAppProviders = <U, A, R>({
     store,
     children,
     extendedThemeOptions,
-    dashAutoAdminComponents
+    dashAutoAdminComponents,
+
 }: IDomainAppProviders<U, A, R>): React.JSX.Element => {
     return (
         <Provider store={store}>
+          
             <ComponentRegistryProvider customComponents={dashAutoAdminComponents || {}}>
                 <AuthContextProvider>
                     <DashThemeProvider extendedOptions={extendedThemeOptions}>
@@ -72,6 +76,7 @@ const DomainAppProviders = <U, A, R>({
                     </DashThemeProvider>
                 </AuthContextProvider>
             </ComponentRegistryProvider>
+          
         </Provider>
     );
 };

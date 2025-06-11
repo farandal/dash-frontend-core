@@ -22,7 +22,7 @@ const DashAutoFormGroups = ({
 	const DEFAULT_TAB_LABEL = AutoAdminSettings?.defaultTabName || resourceConfig.label;
   
 	const isDrawer = options?.isDrawer === true ? true : false;
-
+   
 	switch (options?.mode) {
 		case 'create':
 			return groupByTabs(schema).map((groupOfAttributes, idx) => {

@@ -192,10 +192,10 @@ const tenantResources: IAppResourceConfig[] = [
     dataGridWrapper: (props: any) => (
       <TableContainer sx={{ maxHeight: 800 }}>{props.children}</TableContainer>
     ),
-    formPostFormatter: (params, form) => {
-        debugger;
+    /*formPostFormatter: (params, form) => {
+        
       return form;
-    },
+    },*/
     postFormatter: (params, method) => {
         debugger;
       /* if (!params.meta) {

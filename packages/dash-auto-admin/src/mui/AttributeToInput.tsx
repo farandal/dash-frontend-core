@@ -138,7 +138,7 @@ const AttributeToInput = (
 
     const typeComponentMapper = (type: string) => {
         const component = components[type];
-       
+
         if (component) {
             return { custom: true, type: "component", component };
         }
@@ -162,6 +162,7 @@ const AttributeToInput = (
             input.type does not contains dots
             input.type dies not represents an Enum or Array.
     */
+
     if (typeof input.type === "string" && !input.type.includes(".") && !Array.isArray(input.type)) {
         switch (input.type) {
             case 'string':
@@ -202,6 +203,7 @@ const AttributeToInput = (
             case 'custom':
             default:
                 input.custom = true;
+         
                 if(typeof input?.component === "string") {
                     input = { ...input, ...typeComponentMapper( input.component ) };
                 }

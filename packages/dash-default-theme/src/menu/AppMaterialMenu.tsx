@@ -3,7 +3,7 @@ import * as React from 'react';
 import { useSelector } from 'react-redux';
 import { usePermissions } from 'react-admin';
 import { LoadingIndicator } from 'react-admin';
-import { List } from '@mui/material';
+import { Divider, List } from '@mui/material';
 import { useEffect } from 'react';
 import { IMenuItem, IAppMenu } from './AppMenuComponents/interfaces';
 import SidebarItem from './AppMenuComponents/expanded/SidebarItem';
@@ -14,6 +14,7 @@ import { IDashAutoAdminResourceConfig } from 'dash-auto-admin';
 import { IDASHAppState } from 'dash-admin-state';
 import checkRole from 'dash-admin/src/helpers/checkRole';
 import { slugify } from 'dash-admin/src/utils/slugify';
+import { AvatarComponent, DarkModeSwitcher, LanguageSwitcher } from 'dash-components';
 
 import Scrollbar from 'dash-admin/src/components/scrollbar/Scrollbar';
 
@@ -78,6 +79,7 @@ const AppMaterialMenu: React.FC<IAppMenu> = (props) => {
       state.settings.groupIcons
   );
 
+  
 
   useEffect(() => {
     const groups = [
@@ -147,7 +149,16 @@ const AppMaterialMenu: React.FC<IAppMenu> = (props) => {
 
   return (
     <>
+      <div className='dash-menu-user'>
+        <AvatarComponent />
+        <div className='dash-menu-actions'>
+            <LanguageSwitcher />
+            <DarkModeSwitcher/>
+        </div>
+      </div>
 
+      <Divider sx={{ mb:1,mt:4 }} />
+     
       <Scrollbar
         //autoHide={true}
         //autoHideTimeout={1000}

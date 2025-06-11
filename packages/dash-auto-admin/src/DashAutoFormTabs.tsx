@@ -100,6 +100,7 @@ const DashAutoFormTabs = ({
             });
 
         case 'edit':
+        
             return groupByTabs(schema).map((groupOfAttributes, idx) => {
                 let grouppedAttributes = groupOfAttributes.filter(
                     (attribute) => attribute?.inEdit !== false,

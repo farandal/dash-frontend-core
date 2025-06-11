@@ -28,6 +28,51 @@ const darkModeColors = {
   background: '#0A0A0A',
   paper: '#1A1A1A'
 };
+
+    const getAllCssVariablesFromStyleSheets = (selector: string) => {
+
+        const cssVariables = {};
+
+        // Loop through all style sheets
+        for (let i = 0; i < document.styleSheets.length; i++) {
+            try {
+                const styleSheet = document.styleSheets[i];
+                // Skip if the stylesheet is from a different origin and can't be accessed
+                if (!styleSheet.cssRules) continue;
+
+                // Loop through all CSS rules in the stylesheet
+                for (let j = 0; j < styleSheet.cssRules.length; j++) {
+                    const rule = styleSheet.cssRules[j];
+
+                    // Check if it's a style rule (type 1)
+
+                    /* @ts-ignore */
+                    if (rule.selectorText === selector) {
+
+                        /* @ts-ignore */
+                        const style = rule.style;
+
+                        // Loop through all style properties
+                        for (let k = 0; k < style.length; k++) {
+                            const prop = style[k];
+                            if (prop.startsWith('--')) {
+                                //console.log(prop,style.getPropertyValue(prop).trim());
+                                cssVariables[prop] = style.getPropertyValue(prop).trim();
+                            }
+                        }
+                    }
+
+                }
+            } catch (e) {
+                // Skip cross-origin stylesheets that throw security errors
+                console.warn('Could not access stylesheet:', e);
+            }
+        }
+
+
+        return cssVariables;
+    };
+
 const getCSSVar = (name: string, defaultColor?: string) => {
 
   const value = window.getComputedStyle(document.documentElement)
@@ -37,70 +82,74 @@ const getCSSVar = (name: string, defaultColor?: string) => {
   return value || defaultColor || '#000000';
 
 };
+
+
+
 export const defaultOptions = () => {
   //const isDarkMode = document.documentElement.getAttribute('data-theme') === 'dark';
   //const themeType = document.documentElement.getAttribute('data-theme') || "light";
   //console.log("REBUILDING MUI THEME!", themeType)
 
   //const colors = isDarkMode ? darkModeColors : defaultColors;
+  const cssVars = getAllCssVariablesFromStyleSheets(":root");
 
   return {
     palette: {
       background: {
-        default: getCSSVar('--body-background'),
-        paper: getCSSVar('--module-background')
+        default: cssVars['--body-background'],
+        paper: cssVars['--module-background']
       },
       primary: {
-        main: getCSSVar('--primary-color'),
+        main: cssVars['--primary-color'],
       },
       secondary: {
-        main: getCSSVar('--secondary-color'),
+        main: cssVars['--secondary-color'],
       },
       text: {
-        primary: getCSSVar('--text-color'),
-        secondary: getCSSVar('--text-light-color'),
-        disabled: getCSSVar('--disabled-color'),
+        primary: cssVars['--text-color'],
+        secondary: cssVars['--text-light-color'],
+        disabled: cssVars['--disabled-color'],
       },
       action: {
-        active: getCSSVar('--component-active-background'),
-        hover: getCSSVar('--component-hover-background'),
-        disabled: getCSSVar('--disabled-color'),
-        disabledBackground: getCSSVar('--disabled-bg'),
+        active: cssVars['--component-active-background'],
+        hover: cssVars['--component-hover-background'],
+        disabled: cssVars['--disabled-color'],
+        disabledBackground: cssVars['--disabled-bg'],
       },
-      divider: getCSSVar('--border-color-split'),
-      border: getCSSVar('--border-color'),
+      divider: cssVars['--border-color-split'],
+      border: cssVars['--border-color'],
       error: {
-        main: getCSSVar('--dash-alert-error-bg'),
-        contrastText: getCSSVar('--dash-alert-error-title'),
+        main: cssVars['--dash-alert-error-bg'],
+        contrastText: cssVars['--dash-alert-error-title'],
       },
       warning: {
-        main: getCSSVar('--dash-alert-warning-bg'),
-        contrastText: getCSSVar('--dash-alert-warning-title'),
+        main: cssVars['--dash-alert-warning-bg'],
+        contrastText: cssVars['--dash-alert-warning-title'],
       },
       info: {
-        main: getCSSVar('--dash-alert-info-bg'),
-        contrastText: getCSSVar('--dash-alert-info-title'),
+        main: cssVars['--dash-alert-info-bg'],
+        contrastText: cssVars['--dash-alert-info-title'],
       },
       success: {
-        main: getCSSVar('--dash-alert-success-bg'),
-        contrastText: getCSSVar('--dash-alert-success-title'),
+        main: cssVars['--dash-alert-success-bg'],
+        contrastText: cssVars['--dash-alert-success-title'],
       },
       common: {
-        black: getCSSVar('--text-color'),
-        white: getCSSVar('--text-contrast-color'),
+        black: cssVars['--text-color'],
+        white: cssVars['--text-contrast-color'],
       },
 
     },
     typography: {
       allVariants: {
-        color: getCSSVar('--text-color')
+        color: cssVars['--text-color']
       },
     },
     components: {
       MuiButton: {
         styleOverrides: {
           root: {
-            color: getCSSVar('--text-color')
+            color: cssVars['--text-color']
           }
         }
       },
@@ -116,7 +165,7 @@ export const defaultOptions = () => {
         styleOverrides: {
           root: {
             '& .RaReferenceField-link>*': {
-              color: getCSSVar('--text-color')
+              color: cssVars['--text-color']
             }
           }
         }
@@ -125,7 +174,7 @@ export const defaultOptions = () => {
         styleOverrides: {
           root: {
             '& .RaSingleFieldList-link>*': {
-              color: getCSSVar('--text-color')
+              color: cssVars['--text-color']
             }
           }
         }
@@ -134,7 +183,7 @@ export const defaultOptions = () => {
         styleOverrides: {
           root: {
             '& svg': {
-              color: getCSSVar('--highlight-color')
+              color: cssVars['--highlight-color']
             }
           }
         }
@@ -144,11 +193,11 @@ export const defaultOptions = () => {
                 root: {
                   '&.MuiButtonBase-root': {
                     '&.Mui-selected': {
-                      color: getCSSVar('--highlight-color'),
-                      backgroundColor: getCSSVar('--tab-selected-bg'),
+                      color: cssVars['--highlight-color'],
+                      backgroundColor: cssVars['--tab-selected-bg'],
                     },
                     '&.MuiTab-textColorPrimary': {
-                      color: getCSSVar('--text-color'),
+                      color: cssVars['--text-color'],
                     },
 
                   }
@@ -160,48 +209,29 @@ export const defaultOptions = () => {
         styleOverrides: {
           root: {
             '&.MuiAlert-standardInfo': {
-              backgroundColor: getCSSVar('--module-background'),
-              color: getCSSVar('--text-color'),
+              backgroundColor: cssVars['--module-background'],
+              color: cssVars['--text-color'],
               '& .MuiAlert-icon': {
-                color: getCSSVar('--highlight-color')
+                color: cssVars['--highlight-color']
               },
               '& .MuiAlertTitle-root': {
-                color: getCSSVar('--text-color')
+                color: cssVars['--text-color']
               }
             }
           }
         }
       },
-      MuiPaper: {
-        styleOverrides: {
-          root: {
-              marginBottom: 8
-          }
-        }
-      },
-      /*MuiToolbar: {
-        styleOverrides: {
-          root: {
-            display: 'block'
-          }
-        }
-      },
-      MuiGrid: {
-        styleOverrides: {
-          root: {
-            display: 'block'
-          }
-        }
-      },*/
+
+
 
 
       MuiAccordion: {
         styleOverrides: {
           root: {
-            backgroundColor: getCSSVar('--module-background'), // Or any specific color you want
-            // You can add more styles here as needed
+            backgroundColor: cssVars['--module-background'],
+
             '&.MuiPaper-root': {
-              backgroundColor: getCSSVar('--module-background'),
+              backgroundColor: cssVars['--module-background'],
             }
           }
         }
@@ -225,9 +255,41 @@ export const defaultOptions = () => {
         }
       },
 
+      MuiCard: {
+        styleOverrides: {
+          root: {
+             backgroundColor: cssVars['--module-background'],
+          }
+        }
+      },
 
+       MuiPaper: {
+        styleOverrides: {
+          root: {
+              marginBottom: 8,
+              backgroundColor: cssVars['--module-background'],
+          }
+        }
+      },
+
+      //MuiToolbar: {
+      //  styleOverrides: {
+      //    root: {
+      //      display: 'block'
+      //    }
+      //  }
+      //},
+      //MuiGrid: {
+      //  styleOverrides: {
+      //    root: {
+      //      display: 'block'
+      //    }
+      //  }
+      //},
+//
     }
   }
+
 };
 
 export const appTheme = (muiThemeOptions?: any) => {
