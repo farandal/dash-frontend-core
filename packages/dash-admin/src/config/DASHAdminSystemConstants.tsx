@@ -54,6 +54,10 @@ const system = {
   //PAGE_TRANSITIONS: JSON.parse(getEnv('PAGE_TRANSITIONS')) || false,
   PAGE_TRANSITIONS: false,
 
+  GOOGLE_SIGNUP: JSON.parse(getEnv('APP_GOOGLE_SIGNUP')) || false,
+  RECAPTCHA_ENABLED: JSON.parse(getEnv('APP_RECAPTCHA_ENABLED')) || false,
+  RECAPTCHA_TOKEN: getEnv('APP_RECAPTCHA_TOKEN') || 'UNSET',
+
   APP_VERSION: getEnv('APP_VERSION') || '1.0.0',
   BUILD_TIME: getEnv('BUILD_TIME') || new Date().toISOString(),
   IS_ELECTRON: JSON.parse(getEnv('IS_ELECTRON')) || false,

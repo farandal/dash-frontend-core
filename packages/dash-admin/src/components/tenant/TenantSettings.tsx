@@ -7,11 +7,8 @@ import { useFormContext, useWatch } from "react-hook-form";
 import { Tenant } from "dash-admin/src/interfaces/Tenant";
 import MUISimpleJsonTable from "../misc/MuiSimpleJsonTable";
 
-export interface ITenantSettings extends IDashAutoAdminCustomFieldComponent {
-  tenant: Tenant
-}
 
-const TenantSettingsEdit: React.FC<ITenantSettings> = ({ method, attribute, tenant }) => {
+const TenantSettingsEdit: React.FC<IDashAutoAdminCustomFieldComponent> = ({ method, attribute, tenant }) => {
   //const tenant: Tenant = useRecordContext();
   const axios = useAxios();
   /*if (!tenant?.settings) return <Loading />*/
@@ -27,7 +24,8 @@ const TenantSettingsEdit: React.FC<ITenantSettings> = ({ method, attribute, tena
   useEffect(() => {
     const fetchSettingFormats = async () => {
       const { data } = await axios.get(
-        `system/tenant/settingFormats`
+        //`system/tenant/settings/formats`
+        'system/tenant/systemSettingFormats'
       );
 
       setSettingsFormats(data.data);
@@ -46,7 +44,7 @@ const TenantSettingsEdit: React.FC<ITenantSettings> = ({ method, attribute, tena
   
 
     if (settingsFormats) {
-
+     
       const parsedSchema = settingsFormats.map((entry) => {
         const defaultValue =
           (tenant.settings && tenant.settings[entry.attribute]) ||
@@ -102,7 +100,80 @@ const TenantSettingsEdit: React.FC<ITenantSettings> = ({ method, attribute, tena
 
 }
 
-const TenantSettingsView: React.FC<ITenantSettings> = ({ method, attribute, tenant }) => {
+const TenantSettingsCreate: React.FC<IDashAutoAdminCustomFieldComponent> = ({ method, attribute }) => {
+  //const tenant: Tenant = useRecordContext();
+  const axios = useAxios();
+  /*if (!tenant?.settings) return <Loading />*/
+  const [settingsFormats, setSettingsFormats] = useState(null);
+  const [settingFormatsSchema, setSettingFormatsSchema] = useState<any>(null);
+  const formContext = useFormContext();
+  const formValues = useWatch({
+    control: formContext.control
+  });
+
+
+
+  useEffect(() => {
+    const fetchSettingFormats = async () => {
+      const { data } = await axios.get(
+        //`system/tenant/settings/formats`
+        'system/tenant/systemSettingFormats'
+      );
+
+      setSettingsFormats(data.data);
+    };
+
+    fetchSettingFormats();
+  }, [])
+
+
+
+
+  //const redirect = useRedirect();
+  //const { axios } = useAxios();
+
+  useEffect(() => {
+  
+
+    if (settingsFormats) {
+   
+      const parsedSchema = settingsFormats.map((entry) => {
+       
+
+        return {
+          ...entry,
+         
+          ...(method === 'view' && {
+            readOnly: true,
+          }),
+        };
+      });
+
+      console.log('SCHEMA', parsedSchema);
+
+      setSettingFormatsSchema(parsedSchema);
+
+    }
+
+  }, [settingsFormats])
+
+ 
+  if (!settingFormatsSchema) return <Loading />
+  return <section>
+  
+    {settingFormatsSchema ? (
+      DashAutoFormTabs({schema:settingFormatsSchema, resourceConfig:null, options: {
+        mode: method,
+        label: 'Opciones de configuración',
+      }})
+    ) : (
+      <></>
+    )}
+  </section>
+
+}
+
+const TenantSettingsView: React.FC<IDashAutoAdminCustomFieldComponent> = ({ method, attribute, tenant }) => {
 
   /*if (!tenant?.settings) return <Loading />*/
   const axios = useAxios();
@@ -113,7 +184,8 @@ const TenantSettingsView: React.FC<ITenantSettings> = ({ method, attribute, tena
   useEffect(() => {
     const fetchSettingFormats = async () => {
       const { data } = await axios.get(
-        `system/tenant/settingFormats`
+       //`system/tenant/settings/formats`
+       'system/tenant/systemSettingFormats'
       );
 
       setSettingsFormats(data.data.setting_formats);
@@ -175,7 +247,7 @@ const TenantSettings = ({ method, attribute, resourceConfig }: IDashAutoAdminCus
     case "view":
       return <TenantSettingsView attribute={attribute} method={method} tenant={tenant} resourceConfig={resourceConfig} />
     case "create":
-      return <TenantSettingsEdit attribute={attribute} method={method} tenant={tenant} resourceConfig={resourceConfig} />
+      return <TenantSettingsCreate attribute={attribute} method={method} resourceConfig={resourceConfig} />
      case "list":
       return <></>
   }

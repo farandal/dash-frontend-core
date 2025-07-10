@@ -54,16 +54,16 @@ const SidebarContent: React.FC<IAppSidebarContent> = ({
 				squaredLogo={squaredLogo}
 			/>
 
-			<div className='dash-sidebar-content'>
+			<div className='sidebar-content'>
 				{navStyle != AppLayoutSettings.NAV_STYLE_COLLAPSABLE &&
 				navStyle ===
 					AppLayoutSettings.NAV_STYLE_FIXED /*|| navStyle === NAV_STYLE_MINI_SIDEBAR*/ ? (
 					<div className='dash-linebar'>
-						<div className='dash-sidebar-icon'>
+						<div className='sidebar-icon'>
 							<i
 								// className={`dash-icon-btn icon icon-${!sidebarExpanded ? 'menu-unfold' : 'menu-fold'} ${themeType !== THEME_TYPE_LIGHT ? 'dash-text-white' : ''}`}
-								// className={`dash-sidebar-menu ${themeType !== THEME_TYPE_LIGHT ? 'dash-text-white' : ''}`}
-								className={`dash-sidebar-menu`}
+								// className={`sidebar-menu ${themeType !== THEME_TYPE_LIGHT ? 'dash-text-white' : ''}`}
+								className={`sidebar-menu`}
 								onClick={() => {
 									setSidebarExpanded(!sidebarExpanded);
 								}}

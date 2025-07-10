@@ -1,18 +1,16 @@
 import MUISimpleJsonTable from '../../../components/misc/MuiSimpleJsonTable';
-import { INotificationPayload } from './notificationFormats';
-import { ReactNode } from 'react';
+import { IDashNotificationBase } from '../../../interfaces/communication/INotification';
 
 export interface IDefaultNotificationComponent {
-	notificationPayload: INotificationPayload<any>;
-	children?: ReactNode;
+	notification: IDashNotificationBase<any>;
 }
 
 const ValidateProductsToImportNotificationComponent: React.FC<IDefaultNotificationComponent> =
-	({ notificationPayload, children, ...props }) => {
+	({ notification, ...props }) => {
 		return (
 			<>
 				<MUISimpleJsonTable
-					tableData={notificationPayload.notificationPayload.json.info}
+					tableData={notification.notificationPayload}
 					vertical={true}
 				/>
 			</>

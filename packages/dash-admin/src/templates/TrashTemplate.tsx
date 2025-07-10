@@ -21,8 +21,10 @@ import { IResourceTemplate } from './ResourceTemplate';
 
 const TrashTemplate: React.FC<IResourceTemplate> = (props) => {	
     
-    const {resourceConfig} = useDashResource()
+    //const {resourceConfig} = useDashResource()
+    const {resourceConfig} = props;
     const TrashBulkActions = () => {
+       
 		const axios = initAxios();
 		const dialog = useDialog();
 
@@ -101,6 +103,7 @@ const TrashTemplate: React.FC<IResourceTemplate> = (props) => {
 
 		return (
 			<>
+        
 				<Button label='Restaurar' onClick={handleRestoreManyClick} />
 				<Confirm
 					isOpen={restoreConfirmDialogOpen}
@@ -122,7 +125,7 @@ const TrashTemplate: React.FC<IResourceTemplate> = (props) => {
 			</>
 		);
 	};
-
+    
 	const trashResourceConfig: IDashAutoAdminResourceConfig = {
 		...resourceConfig,
 		model:  resourceConfig.model+'/trash',
@@ -137,8 +140,9 @@ const TrashTemplate: React.FC<IResourceTemplate> = (props) => {
             ...resourceConfig.dataGridProps,
             bulkActionButtons: <TrashBulkActions />
         },
+        
 	};
-   
+  
 	return (
 
 				<Resource
@@ -147,7 +151,7 @@ const TrashTemplate: React.FC<IResourceTemplate> = (props) => {
 						group: trashResourceConfig.group,
 					}}
 					name={trashResourceConfig.model}
-					list={() => <ResourceTemplateList resourceConfig={trashResourceConfig} />/*{
+					list={() => <><ResourceTemplateList resourceConfig={trashResourceConfig} /></>/*{
 						return (
 							<ApplicationLayout
 								//icon={trashResourceConfig.icon} 

@@ -172,12 +172,19 @@ export const ResourceTemplate = (resourceConfig:IDashAutoAdminResourceConfig) =>
                 icon={resourceConfig?.icon || <></>}
             >
 
-                <Route path="trash/*" element={ <DashResourceProvider resourceConfig={resourceConfig}><TrashTemplate resourceConfig={resourceConfig} /></DashResourceProvider>} />
+                {/*<Route path="trash/*" element={ <DashResourceProvider resourceConfig={resourceConfig}><TrashTemplate resourceConfig={resourceConfig} /></DashResourceProvider>} />
                 {_list && <Route path={`/*`} element={ <DashResourceProvider resourceConfig={resourceConfig}><ResourceTemplateList resourceConfig={resourceConfig} /></DashResourceProvider>} />}
                 {_create && <Route path={`create/*`} element={ <DashResourceProvider resourceConfig={resourceConfig}><ResourceTemplateCreate resourceConfig={resourceConfig} /></DashResourceProvider>} />}
                 {_view && <Route path={`:id/show/*`}  element={ <DashResourceProvider resourceConfig={resourceConfig}><ResourceTemplateShow resourceConfig={resourceConfig} /></DashResourceProvider>} />}
-                {_edit && <Route path={`:id/*`} element={<DashResourceProvider resourceConfig={resourceConfig}><ResourceTemplateEdit resourceConfig={resourceConfig} /></DashResourceProvider>} />}
+                {_edit && <Route path={`:id/*`} element={<DashResourceProvider resourceConfig={resourceConfig}><ResourceTemplateEdit resourceConfig={resourceConfig} /></DashResourceProvider>} />}*/}
               
+              <Route path="trash/*" element={ <TrashTemplate resourceConfig={resourceConfig}  />} />
+                {_list && <Route path={`/*`} element={ <ResourceTemplateList resourceConfig={resourceConfig} />} />}
+                {_create && <Route path={`create/*`} element={ <ResourceTemplateCreate resourceConfig={resourceConfig} />} />}
+                {_view && <Route path={`:id/show/*`}  element={ <ResourceTemplateShow resourceConfig={resourceConfig} />} />}
+                {_edit && <Route path={`:id/*`} element={<ResourceTemplateEdit resourceConfig={resourceConfig} />} />}
+              
+
             </Resource>
         </>
 

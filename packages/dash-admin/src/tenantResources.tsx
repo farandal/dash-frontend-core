@@ -197,7 +197,7 @@ const tenantResources: IAppResourceConfig[] = [
       return form;
     },*/
     postFormatter: (params, method) => {
-        debugger;
+        
       /* if (!params.meta) {
         params.meta = {
           method: "PUT",

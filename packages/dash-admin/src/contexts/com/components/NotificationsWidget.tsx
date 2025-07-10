@@ -1,48 +1,44 @@
 import React, { FC, useContext, useEffect } from 'react';
 import { useGetList } from 'react-admin';
 import { NotificationComponent } from './NotificationRenderer';
-import {
-	formatNotification,
-	IFormattedNotification,
-	IProductImportNotificationPayload,
-	INotificationPayloadBase,
-} from './notificationFormats';
+
 import { Badge, Button, Popover } from '@mui/material';
 import { useNavigate } from 'react-router';
 import { Link } from 'react-router-dom';
 import { useStore } from 'react-admin';
 import NotificationsActive from '@mui/icons-material/NotificationsActive';
-import { INotificationBase } from '../interfaces/INotification';
+
 import LaravelEchoContext, { ILaravelEchoContext } from '../LaravelEchoContext';
 import DictionaryContext from '../../dictionary/DictionaryContext';
 import Scrollbar from '../../../components/scrollbar/Scrollbar';
+import { IDashFormattedNotification, formatNotification } from './notificationFormats';
+import { IDashNotificationBase, IDashNotificationPayloadBase } from '../../../interfaces/communication/INotification';
 
 export interface INotificationItem {
 	key: React.Key;
 	title: string;
-	notification: INotificationBase;
+	notification: IDashNotificationBase<any>;
 	image?: string;
 	name?: string;
 	time?: string;
 }
 
 export const NotificationWrapper: FC<{
-	notification: INotificationPayloadBase;
+	notification: IDashNotificationBase<any>;
 	key: React.Key;
 	children: React.ReactNode;
 }> = ({ notification, key, children }) => {
-	const formattedNotification: IFormattedNotification =
-		formatNotification<IProductImportNotificationPayload>(notification);
+	const formattedNotification: IDashFormattedNotification = formatNotification<any>(notification);
 	return (
 		<li key={key} className='dash-media'>
 			<div className='dash-user-thumb dash-mr-3'>
-				{formattedNotification.icon}
+				<formattedNotification.content notification={notification} />
 				<span className='dash-badge dash-badge-danger dash-text-white dash-rounded-circle'></span>
 			</div>
 			<div className='dash-media-body'>
-				<h5>{formattedNotification.title}</h5>
+				<h5><formattedNotification.title notification={notification} /></h5>
 				<span>
-					{formattedNotification?.content?.props?.notificationPayload?.date}
+					<formattedNotification.content notification={notification} />
 				</span>
 				{children}
 			</div>
@@ -51,7 +47,7 @@ export const NotificationWrapper: FC<{
 };
 
 export const NotificationsWidget: FC<{}> = () => {
-	const [currentNotifications, setCurrentNotifications] = useStore(
+	const [currentNotifications, setCurrentNotifications] = useStore<number>(
 		'activeNotifications',
 	);
 

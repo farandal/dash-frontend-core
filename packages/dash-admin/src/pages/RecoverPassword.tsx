@@ -1,15 +1,14 @@
-import { Button, Input, InputLabel, TextField } from '@mui/material';
+import { Button, Input, InputLabel, TextField, Alert, IconButton, Grid } from '@mui/material';
 import React, { useState } from 'react';
 import { Layout } from 'react-admin';
 import { useNotify, useRedirect } from 'react-admin';
 import useAxios from '../hooks/axios';
-
+import { FullLayoutMarkup } from 'dash-default-theme';
 import getType from '../utils/getType';
 import MUISimpleJsonTable from '../components/misc/MuiSimpleJsonTable';
+import HomeIcon from '@mui/icons-material/Home';
 
-//import IntlMessages from './theme/util/IntlMessages';
-
-const RecoverPassword = () => {
+const RecoverPassword = ({ panelSettings }: { panelSettings: any }) => {
 	const [email, setEmail] = useState('');
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState('');
@@ -54,9 +53,34 @@ const RecoverPassword = () => {
 	};
 
 	return (
-		<div className='ant-layout dash-app-layout'>
+		<FullLayoutMarkup
+			logo={panelSettings?.horizontalLogo}
+			loginBackground={panelSettings?.loginBackground}
+            className='w50'
+		>
 			<form onSubmit={handleSubmit} className='dash-app-login-form'>
-				<div className='dash-app-login-form-item'>
+				<Grid container sx={{ mb:4, mt:2 }} spacing={2} alignItems="center">
+					<Grid item xs={2}>
+						<IconButton
+							color={'primary'}
+							size={'large'}
+							onClick={() => redirect('/')}
+						>
+							<HomeIcon />
+						</IconButton>
+					</Grid>
+					<Grid item xs={10}>
+						<h1 className="dash-app-login-form-title" style={{ margin: 0 }}>Recuperar Contraseña</h1>
+					</Grid>
+				</Grid>
+
+				{error && (
+					<Alert severity="error" sx={{ mb: 2 }}>
+						{error}
+					</Alert>
+				)}
+
+				<div className='dash-app-form-item'>
 					<TextField
 						variant='outlined'
 						label='Email'
@@ -64,27 +88,27 @@ const RecoverPassword = () => {
 						required
 						value={email}
 						inputProps={{type:'email'}}
-						//readOnly={loading}
 						onChange={(e) => setEmail(e.target.value)}
-						className='dash-app-login-form-input'
-						//requiredIcon={<></>}
+						className='dash-app-form-item-input'
+						autoComplete="username"
+						name="email"
+						type="email"
+						id="email"
 					/>
-
-					{error && <span style={{ color: 'red' }}>{error}</span>}
 				</div>
 
-				<div className='dash-app-login-form-item mt-1'>
+				<div className='dash-app-form-item mt-1'>
 					<Button
 						type='submit'
-						color='primary'
+						variant='contained'
 						disabled={loading}
-						style={{ marginBottom: '21px' }}
+						sx={{ mb: 2, width: '100%' }}
 					>
-						{loading ? 'Cargando...' : 'Resetear'}
+						{loading ? 'Cargando...' : 'Resetear Contraseña'}
 					</Button>
 				</div>
 			</form>
-		</div>
+		</FullLayoutMarkup>
 	);
 };
 

@@ -5,15 +5,18 @@
  * TODO: Implement MemoryHistory instead of history.
  */
 import * as React from 'react';
-import { Route, Routes } from 'react-router-dom';
-import { appTheme } from 'dash-styles';
+import { Route, Routes, useLocation, useNavigate } from 'react-router-dom';
+//import { appTheme } from 'dash-styles';
+
+//import RoutingWrapper from './RoutingWrapper';
+//import DomainAppLayout from 'dash-default-theme/src/DomainAppLayout';
 
 import MyLoginPage from './pages/Login';
 import Profile from './pages/Profile';
 
 import { useDispatch, useSelector } from 'react-redux';
 import { getCookie, setCookie } from './utils/cookies';
-import { AuthContext, IAuthContext, useAuthContext } from './contexts/auth';
+import {  useAuthContext } from './contexts/auth';
 import { IDASHAppState } from 'dash-admin-state';
 import { Error } from './components/error/Error';
 //import { lightTheme } from './themes';
@@ -25,90 +28,29 @@ export interface IAppResourceGroupsIcon {
   [x: string]: JSX.Element;
 }
 
-export interface IRALoginPage {
-  theme: any;
-}
-
 /**
  * Defines the interface for the DASHAdmin application, which includes various configuration options for customizing the application's behavior.
- *
- * @template U - The interface for the application's user data.
- * @template A - The interface for the application's authentication data.
- * @template R - The interface for the application's resource data, which must be an extension of `IAutoResourceConfig`.
- * @template C - The interface for the application's constants.
- *
- * @property {C} [initialAppConstants] - The initial app constants for the application.
- * @property {IDASHAppState<U, A, R>} [initialAppState] - The initial app state for the application.
- * @property {any} [customDataProvider] - A custom data provider to replace the default one.
- * @property {R[]} [customResources] - The custom resources for the application.
- * @property {React.FC<IRALoginPage>} [customLoginPage] - A custom login page to replace the default one.
- * @property {React.FC<IAppLayout>} [customLayout] - A custom layout to replace the default one.
- * @property {() => JSX.Element} [customNotification] - A custom notification component to replace the default one.
- * @property {any} [customErrorPage] - A custom error page to replace the default one.
- * @property {any} [customAuthProvider] - A custom auth provider to replace the default one.
- * @property {any} [customI18nProvider] - A custom i18n provider to replace the default one.
- * @property {boolean} [useCoreResources] - Whether to use the default core resources or not.
- * @property {JSX.Element | false} [customProfilePage] - A custom profile page or `false` to disable the default one.
- * @property {JSX.Element | false} [customRecoverPassword] - A custom recover password page or `false` to disable the default one.
- * @property {JSX.Element | false} [customVerifyAccount] - A custom verify account page or `false` to disable the default one.
- * @property {JSX.Element | false} [customChangePassword] - A custom change password page or `false` to disable the default one.
- * @property {any} [customThemeConfig] - A custom Material UI theme configuration.
- * @property {Route[]} [customAuthRoutes] - Custom authentication routes.
- * @property {Route[]} [customRoutes] - Custom routes.
- * @property {QueryClient} [customQueryClient] - A custom QueryClient.
- * @property {any} [history] - The history object (deprecated).
- * @property {{ [x: string]: string }} [customDict] - Custom dictionary translations.
- * @property {{ [x: string]: string }} [customReplacements] - Custom string replacements.
- * @property {JSX.Element} [children] - The child components of the DASHAdmin application.
  */
-export interface IDASHAdmin<U, A, R, C, S> {
-  /**
-   * DASHAdmin application default app state; you can specify the User <U> interface, the Auth <A> interface and the Resources <R> interface
-   * U: App User Interface
-   * A: App Auth Interface (Auth is for system config for an auth user)
-   * R: Resource items interface, always will be an IAutoResourceConfig extension class.
-   * C: Interface for app constants
-   */
+export interface IDASHAdmin<U, A, R, C> {
   initialAppConstants?: C;
-  //initialAppState?: IDASHAppState<U, A, R>;
-  dashAdminState?: S;
-  /** A default data provider is included, replaces the entire data provider */
   customDataProvider?: any;
-  /** Your application resources */
   customResources?: R[];
-  /** replaces the login page  */
-  customLoginPage?: React.FC<IRALoginPage>;
-  /** replaces the layout */
+  customLoginPage?: React.FC<any>;
   customLayout?: React.FC<IAppLayout>;
-  /** replaces the default notification; https://marmelab.com/react-admin/Admin.html#notification */
   customNotification?: () => React.JSX.Element;
-  /** replaces the default error page */
   customErrorPage?: any;
-  /** replaces the default data provider*/
   customAuthProvider?: any;
-  /** replaces the I18n provider*/
   customI18nProvider?: any;
-  /** Default resources for system/admin model to work with the default backend api are included, if set to false, no system resources will be appended */
   useCoreResources?: boolean;
-  /** false to disable and handle your own route */
   customProfilePage?: JSX.Element | false;
-  /** false to disable and handle your own route */
   customRecoverPassword?: JSX.Element | false;
-  /** false to disable and handle your own route */
-  customVerifyAccount?: JSX.Element | false;
-  /** false to disable and handle your own route */
   customChangePassword?: JSX.Element | false;
-  /** Material UI theme */
+  customVerifyAccount?: JSX.Element | false;
   customThemeConfig?: any;
-  /** Custom Auth Routes */
-  customAuthRoutes?: React.ReactElement[] /*React.ReactElement[];*/
-  /** Custom Not Authenticated Routes */
-  customRoutes?: React.ReactElement[] /*React.ReactElement[];*/
-  /** QueryClient */
+  customAuthRoutes?: React.ReactElement[];
+  customRoutes?: React.ReactElement[];
   customQueryClient?: QueryClient;
-  /** History. @deprecated notice */
-  history?: any; // TODO: MemoryHistory
-  // error={{errorComponent:Error}} // TODO as defined in the header of this file.
+  history?: any;
   customDict?: { [x: string]: string }
   customReplacements?: { [x: string]: string }
   children?: JSX.Element;
@@ -122,7 +64,6 @@ import DASHStorageClass from './classes/DASHStorageClass';
 
 import { QueryClient } from '@tanstack/react-query';
 
-
 import checkRole from './helpers/checkRole';
 
 import { Provider } from 'react-redux';
@@ -135,22 +76,139 @@ import RecoverPassword from './pages/RecoverPassword';
 import ChangePassword from './pages/ChangePassword';
 
 import { setResources } from 'dash-admin-state/src/redux/actions/Resources';
-import configureStore from 'dash-admin-state/src/redux/store';
 import {
   DictionaryProvider,
 } from './contexts/dictionary/DictionaryContext';
 import { IDashAutoAdminResourceConfig } from 'dash-auto-admin';
 import ResourceTemplate from './templates/ResourceTemplate';
-import { JSX, useEffect } from 'react';
+import { JSX, useEffect, useMemo, useCallback } from 'react';
 import RADashComponent from './react-admin-dash/RADashComponent';
-import { createTheme } from '@mui/material';
+import DASHAuthenticationService from './contexts/auth/DASHAuthenticationService';
+import { useDashThemeContext } from 'dash-default-theme/src/DashThemeContext';
 
 interface IAsyncResources extends AdminUIProps {
   resources: any;
+  customProfilePage?: JSX.Element | false;
+  customAuthRoutes?: React.ReactElement[];
+  customRoutes?: React.ReactElement[];
 }
 
+// Memoized selectors
+const selectLocale = (state: IDASHAppState<unknown, unknown, IDashAutoAdminResourceConfig>) =>
+  state.settings.locale;
 
-const DASHAdminApp: React.FC<IDASHAdmin<unknown, unknown, unknown, unknown, unknown>> = (props) => {
+const selectResources = (state: IDASHAppState<unknown, unknown, IDashAutoAdminResourceConfig>) =>
+  state.resources.items;
+
+// Single AsyncResources component with full memoization
+const AsyncResources: React.FC<IAsyncResources> = React.memo((props) => {
+  const { 
+    resources: res, 
+    customProfilePage, 
+    customAuthRoutes = [], 
+    customRoutes = [], 
+    ...rest 
+  } = props;
+
+  // Get auth state
+  const { authenticated } = useAuthContext();
+
+  // Memoize the resources processing
+  const processedResources = useMemo(() => {
+    return res.map((originalResource: any) => {
+      const { component: InputResourceTemplate, ...restProps } = originalResource;
+      const ResourceComponent = InputResourceTemplate || ResourceTemplate;
+      return ResourceComponent(restProps);
+    });
+  }, [res]);
+
+  // Memoize route functions
+  const getCustomAuthRoutes = useCallback(() => customAuthRoutes, [customAuthRoutes]);
+  const getCustomRoutes = useCallback(() => customRoutes, [customRoutes]);
+
+  // Memoize custom routes
+  const memoizedCustomRoutes = useMemo(() => (
+    <CustomRoutes>
+      {(authenticated) && customProfilePage !== false ? (
+        <Route
+          key={'/profile'}
+          path='/profile'
+          element={customProfilePage || <Profile />}
+        />
+      ) : <></>}
+      
+      {(authenticated) && getCustomAuthRoutes()
+      .filter(route => !route.props['data-layout']?.toString().includes('no-layout'))
+      .map((route, index) => {
+        return <Route key={`auth-route-${index}`} {...route.props} />
+      })}
+
+      {getCustomRoutes()
+      .filter(route => {
+        if ((authenticated) && getCustomAuthRoutes().some(authRoute => authRoute.props.path === route.props.path)) {
+          return false
+        }
+        return !route.props['data-layout']?.toString().includes('no-layout')
+      })
+      .map((route, index) => {
+        return <Route key={`custom-auth-route-${index}`} {...route.props}>
+          {route.props.children || <></>}
+        </Route>
+      })}         
+    </CustomRoutes>
+  ), [authenticated, customProfilePage, getCustomAuthRoutes, getCustomRoutes]);
+
+  const memoizedNoLayoutRoutes = useMemo(() => (
+    <CustomRoutes noLayout>
+      {authenticated ? getCustomAuthRoutes()
+      .filter(route => route.props['data-layout']?.toString().includes('no-layout'))
+      .map((route, index) => {
+        return <Route key={`auth-route-${index}`} {...route.props} />
+      }) : <></>}
+
+      {getCustomRoutes()
+      .filter(route => {
+        if (authenticated && getCustomAuthRoutes().some(authRoute => authRoute.props.path === route.props.path)) {
+          return false
+        }
+        return route.props['data-layout']?.toString().includes('no-layout')
+      })
+      .map((route, index) => {
+        return <Route key={`custom-auth-route-${index}`} {...route.props}>
+          {route.props.children || <></>}
+        </Route>
+      })}        
+    </CustomRoutes>
+  ), [authenticated, getCustomAuthRoutes, getCustomRoutes]);
+
+  return (
+    <>
+      <AdminUI {...rest}>
+        {processedResources}
+        {memoizedCustomRoutes}
+        {memoizedNoLayoutRoutes}
+      </AdminUI>
+    </>
+  );
+}, (prevProps, nextProps) => {
+  // Deep comparison for AsyncResources
+  const resourcesEqual = prevProps.resources.length === nextProps.resources.length &&
+    prevProps.resources.every((resource, index) => 
+      resource === nextProps.resources[index]
+    );
+
+  return resourcesEqual && 
+    prevProps.layout === nextProps.layout &&
+    prevProps.loginPage === nextProps.loginPage &&
+    prevProps.notification === nextProps.notification &&
+    prevProps.catchAll === nextProps.catchAll &&
+    prevProps.error === nextProps.error &&
+    prevProps.customProfilePage === nextProps.customProfilePage &&
+    prevProps.customAuthRoutes === nextProps.customAuthRoutes &&
+    prevProps.customRoutes === nextProps.customRoutes;
+});
+
+const DASHAdminApp: React.FC<IDASHAdmin<unknown, unknown, unknown, unknown>> = React.memo((props) => {
   const {
     customLoginPage = MyLoginPage,
     customLayout = AppLayout,
@@ -176,33 +234,22 @@ const DASHAdminApp: React.FC<IDASHAdmin<unknown, unknown, unknown, unknown, unkn
   } = props;
 
   //Locale
-  const ReactLocale = useSelector(
-    (state: IDASHAppState<unknown, unknown, IDashAutoAdminResourceConfig>) =>
-      state.settings.locale,
-  );
-  const resources = useSelector(
-    (state: IDASHAppState<unknown, unknown, IDashAutoAdminResourceConfig>) =>
-      state.resources.items,
-  );
+  const ReactLocale = useSelector(selectLocale);
+  const resources = useSelector(selectResources);
 
   const dispatch = useDispatch();
-  //const currentAppLocale = AppLocale[locale.locale];
-
-  // Theme
-  //const appThemeConfig = customThemeConfig || createTheme(appTheme()); // Matetial UI light theme
-  //const [themeConfig] = useTheme(appThemeConfig);
+  const navigate = useNavigate();
 
   //Roles
-  const _checkRole = (permissions, roles) => {
+  const _checkRole = useCallback((permissions, roles) => {
     return checkRole(permissions, roles);
-  };
+  }, []);
 
-  //const a = useSelector((state: IDASHAppState) => state.settings.locale);
   /** The auth context watches for auth changes */
-  //const { authenticated, user }: IAuthContext = React.useContext(AuthContext);
   const { authenticated, user } = useAuthContext();
-  // Concatenate default system resources (coreResources) with the AppResouces (customResources):
-  const calculateResources = () => {
+
+  // Memoize the resource calculation
+  const calculateResources = useCallback(() => {
     const _resources = !children
       ? customResources
         ? customResources && useCoreResources === false
@@ -213,195 +260,91 @@ const DASHAdminApp: React.FC<IDASHAdmin<unknown, unknown, unknown, unknown, unkn
     if (_resources && _resources.length > 0) {
       dispatch<any>(setResources(_resources));
     }
-  };
+  }, [children, customResources, useCoreResources, dispatch]);
 
-  /** When the application loads, process the resources, and dispatch the redux setter. */
-  /*React.useEffect(() => {
-    console.log("calculateResources on refresh")
-    calculateResources();
-  }, []);*/
-
-  /** When the authcontext changes, update the resources; this is necessary to render different menus, if the user log out, then log in with a different role. */
+  /** When the authcontext changes, update the resources */
   React.useEffect(() => {
-    //console.log("calculateResources on auth")
-    if(authenticated && user?.id) calculateResources();
-  }, [authenticated]);
+    if(authenticated) calculateResources();
+  }, [authenticated, calculateResources]);
 
-  /** When the redux resources are updated, store them in an ES6 Class, in order to be accessible in the data-provider without redux */
+  /** When the redux resources are updated, store them in an ES6 Class */
   React.useEffect(() => {
-    //console.log("updating resources")
-    // DASHStorageClass is required to be access the current Resources in the dataProvider;
-    // TODO: store just a simplified serialized version.
     DASHStorageClass.resources = resources;
   }, [resources]);
 
   /**
    * DASH Admin AuthContext
-   * AuthContext from RA can't be used because this happens before RA initialization
    */
   React.useEffect(() => {
-    if (authenticated && user?.id && resources) {
+    if (authenticated && resources) {
       if (!children) {
         try {
           if (user?.tenant_id) {
-
             const existingTenantCookie = getCookie('tenant_id');
             if (!existingTenantCookie) {
               localStorage.setItem('tenant_id', user.tenant_id.toString());
               setCookie('tenant_id', user.tenant_id.toString());
             }
-
           }
         } catch (e) {
           console.error(e);
         }
       }
     }
-  }, [authenticated, user, resources]);
+  }, [authenticated, user, resources, children]);
 
   /* Sets the application auth and no auth custom routes */
-  /* @ts-ignore */
-  const getCustomAuthRoutes = (): Route[] => customAuthRoutes ?? [];
-  /* @ts-ignore */
-  const getCustomRoutes = (): Route[] => customRoutes ?? [];
+  //const getCustomAuthRoutes = useCallback(() => customAuthRoutes ?? [], [customAuthRoutes]);
+  //const getCustomRoutes = useCallback(() => customRoutes ?? [], [customRoutes]);
 
-  const AsyncResources: React.FC<IAsyncResources> = (p) => {
-    const { resources: res, ...rest } = p;
-
-    const _resources = res.map((originalResource:any /*IDashAutoAdminResourceConfig)*/) => {
-
-      /* Deprecated 
-
-      if (_checkRole(permissions, resource.roles) && resource.component) {
-          _resources.push(resource.component && resource.component(resource));
-      }
-
-      */
-
-      const { component: InputResourceTemplate, ...restProps } = originalResource;
-      const ResourceComponent = InputResourceTemplate || ResourceTemplate;
-      return ResourceComponent(restProps);
-    });
-
-    return (
-      <AdminUI {...rest} /*ready={Loading}*/>
-
-        {_resources.map((parsedResource) => parsedResource)}
-
-        <CustomRoutes>
-          {(authenticated && user?.id) && customProfilePage !== false ? (
-            <Route
-              key={'/profile'}
-              path='/profile'
-              element={customProfilePage || <Profile />}
-            />
-          ) : <></>}
-          
-          {(authenticated && user?.id) && getCustomAuthRoutes()
-          .filter(route => !route.props['data-layout']?.toString().includes('no-layout'))
-          .map((route, index) => {
-            //console.log('Auth Route Key:', route.props.get)
-            return <Route key={`auth-route-${index}`} {...route.props} />
-          })}
-
-      
-            {getCustomRoutes()
-            .filter(route => {
-                if ((authenticated && user?.id) && getCustomAuthRoutes().some(authRoute => authRoute.props.path === route.props.path)) {
-                return false
-                }
-                return !route.props['data-layout']?.toString().includes('no-layout')
-            })
-            .map((route, index) => {
-                //console.log('Normal Route Key:', route.props)
-                return <Route key={`custom-auth-route-${index}`} {...route.props}>
-                    {route.props.children || <></>}
-                </Route>
-                
-            })}         
-                    
-        </CustomRoutes>
-
-        <CustomRoutes noLayout>
-          {customRecoverPassword !== false && (
-            <Route
-              key={'reset-password'}
-              path='reset-password'
-              element={customRecoverPassword || <RecoverPassword />}
-            />
-          )}
-          {customChangePassword !== false && (
-            <Route
-              key={'change-password'}
-              path='change-password'
-              element={customChangePassword || <ChangePassword />}
-            />
-          )}
-          {customVerifyAccount !== false && (
-            <Route
-              key={'verify-account'}
-              path='verify-email'
-              element={customVerifyAccount || <VerifyAccount />}
-            />
-          )}
-         
-
-         {authenticated && user?.id ? getCustomAuthRoutes()
-          .filter(route => route.props['data-layout']?.toString().includes('no-layout'))
-          .map((route, index) => {
-            //console.log('No layout Auth Route Key:', route.props.get)
-            return <Route key={`auth-route-${index}`} {...route.props} />
-          }) : <></>}
-
-            {getCustomRoutes()
-            .filter(route => {
-                if (authenticated && user?.id && getCustomAuthRoutes().some(authRoute => authRoute.props.path === route.props.path)) {
-                return false
-                }
-                return route.props['data-layout']?.toString().includes('no-layout')
-            })
-            .map((route, index) => {
-                //console.log('No layout Normal Route Key:', route.props)
-                return <Route key={`custom-auth-route-${index}`} {...route.props}>
-                    {route.props.children || <></>}
-                </Route>
-                
-            })}        
-          
-
-        </CustomRoutes>
-
-      </AdminUI>
-    );
-  };
+  /*useEffect(() => {
+    const redirect = DASHAuthenticationService.getPendingRedirect();
+    if(redirect) {
+      DASHAuthenticationService.clearPendingRedirect();
+      navigate(redirect)
+    }
+  }, [authenticated, navigate]);*/
 
   const constants = React.useContext(ConstantsContext);
 
+  // Memoize dictionary and replacements
+  const memoizedDictionary = useMemo(() => 
+    customDict ? { ...constants.systemConstants.dict, ...customDict } : constants.systemConstants.dict,
+    [customDict, constants.systemConstants.dict]
+  );
+
+  const memoizedReplacements = useMemo(() =>
+    customReplacements ? { ...constants.systemConstants.replacements, ...customReplacements } : constants.systemConstants.replacements,
+    [customReplacements, constants.systemConstants.replacements]
+  );
+
+  const {themeOptions} = useDashThemeContext();
+  // Memoize AdminContext props
+  const adminContextProps = {
+    dataProvider: customDataProvider || dataProvider,
+    i18nProvider: customI18nProvider || i18nProvider,
+    authProvider: customAuthProvider || authProvider,
+    ...(customThemeConfig ? { theme: customThemeConfig } : { theme: themeOptions }),
+    ...(customQueryClient && { queryClient: customQueryClient as QueryClient }),
+    ...(history && { history: history }),
+  };
+
+  
+  const adminUIProps = useMemo(() => ({
+    ...(customNotification && { notification: customNotification }),
+    layout: customLayout,
+    loginPage: customLoginPage,
+    ...(customErrorPage && { catchAll: customErrorPage }),
+    ...(Error && { error: Error }),
+  }), [customNotification, customLayout, customLoginPage, customErrorPage]);
+
   return children ? (
     <DictionaryProvider
-      dictionary={customDict ? { ...constants.systemConstants.dict, ...customDict } : constants.systemConstants.dict}
-      replacements={customReplacements ? { ...constants.systemConstants.replacements, ...customReplacements } : constants.systemConstants.replacements}
+      dictionary={memoizedDictionary}
+      replacements={memoizedReplacements}
     >
-      <AdminContext
-        dataProvider={customDataProvider || dataProvider}
-        i18nProvider={customI18nProvider || i18nProvider}
-        authProvider={customAuthProvider || authProvider}
-        {...(customThemeConfig && { theme:customThemeConfig })}
-        {...(customQueryClient && { queryClient: customQueryClient as QueryClient })}
-        {...((history !== null || history !== undefined) && { history })}
-      //store={store} //TODO implement the store override
-      // error={{ errorComponent: Error }} // TODO ¿how to customize the error page?
-      >
-
-        <AdminUI
-          {...(customNotification && { notification: customNotification })}
-          layout={customLayout}
-          /* @ts-ignore Known issue type mismatch */
-          loginPage={customLoginPage}
-          {...(customErrorPage && { catchAll: customErrorPage })}
-          {...(Error && { error: Error })}
-        //error={Error}  // TODO ¿how to customize the error page?
-        >
+      <AdminContext {...adminContextProps}>
+        <AdminUI {...adminUIProps}>
           {children}
         </AdminUI>
         <RADashComponent />
@@ -409,57 +352,52 @@ const DASHAdminApp: React.FC<IDASHAdmin<unknown, unknown, unknown, unknown, unkn
     </DictionaryProvider>
   ) : (
     <DictionaryProvider
-      dictionary={customDict ? { ...constants.systemConstants.dict, ...customDict } : constants.systemConstants.dict}
-      replacements={customReplacements ? { ...constants.systemConstants.replacements, ...customReplacements } : constants.systemConstants.replacements}
+      dictionary={memoizedDictionary}
+      replacements={memoizedReplacements}
     >
-
-      <AdminContext
-        dataProvider={customDataProvider || dataProvider}
-        i18nProvider={customI18nProvider || i18nProvider}
-        authProvider={customAuthProvider || authProvider}
-        {...(customThemeConfig && { theme:customThemeConfig })}
-        {...(customQueryClient && { queryClient: customQueryClient as QueryClient })}
-        {...(history && { history: history })}
-      // error={{ errorComponent: Error }} // TODO how to customize the error page
-      >
-
+      <AdminContext {...adminContextProps}>
         <AsyncResources
-          {...(customNotification && { notification: customNotification })}
-          /* @ts-ignore type mismatch */
-          loginPage={customLoginPage}
-          layout={customLayout}
-          {...(customErrorPage && { catchAll: customErrorPage })}
-          {...(Error && { error: Error })}
+          {...adminUIProps}
           resources={resources}
+          customProfilePage={customProfilePage}
+          customAuthRoutes={customAuthRoutes}
+          customRoutes={customRoutes}
         />
         <RADashComponent />
       </AdminContext>
-
     </DictionaryProvider>
   );
-};
+}, (prevProps, nextProps) => {
+  // Custom comparison for DASHAdminApp
+  return (
+    prevProps.customResources === nextProps.customResources &&
+    prevProps.useCoreResources === nextProps.useCoreResources &&
+    prevProps.children === nextProps.children &&
+    prevProps.customLoginPage === nextProps.customLoginPage &&
+    prevProps.customLayout === nextProps.customLayout &&
+    prevProps.customDataProvider === nextProps.customDataProvider &&
+    prevProps.customAuthProvider === nextProps.customAuthProvider
+  );
+});
+
+DASHAdminApp.whyDidYouRender = true;
 
 /**
  * The main DASHAdmin component
- * 
- * @param props - The props object containing the initial app state, initial app constants, and optional children components.
- * @returns A React component that renders the DASHAdminApp with the provided props and context.
  */
-
-
-const DASHAdmin = <U, A, R, C, S>(props: IDASHAdmin<U, A, R, C, S>): JSX.Element => {
-
-  const { dashAdminState, initialAppConstants, children, ...rest } = props;
+const DASHAdmin = <U, A, R, C, S>(props: IDASHAdmin<U, A, R, C>): JSX.Element => {
+  const { initialAppConstants, children, ...rest } = props;
 
   return (
-    /* @ts-ignore */
-
     <ConstantsProvider<C> initialAppConstants={initialAppConstants}>
       {children ? <DASHAdminApp {...rest}>{children}</DASHAdminApp> : <DASHAdminApp {...rest} />}
     </ConstantsProvider>
-
   );
 };
-export default React.memo(
-  DASHAdmin as React.ComponentType<IDASHAdmin<unknown, unknown, unknown, unknown, unknown>>
+
+/*export default React.memo(
+  DASHAdmin as React.ComponentType<IDASHAdmin<unknown, unknown, unknown, unknown>>
 ) as typeof DASHAdmin;
+*/
+
+export default DASHAdmin;

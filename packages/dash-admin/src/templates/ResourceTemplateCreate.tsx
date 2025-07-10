@@ -18,7 +18,8 @@ import { parseAxiosError } from '../helpers/parseAxiosError';
 import { useDashResource } from '../contexts/DashResourceContext';
 
 export const ResourceTemplateCreate: FC<IResourceTemplate> = (props) => {
-	const {resourceConfig} = useDashResource()
+	//const {resourceConfig} = useDashResource()};
+    const {resourceConfig} = props;
 	const notify = useNotify();
 	const redirect = useRedirect();
 	const refresh = useRefresh();
@@ -89,7 +90,7 @@ export const ResourceTemplateCreate: FC<IResourceTemplate> = (props) => {
 	};
 
     const onError = (_error: any) => {
-        debugger;
+        
 		if (resourceConfig.onError) {
 			resourceConfig.onError('create', _error);
             return;

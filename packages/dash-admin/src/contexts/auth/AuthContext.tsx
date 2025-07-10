@@ -1,3 +1,52 @@
+// 1. Direct Login with DASHAuthenticationService
+// // In a custom login component using react-admin.
+// import DASHAuthenticationService from './DASHAuthenticationService';
+// import { useLogin } from 'react-admin';
+// 
+// const CustomLoginComponent = () => {
+//   const login = useLogin();
+// 
+//   const handleLogin = async (credentials) => {
+//     try {
+//       // Use your custom authentication service
+//       await DASHAuthenticationService.loginWithReactAdmin(credentials, login);
+//       // User is now logged in and React Admin is aware
+//     } catch (error) {
+//       console.error('Login failed:', error);
+//     }
+//   };
+// 
+//   // Your login form JSX
+// };
+// 
+// 
+// 
+// 2. Using React Admin's Standard Login
+// // React Admin will automatically use your authProvider
+// const App = () => (
+//   <Admin
+//     authProvider={authProvider}
+//     dataProvider={dataProvider}
+//     // ... other props
+//   >
+//     {/* Your resources */}
+//   </Admin>
+// );
+// 
+// 
+// 3. Manual Integration
+// // If you need to manually set auth data
+// import authProvider from './DASHAuthProvider';
+// 
+// const someFunction = async () => {
+//   const authData = {
+//     token: 'your-token',
+//     user: { /* user data */ },
+//     auth: { /* auth data */ }
+//   };
+// 
+//   await authProvider.loginWithAuthData(authData);
+// };
 import { useDispatch, useSelector } from 'react-redux';
 import { IGetAuth } from '../../interfaces/user/IGetAuth';
 import { IGetAuthUser } from '../../interfaces/user/IUser';
@@ -6,18 +55,23 @@ import React, {
   PropsWithChildren,
   useCallback,
   useContext,
+  useRef,
 } from 'react';
 import { DASH_REDUX_ACTIONS, IAuthState, IDASHAppState } from 'dash-admin-state';
 import { ACTION_UPDATE_AUTH, ACTION_UPDATE_AUTH_AUTH } from 'dash-admin-state/src/redux/reducers/Auth';
 import useAxios from '../../hooks/axios';
 import { getEnv } from 'dash-admin/src/config/DASHAdminSystemConstants';
+import { useDashThemeContext } from 'dash-default-theme/src/DashThemeContext';
+import AppLayoutSettings from '../../theme/AppLayoutSetting';
+import DASHAuthenticationService from './DASHAuthenticationService';
 
-// Auth persistence service
+// Auth persistence service (keeping the same as before)
 export class AuthPersistenceService {
   private static readonly AUTH_KEY = 'dashAuth';
   private static readonly TIMESTAMP_KEY = 'dashAuthTimestamp';
   private static readonly TENANT_IMAGES_KEY = 'dashTenantImages'; 
-  private static readonly TENANT_SETTINGS_KEY = 'dashTenantSettings'; // Add this
+  private static readonly TENANT_SETTINGS_KEY = 'dashTenantSettings';
+
   private static readonly EXPIRY_HOURS = 24;
 
   static saveAuth(authData: any): void {
@@ -44,9 +98,58 @@ export class AuthPersistenceService {
       
       localStorage.setItem(this.AUTH_KEY, JSON.stringify(cleanAuthData));
       localStorage.setItem(this.TIMESTAMP_KEY, Date.now().toString());
-      //localStorage.setItem('authenticated', 'true');
     } catch (error) {
       console.error('Failed to save auth data:', error);
+    }
+  }
+
+  static setAuth(authData: any): void {
+    try {
+      // Store token separately for easy access
+      if (authData.token) {
+        localStorage.setItem('token', authData.token);
+      }
+      
+      // Store user data separately for easy access
+      if (authData.user) {
+        localStorage.setItem('user', JSON.stringify(authData.user));
+      }
+      
+      // Mark as authenticated
+      localStorage.setItem('authenticated', 'true');
+      
+      // Use existing saveAuth method for the main auth data
+      this.saveAuth({
+        auth: {
+          user: authData.user,
+          token: authData.token,
+          refreshToken: authData.refreshToken,
+          // Include any other auth-related data
+        }
+      });
+      
+      console.log('Auth data set successfully');
+    } catch (error) {
+      console.error('Failed to set auth data:', error);
+    }
+  }
+
+  static getToken(): string | null {
+    try {
+      return localStorage.getItem('token');
+    } catch (error) {
+      console.error('Failed to get token:', error);
+      return null;
+    }
+  }
+
+  static getUser(): any | null {
+    try {
+      const userData = localStorage.getItem('user');
+      return userData ? JSON.parse(userData) : null;
+    } catch (error) {
+      console.error('Failed to get user data:', error);
+      return null;
     }
   }
 
@@ -130,7 +233,7 @@ export class AuthPersistenceService {
     localStorage.removeItem(this.AUTH_KEY);
     localStorage.removeItem(this.TIMESTAMP_KEY);
     localStorage.removeItem('token');
-     localStorage.removeItem('user');
+    localStorage.removeItem('user');
     localStorage.setItem('authenticated', 'false');
   }
 
@@ -158,6 +261,48 @@ export class AuthPersistenceService {
   static isAuthValid(): boolean {
     return this.getAuth() !== null;
   }
+
+  static getPermissions(): Promise<any> {
+    try {
+      // First check if user is guest
+      const storedRoles = localStorage.getItem('roles');
+      if (storedRoles === 'guest') {
+        return Promise.resolve('guest');
+      }
+
+      // Try to get permissions from the persisted auth data first
+      const authData = this.getAuth();
+      if (authData?.auth?.user?.roles) {
+        const processedPermissions = {
+          roles: authData.auth.user.roles.map((item: any) => 
+            typeof item === 'string' ? item : item.name
+          )
+        };
+        return Promise.resolve(processedPermissions);
+      }
+
+      // Fallback to localStorage roles if auth data doesn't have roles
+      if (storedRoles) {
+        try {
+          const parsedRoles = JSON.parse(storedRoles);
+          const processedPermissions = {
+            roles: Array.isArray(parsedRoles) 
+              ? parsedRoles.map((item: any) => typeof item === 'string' ? item : item.name)
+              : [parsedRoles]
+          };
+          return Promise.resolve(processedPermissions);
+        } catch (parseError) {
+          console.error('Failed to parse roles from localStorage:', parseError);
+          return Promise.resolve('null');
+        }
+      }
+
+      return Promise.resolve('null');
+    } catch (error) {
+      console.error('Failed to get permissions:', error);
+      return Promise.resolve('null');
+    }
+  }
 }
 
 export class AuthContextClass {
@@ -179,8 +324,10 @@ export interface IAuthContext {
   token?: string;
   roles?: any;
   updateValues: (values: Partial<IAuthContextProps>) => void;
-  logout: () => Promise<void>;
-  handleReactAdminIdentity: (identity: any) => void; // New method for RADashComponent
+  logout: (callback?: () => void)  => void;
+  handleReactAdminIdentity: (identity: any) => void;
+  getPermissions: () => Promise<any>; 
+  fetchAuth: () => Promise<any>;
 }
 
 export const AuthContext = React.createContext<IAuthContext>(null);
@@ -195,12 +342,30 @@ export const AuthContextProvider: FC<IAuthContextProvider> = (props) => {
   const dispatch = useDispatch();
   const { axios } = useAxios();
   
-  const [contextValues, setContextValues] = React.useState<Partial<IAuthContextProps>>({
-    authenticated: auth.authenticated,
-    user: auth.user,
-    auth: auth.auth,
-    token: auth.user?.token,
-    roles: auth.user?.roles
+  // Add this line to get theme context
+  const { recreateTheme } = useDashThemeContext();
+
+  // Use refs to prevent infinite loops
+  const isHandlingIdentityRef = useRef(false);
+  const lastIdentityRef = useRef<string>('');
+  const lastTenantImagesRef = useRef<string>('');
+  const lastTenantSettingsRef = useRef<string>('');
+  const hasInitializedRef = useRef(false);
+
+  // Initialize context values with proper fallbacks
+  const [contextValues, setContextValues] = React.useState<Partial<IAuthContextProps>>(() => {
+    // Try to get initial values from localStorage and Redux
+    const storedUser = AuthPersistenceService.getUser();
+    const storedToken = AuthPersistenceService.getToken();
+    const isAuthenticated = JSON.parse(localStorage.getItem('authenticated') || 'false');
+    
+    return {
+      authenticated: auth.authenticated || isAuthenticated,
+      user: auth.user || storedUser,
+      auth: auth.auth,
+      token: auth.user?.token || storedToken,
+      roles: auth.user?.roles
+    };
   });
 
   // Internal method to fetch complete auth data
@@ -230,72 +395,128 @@ export const AuthContextProvider: FC<IAuthContextProvider> = (props) => {
     }
   }, [axios, dispatch]);
 
-  // Method for RADashComponent to call when react-admin identity is loaded
-  const handleReactAdminIdentity = useCallback(async (identity: any) => {
-    if (!identity || auth.authenticated) {
-      return; // Already authenticated or no identity
-    }
+  // Method to initialize auth from token
+  const initializeAuthFromToken = useCallback(async () => {
+    const token = AuthPersistenceService.getToken();
+    const storedUser = AuthPersistenceService.getUser();
+    const isAuthenticated = JSON.parse(localStorage.getItem('authenticated') || 'false');
 
-    console.log('Handling react-admin identity:', identity);
-    
-    // First set basic identity data
-    dispatch(
-      DASH_REDUX_ACTIONS.updateAuth(ACTION_UPDATE_AUTH, {
-        user: identity.user,
-        authenticated: identity?.user ? true : false,
-        auth: identity.auth,
-      })
-    );
+    console.log('Initializing auth from token:', {
+      hasToken: !!token,
+      hasStoredUser: !!storedUser,
+      isAuthenticated,
+      reduxAuthenticated: auth.authenticated
+    });
 
-    // Then fetch complete auth data including tenant settings
-    try {
-      await fetchCompleteAuth();
-    } catch (error) {
-      console.error('Failed to fetch complete auth data after identity load');
+    // If we have a token but no complete auth data, fetch it
+    if (token && !auth.authenticated) {
+      try {
+        console.log('Token found but not fully authenticated, fetching complete auth data...');
+        await fetchCompleteAuth();
+      } catch (error) {
+        console.error('Failed to initialize auth from token:', error);
+        // If fetching fails, clear the invalid token
+        AuthPersistenceService.markAsLoggedOut();
+      }
+    } else if (isAuthenticated && storedUser && token && !auth.authenticated) {
+      // If we have all stored data but Redux isn't updated, restore the session
+      console.log('Restoring auth session from localStorage');
+      
+      const persistedAuth = AuthPersistenceService.getAuth();
+
+      dispatch(
+        DASH_REDUX_ACTIONS.updateAuth(ACTION_UPDATE_AUTH, {
+          user: storedUser,
+          authenticated: true,
+          auth: persistedAuth?.auth || null,
+        })
+      );
     }
   }, [auth.authenticated, dispatch, fetchCompleteAuth]);
 
-  // Load persisted auth data on mount
-  React.useEffect(() => {
-    const persistedAuth = AuthPersistenceService.getAuth();
-    if (persistedAuth && !auth.authenticated) {
-      console.log('Loading persisted auth data from localStorage (auth.auth only)');
-      
-      // Only restore auth.auth from localStorage, user data comes from react-admin identity
+  // Method for RADashComponent to call when react-admin identity is loaded
+  const handleReactAdminIdentity = useCallback(async (identity: any) => {
+    if (!identity || auth.authenticated || isHandlingIdentityRef.current) {
+      return; // Already authenticated, no identity, or already handling
+    }
+
+    const identityKey = JSON.stringify(identity);
+    if (lastIdentityRef.current === identityKey) {
+      return; // Same identity, skip processing
+    }
+
+    isHandlingIdentityRef.current = true;
+    lastIdentityRef.current = identityKey;
+
+    console.log('Handling react-admin identity:', identity);
+    
+    try {
+      // First set basic identity data
+
       dispatch(
         DASH_REDUX_ACTIONS.updateAuth(ACTION_UPDATE_AUTH, {
-          user: null, // Don't restore user from localStorage
-          authenticated: false, // Don't auto-authenticate from localStorage
-          auth: persistedAuth.auth, // Only restore auth.auth
+          user: identity.user || identity,
+          authenticated: identity?.user ? true : (identity?.id ? true : false),
+          auth: identity.auth,
         })
       );
-    } else {
-      const storedAuth = AuthPersistenceService.getStoredAuthData();
-      if (storedAuth && storedAuth._loggedOut) {
-        console.log('Found logged out auth data in localStorage - not auto-logging in');
-      }
-    }
-  }, [dispatch]);
 
-  const logout = async () => {
-    try {
+      // Then fetch complete auth data including tenant settings
+      await fetchCompleteAuth();
+    } catch (error) {
+      console.error('Failed to fetch complete auth data after identity load');
+    } finally {
+      isHandlingIdentityRef.current = false;
+    }
+  }, [auth.authenticated, dispatch, fetchCompleteAuth]);
+
+    // Initialize auth on mount
+    /*
+  React.useEffect(() => {
+    if (!hasInitializedRef.current) {
+      hasInitializedRef.current = true;
+      console.log('Initializing auth context on mount...');
+      initializeAuthFromToken();
+    }
+  }, [initializeAuthFromToken]);
+
+  */
+
+  const logout = (callback?: () => void) => {
+   /*try {
       // Try to use react-admin's logout if available
       const { useLogout } = await import('react-admin');
       
       try {
         const raLogout = useLogout();
+        
         await raLogout({}, '/login', true);
       } catch (reactAdminError) {
         console.warn('React-admin logout not available, using fallback');
-        window.location.href = '/login';
+        if (callback) {
+          callback();
+        } else {
+          const { useNavigate } = await import('react-router-dom');
+          const navigate = useNavigate();
+          navigate('/login');
+        }
       }
     } catch (importError) {
       console.warn('React-admin not available, using fallback logout');
-      window.location.href = '/login';
-    }
-    
+      if (callback) {
+        callback();
+      } else {
+        const { useNavigate } = await import('react-router-dom');
+        const navigate = useNavigate();
+        navigate('/login');
+      }
+    }*/
+
     // Mark as logged out but keep the auth.auth data
     AuthPersistenceService.markAsLoggedOut();
+    
+    DASHAuthenticationService.setPendingRedirect(window.location.pathname)
+   
 
     setContextValues({
       authenticated: false,
@@ -311,11 +532,37 @@ export const AuthContextProvider: FC<IAuthContextProvider> = (props) => {
         authenticated: false,
         auth: null,
       }),
-    );         
+    );    
+
+    setAuthEvent({
+      authenticated: false,
+      user: null,
+      auth: null,
+      token: null,
+      roles: null
+    });
+
+       document.body.classList.remove(
+            AppLayoutSettings.LAYOUT_TYPE_FULL,
+            AppLayoutSettings.LAYOUT_TYPE_BOXED,
+            AppLayoutSettings.LAYOUT_TYPE_FRAMED,
+            AppLayoutSettings.THEME_TYPE_DARK,
+            AppLayoutSettings.THEME_TYPE_LIGHT
+        );
+    
+    if (callback) {
+        callback();
+    } 
+
+
   };
 
-  const updateAuth = useCallback((authData: Partial<IAuthContextProps>) => {
+  /*
+const updateAuth = useCallback((authData: Partial<IAuthContextProps>) => {
     if (authData) {
+      console.log('🔄 AuthContext: Updating auth context with:', authData);
+      
+      // Update local context state
       setContextValues(prevValues => {
         const hasChanges = Object.keys(authData).some(key => {
           const newValue = authData[key as keyof IAuthContextProps];
@@ -324,25 +571,120 @@ export const AuthContextProvider: FC<IAuthContextProvider> = (props) => {
         });
         
         if (hasChanges) {
-          return {
+          const newValues = {
             ...prevValues,
             ...authData
           };
+          console.log('✅ AuthContext: Local context updated:', newValues);
+          return newValues;
         }
         return prevValues;
       });
+
+      // Only update Redux state if we have meaningful auth data and it's not a logout
+      if ((authData.authenticated !== undefined || authData.user || authData.auth) && authData.authenticated !== false) {
+        console.log('🔄 AuthContext: Dispatching to Redux state...');
+        
+        const reduxPayload = {
+          user: authData.user || auth.user,
+          authenticated: authData.authenticated ?? auth.authenticated,
+          auth: authData.auth || auth.auth,
+        };
+        
+        console.log('🔄 AuthContext: Redux payload:', reduxPayload);
+        
+        dispatch(
+          DASH_REDUX_ACTIONS.updateAuth(ACTION_UPDATE_AUTH, reduxPayload)
+        );
+        
+        console.log('✅ AuthContext: Redux dispatch completed');
+      }
     }
-  }, []);
+}, [dispatch, auth.user, auth.authenticated, auth.auth]);
+*/
+
+// Replace the updateAuth function with this simplified version:
+const updateAuth = useCallback((authData: Partial<IAuthContextProps>) => {
+    if (authData) {
+      console.log('🔄 AuthContext: Updating auth context with:', authData);
+      
+      // Update local context state first
+      setContextValues(prevValues => {
+        const newValues = {
+          ...prevValues,
+          ...authData
+        };
+        console.log('✅ AuthContext: Local context updated:', newValues);
+        return newValues;
+      });
+
+      // Update Redux state if we have meaningful auth data and it's not a logout
+      if ((authData.authenticated !== undefined || authData.user || authData.auth) && authData.authenticated !== false) {
+        console.log('🔄 AuthContext: Dispatching to Redux state...');
+        
+        const reduxPayload = {
+          user: authData.user || auth.user,
+          authenticated: authData.authenticated ?? auth.authenticated,
+          auth: authData.auth || auth.auth,
+        };
+        
+        console.log('🔄 AuthContext: Redux payload:', reduxPayload);
+        
+        dispatch(
+          DASH_REDUX_ACTIONS.updateAuth(ACTION_UPDATE_AUTH, reduxPayload)
+        );
+        
+        console.log('✅ AuthContext: Redux dispatch completed');
+      }
+    }
+}, [dispatch, auth.user, auth.authenticated, auth.auth]);
     
   const updateValues = useCallback((authData: Partial<IAuthContextProps>) => {
+    console.log('Manual update values called with:', authData);
     setContextValues(prevValues => ({
       ...prevValues,
       ...authData
     }));
   }, []);
-    
+
+  const getPermissions = useCallback((): Promise<any> => {
+    try {
+      // First check if user is guest
+      if (contextValues.roles === 'guest') {
+        return Promise.resolve('guest');
+      }
+
+      // Use current context values first (most up-to-date)
+      if (contextValues.roles && Array.isArray(contextValues.roles)) {
+        const processedPermissions = {
+          roles: contextValues.roles.map((item: any) => 
+            typeof item === 'string' ? item : item.name
+          )
+        };
+        return Promise.resolve(processedPermissions);
+      }
+
+      // Fallback to auth object roles
+      if (auth.user?.roles && Array.isArray(auth.user.roles)) {
+        const processedPermissions = {
+          roles: auth.user.roles.map((item: any) => 
+            typeof item === 'string' ? item : item.name
+          )
+        };
+        return Promise.resolve(processedPermissions);
+      }
+
+      // Final fallback to persistence service
+      return AuthPersistenceService.getPermissions();
+    } catch (error) {
+      console.error('Failed to get permissions from context:', error);
+      return Promise.resolve('null');
+    }
+  }, [contextValues.roles, auth.user?.roles]);
+
   React.useEffect(() => {
     const handleAuthEvent = (event: CustomEvent<Partial<IAuthContextProps>>) => {
+      console.log('Auth event received:', event.detail);
       updateAuth(event.detail);
     };
 
@@ -354,12 +696,18 @@ export const AuthContextProvider: FC<IAuthContextProvider> = (props) => {
 
   // Sync with Redux state changes and handle persistence + panel settings
   React.useEffect(() => {
-    setContextValues(prevValues => {
+    console.log('Redux auth state changed:', {
+      authenticated: auth.authenticated,
+      user: !!auth.user,
+      auth: !!auth.auth
+    });
+    
+    /*setContextValues(prevValues => {
       const newValues = {
         authenticated: auth.authenticated,
         user: auth.user,
         auth: auth.auth,
-        token: auth.user?.token,
+        token: auth.user?.token || AuthPersistenceService.getToken(),
         roles: auth.user?.roles
       };
       
@@ -370,10 +718,12 @@ export const AuthContextProvider: FC<IAuthContextProvider> = (props) => {
       });
       
       if (hasChanges) {
+        console.log('Context values updated from Redux:', newValues);
+        
         // Persist only auth.auth to localStorage when auth data changes
         if (auth.authenticated && auth.auth) {
           AuthPersistenceService.saveAuth({
-            auth: auth.auth // Only persist auth.auth, not auth.user
+            auth: auth.auth
           });
         }
         
@@ -383,68 +733,89 @@ export const AuthContextProvider: FC<IAuthContextProvider> = (props) => {
         };
       }
       return prevValues;
-    });
+    });*/
 
- // Update panel settings when tenant images are available OR get from persisted data
-  let tenantImages = auth?.auth?.tenantImages;
-  let tenantSettings = auth?.auth?.tenantSettings;
-  
-  // If no tenant data in current auth (e.g., after logout), try to get persisted ones
-  if (!tenantImages) {
-    tenantImages = AuthPersistenceService.getTenantImages();
-  }
-  
-  if (!tenantSettings) {
-    tenantSettings = AuthPersistenceService.getTenantSettings();
-  }
-  
-  // Update panel settings with tenant images
-  if (tenantImages) {
-    console.log('Updating panel settings with tenant images from auth context or persisted data');
-    
-    dispatch(
-      DASH_REDUX_ACTIONS.setPanelSettings({
-        ...(tenantImages.horizontal_logo?.original && { horizontalLogo: tenantImages.horizontal_logo.original }),
-        ...(tenantImages.squared_logo?.original && { squaredLogo: tenantImages.squared_logo.original }),
-        ...(tenantImages.banner?.original && { loginBackground: tenantImages.banner.original })
-      })
-    );
-  }
+    // Update panel settings and recreate theme when tenant data is available
+    // Use refs to prevent unnecessary updates
+    if (auth.authenticated) {
+      let tenantImages = auth?.auth?.tenantImages;
+      let tenantSettings = auth?.auth?.tenantSettings;
+      
+      if (!tenantImages) {
+        tenantImages = AuthPersistenceService.getTenantImages();
+      }
+      
+      if (!tenantSettings) {
+        tenantSettings = AuthPersistenceService.getTenantSettings();
+      }
+      
+      // Update panel settings with tenant images (only if we have new data)
+      const tenantImagesKey = JSON.stringify(tenantImages);
+      if (tenantImages && lastTenantImagesRef.current !== tenantImagesKey) {
+        console.log('Updating panel settings with tenant images from auth context or persisted data');
+        lastTenantImagesRef.current = tenantImagesKey;
+        const logos = {
+            ...(tenantImages.horizontal_logo.original && { horizontalLogo: tenantImages.horizontal_logo.original }),
+            ...(tenantImages.squared_logo.original && { squaredLogo: tenantImages.squared_logo.original }),
+            ...(tenantImages.banner.original && { loginBackground: tenantImages.banner.original })
+          };
+        
+        dispatch(
+          DASH_REDUX_ACTIONS.setPanelSettings(logos)
+        );
+      }
 
+      // Recreate MUI theme when tenant settings are available (only if we have new data)
+      const tenantSettingsKey = JSON.stringify(tenantSettings);
+      if (tenantSettings && lastTenantSettingsRef.current !== tenantSettingsKey) {
+        console.log('Recreating MUI theme with tenant settings from auth context');
+        lastTenantSettingsRef.current = tenantSettingsKey;
+        recreateTheme(tenantSettings);
+      }
 
-   if (tenantSettings) {
-    console.log('Updating app settings with tenant settings from auth context or persisted data');
-    
-    // Example: Update theme settings, colors, or other configurations
-    // TODO
-    
-
-   }
-
-    // Handle IPC service for background service
-    const storageAuthenticated = JSON.parse(localStorage.getItem('authenticated') || 'false');
-    if (storageAuthenticated && auth.authenticated && auth.user?.tenant_id) {
-      const { DashIPCService } = window;
-      DashIPCService && DashIPCService.action('start-background-service', {
-        token: localStorage.getItem('token'),
-        channel: `private-tenant.${auth.user.tenant_id}.system`
-      });
+      // Handle IPC service for background service
+      const storageAuthenticated = JSON.parse(localStorage.getItem('authenticated') || 'false');
+      if (storageAuthenticated && auth.user?.tenant_id) {
+        const { DashIPCService } = window;
+        DashIPCService && DashIPCService.action('start-bg-service', {
+          token: localStorage.getItem('token'),
+          channel: `private-tenant.${auth.user.tenant_id}.system`
+        });
+      }
     }
 
-  }, [auth.authenticated, auth.user, auth.auth, dispatch]);
+  }, [auth.authenticated]);
 
-  // Create the context value
-  const contextValue: IAuthContext = {
-    user: contextValues.user || null,
-    authenticated: contextValues.authenticated ?? false,
-    auth: contextValues.auth,
-    token: contextValues.token,
-    roles: contextValues.roles,
-    updateValues,
-    logout,
-    handleReactAdminIdentity
-  };
-
+  // Debug effect to log context values changes
+  React.useEffect(() => {
+    
+    console.log('Auth context values changed:', {
+      authenticated: contextValues.authenticated,
+      user: contextValues.user ? `${contextValues.user.name} (${contextValues.user.id})` : null,
+      auth: contextValues.auth,
+      token: contextValues.token ? 'present' : 'missing'
+    });
+  }, [contextValues]);
+  
+  // Create the context value - ensure we always return the most current data
+const contextValue: IAuthContext = React.useMemo(() => {
+    const currentUser = contextValues.user || auth.user || AuthPersistenceService.getUser();
+    const currentAuthenticated = contextValues.authenticated ?? auth.authenticated ?? false;
+    const currentToken = contextValues.token || auth.user?.token || AuthPersistenceService.getToken();
+    
+    return {
+      user: currentUser,
+      authenticated: currentAuthenticated,
+      auth: contextValues.auth || auth.auth,
+      token: currentToken,
+      roles: contextValues.roles || auth.user?.roles,
+      updateValues,
+      logout,
+      handleReactAdminIdentity,
+      getPermissions,
+      fetchAuth: fetchCompleteAuth 
+    };
+  }, [contextValues, auth, updateValues, logout, handleReactAdminIdentity, getPermissions, fetchCompleteAuth]);
   return (
     <AuthContext.Provider value={contextValue}>
       {children}
@@ -460,8 +831,13 @@ export const useAuthContext = () => {
 };
 
 export const setAuthEvent = (values: Partial<IAuthContextProps>) => {
+  console.log('Setting auth event:', values);
   window.dispatchEvent(new CustomEvent('authEvent', { detail: values }));
   return values;
+};
+
+export const getAuthPermissions = (): Promise<any> => {
+  return AuthPersistenceService.getPermissions();
 };
 
 export default AuthContext;

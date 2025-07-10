@@ -1,23 +1,18 @@
 import React, { FC } from 'react';
 import { useRecordContext } from 'react-admin';
-import {
-	formatNotification,
-	IFormattedNotification,
-	INotificationPayloadBase,
-} from './notificationFormats';
-import { IDashAutoAdminCustomFieldComponent } from 'dash-auto-admin';
-import INotification, { INotificationBase } from '../interfaces/INotification';
 
-export const NotificationComponent: FC<{ notification: INotificationBase }> = ({
+import { IDashAutoAdminCustomFieldComponent } from 'dash-auto-admin';
+import { IDashNotificationBase, IDashNotificationPayloadBase } from '../../../interfaces/communication/INotification';
+import { IDashFormattedNotification, formatNotification } from './notificationFormats';
+
+export const NotificationComponent: FC<{ notification: IDashNotificationBase<any> }> = ({
 	notification,
 }) => {
-	let _record = notification as INotification<INotificationPayloadBase>;
-	const formattedNotificationDefault: IFormattedNotification =
-		formatNotification<INotificationPayloadBase>(_record);
+	let _record = notification as IDashNotificationBase<IDashNotificationPayloadBase>;
+	const formattedNotificationDefault: IDashFormattedNotification =
+		formatNotification(_record);
 	return (
-		<formattedNotificationDefault.content.component
-			{...formattedNotificationDefault.content.props}
-		/>
+		<formattedNotificationDefault.content notification={_record} />
 	);
 };
 
@@ -25,13 +20,14 @@ const NotificationRendererView: React.FC<IDashAutoAdminCustomFieldComponent> = (
 	method,
 	attribute,
 }) => {
-	const record: INotificationBase = useRecordContext();
+	const record: IDashNotificationBase<any> = useRecordContext();
 	return <NotificationComponent notification={record} />;
 };
 
 const NotificationRenderer = ({
 	method,
 	attribute,
+    resourceConfig
 }: IDashAutoAdminCustomFieldComponent) => {
 	switch (method) {
 		case 'edit':
@@ -39,7 +35,7 @@ const NotificationRenderer = ({
 			return <>Not implemented</>;
 		case 'view':
 		case 'list':
-			return <NotificationRendererView attribute={attribute} method={method} />;
+			return <NotificationRendererView attribute={attribute} method={method} resourceConfig={resourceConfig}  />;
 	}
 };
 

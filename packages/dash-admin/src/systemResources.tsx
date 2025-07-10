@@ -16,6 +16,8 @@ import Https from '@mui/icons-material/Https';
 import SystemUpdateAlt from '@mui/icons-material/SystemUpdateAlt';
 import Person from '@mui/icons-material/Person';
 import { lazy } from 'react';
+import subscriptionPlanSchema from './schemas/subscription/subscriptionPlanSchema';
+import subscriptionSchema from './schemas/subscription/subscriptionSchema';
 
 const TableContainer = lazy(() => import('@mui/material/TableContainer'));
 
@@ -48,6 +50,7 @@ const systemResources: IAppResourceConfig[] = [
         customRoutes: (resourceConfig) => TenantImpersonateResource(resourceConfig),
         model: 'system/tenant',
         label: 'Clientes',
+       
         schema: tenantSystemAdminSchema,
         //references: [{ reference: 'roles', target: 'role', schema: rolesSchema }]
         //references: [{ reference: 'roles', target: 'gitid', schema: roleSchema }],
@@ -57,7 +60,12 @@ const systemResources: IAppResourceConfig[] = [
             title: 'Clientes',
             redirect: '/system/tenant',
         },
+       
         {
+                title: "Papelera",
+                redirect: "/system/tenant/trash",
+            },
+             {
             title: 'Impersonar',
             redirect: '/system/tenant/impersonate',
         },
@@ -180,6 +188,98 @@ const systemResources: IAppResourceConfig[] = [
         },
         ...drawerSettings,
     },
+
+
+    {
+        roles: [DASHAppConstants.system.SYSTEM_ROLE],
+        component: ResourceTemplate,
+        model: 'system/subscription-plan',
+        label: 'planes',
+        icon: <SystemUpdateAlt />,
+        group: 'Recursos de sistema',
+        menu: [
+            {
+                title: 'Planes',
+                redirect: '/system/subscription-plan',
+            },
+        ],
+        mainAction: {
+            title: 'Agregar',
+            // type: "ghost",
+            redirect: '/system/subscription-plan/create',
+        },
+        schema: subscriptionPlanSchema,
+        mutationMode: 'pessimistic',
+        redirectAfterUpdate: false,
+
+        dataGridProps: { stickyHeader: true },
+        listEditButton: { enabled: true },
+        toolbarCreateButton: { enabled: false },
+        toolbarDeleteButton: { enabled: false },
+        toolbarListButton: { enabled: false },
+        toolbarSaveButton: { enabled: true },
+        toolbarExportButton: { enabled: false },
+        toolbarEditButton: { enabled: false },
+
+        formGroupMode: 'groups',
+
+        dataGridWrapper: (props: any) => (
+            <TableContainer sx={{ maxHeight: 800 }}>{props.children}</TableContainer>
+        ),
+      
+        postFormatter: (params, _) => {
+           
+            return params
+        },
+        ...drawerSettings,
+    },
+
+
+    {
+        roles: [DASHAppConstants.system.SYSTEM_ROLE],
+        component: ResourceTemplate,
+        model: 'system/subscription',
+        label: 'suscripciones',
+        icon: <SystemUpdateAlt />,
+        group: 'Recursos de sistema',
+        menu: [
+            {
+                title: 'Subscripciones',
+                redirect: '/system/subscription',
+            },
+        ],
+        mainAction: {
+            title: 'Agregar',
+            // type: "ghost",
+            redirect: '/system/subscription-plan/create',
+        },
+        schema: subscriptionSchema,
+        mutationMode: 'pessimistic',
+        redirectAfterUpdate: false,
+
+        dataGridProps: { stickyHeader: true },
+        listEditButton: { enabled: true },
+        listViewButton: { enabled: false },
+        toolbarCreateButton: { enabled: false },
+        toolbarDeleteButton: { enabled: false },
+        toolbarListButton: { enabled: false },
+        toolbarSaveButton: { enabled: true },
+        toolbarExportButton: { enabled: false },
+        toolbarEditButton: { enabled: false },
+
+        formGroupMode: 'groups',
+
+        dataGridWrapper: (props: any) => (
+            <TableContainer sx={{ maxHeight: 800 }}>{props.children}</TableContainer>
+        ),
+      
+        postFormatter: (params, _) => {
+           
+            return params
+        },
+        ...drawerSettings,
+    },
+
     {
         roles: [DASHAppConstants.system.SYSTEM_ROLE],
         component: ResourceTemplate,
@@ -406,6 +506,10 @@ const systemResources: IAppResourceConfig[] = [
                 title: 'Usuarios',
                 redirect: '/system/user',
             },
+            {
+                title: "Papelera",
+                redirect: "/system/user/trash",
+            }
         ],
         //{
         //    title: "Papelera",

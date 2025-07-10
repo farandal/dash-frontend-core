@@ -27,7 +27,8 @@ import { IResourceTemplate } from './ResourceTemplate';
 
 
 export const ResourceTemplateShow: FC<IResourceTemplate> = (props) => {
-	const {resourceConfig} = useDashResource()
+	//const {resourceConfig} = useDashResource()
+      const {resourceConfig} = props;
 
 	/*const ShowActions = ({ edit }) => (
     <TopToolbar>{edit !== false && <EditButton />}</TopToolbar>

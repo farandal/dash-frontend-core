@@ -201,7 +201,7 @@ const dataProvider = {
 	getList: async (resource, params, _options) => {
         const tenant_id = getCookie('tenant_id');
         
-        debugger;
+        
 
         let payload = processPostData(
             resource,
@@ -637,7 +637,7 @@ const dataProvider = {
     checkError: (error) => {
         const status = error.status;
         if (status >= 400 && status < 499) {
-            debugger;
+            
             // Format client errors
             console.error('checkError', JSON.stringify(error));
             

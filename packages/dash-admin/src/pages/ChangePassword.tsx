@@ -1,13 +1,8 @@
-import { Button, Input, InputLabel } from '@mui/material';
-
+import { Alert, Button, Input, InputLabel, TextField } from '@mui/material';
 import React, { useEffect, useState } from 'react';
-import { useNotify } from 'react-admin';
-import { useRedirect } from 'react-admin';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import useAxios from '../hooks/axios';
-
-//import { Logo } from './theme/containers/Sidebar/Logo';
-//import IntlMessages from './theme/util/IntlMessages';
+import { FullLayoutMarkup } from 'dash-default-theme';
 
 const getUrlParamsObject = (searchParams: any) => {
 	let params: Record<string, any> = {};
@@ -18,8 +13,16 @@ const getUrlParamsObject = (searchParams: any) => {
 	return Object.keys(params).length > 0 ? params : null;
 };
 
-const ChangePassword = () => {
-	const redirect = useRedirect();
+
+interface ChangePasswordProps {
+    panelSettings: any;
+    onAuthChange?: (authenticated: any) => void;
+}
+
+const ChangePassword: React.FC<ChangePasswordProps> = ({
+    panelSettings,
+}) => {
+	const navigate = useNavigate();
 	let [searchParams] = useSearchParams();
 	const urlQuery: any = getUrlParamsObject(searchParams.entries());
 	const [password, setPassword] = useState('');
@@ -27,11 +30,10 @@ const ChangePassword = () => {
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState('');
 	const { axios } = useAxios();
-	const notify = useNotify();
 
 	useEffect(() => {
-		if (!urlQuery.token || !urlQuery.email) {
-			redirect('/login');
+		if (!urlQuery?.token || !urlQuery?.email) {
+			navigate('/login');
 		}
 	}, []);
 
@@ -47,16 +49,18 @@ const ChangePassword = () => {
 					token: urlQuery?.token,
 					email: urlQuery?.email,
 				});
-				notify(data.message);
-				redirect('/login');
+				//notify(data.message);
+				navigate('/login');
 			} catch (error: any) {
 				console.log(JSON.stringify(error));
-				if (error.status === 422 && typeof error.body.message === 'string')
+				if (error.status === 422 && typeof error.body.message === 'string') {
 					setError(error.body.message);
-				else
-					notify(error?.body?.message || 'Error al cambiar contraseña', {
+                }
+				else {
+					/*notify(error?.body?.message || 'Error al cambiar contraseña', {
 						type: 'error',
-					});
+					});*/
+                }
 			} finally {
 				setLoading(false);
 			}
@@ -66,72 +70,69 @@ const ChangePassword = () => {
 	};
 
 	return (
-		<div className='ant-layout dash-app-layout'>
-			<div className='dash-app-login-wrap'>
-				<div className='dash-app-login-container'>
-					<div className='dash-app-login-main-content'>
-						<div className='dash-app-logo-content'>
-							<div className='dash-app-logo-content-bg'>
-								{/*<img src={"https://via.placeholder.com/272x395"} alt='Neature'/>*/}
-							</div>
-							<div className='dash-app-logo-wid'>
-								{/* <h1><IntlMessages id="app.userAuth.signIn"/></h1>
-                <p><IntlMessages id="app.userAuth.bySigning"/></p>
-    <p><IntlMessages id="app.userAuth.getAccount"/></p>*/}
-							</div>
-							<div className='dash-app-login-logo'>{/* <Logo />*/}</div>
-						</div>
-						<div className='dash-app-login-content'>
-							<form onSubmit={handleSubmit}>
-								<InputLabel id='demo-simple-select-label'>
-									Contraseña
-								</InputLabel>
+		 <FullLayoutMarkup
+            logo={panelSettings?.horizontalLogo}
+            loginBackground={panelSettings?.loginBackground}
+        >
+			<form 
+				onSubmit={handleSubmit} 
+				className="dash-app-login-form"
+				autoComplete="on"
+				method="post"
+			>
+				<h1 className="dash-app-login-form-title">Cambiar Contraseña</h1>
 
-								<Input
-									name='password'
-									type='password'
-									value={password}
-									readOnly={loading}
-									onChange={(e) => {
-										setError('');
-										setPassword(e.target.value);
-									}}
-								/>
-								<br />
-								{error && <span style={{ color: 'red' }}>{error}</span>}
-								<br />
-								<InputLabel id='demo-simple-select-label'>
-									Repetir Contraseña
-								</InputLabel>
+				{error && (
+					<Alert severity="error" sx={{ mb: 2 }}>
+						{error}
+					</Alert>
+				)}
 
-								<Input
-									name='password_confirmation'
-									type='password'
-									value={rePassword}
-									readOnly={loading}
-									onChange={(e) => {
-										setError('');
-										setRePassword(e.target.value);
-									}}
-								/>
-								<br />
-								{error && <span style={{ color: 'red' }}>{error}</span>}
-								<br />
-								<br />
-								<Button
-									type='submit'
-									variant='contained'
-									color='primary'
-									disabled={loading}
-								>
-									{loading ? 'Cargando...' : 'Resetear contraseña'}
-								</Button>
-							</form>
-						</div>
-					</div>
+				<div className="dash-app-form-item">
+					<TextField
+						label="Contraseña"
+						placeholder="Contraseña"
+						required
+						type="password"
+						value={password}
+						onChange={(e) => {
+							setError('');
+							setPassword(e.target.value);
+						}}
+						className="dash-app-form-item-input"
+						disabled={loading}
+					/>
 				</div>
-			</div>
-		</div>
+
+				<div className="dash-app-form-item">
+					<TextField
+						label="Repetir Contraseña"
+						placeholder="Repetir Contraseña"
+						required
+						type="password"
+						value={rePassword}
+						onChange={(e) => {
+							setError('');
+							setRePassword(e.target.value);
+						}}
+						className="dash-app-form-item-input"
+						disabled={loading}
+					/>
+				</div>
+
+				<div className="dash-app-form-item mt-1">
+					<Button
+						type="submit"
+						variant="contained"
+						className="submit"
+						disabled={loading}
+						sx={{ mb: 2, width: '100%' }}
+					>
+						{loading ? 'Cargando...' : 'Cambiar Contraseña'}
+					</Button>
+				</div>
+			</form>
+		</FullLayoutMarkup>
 	);
 };
 

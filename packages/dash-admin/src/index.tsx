@@ -57,6 +57,7 @@ export type {
 export {default as LogFileById} from "./components/logs/LogFileById"
 export {default as LogFile} from "./components/logs/LogFile"
 
+export { default as DASHAuthenticationService } from "./contexts/auth/DASHAuthenticationService"
 
 export * from "./contexts/auth"
 

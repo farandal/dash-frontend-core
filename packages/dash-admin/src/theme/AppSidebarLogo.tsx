@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { JSX } from 'react';
 import { useSelector } from 'react-redux';
 
 import AppLogo from './AppLogo';

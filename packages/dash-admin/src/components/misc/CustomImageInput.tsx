@@ -12,14 +12,14 @@ const CustomImageInputView: React.FC<IDashAutoAdminCustomFieldComponent> = ({
     const record = useRecordContext();
 
     return record ? (
-        <img src={record[attribute.listAttribute]} alt='imagen' />
+        <img src={record[attribute.listAttribute] || ''} alt='imagen' />
     ) : (
         <></>
     );
 };
 const ImagePlaceholder = ({ record, attribute }) => (
     <div style={{ padding: '30px', border: '4px dashed rgba(0, 0, 0, 0.5)', display: 'flex', alignItems: 'center', gap: '10px' }}>
-        <img src={record[attribute.listAttribute]} alt='imagen' />
+        <img src={record?.[attribute.listAttribute] || ''} alt='imagen' />
         <CloudUploadIcon /> 
         Arrástre una imágen o haga click aquí para seleccionar 
     </div>

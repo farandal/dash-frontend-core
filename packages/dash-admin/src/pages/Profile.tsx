@@ -22,9 +22,10 @@ import { useAuthContext } from '../contexts/auth';
 
 const Profile: FC = (_props) => {
 	const [currTab, setCurrTab] = useState('auth/update/info');
+	const [isLoading, setIsLoading] = useState(false);
 	//const { identity, isLoading: identityLoading } = useGetIdentity();
     
-    const { user } = useAuthContext();
+    const { user, fetchAuth } = useAuthContext(); // Add fetchCompleteAuth here
 	const [avatar, setAvatar] = useState({ rawFile: null, urlFile: '' });
 	const notify = useNotify();
 	
@@ -69,6 +70,8 @@ const Profile: FC = (_props) => {
 	};
 
 	const handleSubmit = async (values) => {
+		setIsLoading(true);
+		
 		const formData = new FormData();
 
 		const passwords = {
@@ -90,10 +93,22 @@ const Profile: FC = (_props) => {
 			} else {
 				await axios.put(currTab, passwords);
 			}
-			notify('Usuario actualizado correctamente', { type:'success' });
+			
+			
+			   
+			// Refresh the auth context with updated user data
+			try {
+           debugger;
+				await fetchAuth();
+				console.log('Auth context refreshed after profile update');
+			} catch (authError) {
+				console.error('Faileds to refresh auth context:', authError);
+				// Don't show error to user as the main operation succeeded
+			}
+
+            notify('Usuario actualizado correctamente', { type:'success' });
+			
 			refresh();
-			// const res = await axios.put(`/user/${identity.id}`, {...identity, ...values});
-			// notify('Usuario actualizado correctamente');
 		} catch (error: any) {
 			notify(`Error al actualizar el usuario, ${error?.body?.message || ''}`, {
 				type: 'error',
@@ -106,11 +121,22 @@ const Profile: FC = (_props) => {
 				});
 				return errors;
 			}
+		} finally {
+			setIsLoading(false);
 		}
 	};
 
+	const handleInfoSubmit = () => {
+		setCurrTab('auth/update/info');
+	};
+
+	const handlePasswordSubmit = () => {
+		setCurrTab('auth/update/password');
+	};
+
 	return (
-		<>
+		<div className='dash-profile'>
+       
 			{/*Page Header
       <Row>
         <Col xs={24} md={12}>
@@ -130,14 +156,27 @@ const Profile: FC = (_props) => {
 				>
                    
 					<Card className='dash-card-content dash-module dash-card-profile'>
-						<Grid container>
-							<Grid  md={4}>
+                      
+						<Grid 
+							container 
+							spacing={{ xs: 2, md: 3 }}
+							sx={{ minHeight: '400px' }}
+						>
+							{/* Profile Image Section */}
+							<Grid 
+								size={{ xs: 12, md: 4 }}
+								display="flex"
+								justifyContent="center"
+								alignItems="center"
+							>
 								<CardContent
-									style={{
+									sx={{
 										height: '100%',
 										display: 'flex',
 										flexDirection: 'column',
 										justifyContent: 'center',
+										alignItems: 'center',
+										width: '100%',
 									}}
 								>
 									{/*<div className='dash-profile-img'>
@@ -172,113 +211,148 @@ const Profile: FC = (_props) => {
 										</IconButton>
 											</div>*/}
                                    
-									<SingleImageUploader currentUrl={user?.image_path} onChange={(file:File) => {
-										setAvatar({
-											rawFile: file,
-											urlFile: URL.createObjectURL(file),
-										});
-									}}  />
-									<Typography className='dash-profile-name' variant='h2'>
-										
-										
-									
+									<SingleImageUploader 
+										currentUrl={user?.image_path} 
+										onChange={(file: File) => {
+											setAvatar({
+												rawFile: file,
+												urlFile: URL.createObjectURL(file),
+											});
+										}}  
+                                        classNamePrefix='dash-profile'
+									/>
+									<Typography 
+										className='dash-profile-name' 
+										variant='h2'
+										sx={{ mt: 2, textAlign: 'center' }}
+									>
 										{`${user?.name || ''}`}
 									</Typography>
 									<Typography
 										variant="body2"
-										style={{
+										sx={{
 											display: 'block',
 											textAlign: 'center',
 											fontSize: '14px',
-											opacity: '0.54',
+											opacity: 0.54,
+											mt: 1,
 										}}
 									>
 										{/* Cargo, telefono, etc. */}
 									</Typography>
 								</CardContent>
 							</Grid>
-							<Grid  md={4}>
-								<CardHeader style={{ padding: '16px 25px 0' }} title='Info' />
-								<CardContent style={{ padding: '25px' }}>
-									<div className='dash-mb-4'>
-										<TextInput
-											source='name'
-											label='Nombre'
-											variant='outlined'
-										/>
-									</div>
-									<div className='dash-mb-4'>
-										<TextInput
-											source='lastname'
-											label='Apellido'
-											variant='outlined'
-										/>
-									</div>
-									<div className='dash-mb-4'>
-										<TextInput
-											source='email'
-											label='Email'
-											variant='outlined'
-										/>
-									</div>
 
-									<Button
-										onClick={() => setCurrTab('auth/update/info')}
-										/*loading={
-											isLoading && currTab === 'auth/update/info' ? true : false
-										}
-										loadingPosition='end'*/
-										variant='contained'
-										type='submit'
-									>
-										Guardar
-									</Button>
+							{/* User Info Section */}
+							<Grid size={{ xs: 12, md: 4 }}>
+								<CardHeader 
+									sx={{ padding: '16px 25px 0' }} 
+									title='Info' 
+								/>
+								<CardContent sx={{ padding: '25px' }}>
+									<Grid container spacing={2}>
+										<Grid size={12}>
+											<TextInput
+												source='name'
+												label='Nombre'
+												variant='outlined'
+												fullWidth
+											/>
+										</Grid>
+										<Grid size={12}>
+											<TextInput
+												source='lastname'
+												label='Apellido'
+												variant='outlined'
+												fullWidth
+											/>
+										</Grid>
+										<Grid size={12}>
+											<TextInput
+												source='email'
+												label='Email'
+												variant='outlined'
+												fullWidth
+											/>
+										</Grid>
+										<Grid size={12} sx={{ mt: 2 }}>
+											<Button
+												onClick={handleInfoSubmit}
+												disabled={isLoading}
+												variant='contained'
+												type='submit'
+												fullWidth
+												sx={{
+													position: 'relative',
+													'&.Mui-disabled': {
+														backgroundColor: 'primary.main',
+														opacity: 0.7,
+														color: 'white'
+													}
+												}}
+											>
+												{isLoading && currTab === 'auth/update/info' ? 'Guardando...' : 'Guardar'}
+											</Button>
+										</Grid>
+									</Grid>
 								</CardContent>
 							</Grid>
-							<Grid  md={4}>
+
+							{/* Password Section */}
+							<Grid size={{ xs: 12, md: 4 }}>
 								<CardHeader
-									style={{ padding: '16px 25px 0' }}
+									sx={{ padding: '16px 25px 0' }}
 									title='Contraseñas'
 								/>
-								<CardContent style={{ padding: '25px' }}>
-									<div className='dash-mb-4'>
-										<TextInput
-											type='password'
-											source='current_password'
-											label='Contraseña actual'
-											variant='outlined'
-										/>
-									</div>
-									<div className='dash-mb-4'>
-										<TextInput
-											type='password'
-											source='password'
-											label='Nueva contraseña'
-											variant='outlined'
-										/>
-									</div>
-									<div className='dash-mb-4'>
-										<TextInput
-											label='Repita nueva contraseña'
-											type='password'
-											source='password_confirmation'
-											variant='outlined'
-										/>
-									</div>
-
-									<Button
-										onClick={() => setCurrTab('auth/update/info')}
-										/*loading={
-											isLoading && currTab === 'auth/update/password'
-												? true
-												: false
-										}
-										loadingPosition='end'*/
-										variant='contained'
-										type='submit'
-									>
-										Guardar Contraseñas
-									</Button>
+								<CardContent sx={{ padding: '25px' }}>
+									<Grid container spacing={2}>
+										<Grid size={12}>
+											<TextInput
+												type='password'
+												source='current_password'
+												label='Contraseña actual'
+												variant='outlined'
+												fullWidth
+											/>
+										</Grid>
+										<Grid size={12}>
+											<TextInput
+												type='password'
+												source='password'
+												label='Nueva contraseña'
+												variant='outlined'
+												fullWidth
+											/>
+										</Grid>
+										<Grid size={12}>
+											<TextInput
+												label='Repita nueva contraseña'
+												type='password'
+												source='password_confirmation'
+												variant='outlined'
+												fullWidth
+											/>
+										</Grid>
+										<Grid size={12} sx={{ mt: 2 }}>
+											<Button
+												onClick={handlePasswordSubmit}
+												disabled={isLoading}
+												variant='contained'
+												type='submit'
+												fullWidth
+												sx={{
+													position: 'relative',
+													'&.Mui-disabled': {
+														backgroundColor: 'primary.main',
+														opacity: 0.7,
+														color: 'white'
+													}
+												}}
+											>
+												{isLoading && currTab === 'auth/update/password' ? 'Guardando Contraseñas...' : 'Guardar Contraseñas'}
+											</Button>
+										</Grid>
+									</Grid>
 								</CardContent>
 							</Grid>
 						</Grid>
@@ -289,7 +363,7 @@ const Profile: FC = (_props) => {
 			) : (
 				<Loading />
 			)}
-		</>
+		</div>
 	);
 };
 

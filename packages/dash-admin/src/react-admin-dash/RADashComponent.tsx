@@ -11,7 +11,7 @@ declare global {
 
 const RADashComponent = () => {
     // React admin integration entry point
-    const { identity, isLoading: identityLoading } = useGetIdentity();
+    //const { identity, isLoading: identityLoading } = useGetIdentity();
     const authContext = useAuthContext();
     const dialog = useDialog();
 
@@ -36,11 +36,14 @@ const RADashComponent = () => {
     }, [dialog]);    
 
     // Handle react-admin identity - delegate everything to AuthContext
+    // Deprecated, Dash handles auth now.
+    /*
     useEffect(() => {
         if (!identityLoading && identity) {
             authContext.handleReactAdminIdentity(identity);
         }
     }, [identity, identityLoading, authContext]);
+    */
 
     return null;
 };

@@ -29,12 +29,14 @@ const DarkToggleMode = () => {
   };
   
   return (
+    <>
     <IconMenuItem 
       onClick={onClick}
       leftIcon={darkMode ? <LightMode /> : <DarkMode />}
       label={darkMode ? 'Light Mode' : 'Dark Mode'}
       className='dash-theme-toggle'
     />
+    </>
   );
 };
 

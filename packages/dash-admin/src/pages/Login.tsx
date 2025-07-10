@@ -50,14 +50,7 @@ const MyLoginPage = () => {
 				<div className='dash-app-login-container'>
 					<div className='dash-app-login-main-content'>
 						<div className='dash-app-logo-content'>
-							<div className='dash-app-logo-content-bg'>
-								{/* <img src={"https://via.placeholder.com/272x395"} alt='Neature'/> */}
-							</div>
-							<div className='dash-app-logo-wid'>
-								{/* <h1><IntlMessages id="app.userAuth.signIn"/></h1>
-                                    <p><IntlMessages id="app.userAuth.bySigning"/></p>
-                                    <p><IntlMessages id="app.userAuth.getAccount"/></p>*/}
-							</div>
+						
 							<div className='dash-app-login-logo'>{panelSettings.logo}</div>
 						</div>
 						<div className='dash-app-login-content'>

@@ -1,16 +1,14 @@
 import React, { useEffect, useState } from 'react';
-
-
-import { Button, useRedirect } from 'react-admin';
-import { useStore } from 'react-admin';
+import { Button, useRedirect, useStore } from 'react-admin';
+import { Drawer } from '@mui/material';
 
 import useVirtualHash from '../hooks/useVirtualHash';
 import { IDashAutoAdminResourceConfig } from 'dash-auto-admin';
 import Scrollbar from '../components/scrollbar/Scrollbar';
-import { Drawer } from '@mui/material';
+
 export interface IApplicationLayoutMenuItem {
     title: string;
-    onClick?: Function;
+    onClick?: () => void;
     redirect?: string;
     icon?: string;
 }
@@ -19,153 +17,95 @@ export interface IApplicationLayoutMainAction {
     title: string;
     type?: 'link' | 'text' | 'ghost' | 'default' | 'primary' | 'dashed';
     icon?: string;
-    onClick?: Function;
+    onClick?: () => void;
     redirect?: string;
     fn?: 'redirect' | 'virtualhash';
 }
+
 export interface IApplicationLayout {
     resourceConfig: IDashAutoAdminResourceConfig;
-    position?: 'side' | 'top';
-    children?: any;
-}
-
-export interface IResourceMenu {
-    //children?: React.ReactNode
-    position: 'side' | 'top';
+    children?: React.ReactNode;
 }
 
 const ApplicationLayout: React.FC<IApplicationLayout> = ({
     resourceConfig,
-	/*title, icon, mainAction, menu, list, record, */ position = 'top',
     children,
 }) => {
     const [drawerState, setDrawerState] = useState<boolean>(false);
-    const onToggleDrawer = () => setDrawerState(!drawerState);
     const redirect = useRedirect();
-    const { hash, setVirtualHash } = useVirtualHash();
+    const { setVirtualHash } = useVirtualHash();
     const [, setResourceConfig] = useStore('resourceConfig', resourceConfig);
 
     useEffect(() => {
         setResourceConfig(resourceConfig);
-    }, []);
+    }, [resourceConfig, setResourceConfig]);
 
-    const handleMenuClick = (menuItem, e) => {
-        debugger;
-        menuItem.redirect
-            ? () => {
-                redirect(menuItem.redirect);
-            }
-            : () => menuItem?.onClick();
+    const toggleDrawer = () => setDrawerState(!drawerState);
+
+    const handleMenuClick = (menuItem: IApplicationLayoutMenuItem) => {
+        if (menuItem.redirect) {
+            redirect(menuItem.redirect);
+        } else if (menuItem.onClick) {
+            menuItem.onClick();
+        }
     };
-    const handleMainAction = (e) => {
+
+    const handleMainAction = (e: React.MouseEvent) => {
         e.preventDefault();
-        debugger;
+        
+        if (!resourceConfig.mainAction) return;
 
-        const fn =
-            resourceConfig.mainAction.fn === 'virtualhash'
-                ? setVirtualHash
-                : redirect;
-        resourceConfig.mainAction.redirect
-            ? fn(resourceConfig.mainAction.redirect)
-            : resourceConfig.mainAction?.onClick();
+        const fn = resourceConfig.mainAction.fn === 'virtualhash' ? setVirtualHash : redirect;
+        
+        if (resourceConfig.mainAction.redirect) {
+            fn(resourceConfig.mainAction.redirect);
+        } else if (resourceConfig.mainAction.onClick) {
+            resourceConfig.mainAction.onClick();
+        }
     };
 
-    const ResourceMenu: React.FC<IResourceMenu> = ({
-		/*children,*/ ...props
-    }) => {
-        const menu = Array.isArray(resourceConfig.menu)
-            ? resourceConfig.menu
-            : resourceConfig.menu();
+    const getMenu = () => {
+        if (!resourceConfig.menu) return [];
+        return Array.isArray(resourceConfig.menu) ? resourceConfig.menu : resourceConfig.menu();
+    };
+
+
+    const TopResourceMenu: React.FC = () => {
+        const menu = getMenu();
+
         return (
-            <div className={`dash-module-${position}`}>
-                {position === 'side' && (
-                    <div className={`dash-module-${position}-header`}>
-                        <div className='dash-module-logo'>
-                            {resourceConfig.icon ? (
-                                resourceConfig.icon
-                            ) : (
-                                <i className='icon icon-check-circle-o dash-mr-4' />
-                            )}
-                            {resourceConfig.label}
-                        </div>
-                    </div>
-                )}
-
-                <div className={`dash-module-${position}-content`}>
-                    {position === 'side' && (
-                        <Scrollbar className='dash-module-side-scroll'>
-                            {resourceConfig.mainAction && (
-                                <div className='dash-module-action'>
-                                    <Button
-                                        type={resourceConfig.mainAction?.type}
-                                        className='dash-btn-block'
-                                        onClick={(e) => handleMainAction(e)}
-                                    >
-                                        {resourceConfig.mainAction.title}
-                                    </Button>
-                                </div>
-                            )}
-
-                            {
-                                <ul className='dash-module-nav'>
-                                    {resourceConfig.menu &&
-                                        menu.map((menuItem, index) => (
-                                            <li
-                                                key={index}
-                                                onClick={(e) => handleMenuClick(menuItem, e)}
-                                            >
-                                                {/*<span className={filter.id === this.state.selectedSectionId ? 'dash-link active' : 'dash-link'}>*/}
-                                                <span className={'dash-link'}>
-                                                    <i className={`icon icon-${menuItem?.icon}`} />
-                                                    <span>{menuItem.title}</span>
-                                                </span>
-                                            </li>
-                                        ))}
-                                </ul>
-                            }
-                        </Scrollbar>
+            <div className="dash-module-top">
+                <div className="dash-module-top-content">
+                    {menu.length > 0 && (
+                        <ul className="dash-module-horizontal-nav">
+                            {menu.map((menuItem, index) => (
+                                <li
+                                    key={index}
+                                    onClick={() => handleMenuClick(menuItem)}
+                                >
+                                    <span className="dash-link">
+                                        {menuItem.icon && (
+                                            <i className={`icon icon-${menuItem.icon}`} />
+                                        )}
+                                        <span>{menuItem.title}</span>
+                                    </span>
+                                </li>
+                            ))}
+                        </ul>
                     )}
 
-                    {position === 'top' && (
+                    {resourceConfig.mainAction && (
                         <>
-                            <ul className='dash-module-horizontal-nav'>
-                                {resourceConfig.menu &&
-                                    menu.map((menuItem, index) => (
-                                        <li
-                                            key={index}
-                                            onClick={
-                                                menuItem.redirect
-                                                    ? () => {
-                                                        redirect(menuItem.redirect);
-                                                    }
-                                                    : () => menuItem?.onClick()
-                                            }
-                                        >
-                                            <span className={'dash-link'}>
-                                                <i className={`icon icon-${menuItem?.icon}`} />
-                                                <span>{menuItem.title}</span>
-                                            </span>
-                                        </li>
-                                    ))}
-                            </ul>
-
-                            {resourceConfig.mainAction && (
-                                <div className='dash-module-action'>
-                                    <Button
-                                        type={resourceConfig.mainAction?.type}
-                                        className='dash-btn-block'
-                                        onClick={
-                                            resourceConfig.mainAction.redirect
-                                                ? () => {
-                                                    redirect(resourceConfig.mainAction.redirect);
-                                                }
-                                                : () => resourceConfig.mainAction?.onClick()
-                                        }
-                                    >
-                                        {resourceConfig.mainAction.title}
-                                    </Button>
-                                </div>
-                            )}
+                      
+                        <div className="dash-module-action">
+                            <Button
+                                type={resourceConfig.mainAction.type}
+                                className="dash-btn-block"
+                                onClick={handleMainAction}
+                            >
+                                {resourceConfig.mainAction.title}
+                            </Button>
+                        </div>
                         </>
                     )}
                 </div>
@@ -173,54 +113,37 @@ const ApplicationLayout: React.FC<IApplicationLayout> = ({
         );
     };
 
-    return (
-        <div className='dash-app-module'>
-            {position === 'side' &&
-                (resourceConfig.mainAction || resourceConfig.menu) && (
-                    <>
-                        <div className='dash-d-block dash-d-lg-none'>
-                            <Drawer
-                                placement='left'
-                                closable={false}
-                                visible={drawerState}
-                                onClose={() => onToggleDrawer()}
-                            >
-                                <ResourceMenu position={position} />
-                            </Drawer>
-                        </div>
-                        <div className='dash-module-sidenav dash-d-none dash-d-lg-flex'>
-                            <ResourceMenu position={position} />
-                        </div>
-                    </>
-                )}
+    const hasNavigation = resourceConfig.mainAction || resourceConfig.menu;
 
+    return (
+        <div className="dash-app-module">
+      
             <div
-                className='dash-module-horizontal-box'
+                className="dash-module-horizontal-box"
                 style={!resourceConfig.menu ? { maxWidth: '100%' } : {}}
             >
-                {(resourceConfig.mainAction || resourceConfig.menu) && (
-                    <div className='dash-module-box-header'>
-                        {position === 'top' && (
-                            <div className='dash-module-sidenav dash-d-none dash-d-lg-flex'>
-                                <ResourceMenu position={position} />
-                            </div>
-                        )}
+                {hasNavigation && (
+                    <div className="dash-module-box-header">
+                        {/* Top navigation for desktop */}
+                 
+                        <div className="dash-module-sidenav dash-d-none dash-d-lg-flex">
+                            <TopResourceMenu />
+                        </div>
 
-                        {position === 'side' && (
-                            <span className='dash-drawer-btn dash-d-flex dash-d-lg-none'>
-                                <i
-                                    className='icon icon-menu dash-icon-btn'
-                                    aria-label='Menu'
-                                    onClick={() => onToggleDrawer()}
-                                />
-                            </span>
-                        )}
+                        {/* Mobile menu button */}
+                        <span className="dash-drawer-btn dash-d-flex dash-d-lg-none">
+                            <i
+                                className="icon icon-menu dash-icon-btn"
+                                aria-label="Menu"
+                                onClick={toggleDrawer}
+                            />
+                        </span>
                     </div>
                 )}
 
-                {/*<DASHScrollbars horizontal={true}  >*/}
-                <div className='dash-module-box-content'>{children}</div>
-                {/*</DASHScrollbars>*/}
+                <div className="dash-module-box-content">
+                    {children}
+                </div>
             </div>
         </div>
     );

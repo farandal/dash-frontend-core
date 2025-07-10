@@ -15,3 +15,4 @@ export * from "./setNativeValue"
 export * from "./slugify"
 export * from "./validators"
 export * from './dashDefaultQueryClient';
+export * from './navEvents';

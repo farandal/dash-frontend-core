@@ -1,16 +1,20 @@
-import {
-	INotificationPayload,
-	INotificationPayloadBase,
-} from '../../components/Notifications/notificationFormats';
-
-export interface INotificationBase {
-	notifiable?: any;
-	modelInstance?: any;
-	model?: string;
-	notificationPayload?: any;
-	[key: string]: any;
+export interface IDashNotificationPayloadBase {
+    notifiable?: any;
+    modelInstance?: number;
+    model?: string;
+    targetType?: string;
+    mailSubject?: string;
+    timestamp?: string;
+    targetRoles?: string[];
+    notify: "dialog" | "toast" | "none";
+    type?:string
+    data?:any
 }
 
-export default interface INotification<T> extends INotificationBase {
-	notificationPayload: T;
+export interface IDashNotificationBase<T> {
+    class?: string;
+    title?: string;
+    message?: string;
+    notificationPayload?: T
+
 }

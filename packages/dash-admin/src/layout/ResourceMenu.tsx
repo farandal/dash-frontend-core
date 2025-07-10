@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react';
-import { useRedirect } from 'react-admin';
+import { useRedirect, useRefresh } from 'react-admin';
 import { useDispatch } from 'react-redux';
 import { useLocation } from 'react-router';
 import IAppResourceConfig from '../interfaces/IAppResourceConfig';
 import { IPageState, DASH_REDUX_ACTIONS } from 'dash-admin-state';
 import useVirtualHash from '../hooks/useVirtualHash';
-import { Button } from '@mui/material';
+import { Button, ButtonGroup } from '@mui/material';
 import DashResourceButton from 'dash-auto-admin/src/toolbar/buttons/DashResourceButton';
-
+import RefreshIcon from '@mui/icons-material/Refresh';
 export interface IResourceMenu {
     resourceConfig: IAppResourceConfig;
 }
@@ -69,20 +69,42 @@ const ResourceMenu: React.FC<IResourceMenu> = (props) => {
         setResourceMenu(val);
     }, [loc]);
 
+    const refresh = useRefresh();
+
     return (
         <div className={`dash-module-${resourceMenuPosition}`}>
+           
+                
+                
+            
             {resourceConfig.mainAction && (
                 <div className='dash-module-action'>
-                    <DashResourceButton
-                        resourceConfig={resourceConfig}
-                        mode={resourceConfig.mainAction?.mode || 'create'}  >
-                        <Button
-                            variant='contained'
-                        >
-                            <>{resourceConfig.mainAction.title}</>
-                        </Button>
-                    </DashResourceButton>
-                    {resourceConfig.navActions && resourceConfig.navActions.map((action) => action)}
+
+                        
+                        <ButtonGroup variant="contained">
+
+                           {/* <DashResourceButton
+                                resourceConfig={resourceConfig}
+                                label={"Refrescar"}
+                                mode={resourceConfig.mainAction?.mode || 'custom'}  >
+                                 <Button
+                                onClick={() => refresh()}
+                            >
+                                <RefreshIcon />
+                            </Button>
+                            </DashResourceButton>*/}
+
+
+                            <DashResourceButton
+                                resourceConfig={resourceConfig}
+                                label={resourceConfig.mainAction.title}
+                                mode={resourceConfig.mainAction?.mode || 'create'}  >
+                                <Button>
+                                    <>{resourceConfig.mainAction.title}</>
+                                </Button>
+                            </DashResourceButton>
+                            {resourceConfig.navActions && resourceConfig.navActions.map((action) => action)}
+                        </ButtonGroup>
                 </div>
             )}
             <div className={`dash-module-${resourceMenuPosition}-content`}>
