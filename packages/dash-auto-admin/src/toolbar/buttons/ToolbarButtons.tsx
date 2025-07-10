@@ -41,8 +41,9 @@ export const ToolbarSaveButton:FC<IToolbarButton> = (props) => {
 
 	const { resourceConfig, mode } = props;
 
-	if (!resourceConfig) return <SaveButton/>;
-	if (resourceConfig.toolbarSaveButton) {
+	if (!resourceConfig) { return <SaveButton/>; }
+    if(!resourceConfig.toolbarSaveButton) { return <SaveButton/>; }
+	
 		if (resourceConfig.toolbarSaveButton?.enabled) {
 			if (checkIfModeEnablesButton(resourceConfig.toolbarSaveButton.modes, mode)) {
 				const buttonProps = {
@@ -52,7 +53,7 @@ export const ToolbarSaveButton:FC<IToolbarButton> = (props) => {
 				return resourceConfig.toolbarSaveButton?.component ? <resourceConfig.toolbarSaveButton.component {...buttonProps} />  : <DashAutoAdminSaveButton {...buttonProps} />;
 			}
 		}
-	}
+	
 	return null;
 };
 

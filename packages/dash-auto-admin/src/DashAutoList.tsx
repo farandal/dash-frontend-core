@@ -13,7 +13,6 @@ import DashAutoListDataGridWrapper from './list/DashAutoListDatagridWrapper';
 import DashAutoListActions from './list/DashAutoListActions';
 
 export interface IDashAutoList {
-
 	resourceConfig: IDashAutoAdminResourceConfig;
 	customToolbarElements?: (props: any) => JSX.Element;
 	beforeSubmit?: (data: any) => any;
@@ -24,6 +23,7 @@ export interface IDashAutoList {
 	Pagination?: FC<PaginationProps>;
 	//stickyHeader?: boolean;
 }
+
 const DashAutoList: React.FC<IDashAutoList> = ({
 	resourceConfig,
 	customToolbarElements,
@@ -37,10 +37,48 @@ const DashAutoList: React.FC<IDashAutoList> = ({
 }) => {
 	const { exporter } = resourceConfig;
 
+	// DEBUG: Log the resource configuration
+	useEffect(() => {
+		console.log('📋 DashAutoList DEBUG - Component initialized (fieldProps standardized):', {
+			resourceModel: resourceConfig.model,
+			hasReferenceFilters: !!(resourceConfig.referenceFilters && resourceConfig.referenceFilters.length > 0),
+			referenceFiltersCount: resourceConfig.referenceFilters?.length || 0,
+			referenceFilters: resourceConfig.referenceFilters?.map(f => ({
+				id: f.id,
+				source: f.source,
+				label: f.label,
+				hasReferenceComponent: !!f.referenceComponent,
+				fieldProps: f.fieldProps, // Only fieldProps now
+			})) || [],
+			timestamp: new Date().toISOString()
+		});
+	}, [resourceConfig]);
+
 	if (customToolbarElements) {
 		resourceConfig.customToolbarElements = customToolbarElements;
 	}
+
+	// DEBUG: Log before generating filters
+	console.log('🔧 DashAutoList DEBUG - About to generate filters (fieldProps only):', {
+		resourceModel: resourceConfig.model,
+		referenceFilters: resourceConfig.referenceFilters,
+		timestamp: new Date().toISOString()
+	});
+
 	const autoFilters = autoFiltersGenerator(resourceConfig);
+
+	// DEBUG: Log generated filters
+	console.log('✅ DashAutoList DEBUG - Filters generated (fieldProps standardized):', {
+		resourceModel: resourceConfig.model,
+		filtersCount: autoFilters.length,
+		filters: autoFilters.map((filter, idx) => ({
+			index: idx,
+			key: filter.key,
+			type: filter.type?.name || 'unknown',
+			props: filter.props,
+		})),
+		timestamp: new Date().toISOString()
+	});
 
 	const unselectAll = useUnselectAll(
 		resourceConfig.listProps?.storeKey || resourceConfig.model,
@@ -51,17 +89,16 @@ const DashAutoList: React.FC<IDashAutoList> = ({
 	const [, setHandleLoading] = useState<boolean>(false);
 
 	useEffect(() => {
-		window.addEventListener('dash-global-loader', (e: any) => {
+		const handleGlobalLoader = (e: any) => {
 			if (resourceConfig.model === e.data.resource)
 				setHandleLoading(e.data.value);
-		});
-		return () => {
-			window.removeEventListener('dash-global-loader', (e: any) => {
-				if (resourceConfig.model === e.data.resource)
-					setHandleLoading(e.data.value);
-			});
 		};
-	}, []);
+
+		window.addEventListener('dash-global-loader', handleGlobalLoader);
+		return () => {
+			window.removeEventListener('dash-global-loader', handleGlobalLoader);
+		};
+	}, [resourceConfig.model]);
 
 	const ListActionsWrapper = resourceConfig.listActionsWrapper || DashAutoListDefaultListActionsWrapper;
 
@@ -69,7 +106,7 @@ const DashAutoList: React.FC<IDashAutoList> = ({
 		if (resourceConfig.resetSelectedIdsOnLoad) {
 			unselectAll();
 		}
-	}, []);
+	}, [resourceConfig.resetSelectedIdsOnLoad, unselectAll]);
 
 	// Check if we should show actions
 	const shouldShowActions = () => {
@@ -91,6 +128,14 @@ const DashAutoList: React.FC<IDashAutoList> = ({
 		if (!shouldShowActions()) {
 			return null; // Return null instead of false to avoid empty spans
 		}
+
+		// DEBUG: Log actions rendering
+		console.log('🎬 DashAutoList DEBUG - Rendering actions (fieldProps standardized):', {
+			resourceModel: resourceConfig.model,
+			autoFiltersCount: autoFilters.length,
+			hasCustomToolbarElements: !!resourceConfig.customToolbarElements,
+			timestamp: new Date().toISOString()
+		});
 
 		return (
 			<ListActionsWrapper
@@ -122,6 +167,16 @@ const DashAutoList: React.FC<IDashAutoList> = ({
 		...(exporter && { exporter: exporter }),
 		...(resourceConfig.bulkActionButtons && { bulkActionButtons: resourceConfig.bulkActionButtons }),
 	};
+
+	// DEBUG: Log final list props
+	console.log('🚀 DashAutoList DEBUG - Final list props (fieldProps standardized):', {
+		resourceModel: resourceConfig.model,
+		finalListProps: {
+			...finalListProps,
+			actions: !!finalListProps.actions ? 'rendered' : 'null',
+		},
+		timestamp: new Date().toISOString()
+	});
 
 	if (!finalListProps) return <></>;
 	

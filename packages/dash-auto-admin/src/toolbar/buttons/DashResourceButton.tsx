@@ -7,7 +7,7 @@ import {
     useResourceContext,
     useRecordContext,
     useRedirect,
-   
+
 } from 'react-admin';
 
 import {
@@ -19,7 +19,7 @@ import {
 
 import useVirtualHash from '../../hooks/useVirtualHash';
 import IDashAutoAdminResourceConfig from '../../interfaces/IDashAutoAdminResourceConfig';
-import { IconButton } from '@mui/material';
+import { IconButton, Tooltip } from '@mui/material';
 
 import { Add, Edit, Visibility, Delete } from '@mui/icons-material'
 import { DeleteWithConfirmButton } from 'react-admin';
@@ -32,7 +32,7 @@ interface Props<RecordType extends RaRecord = any> {
     resource?: string;
     navigate?: (record?: RecordType) => string;
     navigation?: 'redirect' | 'virtualhash';
-    mode: 'show' | 'create' | 'edit' | 'destroy';
+    mode: 'show' | 'create' | 'edit' | 'destroy' | 'custom';
     size?: 'small' | 'medium' | 'large';
     scrollToTop?: boolean;
     resourceConfig?: IDashAutoAdminResourceConfig;
@@ -81,7 +81,7 @@ const DashResourceButton = <RecordType extends RaRecord = any>(
 
     const resource = _inputResource || useResourceContext();
     const record = _inputRecord || useRecordContext();
-    if(!size) { size = 'small' }
+    if (!size) { size = 'small' }
 
     /*if(navigate && !mode) {
         mode = inferModeFromUrl(navigate(record));
@@ -115,6 +115,10 @@ const DashResourceButton = <RecordType extends RaRecord = any>(
         e.preventDefault();
         e.stopPropagation();
 
+        if(componentProps.onClick) {
+          componentProps.onClick(e);
+          return;
+        }
         if (navigation === 'virtualhash') {
 
             const vhash = navigate(record);
@@ -136,37 +140,48 @@ const DashResourceButton = <RecordType extends RaRecord = any>(
     };
 
     const _styles = size === 'small' ? {
-            '& .MuiButton-startIcon': { margin: 0 },
-            '& .MuiButton-text': { paddingLeft: '4px' },
-            borderRadius: '50% !important',
-            padding: 0,
-            minWidth: '35px',
-            width: '35px',
-            height: '35px',
-            overflow: 'hidden'
+        '& .MuiButton-startIcon': { margin: 0 },
+        '& .MuiButton-text': { paddingLeft: '4px' },
+        borderRadius: '50% !important',
+        padding: 0,
+        minWidth: '35px',
+        width: '35px',
+        height: '35px',
+        overflow: 'hidden'
     } : {}
 
     const _label = size === 'small' ? '' : props?.label;
-
-    if(mode === "destroy") {
-        return <><DeleteWithConfirmButton label={_label} sx={{ ..._styles }}  size={size} record={record} /></>
+    
+    if (mode === "destroy") {
+        return <Tooltip title={props?.label}><DeleteWithConfirmButton label={_label} sx={{ ..._styles }} size={size} record={record} /></Tooltip>
+    } else if (mode === "custom") {
+        // Remove title prop from rest to avoid conflict with Tooltip
+        const { title, ...restWithoutTitle } = rest as any;
+        return <Tooltip title={props?.label}><ComponentType
+            onClick={(e) => handleOnClick(e)}
+            state={scrollStates[String(scrollToTop)]}
+            size={size}
+            {...restWithoutTitle}
+        /></Tooltip>
     } else {
-        return <ComponentType
-                onClick={(e) => handleOnClick(e)}
-                state={scrollStates[String(scrollToTop)]}
-                size={size}
-                {...(rest as any)}
-            //alt={`${navigation} to ${mode}`}
-            >
-               
-                {mode === 'edit' ? <Edit/>:
-                    mode === 'show' ? <Visibility/> :
-                        mode === 'create' ? <Add/> :
-                            mode}
+        // Remove title prop from rest to avoid conflict with Tooltip
+        const { title, ...restWithoutTitle } = rest as any;
+        const button = <ComponentType
+            onClick={(e) => handleOnClick(e)}
+            state={scrollStates[String(scrollToTop)]}
+            size={size}
+            {...restWithoutTitle}
+        >
+            {mode === 'edit' ? <Edit /> :
+                mode === 'show' ? <Visibility /> :
+                    mode === 'create' ? <Add /> :
+                        mode}
+        </ComponentType>
 
-            </ComponentType>
+        return <Tooltip title={props?.label || ''}>
+            {button}
+        </Tooltip>;
     }
-
 };
 
 DashResourceButton.propTypes = {

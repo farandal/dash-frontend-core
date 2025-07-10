@@ -165,7 +165,7 @@ const AttributeToInput = (
     const record = useRecordByMethod(method, options?.mode);
     const location = useLocation();
     const params = useParams();
-    
+
     const typeComponentMapper = (type: string) => {
         const component = components[type];
 
@@ -383,7 +383,7 @@ const AttributeToInput = (
                         >
                             <CustomComponent
                                 optionText={safeIfNull}
-                                method={method} // edit because its AttributeToInput we need to assure is edit or create
+                                method={'edit'} // edit because its AttributeToInput
                                 attribute={input}
                                 onChange={e => {
                                     if (options?.handleChange) {
@@ -498,7 +498,7 @@ const AttributeToInput = (
                     >
                         <CustomComponent
                             optionText={sourceName}
-                            method={method} // edit because its AttributeToInput
+                            method={'edit'} // edit because its AttributeToInput
                             attribute={input}
                             label={input?.label || ''}
                             {...input.fieldProps}

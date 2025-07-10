@@ -326,8 +326,9 @@ export default interface IDashAutoAdminResourceConfig {
 	AutoCreateBottomToolbarElements?: (
 		resourceConfig: IDashAutoAdminResourceConfig,
 	) => React.ReactElement;
-
+    topToolbarButtons?: boolean; // Uses the bottom toolbar button in the top toolbar.
     // Extended Resource Props from reactAdmin:
     recordRepresentation?: string;
+    syncTabsWithLocation?: boolean;
 
 }

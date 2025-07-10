@@ -32,7 +32,7 @@ export function isCompositeTypeElement(element) {
 export default isReactComponent;
 
 /*const isComponent = (Component) => {
-    debugger;
+    
     if (typeof Component === "undefined") return false;
     return !!Component.name
     return (

@@ -5,6 +5,7 @@ import {
 	SelectArrayInputProps,
 	AutocompleteArrayInputProps,
 } from 'react-admin/src';
+
 /**
  * IReferenceFilter.
  *
@@ -38,8 +39,8 @@ export default interface IReferenceFilter {
 	| FC<AutocompleteArrayInputProps>
 	| FC<any>;
 	/**
-	 * TODO: rename to referenceFieldProps
-	 * props for the reference component, by default <SelectInput/> | <SelectArrayInput/> for single o multiple select filter.
+	 * Props for the reference component, by default <SelectInput/> | <SelectArrayInput/> for single o multiple select filter.
+	 * This includes props for custom components when using referenceComponent.
 	 */
 	fieldProps?: any;
     slotProps?: any;
@@ -50,4 +51,5 @@ export default interface IReferenceFilter {
 	inputOptions?: any;
 	/** Specify if the selection is multiple or single. */
 	multiple?: boolean;
+
 }

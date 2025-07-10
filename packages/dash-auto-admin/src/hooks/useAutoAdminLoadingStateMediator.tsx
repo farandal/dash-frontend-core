@@ -14,7 +14,7 @@ const useAutoAdminLoadingStateMediator = (origin?: string) => {
 				localState[0].origin === origin &&
 				useAutoAdminLoadingState[1](localState[0].data)
 			) {
-				//debugger; // eslint-disable-line no-debugger
+				 // eslint-disable-line no-debugger
 				return;
 			}
 		}

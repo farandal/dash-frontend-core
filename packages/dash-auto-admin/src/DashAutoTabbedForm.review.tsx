@@ -13,7 +13,7 @@ import { DashAutoFormLayout } from '.';
 import { useDataProvider } from 'react-admin';
 
 import { IDashAutoAdminForm } from './DashAutoAdminForm';
-
+import axios from 'axios';
 import { useSelector } from 'react-redux';
 import { IDASHAppState } from 'dash-admin-state';
 import { Loading } from 'react-admin';
@@ -158,7 +158,6 @@ const DashAutoTabbedForm: React.FC<IDashAutoTabbedForm> = ({
 			<SimpleForm
 				key="create-form"
 				//redirect={false}
-                
 				toolbar={toolbar || null}
 				onSubmit={onSave}
 				validate={validate(resourceConfig.schema)}
@@ -166,7 +165,6 @@ const DashAutoTabbedForm: React.FC<IDashAutoTabbedForm> = ({
 				className={'auto-admin-grouped-form'}
              
 			>
-                
 				{resourceConfig.createComponent(resourceConfig)}
 			</SimpleForm>
 		);
@@ -185,7 +183,6 @@ const DashAutoTabbedForm: React.FC<IDashAutoTabbedForm> = ({
 				className={'auto-admin-grouped-form'}
                
 			>
-               
 				{resourceConfig.editComponent(resourceConfig)}
 			</SimpleForm>
 		);
@@ -196,7 +193,6 @@ const DashAutoTabbedForm: React.FC<IDashAutoTabbedForm> = ({
        
 		return (
 			<>
-            
 			<TabbedForm
 				key="tabbed-form"
 				toolbar={toolbar || null}
@@ -209,7 +205,6 @@ const DashAutoTabbedForm: React.FC<IDashAutoTabbedForm> = ({
                 defaultValues={mode === "create" ? formData : {...record,...formData}}
                 
 			>
-               
                 {/* It has to be a function and not a Functional component, because it returns an array of JSX elements without parent container */}
                 {/* The downside, is can't implement hooks within the DashAutoFormTabs component */}
 				{DashAutoFormTabs({

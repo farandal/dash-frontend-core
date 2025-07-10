@@ -1,5 +1,5 @@
 import FabButton from '../common/components/FabButton';
-import { SavedQueriesList, useListContext, useUnselectAll } from 'react-admin/src';
+import { SavedQueriesList, useListContext, useRefresh, useUnselectAll } from 'react-admin/src';
 import { TopToolbar, FilterForm } from 'react-admin/src';
 import IDashAutoAdminResourceConfig from '../interfaces/IDashAutoAdminResourceConfig';
 import { FC, ReactNode } from 'react';
@@ -11,6 +11,7 @@ import KeyboardArrowUp from '@mui/icons-material/KeyboardArrowUp';
 import KeyboardArrowDown from '@mui/icons-material/KeyboardArrowDown';
 import Search from '@mui/icons-material/Search';
 import { ToolbarCreateButton, ToolbarExportButton } from '../toolbar/buttons/ToolbarButtons';
+import { Refresh } from '@mui/icons-material';
 
 export interface IToolbarFilters {
 	resourceConfig: IDashAutoAdminResourceConfig;
@@ -76,13 +77,16 @@ const DashAutoListTopToolbar: FC<IDashAutoListTopToolbar> = (props) => {
 	type FilterComponentHandle = React.ElementRef<React.ForwardRefExoticComponent<IToolbarFilters & React.RefAttributes<IToolbarFiltersHandler>>>;
 
 	const ref = React.useRef<FilterComponentHandle>(null); 
-
+    const refresh = useRefresh();
 	const clearFilters = () => {
 		unselectAll();
 		setFilters({}, []);
 		ref.current?.reset();
 	};
     
+    const refreshList = () => {
+        refresh();
+    };
 
 	return  <div>
 
@@ -166,6 +170,19 @@ const DashAutoListTopToolbar: FC<IDashAutoListTopToolbar> = (props) => {
 				gap: 1,
                 padding: 1
 			}}>
+            <FabButton
+					onClick={refreshList}
+					size='small'
+					aria-label='refresh'
+					color='primary'
+					icon={<Refresh sx={{ fontSize: '1rem' }} />}
+					tooltip={'Refrescar'}
+                    style={{
+						width: '30px',
+						height: '30px',
+						minHeight: '30px'
+					}}
+				/>
             {countFilters && autoFilters ? (
 				<FabButton
 					onClick={clearFilters}

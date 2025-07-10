@@ -3,7 +3,7 @@ import IAutoForm from './interfaces/IDashAutoForm';
 import AutoTabbedForm from './DashAutoTabbedForm';
 import { TopToolbar, Edit, Toolbar } from 'react-admin';
 import React from 'react';
-import { ToolbarCreateButton, ToolbarDeleteButton, ToolbarEditButton, ToolbarExportButton, ToolbarListButton } from './toolbar/buttons/ToolbarButtons';
+import { ToolbarCreateButton, ToolbarDeleteButton, ToolbarEditButton, ToolbarExportButton, ToolbarListButton, ToolbarSaveButton } from './toolbar/buttons/ToolbarButtons';
 import { BottomToolbarDeleteButton, BottomToolbarSaveButton } from './toolbar/buttons/BottomToolbarButtons';
 
 const DashAutoEdit: React.FC<IAutoForm> = ({
@@ -20,11 +20,13 @@ const DashAutoEdit: React.FC<IAutoForm> = ({
 	const EditActions: React.FC = ({ ...props }) => {
 
 		const _isDrawer = !!resourceConfig.drawer;
-
+        // Top Toolbar
 		return <TopToolbar sx={{ mb:2 }}  {...props}>
 			{resourceConfig?.AutoEditTopToolbarElements ? (
 				resourceConfig.AutoEditTopToolbarElements(resourceConfig)
 			) : null}
+
+            {/* Save button can't be here */}
 			{!_isDrawer && <ToolbarListButton mode='edit' resourceConfig={resourceConfig}/>}
 			{!_isDrawer && <ToolbarEditButton mode='edit' resourceConfig={resourceConfig}/>}
 			{!_isDrawer && <ToolbarCreateButton mode='edit' resourceConfig={resourceConfig}/>}
@@ -34,6 +36,7 @@ const DashAutoEdit: React.FC<IAutoForm> = ({
 		
 	};
 
+    // Bottom Toolbar
 	const EditToolbar: React.FC = ({ ...props }) => {
 
 		return (
@@ -49,6 +52,7 @@ const DashAutoEdit: React.FC<IAutoForm> = ({
 							resourceConfig.toolbarSaveButton?.props)}
 					/>
 				)*/}
+                
 				<BottomToolbarSaveButton mode='edit' resourceConfig={resourceConfig} onError={onError} onSubmit={onSubmit} />
 				<BottomToolbarDeleteButton mode='edit' resourceConfig={resourceConfig} onError={onError} onSubmit={onSubmit} />
 				{/*evalActionPermission(

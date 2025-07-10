@@ -25,6 +25,54 @@ export const generateFilter = (
 		date = false,
 	} = r;
 
+	// DEBUG: Log the filter configuration
+	console.log('🔧 DashAutoFiltersGenerator DEBUG - generateFilter called:', {
+		idx,
+		label,
+		source,
+		reference,
+		hasReferenceComponent: !!referenceComponent,
+		fieldProps,
+		timestamp: new Date().toISOString()
+	});
+
+	if (referenceComponent && !reference) {
+		console.log('🔧 DashAutoFiltersGenerator DEBUG - Rendering with reference component (no reference):', {
+			idx,
+			source,
+			label,
+			referenceComponent: referenceComponent.name,
+			fieldProps,
+			timestamp: new Date().toISOString()
+		});
+		
+		const ReferenceComponent = referenceComponent;
+		
+		// Use only fieldProps for all component props
+		const finalProps = {
+			source,
+			label,
+			alwaysOn,
+			...fieldProps, // fieldProps contains all component-specific props
+		};
+
+		console.log('🔧 DashAutoFiltersGenerator DEBUG - Final props for reference component (DETAILED):', {
+			idx,
+			source,
+			label,
+			finalProps,
+			fieldPropsResource: fieldProps?.resource,
+			timestamp: new Date().toISOString()
+		});
+		
+		return (
+			<ReferenceComponent
+				key={idx}
+				{...finalProps}
+			/>
+		);
+	}
+
 	// If not reference provided uses SelectArrayInput if multiple, or SelectInput if not.
 	let ReferenceComponent = referenceComponent || SelectInput;
 
@@ -33,20 +81,18 @@ export const generateFilter = (
 			ReferenceComponent = SelectArrayInput;
 		}
 
-		return (
-			<ReferenceComponent
-				choices={reference}
-				label={label}
-				source={source}
-				alwaysOn={alwaysOn}
-				{...fieldProps}
-			/>
-		);
-	}
+		console.log('🔗 DashAutoFiltersGenerator DEBUG - Rendering with object reference:', {
+			idx,
+			source,
+			label,
+			reference,
+			ReferenceComponent: ReferenceComponent.name,
+			timestamp: new Date().toISOString()
+		});
 
-	if (!reference && referenceComponent) {
 		return (
 			<ReferenceComponent
+				key={idx}
 				choices={reference}
 				label={label}
 				source={source}
@@ -57,6 +103,17 @@ export const generateFilter = (
 	}
 
 	if (reference) {
+		console.log('🔗 DashAutoFiltersGenerator DEBUG - Rendering ReferenceInput:', {
+			idx,
+			source,
+			label,
+			reference,
+			ReferenceComponent: ReferenceComponent.name,
+			inputOptions,
+			fieldProps,
+			timestamp: new Date().toISOString()
+		});
+		
 		return (
 			<ReferenceInput
 				key={idx}
@@ -77,8 +134,17 @@ export const generateFilter = (
 	}
 
 	if (date) {
+		console.log('📅 DashAutoFiltersGenerator DEBUG - Rendering DateInput:', {
+			idx,
+			source,
+			label,
+			fieldProps,
+			timestamp: new Date().toISOString()
+		});
+		
 		return (
 			<DateInput
+				key={idx}
 				placeholder='Date'
 				label={label}
 				source={source}
@@ -88,8 +154,18 @@ export const generateFilter = (
 		);
 	}
 
+	console.log('📝 DashAutoFiltersGenerator DEBUG - Rendering TextInput (default):', {
+		idx,
+		source,
+		label,
+		fieldProps,
+		slotProps,
+		timestamp: new Date().toISOString()
+	});
+
 	return (
 		<TextInput
+			key={idx}
 			label={label}
 			source={source}
 			alwaysOn={alwaysOn}
@@ -105,6 +181,19 @@ const dashAutoFiltersGenerator = (
 	const referenceFilters: IReferenceFilter[] =
 		resourceConfig?.referenceFilters || [];
 	const filters: JSX.Element[] = [];
+
+	console.log('🏭 DashAutoFiltersGenerator DEBUG - dashAutoFiltersGenerator called:', {
+		resourceConfig: resourceConfig?.model || 'unknown',
+		filtersCount: referenceFilters.length,
+		filters: referenceFilters.map(f => ({
+			id: f.id,
+			source: f.source,
+			label: f.label,
+			hasReferenceComponent: !!f.referenceComponent,
+			fieldProps: f.fieldProps
+		})),
+		timestamp: new Date().toISOString()
+	});
 
 	if (referenceFilters && referenceFilters.length > 0) {
 		referenceFilters.forEach((r, idx) => {

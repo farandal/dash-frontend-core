@@ -88,7 +88,7 @@ const DashAutoFormTabs = ({
     }, [formData, setValue]);*/
 
     /*useEffect(() => {
-        debugger;
+        
         dispatch({ type: CLEAR_FORM_DATA });
     },[])*/
 
