@@ -17,19 +17,15 @@
     "dev:ngrok": "cd apps/dash && yarn dev:ngrok",
     "dev-win": "cd apps/dash && yarn dev-win",
     "build": "rimraf node_modules/.turbo node_modules/.vite && turbo build --filter=!./packages/react-18-beautiful-dnd-grid --force",
-    "build-win": "rimraf node_modules/.turbo node_modules/.vite && turbo build --filter=!./packages/react-18-beautiful-dnd-grid --force",    
+    "build-win": "rimraf node_modules/.turbo node_modules/.vite && turbo build --filter=!./packages/react-18-beautiful-dnd-grid --force",
     "android": "NODE_ENV=staging turbo build && cap run android",
     "android-prod": "NODE_ENV=production turbo build && cap run android",
     "electron-icons": "electron-icon-builder --input=./apps/dash/src/assets/logo.png --output=./",
-
     "electron-dev:local": "vite build -c electron.vite.config.ts && cross-env NODE_ENV=development BUILD_ENV=dev concurrently \"cd apps/dash && yarn dev:desktop:local &\" \"wait-on http://127.0.0.1:3006 && electron .\"",
     "electron-dev:prod": "vite build -c electron.vite.config.ts && cross-env NODE_ENV=development BUILD_ENV=prod concurrently \"cd apps/dash && yarn dev:desktop:prod &\" \"wait-on http://127.0.0.1:3006 && electron .\"",
-   
-    "electron-prod": "electron-icon-builder --input=./apps/dash/src/assets/logo.png --output=./  && cross-env BUILD_ENV=prod IS_ELECTRON=true vite build -c electron.vite.config.ts && cross-env NODE_ENV=production BUILD_ENV=prod IS_ELECTRON=true yarn build &&  electron-builder --config electron-builder.config.js",   
-
+    "electron-prod": "electron-icon-builder --input=./apps/dash/src/assets/logo.png --output=./  && cross-env BUILD_ENV=prod IS_ELECTRON=true vite build -c electron.vite.config.ts && cross-env NODE_ENV=production BUILD_ENV=prod IS_ELECTRON=true yarn build &&  electron-builder --config electron-builder.config.js",
     "electron-dev-win": "vite build -c electron.vite.config.ts && cross-env NODE_ENV=development BUILD_ENV=dev concurrently --kill-others --raw \"cd apps/dash && yarn dev-win\" \"wait-on -v http://127.0.0.1:3006 && electron .\"",
     "electron-prod-win": "electron-icon-builder --input=./apps/dash/src/assets/logo.png --output=./ && yarn build-win &&  cross-env NODE_ENV=production BUILD_ENV=prod IS_ELECTRON=true vite build -c electron.vite.config.ts && electron-builder --config electron-builder.config.js",
-   
     "electron-preview": "vite preview",
     "electron-pree2e": "vite build --mode=test",
     "resources": "chmod +x ./resources.sh && ./resources.sh",
@@ -50,6 +46,7 @@
     "types:check": "turbo run types:check"
   },
   "dependencies": {
+    "@capacitor/keyboard": "^7.0.1",
     "@types/sound-play": "^1.1.3",
     "dash-eslint": "*",
     "dash-prettier": "*",
@@ -71,6 +68,7 @@
     "@types/react-dom": "latest",
     "autoprefixer": "latest",
     "capacitor-resources": "^2.0.5",
+    "capacitor-voice-recorder": "^7.0.6",
     "concurrently": "^9.1.2",
     "depcheck": "latest",
     "electron": "^35.1.5",
@@ -121,6 +119,7 @@
   },
   "resolutions": {
     "react": "19.1.0",
-    "react-dom": "19.1.0"
+    "react-dom": "19.1.0",
+    "query-string": "7.1.3"
   }
 }
