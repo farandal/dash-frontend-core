@@ -11,7 +11,7 @@ export interface ISingleImageUploader {
 
 const SingleImageUploader:FC<ISingleImageUploader> = (props) => {
 
-	const { classNamePrefix, currentUrl = 'single-image-uploader', onChange } = props;
+	const { classNamePrefix = 'default', currentUrl = 'single-image-uploader', onChange } = props;
 
 	const [localFile, setLocalFile] = useState(null);
 

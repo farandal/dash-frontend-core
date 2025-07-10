@@ -10,6 +10,8 @@ import {
 
 import { Button } from '@mui/material';
 import  ErrorOutline  from '@mui/icons-material/ErrorOutline'
+import { useNavigate } from 'react-router';
+import { DASHAuthenticationService } from 'dash-admin';
 function goBack() {
 	window.history.go(-1);
 }
@@ -21,101 +23,65 @@ const sanitizeRestProps = ({
 	match,
 	...rest
 }) => rest;
-
-
-const NotFound: CatchAllComponent = (props) => {
+	const NotFound: CatchAllComponent = (props: { title?: TitleComponent } & { time?: number; redirect?: string | null }) => {
 	const { title, ...rest } = props;
-	const translate = useTranslate();
-	//useAuthenticated();
+	const { time = false, redirect = null} = rest;
+	
+    const [countdown, setCountdown] = React.useState<number>(time || 0);
+    const navigate = useNavigate();
+    React.useEffect(() => {
+        if (typeof time === 'number') {
+            const timer = setInterval(() => {
+                setCountdown((prev) => {
+                    if (prev <= 1) {
+                        const currentPath = window.location.pathname;
+                        navigate(`${redirect || '/'}?redirect=${encodeURIComponent(currentPath)}`);
+                        return 0;
+                    }
+                    return prev - 1;
+                });
+            }, 1000);
+            return () => clearInterval(timer);
+        }
+    }, [time, navigate, redirect]);
+
+    React.useEffect(() => {
+       //DASHAuthenticationService.setPendingRedirect(window.location.pathname);
+    });
+	
 	return (
 		<div
-			className={'dash-app-module ' + NotFoundClasses.wrapper}
+			className={'dash-app-module not-found'}
 			{...sanitizeRestProps(rest as any)}
 		>
 			<div className='dash-app-notfound'>
 				<div className='dash-app-notfound-img'>
-					
                     <ErrorOutline sx={{ fontSize: 300 }} />
 				</div>
 				<div className='dash-app-notfound-content'>
-					<h1>{translate('ra.page.not_found')}</h1>
-					<span>{translate('ra.message.not_found')}.</span>
-					<Button
+					<h1>Oops!</h1>
+					<span>No encontramos este enlace.</span>
+                    
+                                        {time && (
+                                            <p style={{ fontSize: '0.9em', color: '#666' }}>
+                                                Serás redirigido en {countdown} segundos...
+                                            </p>
+                                        )}
+                    
+                    <Button
 						color={'primary'}
-						// icon={<HistoryOutlined />}
+						//icon={<HistoryOutlined />}
 						onClick={goBack}
 					>
-						{/* {translate('ra.action.back')} */}
+						
 						Aceptar
 					</Button>
 				</div>
 
-				{/* <Title defaultTitle={title} />
-                <div className={NotFoundClasses.message}>
-                    <FrownOutlined className={NotFoundClasses.icon} />
-                    <h1>{translate('ra.page.not_found')}</h1>
-                    <div>{translate('ra.message.not_found')}.</div>
-                </div>
-                <div className={NotFoundClasses.toolbar}>
-                    <DASHButton
-                        icon={<HistoryOutlined />}
-                        onClick={goBack}
-                    >
-                        {translate('ra.action.back')}
-                    </DASHButton>
-                </div> */}
 			</div>
 		</div>
 	);
 
-	{
-		/*<Space direction="vertical" style={{ width: '100%' }}>
-        <DASHAlert
-        message={translate('ra.page.not_found')}
-        description={translate('ra.message.not_found')}
-        action={ <DASHButton
-            icon={<HistoryOutlined />}
-            onClick={goBack}
-        >
-            {translate('ra.action.back')}
-        </DASHButton>}
-        type="error"
-        />
-        </Space>*/
-	}
-
-	{
-		/*<DASHCard
-            //title={title}
-            title={translate('ra.page.not_found')}
-            actions={[
-                <DASHButton
-                    icon={<HistoryOutlined />}
-                    onClick={goBack}
-                >
-                    {translate('ra.action.back')}
-                </DASHButton>
-            ]}
-        >
-            <Title defaultTitle={title} />
-            <div className={NotFoundClasses.message}>
-                <FrownOutlined className={NotFoundClasses.icon} />
-                {
-                //<h1>{translate('ra.page.not_found')}</h1>
-                }
-                <div>{translate('ra.message.not_found')}.</div>
-            </div>
-            </DASHCard>*/
-	}
-};
-
-const PREFIX = 'RaNotFound';
-
-export const NotFoundClasses = {
-	wrapper: `${PREFIX}-wrapper`,
-	icon: `${PREFIX}-icon`,
-	message: `${PREFIX}-message`,
-	toolbar: `${PREFIX}-toolbar`,
 };
 
 

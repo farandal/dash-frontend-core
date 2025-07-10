@@ -22,4 +22,7 @@ export { default as ListActive } from './components/ListActive/ListActive';
 // Custom Components
 
 export { default as JsonColorSelector } from './components/JsonColorSelector/JsonColorSelector'
+export { default as JsonColorSelectorEnhanced } from './components/JsonColorSelector/JsonColorSelectorEnhanced'
+//export { default as useAsyncColorThief } from ''
 export { default as Json } from './components/Json/Json'
+export { default as JsonCssVarValues } from './components/JsonColorSelector/JsonCssVarValues'

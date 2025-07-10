@@ -4,7 +4,7 @@ import { useLocaleState, useLocales } from 'ra-core';
 import { Avatar, useMediaQuery, useTheme } from '@mui/material';
 import LanguageIcon from '@mui/icons-material/Translate';
 import ReactDOM from 'react-dom';
-
+import { useWindowSize } from 'dash-admin';
 const DefaultIcon = <LanguageIcon />;
 
 export interface LanguageSwitcherButtonProps {
@@ -27,6 +27,7 @@ const LanguageSwitcher = (props: LanguageSwitcherButtonProps) => {
     const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 });
     const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+    const windowSize = useWindowSize();
     useEffect(() => {
         if(document.body.classList.contains('webview')) {
             setWebView(true)
@@ -45,28 +46,27 @@ const LanguageSwitcher = (props: LanguageSwitcherButtonProps) => {
         setOpen(false);
     };
 
-    const calculateMenuPosition = () => {
-        if (avatarRef.current) {
-            const rect = avatarRef.current.getBoundingClientRect();
-            const menuWidth = 200; // minWidth from styles
-            
-            let left = rect.left + window.scrollX;
-            
-            // Ensure menu doesn't go off-screen
-            const viewportWidth = window.innerWidth;
-            if (left + menuWidth > viewportWidth) {
-                left = viewportWidth - menuWidth - 10; // 10px margin
-            }
-            if (left < 10) {
-                left = 10; // 10px margin
-            }
-            
-            setMenuPosition({ 
-                top: rect.top + window.scrollY + 30, 
-                left: left
-            });
+  const calculateMenuPosition = () => {
+    if (avatarRef.current && windowSize.width) {
+        const rect = avatarRef.current.getBoundingClientRect();
+        const menuWidth = 200; // minWidth from styles
+        
+        let left = rect.left + window.scrollX;
+        
+        // Ensure menu doesn't go off-screen using windowSize
+        if (left + menuWidth > windowSize.width) {
+            left = windowSize.width - menuWidth - 10; // 10px margin
         }
-    };
+        if (left < 10) {
+            left = 10; // 10px margin
+        }
+        
+        setMenuPosition({ 
+            top: rect.top + window.scrollY + 30, 
+            left: left
+        });
+    }
+};
 
     const handleLanguageMouseEnter = (e: React.MouseEvent<HTMLDivElement>) => {
         e.preventDefault();
