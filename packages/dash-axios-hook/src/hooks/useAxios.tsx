@@ -50,24 +50,32 @@ export const initAxios = (
         }),
     );
 
-
 			return Promise.reject(error);
 		},
-
-
-
 	);
 
 	return instance;
 };
 
-const useAxios = (options?:Partial<AxiosRequestConfig<any>>) => {
-
+// Hook version (for use in React components)
+const useAxios = (options?: Partial<AxiosRequestConfig<any>>) => {
 	const a = initAxios({
 		baseURL: DASHAdminSystemConstants.system.ADMIN_API_URL,
-    ...(options) && {...options}
+		...(options) && {...options}
 	});
 	return a;
 };
 
+// Non-hook version (for use in classes and regular functions)
+export const createAxiosInstance = (options?: Partial<AxiosRequestConfig<any>>) => {
+	return initAxios({
+		baseURL: DASHAdminSystemConstants.system.ADMIN_API_URL,
+		...(options) && {...options}
+	});
+};
+
+// Default export is the hook
 export default useAxios;
+
+// Named export for non-hook usage
+export { useAxios };
