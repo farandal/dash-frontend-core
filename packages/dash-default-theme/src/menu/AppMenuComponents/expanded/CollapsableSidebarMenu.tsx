@@ -91,7 +91,7 @@ const CollapsableSidebarMenu = ({
           />
         )}
         {navExpanded &&
-          (localOpen ? <ExpandLessOutlinedIcon /> : <ExpandMoreOutlinedIcon />)}
+          (localOpen ? <ExpandLessOutlinedIcon className='expand-icon less' /> : <ExpandMoreOutlinedIcon  className='expand-icon more' />)}
       </ListItemButton>
       {navExpanded && (
         <Collapse in={localOpen} timeout='auto'>

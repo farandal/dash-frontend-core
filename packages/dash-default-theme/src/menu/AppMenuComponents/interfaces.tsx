@@ -8,7 +8,8 @@ export interface IAppMenu {
 	menu?: IDashAutoAdminResourceConfig[];
 	debug?: boolean;
 	showDrawer?: boolean;
-	navSize?: "small" | "large";
+	navSize: "small" | "large";
+    navExpanded: boolean;
 	[key: string]: any;
 }
 

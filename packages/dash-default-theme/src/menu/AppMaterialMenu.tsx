@@ -1,9 +1,10 @@
 import * as React from 'react';
 
 import { useSelector } from 'react-redux';
-import { usePermissions } from 'react-admin';
-import { LoadingIndicator } from 'react-admin';
-import { Divider, List } from '@mui/material';
+// Remove this import
+// import { usePermissions } from 'react-admin';
+
+import { CircularProgress, Divider, List } from '@mui/material';
 import { useEffect } from 'react';
 import { IMenuItem, IAppMenu } from './AppMenuComponents/interfaces';
 import SidebarItem from './AppMenuComponents/expanded/SidebarItem';
@@ -17,9 +18,11 @@ import { slugify } from 'dash-admin/src/utils/slugify';
 import { AvatarComponent, DarkModeSwitcher, LanguageSwitcher } from 'dash-components';
 
 import Scrollbar from 'dash-admin/src/components/scrollbar/Scrollbar';
+// Add this import
+import { AuthPersistenceService, useAuthContext } from 'dash-admin/src/contexts/auth/AuthContext';
 
 // Group icons
-const GenerateItems: React.FC<{ items: IMenuItem[]; navExpanded: boolean, navSize: "small" | "large", level: number }> = ({
+const GenerateItems: React.FC<{ items: IMenuItem[]; navExpanded: boolean, navSize: string, level: number }> = ({
   items,
   navExpanded,
   navSize,
@@ -53,15 +56,21 @@ const GenerateItems: React.FC<{ items: IMenuItem[]; navExpanded: boolean, navSiz
 
 const AppMaterialMenu: React.FC<IAppMenu> = (props) => {
 
-  const { menu, debug, navSize } = props;
+  const { menu, debug } = props;
   //const resources = useResourceDefinitions()
-  const { permissions } = usePermissions();
-  const { navExpanded } = useSelector(
+  
+  // Replace usePermissions with useAuthContext - add null check
+  // const { permissions } = usePermissions();
+  const authContext = useAuthContext();
+  
+  /*const { navExpanded,navSize } = useSelector(
     (state: IDASHAppState<any, any, IDashAutoAdminResourceConfig>) =>
-      state.menu,
-  );
-
+      state.common,
+  );*/
+const { navExpanded,navSize } = props; 
   const [items, setItems] = React.useState<IMenuItem[]>(null);
+  // Add state for permissions
+  //const [permissions, setPermissions] = React.useState<any>(null);
 
   const resources = useSelector(
     (
@@ -74,14 +83,17 @@ const AppMaterialMenu: React.FC<IAppMenu> = (props) => {
     },
   );
 
-    const groupIcons = useSelector(
+  const groupIcons = useSelector(
     (state: IDASHAppState<any, any, IDashAutoAdminResourceConfig>) =>
       state.settings.groupIcons
   );
 
-  
 
   useEffect(() => {
+    // Don't process resources if permissions haven't been loaded yet and not in debug mode
+   
+    
+ 
     const groups = [
       ...new Set(
         resources.map((resource) => resource.group).filter((x) => x !== null),
@@ -94,9 +106,10 @@ const AppMaterialMenu: React.FC<IAppMenu> = (props) => {
         if (debug === true) {
           return resource.group === group;
         }
+
         //console.log(resource.group + " | ", resource.label + " | ", permissions, resource.roles, checkRole(permissions, resource.roles));
         return (
-          resource.group === group && checkRole(permissions, resource.roles)
+          resource.group === group && checkRole(authContext.user?.roles?.flatMap(role => role.name) || [], resource.roles)
         );
       });
     });
@@ -143,16 +156,17 @@ const AppMaterialMenu: React.FC<IAppMenu> = (props) => {
     });
 
     setItems(_items);
-  }, [resources]);
+  }, [resources, debug, authContext?.user]); // Add authContext.user as dependency
 
-  //if (!items) return <LoadingIndicator />;
 
   return (
     <>
       <div className='dash-menu-user'>
         <AvatarComponent />
         <div className='dash-menu-actions'>
-            <LanguageSwitcher />
+            {/* TODO: Languahe switcher that do not rely on react-admin*/}
+            {/*<LanguageSwitcher />*/}
+           
             <DarkModeSwitcher/>
         </div>
       </div>
@@ -171,10 +185,12 @@ const AppMaterialMenu: React.FC<IAppMenu> = (props) => {
   );
 };
 
-export default React.memo(
+/*export default React.memo(
   AppMaterialMenu,
   (props, nextProps) =>
     props === nextProps
 ) as typeof AppMaterialMenu;
+*/
 
-//export default AppMaterialMenu;
+
+export default AppMaterialMenu;
