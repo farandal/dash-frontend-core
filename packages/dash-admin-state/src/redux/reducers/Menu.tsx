@@ -1,47 +1,24 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
+// This reducer is now deprecated - nav functionality moved to Common reducer
+// Keep this file for backward compatibility but redirect to common state
+
 export interface IMenuState {
-  navExpanded: boolean;
+  // Empty - functionality moved to Common reducer
 }
 
-// Initialize state from localStorage if available
-const getInitialNavExpanded = (): boolean => {
-  try {
-    const savedState = localStorage.getItem('dashNavExpanded');
-    return savedState !== null ? savedState === 'true' : true;
-  } catch (e) {
-    // Fallback in case localStorage is not available
-    return true;
-  }
-};
-
-const initialState: IMenuState = {
-  navExpanded: getInitialNavExpanded()
-};
-
-// Helper function to save state to localStorage
-const saveNavExpandedState = (state: boolean): void => {
-  try {
-    localStorage.setItem('dashNavExpanded', String(state));
-    console.log( `Saved navigation state to localStorage: ${state}`)
-  } catch (e) {
-    console.error('Failed to save navigation state to localStorage:', e);
-  }
-};
+const initialState: IMenuState = {};
 
 const menuSlice = createSlice({
   name: 'menu',
   initialState,
   reducers: {
+    // Deprecated - use common reducer actions instead
     setNavExpanded(state, action: PayloadAction<boolean>) {
-      state.navExpanded = action.payload;
-      // Save to localStorage directly in the reducer
-      saveNavExpandedState(action.payload);
+      console.warn('menu/setNavExpanded is deprecated. Use common reducer actions instead.');
     },
     toggleNavExpanded(state) {
-      state.navExpanded = !state.navExpanded;
-      // Save to localStorage directly in the reducer
-      saveNavExpandedState(!state.navExpanded);
+      console.warn('menu/toggleNavExpanded is deprecated. Use common reducer actions instead.');
     }
   }
 });

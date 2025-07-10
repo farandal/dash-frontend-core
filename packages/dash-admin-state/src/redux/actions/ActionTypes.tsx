@@ -44,3 +44,4 @@ export const INIT_URL = 'INIT_URL';
 
 export const TOGGLE_NAV_EXPANDED = 'TOGGLE_NAV_EXPANDED';
 export const SET_NAV_EXPANDED = 'SET_NAV_EXPANDED';
+export const SET_NAV_SIZE = 'SET_NAV_SIZE';

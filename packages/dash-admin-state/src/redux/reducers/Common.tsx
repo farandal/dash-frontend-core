@@ -12,18 +12,21 @@ import {
 } from '../actions/ActionTypes';
 import { TOGGLE_COLLAPSED_NAV, WINDOW_WIDTH } from '../actions/ActionTypes';
 import ICommonState from '../interfaces/ICommonState';
+import defaultCommon from '../../defaults/defaultCommon'; // Import the default
+
+// Helper function to save nav state to localStorage
+const saveNavState = (navExpanded: boolean, navSize: "large" | "small"): void => {
+	try {
+		localStorage.setItem('dashNavExpanded', String(navExpanded));
+		localStorage.setItem('dashNavSize', navSize);
+
+	} catch (e) {
+		console.error('Failed to save navigation state to localStorage:', e);
+	}
+};
 
 const CommonReducer = (
-	state: ICommonState = {
-		error: '',
-		loading: false,
-		message: undefined,
-		navExpanded: false,
-		width: undefined,
-		height: undefined,
-		pathname: '',
-		headerComponents: [],
-	},
+	state: ICommonState = defaultCommon, // Use the imported default instead of inline object
 	action,
 ) => {
 	switch (action.type) {
@@ -31,7 +34,6 @@ const CommonReducer = (
 			return {
 				...state,
 				pathname: action.payload.location.pathname,
-				//navExpanded: false
 			};
 		}
 
@@ -44,11 +46,11 @@ const CommonReducer = (
 				},
 			};
 		case 'UNSET_COMPONENT_STATE':
-			let componentStates = state.componentsState;
+			let componentStates = { ...state.componentsState }; // Create copy instead of mutating
 			delete componentStates[action.componentId];
 			return {
 				...state,
-				componentStates,
+				componentsState: componentStates, // Fixed typo: was componentStates, should be componentsState
 			};
 
 		case SET_HEADER_COMPONENTS:
@@ -60,7 +62,7 @@ const CommonReducer = (
 		case SET_PANEL_SETTINGS:
 			return {
 				...state,
-				panelSettings: action.panelSettings,
+				panelSettings: {...state.panelSettings,...action.panelSettings},
 			};
 
 		case CONTENT_WIDTH:
@@ -84,12 +86,37 @@ const CommonReducer = (
 				...state,
 				width: action.width,
 			};
+
 		case TOGGLE_COLLAPSED_NAV: {
+			const newNavExpanded = action.navExpanded;
+			// Save to localStorage when toggling
+			saveNavState(newNavExpanded, state.navSize);
 			return {
 				...state,
-				navExpanded: action.navExpanded,
+				navExpanded: newNavExpanded,
 			};
 		}
+
+		case 'SET_NAV_EXPANDED': {
+			const newNavExpanded = action.payload;
+			// Save to localStorage when setting nav expanded
+			saveNavState(newNavExpanded, state.navSize);
+			return {
+				...state,
+				navExpanded: newNavExpanded,
+			};
+		}
+
+		case 'SET_NAV_SIZE': {
+			const newNavSize = action.payload;
+			// Save to localStorage when setting nav size
+			saveNavState(state.navExpanded, newNavSize);
+			return {
+				...state,
+				navSize: newNavSize,
+			};
+		}
+
 		case FETCH_START: {
 			return { ...state, error: '', message: '', loading: true };
 		}

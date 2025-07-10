@@ -14,8 +14,8 @@ const defaultSettings: ISettingsState = {
 		name: 'Español',
 		icon: 'es',
 	},
-	sidebarExpandedWidth: 240,
-	sidebarCollapsedWidth: 80,
+	//sidebarExpandedWidth: 240,
+	//sidebarCollapsedWidth: 80,
 };
 
 export default defaultSettings;

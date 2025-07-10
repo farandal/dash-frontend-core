@@ -16,5 +16,18 @@ export { default as defaultFormState } from './defaults/defaultFormState';
 export { default as defaultPageSettings } from './defaults/defaultPage';
 export { default as defaultSettings } from './defaults/defaultSettings';
 
-export * as DASH_REDUX_ACTIONS from './redux/actions';
+// Export all optimized hooks
+export {
+  useLayoutState,
+  useAuthState,
+  useSettingsState,
+  useCommonState,
+  usePageState,
+  useResourcesState,
+  useLogoSettings,
+  useThemeState,
+  useNavigationState
+} from './hooks/DashAdminStateSelectors';
 
+export * as DASH_REDUX_ACTIONS from './redux/actions';
+export * from './redux/ReduxStoreAccesor';

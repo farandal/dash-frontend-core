@@ -1,4 +1,5 @@
 class DefaultThemeSettings {
+
 	static TAB_SIZE = 992;
 	static MOBILE_SIZE = 575;
 	static THEME_TYPE = 'THEME_TYPE';
@@ -7,7 +8,6 @@ class DefaultThemeSettings {
 	static THEME_TYPE_DASH_DEFAULT = 'light';
 	static THEME_TYPE_SEMI_DARK = 'THEME_TYPE_SEMI_DARK';
 	static THEME_COLOR = 'THEME_COLOR';
-	static UPDATE_RTL_STATUS = 'UPDATE_RTL_STATUS';
 	static LAYOUT_TYPE = 'LAYOUT_TYPE';
 	static LAYOUT_TYPE_FRAMED = 'framed-layout';
 	static LAYOUT_TYPE_BOXED = 'boxed-layout';
@@ -26,34 +26,7 @@ class DefaultThemeSettings {
 	static NAV_STYLE_BELOW_HEADER = 'NAV_STYLE_BELOW_HEADER';
 	static NAV_STYLE_ABOVE_HEADER = 'NAV_STYLE_ABOVE_HEADER';
 	static NAV_STYLE_COLLAPSABLE = 'NAV_STYLE_COLLAPSABLE';
-	static LIGHT_PURPLE = 'light_purple';
-	static LIGHT_PURPLE_SEC = '#00B378';
-	static LIGHT_PURPLE_DARK_TEXT_COLOR = '#9799AC';
-	static RED = 'red';
-	static RED_SEC = '#00D9C9';
-	static RED_DARK_TEXT_COLOR = '#878BAB';
-	static BLUE = 'blue';
-	static BLUE_SEC = '#FCB53B';
-	static BLUE_DARK_TEXT_COLOR = '#AAA59A';
-	static DARK_BLUE = 'dark_blue';
-	static DARK_BLUE_SEC = '#17BDE5';
-	static DARK_BLUE_DARK_TEXT_COLOR = '#9DDAE9';
-	static ORANGE = 'orange';
-	static ORANGE_SEC = '#F1D065';
-	static ORANGE_DARK_TEXT_COLOR = '#ABA895';
-	static LIGHT_BLUE = 'light_blue';
-	static LIGHT_BLUE_SEC = '#59DCFF';
-	static LIGHT_BLUE_DARK_TEXT_COLOR = '#92A2C8';
-	static DEEP_ORANGE = 'deep_orange';
-	static DEEP_ORANGE_SEC = '#70A288';
-	static DEEP_ORANGE_DARK_TEXT_COLOR = '#97B8C7';
-	static LIGHT_PURPLE_1 = 'light_purple_1';
-	static LIGHT_PURPLE_1_SEC = '#E14594';
-	static LIGHT_PURPLE_1_DARK_TEXT_COLOR = '#8288B4';
-	static LIGHT_PURPLE_2 = 'light_purple_2';
-	static LIGHT_PURPLE_2_SEC = '#64D7D6';
-	static LIGHT_PURPLE_2_DARK_TEXT_COLOR = '#5782BB';
-	static ACTIVE_COLOR_OPTION = '#ffffff';
+
 }
 
 export default DefaultThemeSettings;

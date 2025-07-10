@@ -2,6 +2,8 @@ import { JSX } from 'react';
 import {
   LOADING,
   SET_HEADER_COMPONENTS,
+  SET_NAV_EXPANDED,
+  SET_NAV_SIZE,
   SET_PANEL_SETTINGS,
 } from './ActionTypes';
 
@@ -35,3 +37,14 @@ export const setPanelSettings = (panelSettings: any) => {
     panelSettings,
   };
 };
+
+
+export const setNavExpanded = (navExpanded: boolean) => ({
+  type: SET_NAV_EXPANDED,
+  payload: navExpanded,
+});
+
+export const setNavSize = (navSize: "large" | "small") => ({
+  type: SET_NAV_SIZE,
+  payload: navSize,
+});

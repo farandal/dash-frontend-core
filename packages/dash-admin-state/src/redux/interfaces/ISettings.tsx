@@ -19,8 +19,8 @@ export interface ISettingsState {
 	// resources: IDashAutoAdminResourceConfig[]
 	locale: string;
   availableLocales: ILocale[];
-	sidebarExpandedWidth?: number;
-	sidebarCollapsedWidth?: number;
+	//sidebarExpandedWidth?: number;
+	//sidebarCollapsedWidth?: number;
 }
 
 export default ISettingsState;
