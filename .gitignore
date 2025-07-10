@@ -16,3 +16,4 @@ apps/dash
 build-resources
 *.mp3
 *.wav
+android/app/src/main/res/*
