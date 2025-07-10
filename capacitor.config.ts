@@ -1,12 +1,12 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
-
 const config: CapacitorConfig = {
   appId: 'cl.pinoywok.app',
-  appName: 'PinoyWok',
+  appName: 'KitchenTabs',
   webDir: 'apps/dash/dist',
   server: {
-    androidScheme: process.env.NODE_ENV === 'production' ? 'https' : 'http'  },
+    androidScheme: process.env.NODE_ENV === 'production' ? 'https' : 'http'
+  },
   android: {
     allowMixedContent: true,
     captureInput: true,
@@ -18,9 +18,8 @@ const config: CapacitorConfig = {
     },
     SplashScreen: {
       androidStatusBarColor: "#4caf50",
-      androidStatusBarStyle: "light",
-     
-      androidScaleType: "FIT_CENTER",
+      androidStatusBarStyle: "dark",
+      androidScaleType: "CENTER",
       androidIcons: {
         mdpi: "resources/android/icon/drawable-mdpi-icon.png",
         hdpi: "resources/android/icon/drawable-hdpi-icon.png",
@@ -32,6 +31,9 @@ const config: CapacitorConfig = {
     WebView: {
       allowFileAccess: true,
       allowMixedContent: true,
+      // Add these for media capture
+      allowFileAccessFromFileURLs: true,
+      allowUniversalAccessFromFileURLs: true,
       webViewEngineSettings: {
         setDomStorageEnabled: true,
         setJavaScriptEnabled: true,
@@ -42,8 +44,16 @@ const config: CapacitorConfig = {
         setBuiltInZoomControls: true,
         setLoadWithOverviewMode: true,
         setUseWideViewPort: true,
-        setMixedContentMode: 0
+        setMixedContentMode: 0,
+        setMediaPlaybackRequiresUserGesture: false
       }
+    },
+
+    VoiceRecorder: {
+      enabled: true
+    },
+    Keyboard: {
+      enabled: true
     }
   }
 };
