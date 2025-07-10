@@ -4,12 +4,12 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            color: var(--text-light-color, @text-light-color);
+            color: var(--text-light, @text-light);
             width: 57px;
             height: 57px;
             svg{
                 path{
-                    fill: var(--text-light-color, @text-light-color);
+                    fill: var(--text-light, @text-light);
                 }
             }
         }
@@ -50,7 +50,7 @@
             &-body{
                 position: relative;
                 z-index: 1;
-                background-color: var(--component-background, @component-background);
+                background-color: var(--component-bg, @component-bg);
                 border-radius: 8px;
                 text-align: center;
                 font-size: 16px;
@@ -100,7 +100,7 @@
         &.ant-modal-dialog-info-styled{
             .ant-modal-dialog{
                 &-header{
-                    background: linear-gradient(93.81deg, var(--primary-color, @primary-color) 2.98%, var(--primary-contrast-color, @primary-contrast-color) 102.49%);  
+                    background: linear-gradient(93.81deg, var(--primary-color, @primary-color) 2.98%, var(--primary-contrast, @primary-contrast) 102.49%);
                 }
             }
         }
@@ -110,7 +110,7 @@
 .dash-modal{
     &-default{
         .MuiDialog-paper{
-            background: var(--component-background, @component-background);
+            background: var(--component-bg, @component-bg);
             box-shadow: var(--component-shadow, @component-shadow);
             > .MuiTypography-root.MuiDialogTitle-root{
                 font-family: 'Montserrat';
@@ -123,7 +123,7 @@
             }
             > .MuiDialogContent-root{
                 padding: 24px;
-                border: 1px solid var(--border-color-split, @border-color-split);
+                border: 1px solid var(--component-border-split, @component-border-split);
                 border-left: unset;
                 border-right: unset;
 
@@ -168,10 +168,10 @@
                 margin-top: -20px;
                 padding: 32px 32px 0;
                 border: unset;
-                background: var(--component-background, @component-background);
+                background: var(--component-bg, @component-bg);
                 border-top-left-radius: 8px;
                 border-top-right-radius: 8px;
-                
+
                 font-family: 'Montserrat';
                 font-style: normal;
                 font-weight: 400;
@@ -182,7 +182,7 @@
             }
             > .MuiDialogActions-root{
                 padding: 10px 16px;
-                background: var(--component-background, @component-background);
+                background: var(--component-bg, @component-bg);
                 border-bottom-left-radius: 8px;
                 border-bottom-right-radius: 8px;
             }
@@ -191,7 +191,7 @@
     &-info{
         .MuiDialog-paper{
             > .MuiTypography-root.MuiDialogTitle-root{
-                background: linear-gradient(93.81deg, var(--primary-color, @primary-color) 2.98%, var(--primary-contrast-color, @primary-contrast-color) 102.49%);
+                background: linear-gradient(93.81deg, var(--primary-color, @primary-color) 2.98%, var(--primary-contrast, @primary-contrast) 102.49%);
             }
         }
     }

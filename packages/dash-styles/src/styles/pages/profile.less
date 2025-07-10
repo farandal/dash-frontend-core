@@ -1,4 +1,4 @@
-.dash-profile{
+.dash-profile {
   &-img{
       display: flex;
       margin: 0 auto 2rem;
@@ -42,15 +42,16 @@
 }
 
 
-
+// Moved to sidebar
+/*
 .dash-user{
- /* &-avatar{
+  &-avatar{
       .MuiAvatar-root{
           width: 65px;
           height: 65px;
           background-color: @primary-color;
       }
-  }*/
+  }
   &-menu{
       .MuiList-root.MuiList-padding.MuiMenu-list{
           padding: .5rem .75rem;
@@ -64,7 +65,7 @@
               display: block;
               width: 12px;
               height: 12px;
-              background: var('--module-background',@module-background);
+              background: var('--module-bg',@module-bg);
               transform: rotate(-45deg);
               position: absolute;
               top: -6px;
@@ -91,7 +92,7 @@
           font-weight: 500;
           font-size: 14px;
           line-height: 22px;
-          color: @dash-sidebar-submenu-color-primary;
+          color: @sidebar_submenu-color-primary;
       }
   }
   &-icon{
@@ -100,28 +101,28 @@
       height: 18px;
       margin: 0 10px 0 0;
       min-width: auto;
-      color: @dash-sidebar-submenu-color-primary;
+      color:inherit;
       svg{
           width: 18px;
           height: 18px;
           object-fit: contain;
-          color: @primary-color;
+          color: inherit;
           path{
-              fill: @primary-color;
+              fill: inherit;
           }
       }
   }
 
   @media (max-width: @mq-sm){
 
-    /*
+
       &-avatar{
           .MuiAvatar-root{
               width: 30px;
               height: 30px;
           }
       }
-*/
+
       &-menu{
           .MuiPaper-root.MuiMenu-paper.MuiPaper-elevation{
               &::before{
@@ -135,3 +136,4 @@
 
 
 }
+*/

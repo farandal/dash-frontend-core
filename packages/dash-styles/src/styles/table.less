@@ -1,18 +1,18 @@
-.MuiTableCell-root.MuiTableCell-head{
+/*.MuiTableCell-root.MuiTableCell-head{
     //padding: 16px;
-    background-color: var(--primary-color, @primary-color) !important;
+    //background-color: var(--table-header-bg, @table-header-bg) !important;
     span{
         font-style: normal;
         font-weight: 600;
         font-size: 14px;
         line-height: 22px;
-        color: var(--highlight-color, @highlight-color);
+        color: var(--table-header-color, @table-header-color);
     }
     svg{
-        color: var(--highlight-color, @highlight-color) !important;
+        color: var(--table-header-color, @table-header-color) !important;
     }
-}
-
+}*/
+/*
 .MuiTableCell-root.MuiTableCell-body{
   span{
       //display: inline;
@@ -28,7 +28,7 @@
       flex-direction: column;
       align-items: center;
   }
-}
+}*/
 
 .RaDatagrid-headerCell{
   //min-width: 140px;
@@ -36,12 +36,12 @@
 }
 .MuiTableCell-root.MuiTableCell-body{
   //text-align: center;
-  border-bottom: 1px solid @primary-contrast-color;
+  //border-bottom: 1px solid @primary-contrast;
   padding: 2px 8px;
 }
 
 .MuiTableRow-hover:hover {
-  background-color: var('--primary-contrast-color', @primary-contrast-color);
+  background-color: var('--primary-contrast', @primary-contrast);
 }
 
 /* Stikcy header */
@@ -115,7 +115,7 @@
 
 .RaBulkActionsToolbar-topToolbar{
   .MuiButtonBase-root{
-      background-color: var('--primary-contrast-color',@primary-contrast-color);
+      background-color: var('--primary-contrast',@primary-contrast);
       border: 1px solid  var('--primary-color',@primary-color);;
       border-radius: 6px !important;
       font-family: 'Montserrat' !important;

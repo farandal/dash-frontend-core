@@ -6,8 +6,8 @@
 //                 padding: 8px 16px;
 //                 margin: 0 2px 0 0;
 //                 height: 40px;
-//                 background: var(--component-background, @component-background);
-//                 border: 1px solid var(--border-color-base, @border-color-base);
+//                 background: var(--component-bg, @component-bg);
+//                 border: 1px solid var(--component-border-base, @component-border-base);
 //                 border-radius: 2px 2px 0px 0px;
 //                 font-style: normal;
 //                 font-weight: 400;
@@ -15,8 +15,8 @@
 //                 line-height: 24px;
 //                 color: var(--text-color, @text-color);
 //                 &.ant-tabs-tab-active{
-//                     background: var(--component-active-background, @component-active-background);
-//                     border: 1px solid var(--border-color-base, @border-color-base);
+//                     background: var(--component-active-bg, @component-active-bg);
+//                     border: 1px solid var(--component-border-base, @component-border-base);
 //                     border-radius: 2px 2px 0px 0px;
 //                     color: var(--primary-color, @primary-color);
 //                 }
@@ -64,7 +64,7 @@
     &-horizontal-nav{
         display: flex;
         flex-wrap: unset;
-        border-bottom: 1px solid var(--border-color-base, @border-color-base);
+        border-bottom: 1px solid var(--component-border-base, @component-border-base);
         position: relative;
         padding-top: 4px;
         margin: 0;
@@ -75,8 +75,8 @@
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                background-color: var(--component-background, @component-background);
-                border: 1px solid var(--border-color-split, @border-color-split);
+                background-color: var(--tab-selected-bg, @tab-selected-bg);
+                border: 1px solid var(--component-border-split, @component-border-split);
                 border-top-left-radius: 8px;
                 border-top-right-radius: 8px;
                 margin: 0 .75rem 0 0;
@@ -87,7 +87,7 @@
                 font-size: 14px;
                 font-weight: 700;
                 text-align: center;
-                color: var(--text-light-color, @text-light-color) !important;
+                color: var(--text-light, @text-light) !important;
                 text-decoration: none !important;
                 position: relative;
 
@@ -103,9 +103,9 @@
             }
             &.active{
                 .dash-link{
-                    background-color: var(--component-active-background, @component-active-background);
+                    background-color: var(--component-active-bg, @component-active-bg);
                     border-color: var(--primary-color, @primary-color);
-                    border-bottom: 2px solid var(--component-active-background, @component-active-background);
+                    border-bottom: 2px solid var(--component-active-bg, @component-active-bg);
                     z-index: 1;
                     transform: translateY(1px);
                 }

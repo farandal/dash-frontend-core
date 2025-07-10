@@ -1,57 +1,63 @@
-@btn-primary-bg: linear-gradient(101.98deg, var(--primary-color, @primary-color) 0%, var(--primary-contrast-color, @primary-contrast-color) 111.65%);
-@btn-primary-color: var(--text-color, @text-color);
+//@btn-bg: linear-gradient(101.98deg, var(--primary-color, @primary-color) 0%, var(--primary-contrast, @primary-contrast) 111.65%);
+//@btn-color: var(--text-color, @text-color);
 
-@btn-tertiary-bg: var(--primary-color, @primary-color);
-@btn-tertiary-color: var(--text-contrast-color, @text-contrast-color);
+//@btn-tertiary-bg: var(--primary-color, @primary-color);
+//@btn-tertiary-color: var(--text-contrast, @text-contrast);
 
-@btn-error-bg: var(--dash-alert-error-bg, @dash-alert-error-bg);
-@btn-error-color: var(--text-contrast-color, @text-contrast-color);
+//@btn-error-bg: var(--alert-error-bg, @alert-error-bg);
+//@btn-error-color: var(--text-contrast, @text-contrast);
+
+
+
 
 .MuiButton-root{
-    background: var(--component-background, @component-background);
-    border: 1px solid var(--component-border-color, @component-border-color);
-    border-radius: 8px !important;
+    //background: var(--component-bg, @component-bg);
+    border: 1px solid var(--component-border, @component-border);
+    //border-radius: 8px !important;
     font-family: 'Montserrat' !important;
     font-style: normal !important;
     font-weight: 400 !important;
     font-size: 16px !important;
     line-height: 24px !important;
-    color: var(--text-color, @text-color);
+    //color: var(--text-color, @text-color);
     transition: all .4s;
     text-transform: unset !important;
     > span{
         display: inline-flex;
         align-items: center;
-        //color: var(--component-text-color, @component-text-color);
+        //color: var(--component-text, @component-text);
         svg{
             margin-right: 9.75px;
         }
     }
     &.MuiButton-containedPrimary{
         border: 1px solid transparent;
-        background: var(--btn-primary-bg, @btn-primary-bg);
-        //color: var(--btn-primary-color, @btn-primary-color);
+       //background-color:  linear-gradient(101.98deg, var(--primary-main) 0%, var(--secondary-main) 111.65%);
+
+        //color: var(--btn-color, @btn-color);
         > span{
-            //color: var(--btn-primary-color, @btn-primary-color);
+            color: var(--btn-color, @btn-color);
             svg{
                 filter: brightness(0) invert(1);
             }
         }
     }
     &.MuiButton-outlinedPrimary{
-        border: 1px solid var(--component-border-color, @component-border-color);
-        background: var(--component-background, @component-background);
-        //color: var(--component-text-color, @component-text-color);
+        border: 1px solid var(--component-border, @component-border);
+        //background: var(--component-bg, @component-bg);
+        //color: var(--component-text, @component-text);
+        //background: var(--btn-secondary-bg, @btn-secondary-bg);
+        color: var(--highlight-color, @highlight-color);
         > span{
-            //color: var(--component-text-color, @component-text-color);
-            svg{
+            //color: var(--component-text, @component-text);
+            svg {
                 filter: brightness(0) invert(1);
             }
         }
     }
 }
 
-
+/*
 &.btn{
     &-sm{
         min-width: 24px;
@@ -105,9 +111,10 @@
             width: 28px !important;
             svg{
                 path{
-                    fill: var(--text-contrast-color, @text-contrast-color);
+                    fill: var(--text-contrast, @text-contrast);
                 }
             }
         }
     }
 }
+*/

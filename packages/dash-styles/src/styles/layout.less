@@ -4,8 +4,8 @@
 
 .framed-layout{
   > #root{
-      border-radius: 8px;
-      background-color: var(--dash-framed-layout-background, @dash-framed-layout-background);
+      border-radius: 22px;
+      background-color: var(--framed_layout-bg, @framed_layout-bg);
       > div > div > .lite{
           background-color: transparent;
       }
@@ -23,6 +23,53 @@
 }
 
 
+/* Prevent layout shifts during route transitions */
+.dash-layout-content {
+  min-height: 100vh;
+  transition: none !important;
+  contain: layout style;
+}
+
+@media (min-width: @mq-md) {
+  .framed-layout #root {
+    min-height: calc(100vh - 16px);
+  }
+}
+/*
+.dash-layout-content {
+  min-height: calc(100vh - 75px);
+}
+*/
+@media (min-width: @mq-sm) {
+  .dash-app-layout-content {
+  padding: 5px;
+}
+    .framed-layout .dash-app-layout {
+      border-radius: 20px;
+      overflow: hidden;
+    }
+}
+/* Optimize sidebar transitions */
+.dash-app-layout {
+  transition: margin-left 0.2s ease-in-out;
+  will-change: margin-left;
+  contain: layout;
+}
+
+.dash-app-layout-sidebar-expanded {
+  margin-left: 240px;
+}
+
+.dash-app-layout-sidebar-collapsed {
+  margin-left: 80px;
+}
+
+/* Prevent flickering during theme changes */
+.dash-app-layout * {
+  transition: background-color 0.1s ease, color 0.1s ease;
+}
+
+
 .framed-layout{
   .dash-module-box-content{
       //max-width: calc(100vw - 60px - 107px);
@@ -32,7 +79,8 @@
 
 body.framed-layout{
   padding: 8px;
-  //background-color: var(--body-background, @body-background);
+
+  //background-color: var(--body-bg, @body-bg);
 }
 
 
@@ -54,9 +102,8 @@ body.framed-layout{
 }
 
 .dash-app-layout {
-  .dash-layout-content{
-    padding: 0 8px 5px 240px;
-    transition: all .4s;
+  .dash-layout-content {
+    //transition: all .4s;
     .dash-app-module{
         margin: 0;
        //padding: 0 0 0 12px;
@@ -70,16 +117,45 @@ body.framed-layout{
     }
   }
 }
-.dash-app-layout-sidebar-collapsed{
-  .dash-header, .dash-layout-content{
-      padding: 0 15px 5px 45px;
+
+
+.small.expanded .sidebar-drawer .MuiPaper-root
+.large.collapsed .sidebar-drawer .MuiPaper-root
+{
+       width: var(--sidebar-small-width, @sidebar-small-width);
+}
+
+.large.expanded .sidebar-drawer .MuiPaper-root {
+    width: var(--sidebar-large-width, @sidebar-large-width);
+}
+
+
+
+.dash-app-layout.collapsed.small{
+  .dash-layout-content, .dash-theme-content {
+        padding: 0px;
   }
 }
 
-/* Adds the default header padding for the expanded menu */
-.dash-header{
-  padding: 0 0px 0 243px;
+.dash-app-layout.collapsed.large{
+
+   .dash-header-container {
+    padding-left: var(--sidebar-small-width, @sidebar-small-width);
+  }
+  .dash-layout-content, .dash-theme-content{
+      padding-left: var(--sidebar-small-width, @sidebar-small-width);
+  }
 }
+
+.dash-app-layout.expanded.large{
+  .dash-header-container {
+    padding-left: var(--sidebar-large-width, @sidebar-large-width);
+  }
+  .dash-layout-content, .dash-theme-content {
+      padding-left:  var(--sidebar-large-width, @sidebar-large-width);
+  }
+}
+
 
 
 @media (max-width: @mq-sm){

@@ -6,7 +6,7 @@
   opacity: 0.5;
 }
 
-.motion-wrapper-background {
+.motion-wrapper-bg {
   background-color: rgba(0, 0, 0, 0.7);
   width: 100%;
   height: 100%;
@@ -30,6 +30,22 @@
   pointer-events: none;
   z-index: 100;
   transition: opacity 500ms ease-in-out;
+}
+
+/* Add this to your global CSS or styled component */
+.react-beautiful-dnd-dragging {
+  /* Prevent horizontal scrolling during drag */
+  overflow-x: hidden !important;
+}
+
+/* Ensure the drag preview doesn't cause layout issues */
+[data-rbd-drag-handle-draggable-id] {
+  transition: transform 0.2s ease !important;
+}
+
+/* Style the placeholder to maintain proper spacing */
+[data-rbd-placeholder-context-id] {
+  transition: height 0.2s ease !important;
 }
 
 .spinner-in {
