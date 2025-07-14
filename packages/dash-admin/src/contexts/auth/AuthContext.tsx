@@ -65,12 +65,13 @@ import { useDashThemeContext } from 'dash-default-theme/src/DashThemeContext';
 import AppLayoutSettings from '../../theme/AppLayoutSetting';
 import DASHAuthenticationService from './DASHAuthenticationService';
 
-// Auth persistence service (keeping the same as before)
+// Auth persistence service
 export class AuthPersistenceService {
   private static readonly AUTH_KEY = 'dashAuth';
   private static readonly TIMESTAMP_KEY = 'dashAuthTimestamp';
   private static readonly TENANT_IMAGES_KEY = 'dashTenantImages'; 
   private static readonly TENANT_SETTINGS_KEY = 'dashTenantSettings';
+  private static readonly SYSTEM_VALUES_KEY = 'dashSystemValues';
 
   private static readonly EXPIRY_HOURS = 24;
 
@@ -89,6 +90,11 @@ export class AuthPersistenceService {
       // Separately save tenant settings for persistence across logout
       if (authData.auth?.tenantSettings) {
         localStorage.setItem(this.TENANT_SETTINGS_KEY, JSON.stringify(authData.auth.tenantSettings));
+      }
+
+      // Separately save system values for persistence across logout
+      if (authData.systemValues) {
+        localStorage.setItem(this.SYSTEM_VALUES_KEY, JSON.stringify(authData.systemValues));
       }
       
       // Remove logout markers when saving new auth data
@@ -114,6 +120,11 @@ export class AuthPersistenceService {
       if (authData.user) {
         localStorage.setItem('user', JSON.stringify(authData.user));
       }
+
+      // Store system values separately for easy access
+      if (authData.systemValues) {
+        localStorage.setItem(this.SYSTEM_VALUES_KEY, JSON.stringify(authData.systemValues));
+      }
       
       // Mark as authenticated
       localStorage.setItem('authenticated', 'true');
@@ -125,7 +136,8 @@ export class AuthPersistenceService {
           token: authData.token,
           refreshToken: authData.refreshToken,
           // Include any other auth-related data
-        }
+        },
+        systemValues: authData.systemValues
       });
       
       console.log('Auth data set successfully');
@@ -229,6 +241,30 @@ export class AuthPersistenceService {
     }
   }
 
+  static getSystemValues(): any | null {
+    try {
+      const systemValues = localStorage.getItem(this.SYSTEM_VALUES_KEY);
+      return systemValues ? JSON.parse(systemValues) : null;
+    } catch (error) {
+      console.error('Failed to get system values:', error);
+      return null;
+    }
+  }
+
+  static getSystemValue(key: string): any | null {
+    try {
+      const systemValues = this.getSystemValues();
+      return systemValues ? systemValues[key] : null;
+    } catch (error) {
+      console.error(`Failed to get system value for key '${key}':`, error);
+      return null;
+    }
+  }
+
+  static getPointOfSales(): any | null {
+    return this.getSystemValue('point_of_sales');
+  }
+
   static clearAuth(): void {
     localStorage.removeItem(this.AUTH_KEY);
     localStorage.removeItem(this.TIMESTAMP_KEY);
@@ -243,6 +279,7 @@ export class AuthPersistenceService {
     localStorage.removeItem(this.TIMESTAMP_KEY);
     localStorage.removeItem(this.TENANT_IMAGES_KEY);
     localStorage.removeItem(this.TENANT_SETTINGS_KEY);
+    localStorage.removeItem(this.SYSTEM_VALUES_KEY);
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     localStorage.setItem('authenticated', 'false');
@@ -315,6 +352,7 @@ export interface IAuthContextProps {
   auth: IGetAuth;
   token: string;
   roles: any;
+  systemValues?: any;
 }
 
 export interface IAuthContext {
@@ -323,11 +361,15 @@ export interface IAuthContext {
   auth?: IGetAuth;
   token?: string;
   roles?: any;
+  systemValues?: any;
   updateValues: (values: Partial<IAuthContextProps>) => void;
   logout: (callback?: () => void)  => void;
   handleReactAdminIdentity: (identity: any) => void;
   getPermissions: () => Promise<any>; 
   fetchAuth: () => Promise<any>;
+  getSystemValues: () => any;
+  getSystemValue: (key: string) => any;
+  getPointOfSales: () => any;
 }
 
 export const AuthContext = React.createContext<IAuthContext>(null);
@@ -350,6 +392,7 @@ export const AuthContextProvider: FC<IAuthContextProvider> = (props) => {
   const lastIdentityRef = useRef<string>('');
   const lastTenantImagesRef = useRef<string>('');
   const lastTenantSettingsRef = useRef<string>('');
+  const lastSystemValuesRef = useRef<string>('');
   const hasInitializedRef = useRef(false);
 
   // Initialize context values with proper fallbacks
@@ -357,6 +400,7 @@ export const AuthContextProvider: FC<IAuthContextProvider> = (props) => {
     // Try to get initial values from localStorage and Redux
     const storedUser = AuthPersistenceService.getUser();
     const storedToken = AuthPersistenceService.getToken();
+    const storedSystemValues = AuthPersistenceService.getSystemValues();
     const isAuthenticated = JSON.parse(localStorage.getItem('authenticated') || 'false');
     
     return {
@@ -364,7 +408,8 @@ export const AuthContextProvider: FC<IAuthContextProvider> = (props) => {
       user: auth.user || storedUser,
       auth: auth.auth,
       token: auth.user?.token || storedToken,
-      roles: auth.user?.roles
+      roles: auth.user?.roles,
+      systemValues: storedSystemValues
     };
   });
 
@@ -375,8 +420,11 @@ export const AuthContextProvider: FC<IAuthContextProvider> = (props) => {
       const { data: authResponse } = await axios.get(getEnv('APP_GETAUTH_ENDPOINT'));
       console.log('Received complete auth data:', authResponse);
 
-      // Save only auth.auth to localStorage
-      AuthPersistenceService.saveAuth(authResponse);
+      // Save auth data including systemValues to localStorage
+      AuthPersistenceService.saveAuth({
+        auth: authResponse.auth,
+        systemValues: authResponse.systemValues
+      });
       
       // Update Redux store with complete auth data (both user and auth)
       dispatch(
@@ -386,6 +434,12 @@ export const AuthContextProvider: FC<IAuthContextProvider> = (props) => {
           auth: authResponse.auth,
         })
       );
+
+      // Update context with system values
+      setContextValues(prev => ({
+        ...prev,
+        systemValues: authResponse.systemValues
+      }));
 
       return authResponse;
     } catch (error) {
@@ -452,7 +506,6 @@ export const AuthContextProvider: FC<IAuthContextProvider> = (props) => {
     
     try {
       // First set basic identity data
-
       dispatch(
         DASH_REDUX_ACTIONS.updateAuth(ACTION_UPDATE_AUTH, {
           user: identity.user || identity,
@@ -470,60 +523,19 @@ export const AuthContextProvider: FC<IAuthContextProvider> = (props) => {
     }
   }, [auth.authenticated, dispatch, fetchCompleteAuth]);
 
-    // Initialize auth on mount
-    /*
-  React.useEffect(() => {
-    if (!hasInitializedRef.current) {
-      hasInitializedRef.current = true;
-      console.log('Initializing auth context on mount...');
-      initializeAuthFromToken();
-    }
-  }, [initializeAuthFromToken]);
-
-  */
-
   const logout = (callback?: () => void) => {
-   /*try {
-      // Try to use react-admin's logout if available
-      const { useLogout } = await import('react-admin');
-      
-      try {
-        const raLogout = useLogout();
-        
-        await raLogout({}, '/login', true);
-      } catch (reactAdminError) {
-        console.warn('React-admin logout not available, using fallback');
-        if (callback) {
-          callback();
-        } else {
-          const { useNavigate } = await import('react-router-dom');
-          const navigate = useNavigate();
-          navigate('/login');
-        }
-      }
-    } catch (importError) {
-      console.warn('React-admin not available, using fallback logout');
-      if (callback) {
-        callback();
-      } else {
-        const { useNavigate } = await import('react-router-dom');
-        const navigate = useNavigate();
-        navigate('/login');
-      }
-    }*/
-
     // Mark as logged out but keep the auth.auth data
     AuthPersistenceService.markAsLoggedOut();
     
-    DASHAuthenticationService.setPendingRedirect(window.location.pathname)
-   
+    DASHAuthenticationService.setPendingRedirect(window.location.pathname);
 
     setContextValues({
       authenticated: false,
       user: null,
       auth: null,
       token: null,
-      roles: null
+      roles: null,
+      systemValues: null
     });
 
     dispatch(
@@ -539,72 +551,25 @@ export const AuthContextProvider: FC<IAuthContextProvider> = (props) => {
       user: null,
       auth: null,
       token: null,
-      roles: null
+      roles: null,
+      systemValues: null
     });
 
-       document.body.classList.remove(
-            AppLayoutSettings.LAYOUT_TYPE_FULL,
-            AppLayoutSettings.LAYOUT_TYPE_BOXED,
-            AppLayoutSettings.LAYOUT_TYPE_FRAMED,
-            AppLayoutSettings.THEME_TYPE_DARK,
-            AppLayoutSettings.THEME_TYPE_LIGHT
-        );
+    document.body.classList.remove(
+      AppLayoutSettings.LAYOUT_TYPE_FULL,
+      AppLayoutSettings.LAYOUT_TYPE_BOXED,
+      AppLayoutSettings.LAYOUT_TYPE_FRAMED,
+      AppLayoutSettings.THEME_TYPE_DARK,
+      AppLayoutSettings.THEME_TYPE_LIGHT
+    );
     
     if (callback) {
-        callback();
-    } 
-
-
+      callback();
+    }
   };
 
-  /*
-const updateAuth = useCallback((authData: Partial<IAuthContextProps>) => {
-    if (authData) {
-      console.log('🔄 AuthContext: Updating auth context with:', authData);
-      
-      // Update local context state
-      setContextValues(prevValues => {
-        const hasChanges = Object.keys(authData).some(key => {
-          const newValue = authData[key as keyof IAuthContextProps];
-          const oldValue = prevValues[key as keyof IAuthContextProps];
-          return JSON.stringify(newValue) !== JSON.stringify(oldValue);
-        });
-        
-        if (hasChanges) {
-          const newValues = {
-            ...prevValues,
-            ...authData
-          };
-          console.log('✅ AuthContext: Local context updated:', newValues);
-          return newValues;
-        }
-        return prevValues;
-      });
-
-      // Only update Redux state if we have meaningful auth data and it's not a logout
-      if ((authData.authenticated !== undefined || authData.user || authData.auth) && authData.authenticated !== false) {
-        console.log('🔄 AuthContext: Dispatching to Redux state...');
-        
-        const reduxPayload = {
-          user: authData.user || auth.user,
-          authenticated: authData.authenticated ?? auth.authenticated,
-          auth: authData.auth || auth.auth,
-        };
-        
-        console.log('🔄 AuthContext: Redux payload:', reduxPayload);
-        
-        dispatch(
-          DASH_REDUX_ACTIONS.updateAuth(ACTION_UPDATE_AUTH, reduxPayload)
-        );
-        
-        console.log('✅ AuthContext: Redux dispatch completed');
-      }
-    }
-}, [dispatch, auth.user, auth.authenticated, auth.auth]);
-*/
-
-// Replace the updateAuth function with this simplified version:
-const updateAuth = useCallback((authData: Partial<IAuthContextProps>) => {
+  // Replace the updateAuth function with this simplified version:
+  const updateAuth = useCallback((authData: Partial<IAuthContextProps>) => {
     if (authData) {
       console.log('🔄 AuthContext: Updating auth context with:', authData);
       
@@ -637,7 +602,7 @@ const updateAuth = useCallback((authData: Partial<IAuthContextProps>) => {
         console.log('✅ AuthContext: Redux dispatch completed');
       }
     }
-}, [dispatch, auth.user, auth.authenticated, auth.auth]);
+  }, [dispatch, auth.user, auth.authenticated, auth.auth]);
     
   const updateValues = useCallback((authData: Partial<IAuthContextProps>) => {
     console.log('Manual update values called with:', authData);
@@ -682,6 +647,20 @@ const updateAuth = useCallback((authData: Partial<IAuthContextProps>) => {
     }
   }, [contextValues.roles, auth.user?.roles]);
 
+  // Add system values methods
+  const getSystemValues = useCallback(() => {
+    return contextValues.systemValues || AuthPersistenceService.getSystemValues();
+  }, [contextValues.systemValues]);
+
+  const getSystemValue = useCallback((key: string) => {
+    const systemValues = getSystemValues();
+    return systemValues ? systemValues[key] : null;
+  }, [getSystemValues]);
+
+  const getPointOfSales = useCallback(() => {
+    return getSystemValue('point_of_sales');
+  }, [getSystemValue]);
+
   React.useEffect(() => {
     const handleAuthEvent = (event: CustomEvent<Partial<IAuthContextProps>>) => {
       console.log('Auth event received:', event.detail);
@@ -702,44 +681,12 @@ const updateAuth = useCallback((authData: Partial<IAuthContextProps>) => {
       auth: !!auth.auth
     });
     
-    /*setContextValues(prevValues => {
-      const newValues = {
-        authenticated: auth.authenticated,
-        user: auth.user,
-        auth: auth.auth,
-        token: auth.user?.token || AuthPersistenceService.getToken(),
-        roles: auth.user?.roles
-      };
-      
-      const hasChanges = Object.keys(newValues).some(key => {
-        const newValue = newValues[key as keyof typeof newValues];
-        const oldValue = prevValues[key as keyof typeof newValues];
-        return JSON.stringify(newValue) !== JSON.stringify(oldValue);
-      });
-      
-      if (hasChanges) {
-        console.log('Context values updated from Redux:', newValues);
-        
-        // Persist only auth.auth to localStorage when auth data changes
-        if (auth.authenticated && auth.auth) {
-          AuthPersistenceService.saveAuth({
-            auth: auth.auth
-          });
-        }
-        
-        return {
-          ...prevValues,
-          ...newValues
-        };
-      }
-      return prevValues;
-    });*/
-
     // Update panel settings and recreate theme when tenant data is available
     // Use refs to prevent unnecessary updates
     if (auth.authenticated) {
       let tenantImages = auth?.auth?.tenantImages;
       let tenantSettings = auth?.auth?.tenantSettings;
+      let systemValues = contextValues.systemValues; // Get from context values
       
       if (!tenantImages) {
         tenantImages = AuthPersistenceService.getTenantImages();
@@ -747,6 +694,10 @@ const updateAuth = useCallback((authData: Partial<IAuthContextProps>) => {
       
       if (!tenantSettings) {
         tenantSettings = AuthPersistenceService.getTenantSettings();
+      }
+
+      if (!systemValues) {
+        systemValues = AuthPersistenceService.getSystemValues();
       }
       
       // Update panel settings with tenant images (only if we have new data)
@@ -773,6 +724,23 @@ const updateAuth = useCallback((authData: Partial<IAuthContextProps>) => {
         recreateTheme(tenantSettings);
       }
 
+      // Handle system values data (only if we have new data)
+      const systemValuesKey = JSON.stringify(systemValues);
+      if (systemValues && lastSystemValuesRef.current !== systemValuesKey) {
+        console.log('Processing system values from auth context or persisted data');
+        lastSystemValuesRef.current = systemValuesKey;
+        
+        // Log available system values
+        console.log('Available system values:', Object.keys(systemValues));
+        console.log('Point of Sales:', systemValues.point_of_sales);
+        
+        // You can dispatch to Redux or handle other system values as needed
+        // For example:
+        // if (systemValues.some_other_key) {
+        //   dispatch(DASH_REDUX_ACTIONS.setSomeOtherData(systemValues.some_other_key));
+        // }
+      }
+
       // Handle IPC service for background service
       const storageAuthenticated = JSON.parse(localStorage.getItem('authenticated') || 'false');
       if (storageAuthenticated && auth.user?.tenant_id) {
@@ -784,21 +752,21 @@ const updateAuth = useCallback((authData: Partial<IAuthContextProps>) => {
       }
     }
 
-  }, [auth.authenticated]);
+  }, [auth.authenticated, contextValues.systemValues]);
 
   // Debug effect to log context values changes
   React.useEffect(() => {
-    
     console.log('Auth context values changed:', {
       authenticated: contextValues.authenticated,
       user: contextValues.user ? `${contextValues.user.name} (${contextValues.user.id})` : null,
       auth: contextValues.auth,
-      token: contextValues.token ? 'present' : 'missing'
+      token: contextValues.token ? 'present' : 'missing',
+      systemValues: contextValues.systemValues ? Object.keys(contextValues.systemValues) : null
     });
   }, [contextValues]);
   
   // Create the context value - ensure we always return the most current data
-const contextValue: IAuthContext = React.useMemo(() => {
+  const contextValue: IAuthContext = React.useMemo(() => {
     const currentUser = contextValues.user || auth.user || AuthPersistenceService.getUser();
     const currentAuthenticated = contextValues.authenticated ?? auth.authenticated ?? false;
     const currentToken = contextValues.token || auth.user?.token || AuthPersistenceService.getToken();
@@ -809,13 +777,18 @@ const contextValue: IAuthContext = React.useMemo(() => {
       auth: contextValues.auth || auth.auth,
       token: currentToken,
       roles: contextValues.roles || auth.user?.roles,
+      systemValues: contextValues.systemValues || AuthPersistenceService.getSystemValues(),
       updateValues,
       logout,
       handleReactAdminIdentity,
       getPermissions,
-      fetchAuth: fetchCompleteAuth 
+      fetchAuth: fetchCompleteAuth,
+      getSystemValues,
+      getSystemValue,
+      getPointOfSales
     };
-  }, [contextValues, auth, updateValues, logout, handleReactAdminIdentity, getPermissions, fetchCompleteAuth]);
+  }, [contextValues, auth, updateValues, logout, handleReactAdminIdentity, getPermissions, fetchCompleteAuth, getSystemValues, getSystemValue, getPointOfSales]);
+
   return (
     <AuthContext.Provider value={contextValue}>
       {children}
