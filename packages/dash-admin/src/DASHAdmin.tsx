@@ -263,10 +263,13 @@ const DASHAdminApp: React.FC<IDASHAdmin<unknown, unknown, unknown, unknown>> = R
   }, [children, customResources, useCoreResources, dispatch]);
 
   /** When the authcontext changes, update the resources */
-  React.useEffect(() => {
+  /*React.useEffect(() => {
     if(authenticated) calculateResources();
-  }, [authenticated, calculateResources]);
+  }, [authenticated, calculateResources]);*/
 
+  React.useEffect(() => {
+     calculateResources();
+  }, []);
   /** When the redux resources are updated, store them in an ES6 Class */
   React.useEffect(() => {
     DASHStorageClass.resources = resources;

@@ -26,10 +26,12 @@ export default {
 			});
 
 			if (loginResponse.status >= 200 && loginResponse.status <= 299) {
-				var today = new Date();
+				/*var today = new Date();
 				var expires = new Date();
 				expires.setDate(today.getDate() + 2);
-				setCookie('token', loginResponse.data.token, { expires });
+				setCookie('token', loginResponse.data.token, { expires });*/
+
+                setCookie('token', loginResponse.data.token);
 
 				localStorage.setItem('token', loginResponse.data.token);
 

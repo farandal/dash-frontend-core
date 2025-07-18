@@ -4,7 +4,9 @@ import { useSelector } from 'react-redux';
 // Remove this import
 // import { usePermissions } from 'react-admin';
 
-import { CircularProgress, Divider, List } from '@mui/material';
+import { CircularProgress, Divider, List, IconButton } from '@mui/material';
+import KeyboardDoubleArrowLeftIcon from '@mui/icons-material/KeyboardDoubleArrowLeft';
+import KeyboardDoubleArrowRightIcon from '@mui/icons-material/KeyboardDoubleArrowRight';
 import { useEffect } from 'react';
 import { IMenuItem, IAppMenu } from './AppMenuComponents/interfaces';
 import SidebarItem from './AppMenuComponents/expanded/SidebarItem';
@@ -20,6 +22,15 @@ import { AvatarComponent, DarkModeSwitcher, LanguageSwitcher } from 'dash-compon
 import Scrollbar from 'dash-admin/src/components/scrollbar/Scrollbar';
 // Add this import
 import { AuthPersistenceService, useAuthContext } from 'dash-admin/src/contexts/auth/AuthContext';
+
+// Update the interface to include new props
+interface IAppMenuExtended extends IAppMenu {
+  logos?: {
+    horizontalLogo: React.ReactNode;
+    squaredLogo: React.ReactNode;
+  };
+  onToggleDrawer?: (e: React.MouseEvent) => void;
+}
 
 // Group icons
 const GenerateItems: React.FC<{ items: IMenuItem[]; navExpanded: boolean, navSize: string, level: number }> = ({
@@ -54,20 +65,15 @@ const GenerateItems: React.FC<{ items: IMenuItem[]; navExpanded: boolean, navSiz
 
 };
 
-const AppMaterialMenu: React.FC<IAppMenu> = (props) => {
+const AppMaterialMenu: React.FC<IAppMenuExtended> = (props) => {
 
-  const { menu, debug } = props;
+  const { menu, debug, navExpanded, navSize, logos, onToggleDrawer } = props;
   //const resources = useResourceDefinitions()
   
   // Replace usePermissions with useAuthContext - add null check
   // const { permissions } = usePermissions();
   const authContext = useAuthContext();
   
-  /*const { navExpanded,navSize } = useSelector(
-    (state: IDASHAppState<any, any, IDashAutoAdminResourceConfig>) =>
-      state.common,
-  );*/
-const { navExpanded,navSize } = props; 
   const [items, setItems] = React.useState<IMenuItem[]>(null);
   // Add state for permissions
   //const [permissions, setPermissions] = React.useState<any>(null);
@@ -109,11 +115,10 @@ const { navExpanded,navSize } = props;
 
         //console.log(resource.group + " | ", resource.label + " | ", permissions, resource.roles, checkRole(permissions, resource.roles));
         return (
-          resource.group === group && checkRole(authContext.user?.roles?.flatMap(role => role.name) || [], resource.roles)
+          resource.group === group && checkRole(authContext.user?.roles ? authContext.user?.roles?.flatMap(role => role.name) : ["Public"] || [], resource.roles)
         );
       });
     });
-
     const _items: IMenuItem[] = [];
 
     Object.keys(groupedResources).map((groupKey) => {
@@ -132,7 +137,7 @@ const { navExpanded,navSize } = props;
             key: resource.label,
             to: resource?.redirect
               ? `/${resource.redirect}`
-              : `/${resource.model}`,
+              : `/${localStorage.getItem('currentAppPath') || ''}/${resource.model}`.replace(/\/+/g, '/'),
             icon: resource.icon,
             group: slugify(group[0].group),
             model: resource.model,
@@ -146,7 +151,7 @@ const { navExpanded,navSize } = props;
         icon: group[0].icon || groupIcons[group[0].group],
         group: slugify(group[0].group),
         model: group[0].model,
-        to: group[0].redirect ? `/${group[0].redirect}` : `/${group[0].model}`,
+        to: group[0].redirect ? `/${group[0].redirect}` : `/${localStorage.getItem('currentAppPath') || ''}/${group[0].model}`.replace(/\/+/g, '/'),
         txtLabel: group[0].group,
         ...(_childrens && _childrens.length > 1 && { children: _children }) as any
       };
@@ -161,26 +166,58 @@ const { navExpanded,navSize } = props;
 
   return (
     <>
-      <div className='dash-menu-user'>
-        <AvatarComponent />
-        <div className='dash-menu-actions'>
-            {/* TODO: Languahe switcher that do not rely on react-admin*/}
-            {/*<LanguageSwitcher />*/}
-           
-            <DarkModeSwitcher/>
-        </div>
+      {/* Sidebar Header - moved from AppSidebarMaterial */}
+      <div className='sidebar-header'>
+            {onToggleDrawer && (
+          <IconButton className='dash-drawer-toggler' color='secondary' onClick={onToggleDrawer} >
+            {navExpanded ? (
+              <KeyboardDoubleArrowLeftIcon />
+            ) : (
+              <KeyboardDoubleArrowRightIcon />
+            )}
+          </IconButton>
+        )}
+      
+    
       </div>
 
-      <Divider sx={{ mb:1,mt:4 }} />
-     
-      <Scrollbar
-        //autoHide={true}
-        //autoHideTimeout={1000}
-        //autoHideDuration={200}
-        className={'dash-layout-sider-scrollbar'}
-      >
-        <GenerateItems items={items} navExpanded={navExpanded} navSize={navSize} level={0} />
-      </Scrollbar>
+      {/* User Section */}
+      {authContext?.authenticated ? <>
+        <div className='dash-menu-user'>
+          <AvatarComponent />
+          <div className='dash-menu-actions'>
+              {/* TODO: Language switcher that do not rely on react-admin*/}
+              {/*<LanguageSwitcher />*/}
+             
+              <DarkModeSwitcher/>
+          </div>
+        </div>
+
+          
+        <div className={'sidebar-logo'}>
+          {navExpanded
+            ? (typeof logos?.horizontalLogo === 'string' ? <img src={logos.horizontalLogo} alt="logo" /> : logos?.horizontalLogo)
+            : (typeof logos?.squaredLogo === 'string' ? <img src={logos.squaredLogo} alt="logo" /> : logos?.squaredLogo)}
+        </div>
+
+
+        <Divider sx={{ mb:1,mt:4 }} />
+        </>
+      : <div className='dash-menu-actions'>
+              {/* TODO: Language switcher that do not rely on react-admin*/}
+              {/*<LanguageSwitcher />*/}
+             
+              <DarkModeSwitcher/>
+          </div>}
+       
+        <Scrollbar
+          //autoHide={true}
+          //autoHideTimeout={1000}
+          //autoHideDuration={200}
+          className={'dash-layout-sider-scrollbar'}
+        >
+          <GenerateItems items={items} navExpanded={navExpanded} navSize={navSize} level={0} />
+        </Scrollbar>
     </>
   );
 };
@@ -191,6 +228,5 @@ const { navExpanded,navSize } = props;
     props === nextProps
 ) as typeof AppMaterialMenu;
 */
-
 
 export default AppMaterialMenu;

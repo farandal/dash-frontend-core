@@ -444,11 +444,11 @@ async initializeFromToken(): Promise<DASHAuthenticationServiceAuthResponse> {
 
                 // Update stored auth data using the same pattern as login
                 if (data.token) {
-                    const today = new Date();
+                    /*const today = new Date();
                     const expires = new Date();
                     expires.setDate(today.getDate() + 2);
-                    
-                    setCookie('token', data.token, { expires });
+                    setCookie('token', data.token, { expires });*/
+                    setCookie('token', data.token);
                     localStorage.setItem('token', data.token);
                 }
 

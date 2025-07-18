@@ -31,6 +31,12 @@
     transition: width 225ms cubic-bezier(0.4, 0, 0.6, 1) 0ms;
 }
 
+ .dash-menu-actions {
+        display: flex;
+        align-self: anchor-center;
+        flex-direction: row;
+ }
+
 .expanded.large .dash-menu-user {
     position: relative;
     display: flex;
@@ -39,6 +45,8 @@
 
   .dash-menu-actions {
         display: flex;
+        align-self: anchor-center;
+        flex-direction: row;
         justify-content: flex-end;
         width: 200px;
         position:absolute;
@@ -63,6 +71,7 @@
     gap:8px;
 
   .dash-menu-actions {
+    align-self: anchor-center;
 
         display: flex;
         flex-direction: column;

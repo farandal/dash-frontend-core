@@ -2,9 +2,6 @@ import * as React from 'react';
 import { styled, Theme, CSSObject } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import MuiDrawer from '@mui/material/Drawer';
-import IconButton from '@mui/material/IconButton';
-import KeyboardDoubleArrowLeftIcon from '@mui/icons-material/KeyboardDoubleArrowLeft';
-import KeyboardDoubleArrowRightIcon from '@mui/icons-material/KeyboardDoubleArrowRight';
 import { useMediaQuery, useTheme } from '@mui/material';
 import { IDASHAppState, DASH_REDUX_ACTIONS } from 'dash-admin-state';
 import { useDispatch, useSelector } from 'react-redux';
@@ -46,6 +43,16 @@ const AppSidebarMaterial = (props) => {
     const [localNavExpanded, setLocalNavExpanded] = useState(true);
     const [localNavSize, setLocalNavSize] = useState<"small" | "large">("large");
 
+    // Create refs to track current values for Redux sync
+    const localNavExpandedRef = React.useRef(localNavExpanded);
+    const localNavSizeRef = React.useRef(localNavSize);
+
+    // Update refs when values change
+    React.useEffect(() => {
+        localNavExpandedRef.current = localNavExpanded;
+        localNavSizeRef.current = localNavSize;
+    }, [localNavExpanded, localNavSize]);
+
     // Listen for nav events from other components
     React.useEffect(() => {
         const unsubscribeToggle = NavEventManager.onToggleExpanded(() => {
@@ -61,11 +68,6 @@ const AppSidebarMaterial = (props) => {
             unsubscribeSet();
         };
     }, []);
-
-    // Notify other components when nav state changes
-    /*React.useEffect(() => {
-        NavEventManager.notifyStateChange(localNavExpanded, localNavSize);
-    }, [localNavExpanded, localNavSize]);*/
 
     // Memoize logo extraction to prevent unnecessary re-renders
     const logos = React.useMemo(() => ({
@@ -142,11 +144,11 @@ const AppSidebarMaterial = (props) => {
                 body.classList.remove(previousLocationClassRef.current);
             }
             
-            // Inform Redux of current local nav state after cleanup - ONLY on location change
-            dispatch(DASH_REDUX_ACTIONS.setNavExpanded(localNavExpanded));
-            dispatch(DASH_REDUX_ACTIONS.setNavSize(localNavSize));
+            // Use ref values to avoid stale closures and prevent infinite loops
+            dispatch(DASH_REDUX_ACTIONS.setNavExpanded(localNavExpandedRef.current));
+            dispatch(DASH_REDUX_ACTIONS.setNavSize(localNavSizeRef.current));
         };
-    }, [location.pathname, dispatch, localNavExpanded, localNavSize]);
+    }, [location.pathname, dispatch]); // ✅ Removed localNavExpanded and localNavSize from deps
 
     const windowSize = useWindowSize();
 
@@ -241,22 +243,12 @@ const AppSidebarMaterial = (props) => {
                     disablePortal: true, 
                 }}
             >
-                <div className='sidebar-header'>
-                    <div className={'sidebar-logo'}>
-                        {localNavExpanded || localNavSize === "large" 
-                            ? (typeof logos.horizontalLogo === 'string' ? <img src={logos.horizontalLogo} alt="logo" /> : logos.horizontalLogo)
-                            : (typeof logos.squaredLogo === 'string' ? <img src={logos.squaredLogo} alt="logo" /> : logos.squaredLogo)}
-                    </div>
-
-                    <IconButton className='dash-drawer-toggler' color='secondary' onClick={(e) => toggleDrawer(e)} >
-                        {localNavExpanded ? (
-                            <KeyboardDoubleArrowLeftIcon />
-                        ) : (
-                            <KeyboardDoubleArrowRightIcon />
-                        )}
-                    </IconButton>
-                </div>
-                <AppMaterialMenu navSize={localNavSize} navExpanded={localNavExpanded} />
+                <AppMaterialMenu 
+                    navSize={localNavSize} 
+                    navExpanded={localNavExpanded}
+                    logos={logos}
+                    onToggleDrawer={toggleDrawer}
+                />
             </MuiDrawer>
         </Box>
     );

@@ -71,7 +71,8 @@ const SidebarItem = ({
         if ((e.target as any)?.localName === "svg") return;
 
         if (item?.to) {
-          navigate(item.to);
+           
+          navigate(item.to.replace(/\/+/g, '/'));
         }
       }}
     >
