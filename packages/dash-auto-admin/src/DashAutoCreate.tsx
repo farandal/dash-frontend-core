@@ -6,6 +6,7 @@ import evalActionPermission from './utils/evalActionPermission';
 import AutoTitle from './common/DashAutoTitle';
 
 import DashAutoAdminSaveButton from './DashAutoAdminSaveButton';
+import { Portal } from '@mui/material';
 
 const DashAutoCreate: React.FC<IAutoForm> = ({
 	resourceConfig,
@@ -46,24 +47,47 @@ const DashAutoCreate: React.FC<IAutoForm> = ({
 				? resourceConfig.toolbarSaveButton.component
 				: DashAutoAdminSaveButton;
 	
-		return <Toolbar {...props}>
-			{evalActionPermission(
-				resourceConfig,
-				resourceConfig.toolbarSaveButton,
-			) && (
-				<SaveComponent
-					resourceConfig={resourceConfig}
-					onSubmit={onSubmit}
-					{...(resourceConfig.toolbarSaveButton &&
-							resourceConfig.toolbarSaveButton?.props)}
-				/>
-			)}
-			{resourceConfig?.AutoEditBottomToolbarElements ? (
-				resourceConfig.AutoCreateBottomToolbarElements(resourceConfig)
-			) : (
-				<></>
-			)}
-		</Toolbar>;
+return  <Toolbar {...props}>
+				{evalActionPermission(
+					resourceConfig,
+					resourceConfig.toolbarSaveButton,
+				) && (
+					<SaveComponent
+						resourceConfig={resourceConfig}
+						onSubmit={onSubmit}
+						{...(resourceConfig.toolbarSaveButton &&
+								resourceConfig.toolbarSaveButton?.props)}
+					/>
+				)}
+				{resourceConfig?.AutoEditBottomToolbarElements ? (
+					resourceConfig.AutoCreateBottomToolbarElements(resourceConfig)
+				) : (
+					<></>
+				)}
+			</Toolbar>
+	
+
+		return <Portal /*container={document.querySelector("div.dash-app-layout")}*/>
+			<Toolbar {...props}>
+				{evalActionPermission(
+					resourceConfig,
+					resourceConfig.toolbarSaveButton,
+				) && (
+					<SaveComponent
+						resourceConfig={resourceConfig}
+						onSubmit={onSubmit}
+						{...(resourceConfig.toolbarSaveButton &&
+								resourceConfig.toolbarSaveButton?.props)}
+					/>
+				)}
+				{resourceConfig?.AutoEditBottomToolbarElements ? (
+					resourceConfig.AutoCreateBottomToolbarElements(resourceConfig)
+				) : (
+					<></>
+				)}
+			</Toolbar>
+		</Portal>;
+        
 	};
 
 	return (

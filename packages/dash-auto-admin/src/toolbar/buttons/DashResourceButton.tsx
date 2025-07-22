@@ -14,9 +14,6 @@ import {
     RaRecord
 } from 'react-admin/src';
 
-
-
-
 import useVirtualHash from '../../hooks/useVirtualHash';
 import IDashAutoAdminResourceConfig from '../../interfaces/IDashAutoAdminResourceConfig';
 import { IconButton, Tooltip } from '@mui/material';
@@ -37,6 +34,8 @@ interface Props<RecordType extends RaRecord = any> {
     scrollToTop?: boolean;
     resourceConfig?: IDashAutoAdminResourceConfig;
     children?: React.JSX.Element;
+    showIcon?: boolean;
+    title?: string;
 }
 /* @ts-ignore Expected Cannot use namespace 'RaRecord' as a type.ts(2709) */
 export type ShowButtonProps<RecordType extends RaRecord = any> =
@@ -76,6 +75,8 @@ const DashResourceButton = <RecordType extends RaRecord = any>(
         resourceConfig,
         record: _inputRecord,
         resource: _inputResource,
+        showIcon = true,
+        title,
         ...rest
     } = componentProps;
 
@@ -86,7 +87,6 @@ const DashResourceButton = <RecordType extends RaRecord = any>(
     /*if(navigate && !mode) {
         mode = inferModeFromUrl(navigate(record));
     } */
-
 
     if (!navigation) {
 
@@ -164,18 +164,30 @@ const DashResourceButton = <RecordType extends RaRecord = any>(
             {...restWithoutTitle}
         /></Tooltip>
     } else {
-        // Remove title prop from rest to avoid conflict with Tooltip
+        // If showIcon is false and children are provided, render children with click handler
+        if (!showIcon && props.children) {
+            return React.cloneElement(props.children, {
+                onClick: (e: React.MouseEvent) => handleOnClick(e),
+                ...props.children.props
+            });
+        }
+
+        // For cases with no children, we need to keep the title prop
         const { title, ...restWithoutTitle } = rest as any;
+        
         const button = <ComponentType
             onClick={(e) => handleOnClick(e)}
             state={scrollStates[String(scrollToTop)]}
             size={size}
+            title={props.children ? undefined : title} // Keep title only when no children
             {...restWithoutTitle}
         >
-            {mode === 'edit' ? <Edit /> :
-                mode === 'show' ? <Visibility /> :
-                    mode === 'create' ? <Add /> :
-                        mode}
+            {showIcon && (
+                mode === 'edit' ? <Edit /> :
+                    mode === 'show' ? <Visibility /> :
+                        mode === 'create' ? <Add /> :
+                            mode
+            )}
         </ComponentType>
 
         return <Tooltip title={props?.label || ''}>
@@ -192,6 +204,7 @@ DashResourceButton.propTypes = {
     navigate: PropTypes.func,
     navigation: PropTypes.string,
     children: PropTypes.element,
+    showIcon: PropTypes.bool,
 };
 
 export default memo(
@@ -201,5 +214,6 @@ export default memo(
         (props.record && nextProps.record
             ? props.record.id === nextProps.record.id
             : props.record == nextProps.record) && // eslint-disable-line eqeqeq
-        props.label === nextProps.label,
+        props.label === nextProps.label &&
+        props.showIcon === nextProps.showIcon,
 );

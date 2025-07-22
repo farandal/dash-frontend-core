@@ -3,7 +3,7 @@ import { SavedQueriesList, useListContext, useRefresh, useUnselectAll } from 're
 import { TopToolbar, FilterForm } from 'react-admin/src';
 import IDashAutoAdminResourceConfig from '../interfaces/IDashAutoAdminResourceConfig';
 import { FC, ReactNode } from 'react';
-import { Box, Button, Collapse, Fab, Grid } from '@mui/material';
+import { Box, Button, Collapse, Fab, Grid, Portal } from '@mui/material';
 import FilterAltOffIcon from '@mui/icons-material/FilterAltOff';
 import DashAutoListFilterFormWithButton, { IToolbarFiltersHandler } from './DashAutoListFilterFormWithButton';
 import React from 'react';

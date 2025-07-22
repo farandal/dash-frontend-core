@@ -34,6 +34,7 @@ export const getEnv = (key: string) => {
 };
 
 const system = {
+  FRONTEND_URL: getEnv('APP_FRONTEND_URL') || 'http://localhost:3006',
   API_URL: getEnv('APP_BACKEND_URL') || 'http://localhost:8000',
   SOCKET_URL: (getEnv('APP_SOCKETS_HOST') || (typeof window !== 'undefined' ? window.location.hostname : 'localhost')) + (getEnv('APP_SOCKETS_PORT') ? ':' + getEnv('APP_SOCKETS_PORT') : ''), 
   SOCKETS_ENABLED: JSON.parse(getEnv('APP_SOCKETS_ENABLED')) || false,
@@ -50,7 +51,8 @@ const system = {
   ENABLE_TENANT_IMPERSONATION: getEnv('ENABLE_TENANT_LOGIC') || true,
   ENABLE_LOGS_AND_NOTIFICATIONS: getEnv('ENABLE_LOGS_AND_NOTIFICATIONS') || false,
   DEFAULT_PER_PAGE: Number(getEnv('DEFAULT_PER_PAGE')) || null,
-  URL_PREFIX: getEnv('DASH_ADMIN_URL_PREFIX') || '#/',
+  //URL_PREFIX: getEnv('DASH_ADMIN_URL_PREFIX') || '#/',
+  URL_PREFIX: getEnv('DASH_ADMIN_URL_PREFIX') || '/',
   //PAGE_TRANSITIONS: JSON.parse(getEnv('PAGE_TRANSITIONS')) || false,
   PAGE_TRANSITIONS: false,
 

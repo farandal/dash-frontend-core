@@ -15,12 +15,12 @@ const getUrlParamsObject = (searchParams: any) => {
 
 
 interface ChangePasswordProps {
-    panelSettings: any;
+   
     onAuthChange?: (authenticated: any) => void;
 }
 
 const ChangePassword: React.FC<ChangePasswordProps> = ({
-    panelSettings,
+   
 }) => {
 	const navigate = useNavigate();
 	let [searchParams] = useSearchParams();
@@ -71,8 +71,7 @@ const ChangePassword: React.FC<ChangePasswordProps> = ({
 
 	return (
 		 <FullLayoutMarkup
-            logo={panelSettings?.horizontalLogo}
-            loginBackground={panelSettings?.loginBackground}
+           
         >
 			<form 
 				onSubmit={handleSubmit} 

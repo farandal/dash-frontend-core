@@ -7,11 +7,11 @@ import { getEnv } from '../config/DASHAdminSystemConstants';
 import { FullLayoutMarkup } from 'dash-default-theme';
 
 interface VerifyAccountProps {
-	panelSettings: any;
+	
 }
 
 const VerifyAccount: React.FC<VerifyAccountProps> = ({
-	panelSettings,
+	
 }) => {
 	const [searchParams] = useSearchParams();
 	const navigate = useNavigate();
@@ -68,8 +68,7 @@ const VerifyAccount: React.FC<VerifyAccountProps> = ({
 
 	return (
 		<FullLayoutMarkup
-			logo={panelSettings?.horizontalLogo}
-			loginBackground={panelSettings?.loginBackground}
+		
 		>
 			<div className="dash-app-login-form">
 				<h1 className="dash-app-login-form-title">Verificación de Cuenta</h1>

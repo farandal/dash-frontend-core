@@ -95,14 +95,14 @@ const ResourceMenu: React.FC<IResourceMenu> = (props) => {
                             </DashResourceButton>*/}
 
 
-                            <DashResourceButton
+                            {(!resourceConfig.toolbarCreateButton?.enabled === false) && <DashResourceButton
                                 resourceConfig={resourceConfig}
                                 label={resourceConfig.mainAction.title}
                                 mode={resourceConfig.mainAction?.mode || 'create'}  >
                                 <Button>
                                     <>{resourceConfig.mainAction.title}</>
                                 </Button>
-                            </DashResourceButton>
+                            </DashResourceButton>}
                             {resourceConfig.navActions && resourceConfig.navActions.map((action) => action)}
                         </ButtonGroup>
                 </div>

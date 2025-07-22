@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 // Remove this import
 // import { usePermissions } from 'react-admin';
 
-import { CircularProgress, Divider, List, IconButton } from '@mui/material';
+import { CircularProgress, Divider, List, IconButton, Box } from '@mui/material';
 import KeyboardDoubleArrowLeftIcon from '@mui/icons-material/KeyboardDoubleArrowLeft';
 import KeyboardDoubleArrowRightIcon from '@mui/icons-material/KeyboardDoubleArrowRight';
 import { useEffect } from 'react';
@@ -17,7 +17,7 @@ import { IDashAutoAdminResourceConfig } from 'dash-auto-admin';
 import { IDASHAppState } from 'dash-admin-state';
 import checkRole from 'dash-admin/src/helpers/checkRole';
 import { slugify } from 'dash-admin/src/utils/slugify';
-import { AvatarComponent, DarkModeSwitcher, LanguageSwitcher } from 'dash-components';
+import { AvatarComponent, DarkModeSwitcher, LanguageSwitcher, TenantAvatarComponent } from 'dash-components';
 
 import Scrollbar from 'dash-admin/src/components/scrollbar/Scrollbar';
 // Add this import
@@ -75,8 +75,16 @@ const AppMaterialMenu: React.FC<IAppMenuExtended> = (props) => {
   const authContext = useAuthContext();
   
   const [items, setItems] = React.useState<IMenuItem[]>(null);
-  // Add state for permissions
-  //const [permissions, setPermissions] = React.useState<any>(null);
+
+  
+  // State for tenant logos
+  const [tenantLogos, setTenantLogos] = React.useState<{
+    horizontalLogo: string | null;
+    squaredLogo: string | null;
+  }>({
+    horizontalLogo: null,
+    squaredLogo: null
+  });
 
   const resources = useSelector(
     (
@@ -94,6 +102,27 @@ const AppMaterialMenu: React.FC<IAppMenuExtended> = (props) => {
       state.settings.groupIcons
   );
 
+  // Load tenant logos from AuthPersistenceService
+  useEffect(() => {
+    const tenantImages = AuthPersistenceService.getTenantImages();
+    
+    if (tenantImages) {
+      console.log('AppMaterialMenu: Loading tenant logos:', tenantImages);
+      setTenantLogos({
+        horizontalLogo: tenantImages.horizontal_logo?.original || null,
+        squaredLogo: tenantImages.squared_logo?.original || null
+      });
+    } else {
+      console.log('AppMaterialMenu: No tenant images found');
+      setTenantLogos({
+        horizontalLogo: null,
+        squaredLogo: null
+      });
+    }
+
+   
+
+  }, []);
 
   useEffect(() => {
     // Don't process resources if permissions haven't been loaded yet and not in debug mode
@@ -135,9 +164,11 @@ const AppMaterialMenu: React.FC<IAppMenuExtended> = (props) => {
           return {
             label: resource.label,
             key: resource.label,
-            to: resource?.redirect
-              ? `/${resource.redirect}`
-              : `/${localStorage.getItem('currentAppPath') || ''}/${resource.model}`.replace(/\/+/g, '/'),
+            to: resource?.redirect?.startsWith('/')
+              ? resource.redirect
+              : resource?.redirect
+                ? `/${localStorage.getItem('currentAppPath') || ''}/${resource.model}/${resource.redirect}`.replace(/\/+/g, '/')
+                : `/${localStorage.getItem('currentAppPath') || ''}/${resource.model}`.replace(/\/+/g, '/'),
             icon: resource.icon,
             group: slugify(group[0].group),
             model: resource.model,
@@ -151,7 +182,12 @@ const AppMaterialMenu: React.FC<IAppMenuExtended> = (props) => {
         icon: group[0].icon || groupIcons[group[0].group],
         group: slugify(group[0].group),
         model: group[0].model,
-        to: group[0].redirect ? `/${group[0].redirect}` : `/${localStorage.getItem('currentAppPath') || ''}/${group[0].model}`.replace(/\/+/g, '/'),
+        //to: group[0].redirect ? `/${group[0].redirect}` : `/${localStorage.getItem('currentAppPath') || ''}/${group[0].model}`.replace(/\/+/g, '/'),
+        to: group[0].redirect?.startsWith('/')
+              ? group[0].redirect
+              : group[0].redirect
+                ? `/${localStorage.getItem('currentAppPath') || ''}/${group[0].model}/${group[0].redirect}`.replace(/\/+/g, '/')
+                : `/${localStorage.getItem('currentAppPath') || ''}/${group[0].model}`.replace(/\/+/g, '/'),
         txtLabel: group[0].group,
         ...(_childrens && _childrens.length > 1 && { children: _children }) as any
       };
@@ -163,64 +199,66 @@ const AppMaterialMenu: React.FC<IAppMenuExtended> = (props) => {
     setItems(_items);
   }, [resources, debug, authContext?.user]); // Add authContext.user as dependency
 
-
-  return (
-    <>
-      {/* Sidebar Header - moved from AppSidebarMaterial */}
-      <div className='sidebar-header'>
+      return  <>
+   
+          <Box className='sidebar-header' sx={{ display: 'flex', flexDirection: navExpanded && navSize === 'large' ? 'row' : 'column' }}>
+        
+            <Box sx={{ 
+              paddingRight: '5px',
+              borderRight: navExpanded && navSize === 'large' ? '1px solid rgba(0, 0, 0, 0.12)' : 'none'
+            }}>
             {onToggleDrawer && (
-          <IconButton className='dash-drawer-toggler' color='secondary' onClick={onToggleDrawer} >
-            {navExpanded ? (
-              <KeyboardDoubleArrowLeftIcon />
-            ) : (
-              <KeyboardDoubleArrowRightIcon />
+                <IconButton className='dash-drawer-toggler' color='secondary' onClick={onToggleDrawer} >
+                    {navExpanded ? (
+                    <KeyboardDoubleArrowLeftIcon />
+                    ) : (
+                    <KeyboardDoubleArrowRightIcon />
+                    )}
+                </IconButton>
             )}
-          </IconButton>
-        )}
+
+            {!(navExpanded && navSize === 'large') && <TenantAvatarComponent 
+                  imageUrl={tenantLogos.squaredLogo} 
+                  size={60} 
+                  alt="Tenant Logo" 
+            />}
+
+            {authContext?.authenticated && <AvatarComponent />}
+        
+            <DarkModeSwitcher/>
+            </Box>
+
+            {navExpanded && navSize === 'large' && <Box>
+         
+                  <TenantAvatarComponent 
+                    imageUrl={tenantLogos.squaredLogo} 
+                    size={200} 
+                    alt="Tenant Logo" 
+                  />
+           
+         
+         
+            </Box>}
+
+
+     </Box>
+
+     
+
       
-    
-      </div>
+            <Scrollbar
+              //autoHide={true}
+              //autoHideTimeout={1000}
+              //autoHideDuration={200}
+              className={'dash-layout-sider-scrollbar'}
+            >
+              <GenerateItems items={items} navExpanded={navExpanded} navSize={navSize} level={0} />
+            </Scrollbar>
 
-      {/* User Section */}
-      {authContext?.authenticated ? <>
-        <div className='dash-menu-user'>
-          <AvatarComponent />
-          <div className='dash-menu-actions'>
-              {/* TODO: Language switcher that do not rely on react-admin*/}
-              {/*<LanguageSwitcher />*/}
-             
-              <DarkModeSwitcher/>
-          </div>
-        </div>
-
-          
-        <div className={'sidebar-logo'}>
-          {navExpanded
-            ? (typeof logos?.horizontalLogo === 'string' ? <img src={logos.horizontalLogo} alt="logo" /> : logos?.horizontalLogo)
-            : (typeof logos?.squaredLogo === 'string' ? <img src={logos.squaredLogo} alt="logo" /> : logos?.squaredLogo)}
-        </div>
-
-
-        <Divider sx={{ mb:1,mt:4 }} />
         </>
-      : <div className='dash-menu-actions'>
-              {/* TODO: Language switcher that do not rely on react-admin*/}
-              {/*<LanguageSwitcher />*/}
-             
-              <DarkModeSwitcher/>
-          </div>}
-       
-        <Scrollbar
-          //autoHide={true}
-          //autoHideTimeout={1000}
-          //autoHideDuration={200}
-          className={'dash-layout-sider-scrollbar'}
-        >
-          <GenerateItems items={items} navExpanded={navExpanded} navSize={navSize} level={0} />
-        </Scrollbar>
-    </>
-  );
-};
+   
+  
+    };
 
 /*export default React.memo(
   AppMaterialMenu,

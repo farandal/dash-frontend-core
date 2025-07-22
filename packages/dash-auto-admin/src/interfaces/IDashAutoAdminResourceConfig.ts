@@ -30,7 +30,9 @@ export default interface IDashAutoAdminResourceConfig {
     redirect?: string;
     hidden?: boolean;
     resourceMenuDisabled?: boolean;
-	/** */
+    /** if not path is provided, model will be used as default */
+    path?: string;
+    /** */
 	model: string;
 	/** */
 	label?: string;

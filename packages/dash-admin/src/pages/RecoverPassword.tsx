@@ -8,7 +8,7 @@ import getType from '../utils/getType';
 import MUISimpleJsonTable from '../components/misc/MuiSimpleJsonTable';
 import HomeIcon from '@mui/icons-material/Home';
 
-const RecoverPassword = ({ panelSettings }: { panelSettings: any }) => {
+const RecoverPassword = ({  }: {  }) => {
 	const [email, setEmail] = useState('');
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState('');
@@ -54,9 +54,8 @@ const RecoverPassword = ({ panelSettings }: { panelSettings: any }) => {
 
 	return (
 		<FullLayoutMarkup
-			logo={panelSettings?.horizontalLogo}
-			loginBackground={panelSettings?.loginBackground}
-            className='w50'
+		
+       
 		>
 			<form onSubmit={handleSubmit} className='dash-app-login-form'>
 				<Grid container sx={{ mb:4, mt:2 }} spacing={2} alignItems="center">

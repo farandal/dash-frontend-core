@@ -3,21 +3,59 @@ import TenantSettings from '../components/tenant/TenantSettings';
 
 const tenantSchema: IDashAutoAdminAttribute[] = [
 	{
+        tab: "Datos",
 		label: 'Nombre',
 		attribute: 'name',
 		type: String,
 	},
 	{
+         tab: "Datos",
 		label: 'Rut',
 		attribute: 'public_id',
 		type: String,
-		validate: (rut: string) => {
-			if (!rut) return 'El campo es requerido';
-			else if (!rut.match(/^(\d{1,3}(?:\.\d{1,3}){2}-[\dkK])$/g))
-				return 'Ingresar rut con puntos y guion';
-			return undefined;
-		},
+		 validate: (rut: string) => {
+        if(!rut)
+          throw new Error('El campo es requerido');
+        else if(!rut.match(/^(\d{7,8}-[\dkK])$/g))
+          throw new Error('Ingresar rut con guion');
+      },
 	},
+
+      {
+         tab: "Datos",
+      label: 'Descripción Corta',
+      attribute: 'short_description',
+      type: String,
+      inList: false,
+      
+      validate: (value: string) => {
+        if (value && value.length > 500) {
+          throw new Error('La descripción corta no puede exceder 500 caracteres');
+        }
+      },
+    },
+
+    {
+         tab: "Datos",
+      label: 'Descripción Larga',
+      attribute: 'long_description',
+      type: String,
+      inList: false,
+       fieldProps: {
+      multiline: true,
+    },
+    slotProps: {
+      multiline: true,
+      fullWidth: true
+    },
+      validate: (value: string) => {
+        if (value && value.length > 5000) {
+          throw new Error('La descripción larga no puede exceder 5000 caracteres');
+        }
+      },
+    },
+
+
 	{
 		tab: 'Configuración',
 		label: 'Configuración',

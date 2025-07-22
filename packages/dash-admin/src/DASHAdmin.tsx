@@ -22,7 +22,7 @@ import { Error } from './components/error/Error';
 //import { lightTheme } from './themes';
 import coreResources from './resources';
 
-import { CustomRoutes, useTheme, AdminUI, AdminContext, AdminUIProps, Resource } from 'react-admin';
+import { CustomRoutes, useTheme, AdminUI, AdminContext, AdminUIProps, Resource, Admin } from 'react-admin';
 
 export interface IAppResourceGroupsIcon {
   [x: string]: JSX.Element;
@@ -53,6 +53,7 @@ export interface IDASHAdmin<U, A, R, C> {
   history?: any;
   customDict?: { [x: string]: string }
   customReplacements?: { [x: string]: string }
+  basePath?: string;
   children?: JSX.Element;
 }
 
@@ -85,6 +86,7 @@ import { JSX, useEffect, useMemo, useCallback } from 'react';
 import RADashComponent from './react-admin-dash/RADashComponent';
 import DASHAuthenticationService from './contexts/auth/DASHAuthenticationService';
 import { useDashThemeContext } from 'dash-default-theme/src/DashThemeContext';
+import DASHAdminSystemConstants from './config/DASHAdminSystemConstants';
 
 interface IAsyncResources extends AdminUIProps {
   resources: any;
@@ -109,6 +111,7 @@ const AsyncResources: React.FC<IAsyncResources> = React.memo((props) => {
     customRoutes = [], 
     ...rest 
   } = props;
+
 
   // Get auth state
   const { authenticated } = useAuthContext();
@@ -181,15 +184,13 @@ const AsyncResources: React.FC<IAsyncResources> = React.memo((props) => {
     </CustomRoutes>
   ), [authenticated, getCustomAuthRoutes, getCustomRoutes]);
 
-  return (
-    <>
-      <AdminUI {...rest}>
+
+  return  <AdminUI {...rest}>
         {processedResources}
         {memoizedCustomRoutes}
         {memoizedNoLayoutRoutes}
       </AdminUI>
-    </>
-  );
+  
 }, (prevProps, nextProps) => {
   // Deep comparison for AsyncResources
   const resourcesEqual = prevProps.resources.length === nextProps.resources.length &&
@@ -207,6 +208,8 @@ const AsyncResources: React.FC<IAsyncResources> = React.memo((props) => {
     prevProps.customAuthRoutes === nextProps.customAuthRoutes &&
     prevProps.customRoutes === nextProps.customRoutes;
 });
+
+
 
 const DASHAdminApp: React.FC<IDASHAdmin<unknown, unknown, unknown, unknown>> = React.memo((props) => {
   const {
@@ -230,6 +233,7 @@ const DASHAdminApp: React.FC<IDASHAdmin<unknown, unknown, unknown, unknown>> = R
     customDict,
     customReplacements,
     history,
+    basePath,
     children,
   } = props;
 
@@ -330,9 +334,18 @@ const DASHAdminApp: React.FC<IDASHAdmin<unknown, unknown, unknown, unknown>> = R
     ...(customThemeConfig ? { theme: customThemeConfig } : { theme: themeOptions }),
     ...(customQueryClient && { queryClient: customQueryClient as QueryClient }),
     ...(history && { history: history }),
+    ...(basePath ? { basename: basePath } : { basename: DASHAdminSystemConstants.system.URL_PREFIX }),
   };
 
-  
+  // Add this debug right before the AdminContext
+console.log('AdminContext Configuration:', {
+    adminContextProps,
+    basename: basePath || '/',
+    currentWindowPath: window.location.pathname,
+    expectedRelativePath: window.location.pathname.replace(basePath || '', '') || '/',
+    resources: resources?.map(r => r.model)
+});
+
   const adminUIProps = useMemo(() => ({
     ...(customNotification && { notification: customNotification }),
     layout: customLayout,
@@ -340,6 +353,7 @@ const DASHAdminApp: React.FC<IDASHAdmin<unknown, unknown, unknown, unknown>> = R
     ...(customErrorPage && { catchAll: customErrorPage }),
     ...(Error && { error: Error }),
   }), [customNotification, customLayout, customLoginPage, customErrorPage]);
+
 
   return children ? (
     <DictionaryProvider
@@ -350,7 +364,7 @@ const DASHAdminApp: React.FC<IDASHAdmin<unknown, unknown, unknown, unknown>> = R
         <AdminUI {...adminUIProps}>
           {children}
         </AdminUI>
-        <RADashComponent />
+       <RADashComponent />
       </AdminContext>
     </DictionaryProvider>
   ) : (
@@ -370,6 +384,8 @@ const DASHAdminApp: React.FC<IDASHAdmin<unknown, unknown, unknown, unknown>> = R
       </AdminContext>
     </DictionaryProvider>
   );
+  
+
 }, (prevProps, nextProps) => {
   // Custom comparison for DASHAdminApp
   return (

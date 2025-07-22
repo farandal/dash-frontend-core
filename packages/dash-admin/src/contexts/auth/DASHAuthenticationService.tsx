@@ -15,6 +15,7 @@ export interface DASHAuthenticationServiceLoginCredentials {
     username: string;
     password: string;
     redirect?: string;
+    meta?: any;
 }
 
 export interface DASHAuthenticationServiceAuthResponse {
@@ -103,7 +104,7 @@ class DASHAuthenticationService {
    // Update the login method to dispatch to Redux directly
 async login(credentials: DASHAuthenticationServiceLoginCredentials): Promise<DASHAuthenticationServiceAuthResponse> {
     console.log("=== DASH AUTH SERVICE LOGIN START ===");
-    console.log("Credentials:", { username: credentials.username, password: "***", redirect: credentials.redirect });
+    console.log("Credentials:", { username: credentials.username, password: "***", redirect: credentials.redirect, meta: credentials.meta });
 
     if (!(credentials.username && credentials.password)) {
         console.log("❌ Missing credentials");
@@ -119,10 +120,14 @@ async login(credentials: DASHAuthenticationServiceLoginCredentials): Promise<DAS
         const loginResponse = await this.axiosInstance.post('/login', {
             email: credentials.username,
             password: credentials.password,
+            redirect: credentials.redirect,
+            meta: credentials.meta
         });
 
         console.log("Login response status:", loginResponse.status);
         console.log("Login response data:", loginResponse.data);
+
+        debugger;
 
         if (loginResponse.status >= 200 && loginResponse.status <= 299) {
             console.log("✅ Login response successful");
@@ -137,9 +142,19 @@ async login(credentials: DASHAuthenticationServiceLoginCredentials): Promise<DAS
 
             // Check if we have token data
             if (loginResponse.data && loginResponse.data.token) {
+                
                 console.log("Setting token in storage");
                 setCookie('token', loginResponse.data.token, { expires });
                 localStorage.setItem('token', loginResponse.data.token);
+                if(loginResponse.data?.refreshToken) {
+                    console.log("Setting refresh token in storage");
+                    setCookie('refreshToken', loginResponse.data.refreshToken, { expires });
+                    localStorage.setItem('refreshToken', loginResponse.data.refreshToken);
+                }
+                if(loginResponse.data?.meta) {
+                    console.log("Setting app");
+                    localStorage.setItem('app', loginResponse.data.meta.app);
+                }
             } else {
                 console.warn("⚠️ No token in login response");
             }
@@ -444,6 +459,7 @@ async initializeFromToken(): Promise<DASHAuthenticationServiceAuthResponse> {
 
                 // Update stored auth data using the same pattern as login
                 if (data.token) {
+                    debugger;
                     /*const today = new Date();
                     const expires = new Date();
                     expires.setDate(today.getDate() + 2);
@@ -562,6 +578,7 @@ async initializeFromToken(): Promise<DASHAuthenticationServiceAuthResponse> {
         try {
             const refreshResponse = await this.refreshToken(refreshToken);
             if (refreshResponse.success) {
+                
                 // Update localStorage with new token
                 localStorage.setItem('token', refreshResponse.token!);
                 if (refreshResponse.refreshToken) {

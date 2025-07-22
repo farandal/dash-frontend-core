@@ -47,12 +47,15 @@ export type {ILaravelEchoContext} from "./contexts/com/LaravelEchoContext"
 
 export {default as DASHGlobalErrorHandler} from "./components/misc/DASHGlobalErrorHandler"
 export type {
-    INotificationPayloadBase,
-    INotificationPayload,
-    DefaultSystemNotification,
-    IFormattedNotification,
+    //NotificationPayloadBase,
+    //INotificationPayload,
+    //DefaultSystemNotification,
+    //IFormattedNotification,
     INotificationFormat
 } from "./contexts/com/components/notificationFormats"
+
+// This is a React-Admin hacked component to overwrite some native features.
+export * from './react-admin-dash/Resource';
 
 export {default as LogFileById} from "./components/logs/LogFileById"
 export {default as LogFile} from "./components/logs/LogFile"
@@ -66,3 +69,5 @@ export * from "./utils"
 export * from "./providers/i18n/languages"
 
 export { default as DarkToggleMode } from "./components/menu/DarkToggleMode"
+
+export { default as useFormPersistence } from "./hooks/useFormPersistance";

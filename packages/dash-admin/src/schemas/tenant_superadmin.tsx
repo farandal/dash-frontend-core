@@ -18,14 +18,12 @@ const tenantSystemAdminSchema: IDashAutoAdminAttribute[] = [
 		label: 'Rut',
 		attribute: 'public_id',
 		type: String,
-		validate: (rut: string) => {
-        
-			if (!rut) return 'El campo es requerido';
-         
-			else if (!rut.match(/^(\d{1,3}(?:\.\d{1,3}){2}-[\dkK])$/g))
-				return 'Ingresar rut con puntos y guin';
-			return undefined;
-		},
+		 validate: (rut: string) => {
+        if(!rut)
+          throw new Error('El campo es requerido');
+        else if(!rut.match(/^(\d{7,8}-[\dkK])$/g))
+          throw new Error('Ingresar rut con guion');
+      },
 	},
     /* TODO! domain spacific logic issue, can't be on the Base tenant controller */
 	/*

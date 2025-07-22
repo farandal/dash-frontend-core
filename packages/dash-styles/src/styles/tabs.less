@@ -120,22 +120,23 @@
 }
 
 .dash-module-action {
-  display: flex;
-  justify-content: flex-end;
-  margin: 4px 4px 0px 0px;
-
+  //display: flex;
+  //justify-content: flex-end;
+  //margin: 4px 4px 0px 0px;
+  position: absolute;
+  right: 6px;
   button {
     z-index: 1000;
   }
 
   .MuiButton-root {
-    padding: 2px 8px;
+    //padding: 2px 8px;
     font-size: 0.8rem !important;
-    min-width: 40px;
-    min-height: 20px;
+    //min-width: 40px;
+    //min-height: 20px;
   }
 
-  margin-bottom: -40px;
+  //margin-bottom: -40px;
 }
 
 @media (max-width: @mq-sm){
@@ -158,9 +159,5 @@
       }
     }
 
-    .dash-module-action {
-      @media (max-width: @mq-sm) {
-        margin-bottom: -28px;
-      }
-    }
+
 }

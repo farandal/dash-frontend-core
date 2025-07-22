@@ -113,6 +113,7 @@ export class AuthPersistenceService {
     try {
       // Store token separately for easy access
       if (authData.token) {
+        debugger;
         localStorage.setItem('token', authData.token);
       }
       
