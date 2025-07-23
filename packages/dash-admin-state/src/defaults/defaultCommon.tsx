@@ -12,7 +12,7 @@ const defaultCommon: ICommonState = {
   content_height: null,
   pathname: '/',
   componentsState: {}, // Changed from [] to {}
-  headerComponents: [],
+  headerToolBar: null,
   panelSettings: {
     horizontalLogo: <>🖥</>,
     squaredLogo: <>🖥</>,

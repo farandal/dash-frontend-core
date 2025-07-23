@@ -52,7 +52,7 @@ export const useCommonState = <U, A>() => {
       appPath: state.common.appPath,
       width: state.common.width,
       height: state.common.height,
-      headerComponents: state.common.headerComponents,
+      headerToolBar: state.common.headerToolBar,
       panelSettings: state.common.panelSettings,
     }),
     isEqual

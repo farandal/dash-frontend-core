@@ -1,4 +1,4 @@
-import { JSX } from "react";
+import { FC, JSX } from "react";
 
 export interface IComponentState {
 	[x: string]: any;
@@ -17,7 +17,7 @@ export interface ICommonState {
 	content_height?: number;
 	pathname: string;
 	componentsState?: {[x: string]: any}; // Changed from array to object
-	headerComponents?: JSX.Element[];
+	headerToolBar?: FC;
 	panelSettings?: {[x: string]: any};
 }
 

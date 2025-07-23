@@ -1,4 +1,4 @@
-import { JSX } from 'react';
+import { FC, JSX } from 'react';
 import {
   LOADING,
   SET_HEADER_COMPONENTS,
@@ -24,10 +24,10 @@ export const unsetComponentState = (componentId: string) => ({
   componentId,
 });
 
-export const setHeaderComponents = (headerComponents: JSX.Element[]) => {
+export const setHeaderComponent = (headerToolBar: FC) => {
   return {
     type: SET_HEADER_COMPONENTS,
-    headerComponents,
+    headerToolBar,
   };
 };
 
