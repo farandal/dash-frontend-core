@@ -36,9 +36,9 @@ const DomainHeader = <U, A>({
         return unsubscribe;
     }, [dispatch]);
 
-    const headerComponents = useSelector(
+    const HeaderToolBar = useSelector(
         (state: IDASHAppState<U, A, IDashAutoAdminResourceConfig>) =>
-            state.common.headerComponents,
+            state.common.headerToolBar,
     );
     const pageSettings: IPageState = useSelector(
         (state: IDASHAppState<U, A, IDashAutoAdminResourceConfig>) =>
@@ -59,7 +59,12 @@ const DomainHeader = <U, A>({
         NavEventManager.toggleExpanded();
     };
   
-    const HeaderComponentInline = () => (
+    const HeaderComponentInline = () => { 
+
+        
+     
+       return <div className={pageSettings.title || HeaderToolBar ? "dash-header-content" : ""}>
+        {pageSettings.title ?
         <div className='dash-header-inline'>
             <span className='dash-header-inline-title'>
                 {pageSettings.title || ''}
@@ -67,8 +72,15 @@ const DomainHeader = <U, A>({
             <span className='dash-header-inline-subtitle'>
                 {pageSettings.subTitle}
             </span>
+        </div> : <></>}
+
+        {HeaderToolBar ? <ul className={`dash-header-items`}> 
+           <HeaderToolBar/>
+        </ul> : <></>}
+
         </div>
-    );
+       
+    }
 
     return (
         <div className='dash-header'>
@@ -90,18 +102,10 @@ const DomainHeader = <U, A>({
                     </div>
                 </Box>
 
-                <div className='dash-header-content'>
+            
                     <HeaderComponentInline />
-                    <ul className={`dash-header-items`}>
-                        {Children.map(headerComponents, (child, index) => {
-                            return (
-                                <li key={index} className={`dash-header-item`}>
-                                    {child}
-                                </li>
-                            );
-                        })}
-                    </ul>
-                </div>
+                   
+                
 
             </div>
         </div>

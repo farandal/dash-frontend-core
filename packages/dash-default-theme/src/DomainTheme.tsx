@@ -5,7 +5,7 @@ import React from 'react';
 
 export interface IDomainTheme<U = any, A = any> extends PropsWithChildren {
     menuComponent?: JSX.Element;
-    headerComponent: JSX.Element;
+    headerToolBar: JSX.Element;
     footerComponent?: JSX.Element;
 }
 
@@ -31,7 +31,7 @@ const MemoizedFooter = React.memo(({ footerComponent }: { footerComponent?: JSX.
 const DomainTheme = <U, A>({
     children,
     menuComponent,
-    headerComponent,
+    headerToolBar,
     footerComponent,
     ...props
 }: IDomainTheme<U, A>): JSX.Element => {
@@ -46,7 +46,7 @@ const DomainTheme = <U, A>({
                 className={'dash-app-layout-content'}
        
             >
-                {headerComponent}
+                {headerToolBar}
                 <MemoizedContent>
                     {children}
                 </MemoizedContent>

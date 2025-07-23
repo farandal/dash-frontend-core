@@ -64,11 +64,11 @@ const SidebarItem = ({
     <ListItemButton
       selected={isCurrent}
       onClick={(e) => {
-
+      
         playClick();
         updatePageState();
 
-        if ((e.target as any)?.localName === "svg") return;
+        //if ((e.target as any)?.localName === "svg") return;
 
         if (item?.to) {
            

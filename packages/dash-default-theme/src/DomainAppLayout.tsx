@@ -50,7 +50,7 @@ const DomainAppLayout = <U, A>(props: IDomainAppLayout<U, A>): React.JSX.Element
     return <>{themeComponent}</>;
   }
 
-    return <DomainTheme headerComponent={<DomainHeader />}>
+    return <DomainTheme headerToolBar={<DomainHeader />}>
         {children}
         <Box sx={{ mb: 3 }}>
             <div className='dash-layout-footer-content'></div>

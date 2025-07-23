@@ -69,11 +69,11 @@ const CollapsableSidebarMenu = ({
         className={'sidebar-list-menu-item'}
 
         onClick={(e) => {
-
+          
           playClick();
           setLocalOpen(!localOpen);
 
-          if ((e.target as any)?.localName === "svg") return;
+          //if ((e.target as any)?.localName === "svg") return;
 
           // TODO: if main clickable prop, then...
           if (!isCurrentPath(loc.pathname, item)) {

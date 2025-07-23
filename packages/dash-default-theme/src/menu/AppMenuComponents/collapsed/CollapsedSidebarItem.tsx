@@ -70,21 +70,24 @@ const SidebarItem: FC<ISidebarItem> = (props) => {
             {...rest}
             selected={isCurrent}
             onClick={(e) => {
-
+               
                 if(onClick) {
                    
                     onClick(e);
                 }
 
                 e.preventDefault();
-                if ((e.target as any)?.localName === 'svg') return;
+                 //if ((e.target as any)?.localName === 'svg') return;
 
                 if (!hasChildren) {
                     if (!isCurrentPath(loc.pathname, item)) {
                         updatePageState();
                         navigate(item.to);
+                        return;
                     }
                 }
+
+              
             }}
         >
             {showIcon && <ListItemIcon>{item.icon && item.icon}</ListItemIcon>}
