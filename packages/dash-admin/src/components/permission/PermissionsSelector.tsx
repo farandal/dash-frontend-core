@@ -169,6 +169,10 @@ const PermissionsSelectorBase: React.FC<IDashAutoAdminCustomFieldComponent> = ({
         name: 'permission_objects',
     });
 
+    const permissionsController = useController({
+        name: 'permissions',
+    });
+
     // Number of items to show initially (before expand)
     const INITIAL_ITEMS_COUNT = 6;
 
@@ -391,11 +395,12 @@ const handlePermissionToggle = useCallback((permission: IPermissionItem, event: 
             newValues = prev.filter(p => p.name !== permission.name);
         }
         
-        // Update form controller with ALL permissions (not just filtered ones)
+        // Update both form controllers
         permissionObjectsController.field.onChange(newValues);
+        permissionsController.field.onChange(newValues.map(p => p.name));
         return newValues;
     });
-}, [form, permissionObjectsController]);
+}, [form, permissionObjectsController, permissionsController]);
 
 // Update the handleSelectAllGroup function to preserve non-group selections
 const handleSelectAllGroup = useCallback((tab: IPermissionItem[], event: React.ChangeEvent<HTMLInputElement>) => {
@@ -430,8 +435,9 @@ const handleSelectAllGroup = useCallback((tab: IPermissionItem[], event: React.C
             newValues = prev.filter(p => p.group !== tab[0]?.group);
         }
         
-        // Update form controller with ALL permissions
+        // Update both form controllers
         permissionObjectsController.field.onChange(newValues);
+        permissionsController.field.onChange(newValues.map(p => p.name));
         return newValues;
     });
 }, [form, permissionObjectsController, permissionsData]);
@@ -450,6 +456,7 @@ const handleSelectAllPermissions = useCallback(() => {
     
     setParsedValues(allPermissions);
     permissionObjectsController.field.onChange(allPermissions);
+    permissionsController.field.onChange(allPermissions.map(p => p.name));
 }, [form, permissionsData, permissionObjectsController]);
 
 // Update the handleDeselectAllPermissions function
@@ -458,7 +465,8 @@ const handleDeselectAllPermissions = useCallback(() => {
     
     setParsedValues([]);
     permissionObjectsController.field.onChange([]);
-}, [form, permissionObjectsController]);
+    permissionsController.field.onChange([]);
+}, [form, permissionObjectsController, permissionsController]);
 
 
 
