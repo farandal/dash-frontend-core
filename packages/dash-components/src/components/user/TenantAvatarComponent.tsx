@@ -12,6 +12,7 @@ const TenantAvatarComponent: React.FC<TenantAvatarComponentProps> = ({
     size = 40, 
     alt = "Tenant Logo" 
 }) => {
+
     return (
         <div className='dash-tenant-avatar'>
             {imageUrl ? (
@@ -19,8 +20,8 @@ const TenantAvatarComponent: React.FC<TenantAvatarComponentProps> = ({
                     src={imageUrl} 
                     alt={alt}
                     sx={{ 
-                        width: size, 
-                        height: size,
+                        width: '100%', 
+                        height: '100%', 
                         '& img': {
                             objectFit: 'contain' // Ensure logo maintains aspect ratio
                         }
@@ -30,8 +31,8 @@ const TenantAvatarComponent: React.FC<TenantAvatarComponentProps> = ({
             ) : (
                 <Avatar 
                     sx={{ 
-                        width: size, 
-                        height: size 
+                        width: '100%', 
+                        height: '100%', 
                     }}
                     variant="square"
                 >

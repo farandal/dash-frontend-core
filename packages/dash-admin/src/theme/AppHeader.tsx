@@ -1,4 +1,4 @@
-import React, { ReactNode, useEffect } from 'react';
+import React, { FC, JSX, ReactNode, useEffect } from 'react';
 import { Children } from 'react';
 
 import { useSelector } from 'react-redux';
@@ -18,8 +18,8 @@ const AppHeader: React.FC<IAppHeader> = ({
 	const page: IPageState = useSelector(
 		(state: IDASHAppState<any, any, any>) => state.page,
 	);
-	const headerComponents: JSX.Element[] = useSelector(
-		(state: IDASHAppState<any, any, any>) => state.common.headerComponents,
+	const HeaderToolBar: FC = useSelector(
+		(state: IDASHAppState<any, any, any>) => state.common.headerToolBar,
 	);
 
 	return (
@@ -35,13 +35,11 @@ const AppHeader: React.FC<IAppHeader> = ({
 				/>
 			)}
 			<ul className={`dash-header-items`}>
-				{Children.map(headerComponents, (child, index) => {
-					return (
-						<li key={index} className={`dash-header-item`}>
-							{child}
-						</li>
-					);
-				})}
+				
+					
+						<HeaderToolBar/>
+						
+					
 			</ul>
 		</div>
 	);

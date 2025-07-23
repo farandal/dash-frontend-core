@@ -85,8 +85,8 @@ useEffect(() => {
             }
             
             setMenuPosition({ 
-                top: rect.top + window.scrollY + 30, 
-                left: left
+                top: rect.top + window.scrollY, 
+                left: left + 40
             });
         }
     };

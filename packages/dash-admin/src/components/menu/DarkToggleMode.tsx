@@ -8,34 +8,52 @@ import {
   DASH_THEME_SETTINGS
 } from 'dash-admin-state';
 import { IconMenuItem } from 'mui-nested-menu';
+import { Avatar, useColorScheme } from '@mui/material';
+import { DashThemeHelperProvider } from 'dash-default-theme';
 
 const DarkToggleMode = () => {
-  const darkMode: boolean = useSelector((state: IDASHAppState<any, any, any>) =>
-    state.settings.themeType === DASH_THEME_SETTINGS.THEME_TYPE_DARK
-      ? true
-      : false,
-  );
+
+  const { mode, setMode } = useColorScheme();
+
+  /*const dashMode: "light" | "dark" = useSelector((state: IDASHAppState<any, any, any>) =>
+    state.settings.themeType
+  );*/
+  const darkMode = mode === "dark";
   const dispatch = useDispatch();
   
-  
   const onClick = () => {
+  const newMode = mode === "dark" 
+          ? "light" 
+          : "dark";
+
     dispatch(
-      DASH_REDUX_ACTIONS.toggleThemeType(
-        darkMode
-          ? DASH_THEME_SETTINGS.THEME_TYPE_LIGHT
-          : DASH_THEME_SETTINGS.THEME_TYPE_DARK,
-      ),
+      DASH_REDUX_ACTIONS.toggleThemeType(newMode),
     );
+
+    setMode(newMode);
   };
   
   return (
     <>
-    <IconMenuItem 
-      onClick={onClick}
-      leftIcon={darkMode ? <LightMode /> : <DarkMode />}
-      label={darkMode ? 'Light Mode' : 'Dark Mode'}
-      className='dash-theme-toggle'
-    />
+     <div className='dash-theme-avatar' onClick={onClick}>
+   
+     <DashThemeHelperProvider>
+      <Avatar 
+        sizes='small'
+        sx={{ fontSize: '1rem' }}
+        style={{
+          width: '30px',
+          height: '30px',
+          minHeight: '30px'
+        }}
+        className='dash-theme-avatar-icon'
+      >
+        {darkMode ? <LightMode /> : <DarkMode />}
+      </Avatar>
+      </DashThemeHelperProvider>
+    </div>
+
+    
     </>
   );
 };

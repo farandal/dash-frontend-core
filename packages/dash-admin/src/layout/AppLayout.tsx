@@ -82,7 +82,7 @@ const CustomAppLayout: React.FC<IAppLayout> = (props) => {
 						</Box>
 						{/*<DASHTheme
 							menuComponent={<AppMenu menu={resources} themeType={themeType} />}
-							headerComponent={<></>}
+							headerToolBar={<></>}
 							key={0}
 						>
 							<Content

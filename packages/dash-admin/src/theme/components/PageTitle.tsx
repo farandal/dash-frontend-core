@@ -1,3 +1,5 @@
+// @Deprecated: not in use.
+
 import React, { PropsWithChildren, ReactNode } from 'react';
 
 export interface IPageTitle extends PropsWithChildren {
@@ -18,6 +20,8 @@ const PageTitle: React.FC<IPageTitle> = ({
 	children,
 	...props
 }) => {
+
+    if(!title || title === "") { return <></>}
 	return (
 		<div className={`dash-page-header ${className || ''}`} {...props}>
 			<h3>{title}</h3>

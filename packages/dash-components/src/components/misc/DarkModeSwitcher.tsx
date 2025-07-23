@@ -17,6 +17,7 @@ const dashThemeType = useSelector((state: IDASHAppState<any, any, any>) =>
   const isDark = mode === 'dark';
 
   const onClick = () => {
+    debugger;
     const newMode = isDark ? 'light' : 'dark';
     setMode(newMode);
     

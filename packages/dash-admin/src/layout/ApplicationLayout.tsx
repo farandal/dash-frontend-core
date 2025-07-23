@@ -44,7 +44,13 @@ const ApplicationLayout: React.FC<IApplicationLayout> = ({
 
     const handleMenuClick = (menuItem: IApplicationLayoutMenuItem) => {
         if (menuItem.redirect) {
-            redirect(menuItem.redirect);
+
+           const _redirect = menuItem.redirect?.startsWith('/')
+                    ? menuItem.redirect
+                    : `/${localStorage.getItem('currentAppPath') || ''}/${menuItem.redirect}`.replace(/\/+/g, '/')
+        
+            redirect(_redirect);
+
         } else if (menuItem.onClick) {
             menuItem.onClick();
         }
@@ -58,8 +64,24 @@ const ApplicationLayout: React.FC<IApplicationLayout> = ({
         const fn = resourceConfig.mainAction.fn === 'virtualhash' ? setVirtualHash : redirect;
         
         if (resourceConfig.mainAction.redirect) {
-            fn(resourceConfig.mainAction.redirect);
+
+
+              const fn = resourceConfig.mainAction.fn === 'virtualhash' ? setVirtualHash : redirect;
+        
+        let _redirect = resourceConfig.mainAction.redirect;
+
+        if (resourceConfig.mainAction.fn !== 'virtualhash') {
+
+            _redirect = resourceConfig.mainAction.redirect?.startsWith('/')
+                    ? resourceConfig.mainAction.redirect
+                    : `/${localStorage.getItem('currentAppPath') || ''}/${resourceConfig.mainAction.redirect}`.replace(/\/+/g, '/');
+        }
+        
+            fn(_redirect);
+            
+           
         } else if (resourceConfig.mainAction.onClick) {
+            debugger;
             resourceConfig.mainAction.onClick();
         }
     };
