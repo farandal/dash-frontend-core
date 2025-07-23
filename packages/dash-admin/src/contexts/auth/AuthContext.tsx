@@ -113,7 +113,7 @@ export class AuthPersistenceService {
     try {
       // Store token separately for easy access
       if (authData.token) {
-        debugger;
+       
         localStorage.setItem('token', authData.token);
       }
       
@@ -717,12 +717,18 @@ export const AuthContextProvider: FC<IAuthContextProvider> = (props) => {
         );
       }
 
+  
       // Recreate MUI theme when tenant settings are available (only if we have new data)
       const tenantSettingsKey = JSON.stringify(tenantSettings);
       if (tenantSettings && lastTenantSettingsRef.current !== tenantSettingsKey) {
         console.log('Recreating MUI theme with tenant settings from auth context');
         lastTenantSettingsRef.current = tenantSettingsKey;
-        recreateTheme(tenantSettings);
+        
+        setTimeout(() => {
+          // Ugly hack, but at this point the UI is not completed loaded, because its lazy loaded.
+          recreateTheme(tenantSettings);
+        }, 300);
+       
       }
 
       // Handle system values data (only if we have new data)

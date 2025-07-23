@@ -34,6 +34,8 @@ export { NotificationWrapper } from './contexts/com/components/NotificationsWidg
 export { default as useLaravelEcho } from './contexts/com/useLaravelEcho';
 export { default as WSMessagesManager } from './hooks/notifications/WSMessagesManager';
 
+export { default as FCMContext, FCMProvider } from './contexts/com/FCMContext';
+
 export { default as Redirect } from './components/custom/Redirect';
 export { default as getEnv } from "./config/DASHAdminSystemConstants";
 

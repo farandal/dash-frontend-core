@@ -127,7 +127,7 @@ async login(credentials: DASHAuthenticationServiceLoginCredentials): Promise<DAS
         console.log("Login response status:", loginResponse.status);
         console.log("Login response data:", loginResponse.data);
 
-        debugger;
+     
 
         if (loginResponse.status >= 200 && loginResponse.status <= 299) {
             console.log("✅ Login response successful");
@@ -594,7 +594,10 @@ async initializeFromToken(): Promise<DASHAuthenticationServiceAuthResponse> {
     }
 
     // Method to check if we should initialize from token on app load
-    async shouldInitializeFromToken(): Promise<boolean> {
+    async shouldInitializeFromToken(forceGetAuth?:boolean): Promise<boolean> {
+        
+        if(forceGetAuth) { return true };
+        
         const token = localStorage.getItem('token');
         const isAuthenticated = JSON.parse(localStorage.getItem('authenticated') || 'false');
         const user = localStorage.getItem('user');
@@ -725,11 +728,11 @@ async initializeFromToken(): Promise<DASHAuthenticationServiceAuthResponse> {
     */
 
     // Update the initializeApp method to dispatch to Redux directly
-async initializeApp(): Promise<DASHAuthenticationServiceAuthResponse> {
+async initializeApp(forceGetAuth?:boolean): Promise<DASHAuthenticationServiceAuthResponse> {
     console.log('Initializing DASH app authentication...');
-    const shouldGetAuth = true;
-    
-    const shouldInit = await this.shouldInitializeFromToken();
+    const USES_GET_AUTH = true; // TODO: add the get auth to the env and retrieve it through getEnv. nevertheless all apps uses getAuth. 
+  
+    const shouldInit = await this.shouldInitializeFromToken(forceGetAuth);
     
     if (shouldInit) {
         console.log('Token found but not fully authenticated, initializing...');
@@ -743,7 +746,7 @@ async initializeApp(): Promise<DASHAuthenticationServiceAuthResponse> {
             console.log('Already authenticated, checking if auth refresh needed');
             
             // If shouldGetAuth is true, refresh auth data to get latest tenant/user info
-            if (shouldGetAuth) {
+            if (USES_GET_AUTH) {
                 try {
                     console.log('Refreshing auth data for latest tenant/user information...');
                     
