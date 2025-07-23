@@ -1,18 +1,22 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'cl.pinoywok.app',
-  appName: 'KitchenTabs',
+  appId: 'com.kitchntabs.app',
+  appName: 'KitchnTabs',
   webDir: 'apps/dash/dist',
+
   server: {
     androidScheme: process.env.NODE_ENV === 'production' ? 'https' : 'http'
   },
   android: {
     allowMixedContent: true,
     captureInput: true,
-    webContentsDebuggingEnabled: true
+    webContentsDebuggingEnabled: true,
   },
   plugins: {
+    PushNotifications: {
+      presentationOptions: ["badge", "sound", "alert"]
+    },
     CapacitorHttp: {
       enabled: true
     },

@@ -1,7 +1,10 @@
-package cl.pinoywok.app;
+package com.kitchntabs.app;
 
 import android.Manifest;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.webkit.PermissionRequest;
@@ -43,6 +46,9 @@ public class MainActivity extends BridgeActivity {
         } catch (Exception e) {
             Log.e(TAG, "Error initializing Pusher Push Notifications", e);
         }
+        
+        // Create notification channel for FCM
+        createNotificationChannel();
         
         // Request microphone permission at startup
         requestMicrophonePermission();
@@ -108,6 +114,28 @@ public class MainActivity extends BridgeActivity {
             } else {
                 Log.d(AUDIO_TAG, "Microphone permission denied by user");
             }
+        }
+    }
+    
+    private void createNotificationChannel() {
+        // Create the NotificationChannel, but only on API 26+ because
+        // the NotificationChannel class is new and not in the support library
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = getString(R.string.default_notification_channel_name);
+            String description = getString(R.string.default_notification_channel_description);
+            String channelId = getString(R.string.default_notification_channel_id);
+            int importance = NotificationManager.IMPORTANCE_HIGH;
+            
+            NotificationChannel channel = new NotificationChannel(channelId, name, importance);
+            channel.setDescription(description);
+            channel.enableLights(true);
+            channel.enableVibration(true);
+            
+            // Register the channel with the system
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+            
+            Log.d(TAG, "Created notification channel: " + channelId);
         }
     }
 }
