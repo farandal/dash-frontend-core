@@ -1,12 +1,13 @@
 import AutoTabbedForm from './DashAutoTabbedForm';
 import IAutoForm from './interfaces/IDashAutoForm';
-import React from 'react';
+import React, { Fragment, ReactNode } from 'react';
 import { Create, TopToolbar, ListButton, Toolbar } from 'react-admin';
 import evalActionPermission from './utils/evalActionPermission';
 import AutoTitle from './common/DashAutoTitle';
 
 import DashAutoAdminSaveButton from './DashAutoAdminSaveButton';
 import { Portal } from '@mui/material';
+import IDashAutoAdminResourceConfig from './interfaces/IDashAutoAdminResourceConfig';
 
 const DashAutoCreate: React.FC<IAutoForm> = ({
 	resourceConfig,
@@ -89,6 +90,7 @@ return  <Toolbar {...props}>
 		</Portal>;
         
 	};
+    
 
 	return (
 		<Create
@@ -96,6 +98,7 @@ return  <Toolbar {...props}>
 			mutationMode={resourceConfig.mutationMode}
 			title={<AutoTitle resourceConfig={resourceConfig} />}
 		>
+          
 			<AutoTabbedForm
 				mode='create'
 				resourceConfig={resourceConfig}
@@ -105,6 +108,7 @@ return  <Toolbar {...props}>
 				beforeSubmit={beforeSubmit}
 				isDrawer={isDrawer}
 			/>
+            
 		</Create>
 	);
 };

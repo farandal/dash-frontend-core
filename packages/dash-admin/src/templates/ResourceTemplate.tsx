@@ -61,6 +61,11 @@ export const ResourceTemplate = (resourceConfig:IDashAutoAdminResourceConfig) =>
     const idParamName = resourceConfig?.idParamName || 'id';
     //const { [idParamName]: id, [a]: all } = useParams();
    
+   /* useEffect(()=> {
+        debugger;
+        console.log("RESOURCE TMPLATE")
+    },[])*/
+    
     return (
         <>
             <CustomRoutes>

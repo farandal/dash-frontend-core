@@ -1,5 +1,5 @@
 /* TODO: commented code note - handling of axios error response to parse the error to the appropiate format the react-hook-form was disabled without further testing.  */
-import { useCallback, useEffect, useState } from 'react';
+import { ReactNode, useCallback, useEffect, useState } from 'react';
 import {
 	useResourceContext,
 	useRecordContext,
@@ -43,16 +43,7 @@ const DashAutoTabbedForm: React.FC<IDashAutoTabbedForm> = ({
 	const resource = useResourceContext();
 	const record = useRecordContext();
     const debug = true;
-
-    useEffect(() => {
-
-        console.log("Dash Auto Tabbed rerendered");
-    },[]);
-	
-       // Add this to access form methods including setError
-       const formContext = useFormContext();
-    
-       const dataProvider = useDataProvider();
+    const dataProvider = useDataProvider();
  
 	let formGroupMode = mode === 'create' && resourceConfig?.formGroupModes?.create
 		? resourceConfig.formGroupModes.create
@@ -147,6 +138,10 @@ const DashAutoTabbedForm: React.FC<IDashAutoTabbedForm> = ({
 			break;
 	}
 
+    const ContextComponent = resourceConfig.contextComponent ? resourceConfig.contextComponent:  ({children}) => {
+        return children;
+    };
+  
 
     if(!formData) return <Loading/>
 
@@ -166,8 +161,10 @@ const DashAutoTabbedForm: React.FC<IDashAutoTabbedForm> = ({
 				className={'auto-admin-grouped-form'}
              
 			>
-                
-				{resourceConfig.createComponent(resourceConfig)}
+                <ContextComponent mode={mode} resourceConfig={resourceConfig}>
+                    {resourceConfig.createComponent(resourceConfig)}
+                </ContextComponent>
+				
 			</SimpleForm>
 		);
 	}
@@ -185,8 +182,10 @@ const DashAutoTabbedForm: React.FC<IDashAutoTabbedForm> = ({
 				className={'auto-admin-grouped-form'}
                
 			>
-               
-				{resourceConfig.editComponent(resourceConfig)}
+                <ContextComponent mode={mode} resourceConfig={resourceConfig}>
+                    {resourceConfig.editComponent(resourceConfig)}
+                </ContextComponent>
+				
 			</SimpleForm>
 		);
 	}
@@ -196,7 +195,7 @@ const DashAutoTabbedForm: React.FC<IDashAutoTabbedForm> = ({
        
 		return (
 			<>
-            
+         
 			<TabbedForm
 				key="tabbed-form"
 				toolbar={toolbar || null}
@@ -207,9 +206,10 @@ const DashAutoTabbedForm: React.FC<IDashAutoTabbedForm> = ({
                 syncWithLocation={resourceConfig.syncTabsWithLocation || false}
                 
                 defaultValues={mode === "create" ? formData : {...record,...formData}}
-                
+                component={(props)=> <ContextComponent mode={mode} resourceConfig={resourceConfig}>{props.children} </ContextComponent>}
+                //component={(props) => props.children}
 			>
-               
+              
                 {/* It has to be a function and not a Functional component, because it returns an array of JSX elements without parent container */}
                 {/* The downside, is can't implement hooks within the DashAutoFormTabs component */}
 				{DashAutoFormTabs({
@@ -217,6 +217,7 @@ const DashAutoTabbedForm: React.FC<IDashAutoTabbedForm> = ({
 					resourceConfig: resourceConfig,
 					options: { mode: mode, isDrawer: isDrawer },
 				})}
+                
 			</TabbedForm>
       
             </>
@@ -235,10 +236,12 @@ const DashAutoTabbedForm: React.FC<IDashAutoTabbedForm> = ({
 				className={'auto-admin-grouped-form'}
             
 			>
+                 <ContextComponent mode={mode} resourceConfig={resourceConfig}>
 				{DashAutoFormGroups({schema:resourceConfig.schema, resourceConfig, options:{
 					mode: mode,
 					isDrawer: isDrawer,
 				}})}
+                </ContextComponent>
 			</SimpleForm>
 		);
 	}
@@ -255,10 +258,12 @@ const DashAutoTabbedForm: React.FC<IDashAutoTabbedForm> = ({
 				className={'auto-admin-grouped-form'}
                 
 			>
+                <ContextComponent mode={mode} resourceConfig={resourceConfig}>
 				{DashAutoFormLayout({schema:resourceConfig.schema, resourceConfig:resourceConfig, options:{
 					mode: mode,
 					isDrawer: isDrawer,
 				}})}
+                </ContextComponent>
 			</SimpleForm>
 		);
 	}

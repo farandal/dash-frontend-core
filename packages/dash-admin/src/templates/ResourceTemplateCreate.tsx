@@ -31,6 +31,13 @@ export const ResourceTemplateCreate: FC<IResourceTemplate> = (props) => {
 	const _showDialogAfterSubmit =
 		resourceConfig?.showDialogAfterSubmit === false ? false : true;
 
+	const getRedirectPath = (path: string) => {
+		const currentAppPath = localStorage.getItem('currentAppPath');
+		return currentAppPath 
+			? `/${currentAppPath}/${path}`.replace(/\/+/g, '/')
+			: `/${path}`.replace(/\/+/g, '/');
+	};
+
 	const onCreate = (data: any) => {
 
 
@@ -48,17 +55,17 @@ export const ResourceTemplateCreate: FC<IResourceTemplate> = (props) => {
 						case false:
 							return;
 						case 'create':
-							redirect('/' + resourceConfig.model + '/create');
+							redirect(getRedirectPath(`${resourceConfig.model}/create`));
 							break;
 						case 'view':
-							redirect('/' + resourceConfig.model + '/' + data.id + '/show');
+							redirect(getRedirectPath(`${resourceConfig.model}/${data.id}/show`));
 							break;
 						case 'edit':
-							redirect('/' + resourceConfig.model + '/' + data.id);
+							redirect(getRedirectPath(`${resourceConfig.model}/${data.id}`));
 							break;
 						case 'list':
 						default:
-							redirect('/' + resourceConfig.model);
+							redirect(getRedirectPath(resourceConfig.model));
 							break;
 					}
 				},
@@ -69,17 +76,17 @@ export const ResourceTemplateCreate: FC<IResourceTemplate> = (props) => {
 		if (!_showDialogAfterSubmit && resourceConfig.redirectAfterCreate) {
 			switch (resourceConfig?.redirectAfterCreate) {
 				case 'create':
-					redirect('/' + resourceConfig.model + '/create');
+					redirect(getRedirectPath(`${resourceConfig.model}/create`));
 					break;
 				case 'view':
-					redirect('/' + resourceConfig.model + '/' + data.id + '/show');
+					redirect(getRedirectPath(`${resourceConfig.model}/${data.id}/show`));
 					break;
 				case 'edit':
-					redirect('/' + resourceConfig.model + '/' + data.id);
+					redirect(getRedirectPath(`${resourceConfig.model}/${data.id}`));
 					break;
 				case 'list':
 				default:
-					redirect('/' + resourceConfig.model);
+					redirect(getRedirectPath(resourceConfig.model));
 					break;
 			}
 		}

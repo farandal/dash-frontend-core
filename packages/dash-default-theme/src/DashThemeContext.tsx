@@ -73,10 +73,9 @@ export const DashThemeProvider: React.FC<DashThemeProviderProps> = ({ extendedOp
         setThemeOptions(newThemeOptions);
         setTheme(newTheme);
 
-        if (settings?.colors || settings?.values) {
-         
+        /*if (settings?.colors || settings?.values) {
             updateDomCssVariables(themeMode, settings?.colors, settings?.values);
-        }
+        }*/
     };
 
     // Observer for data-theme attribute changes
@@ -88,6 +87,8 @@ export const DashThemeProvider: React.FC<DashThemeProviderProps> = ({ extendedOp
                     if (newMode !== currentMode) {
                         console.log('Theme mode changed from', currentMode, 'to', newMode);
                         setCurrentMode(newMode);
+                        const settings = getTenantSettings();
+                        updateDomCssVariables(newMode, settings?.colors, settings?.values);
                     }
                 }
             });

@@ -2,10 +2,11 @@ import AutoTitle from './common/DashAutoTitle';
 import IAutoForm from './interfaces/IDashAutoForm';
 import AutoTabbedForm from './DashAutoTabbedForm';
 import { TopToolbar, Edit, Toolbar } from 'react-admin';
-import React from 'react';
+import React, { ReactNode } from 'react';
 import { ToolbarCreateButton, ToolbarDeleteButton, ToolbarEditButton, ToolbarExportButton, ToolbarListButton, ToolbarSaveButton } from './toolbar/buttons/ToolbarButtons';
 import { BottomToolbarDeleteButton, BottomToolbarSaveButton } from './toolbar/buttons/BottomToolbarButtons';
 import { Portal } from '@mui/material';
+import IDashAutoAdminResourceConfig from './interfaces/IDashAutoAdminResourceConfig';
 
 const DashAutoEdit: React.FC<IAutoForm> = ({
 	id,
@@ -75,6 +76,8 @@ const DashAutoEdit: React.FC<IAutoForm> = ({
 			</Toolbar>
 		);
 	};
+
+   
    
 	return (
 		<Edit
@@ -84,6 +87,7 @@ const DashAutoEdit: React.FC<IAutoForm> = ({
 			mutationMode={resourceConfig.mutationMode}
 			title={<AutoTitle resourceConfig={resourceConfig} />}
 		>
+             
 			<AutoTabbedForm
 				isDrawer={isDrawer}
 				mode='edit'
@@ -96,7 +100,7 @@ const DashAutoEdit: React.FC<IAutoForm> = ({
 				onCancel={onCancel}
                
 			/>
-         
+      
 		</Edit>
 	);
 };

@@ -1,4 +1,3 @@
-
 /* eslint-disable no-mixed-spaces-and-tabs */
 import { useNotify } from 'react-admin';
 import { useRedirect } from 'react-admin';
@@ -30,7 +29,12 @@ export const ResourceTemplateEdit: FC<IResourceTemplate> = (props) => {
 
 	const refresh = useRefresh();
 
-	
+	const getRedirectPath = (path: string) => {
+		const currentAppPath = localStorage.getItem('currentAppPath');
+		return currentAppPath 
+			? `/${currentAppPath}/${path}`.replace(/\/+/g, '/')
+			: `/${path}`.replace(/\/+/g, '/');
+	};
 
 	//const location = useLocation();
 
@@ -56,14 +60,14 @@ export const ResourceTemplateEdit: FC<IResourceTemplate> = (props) => {
 						case false:
 							return;
 						case 'view':
-							redirect('/' + resourceConfig.model + '/' + data.id + '/show');
+							redirect(getRedirectPath(`${resourceConfig.model}/${data.id}/show`));
 							break;
 						case 'edit':
-							redirect('/' + resourceConfig.model + '/' + data.id);
+							redirect(getRedirectPath(`${resourceConfig.model}/${data.id}`));
 							break;
 						case 'list':
 						default:
-							redirect('/' + resourceConfig.model);
+							redirect(getRedirectPath(resourceConfig.model));
 							break;
 					}
 				},
@@ -72,18 +76,17 @@ export const ResourceTemplateEdit: FC<IResourceTemplate> = (props) => {
 		}
 
 		if (!_showDialogAfterSubmit && resourceConfig.redirectAfterUpdate) {
-			switch (resourceConfig?.redirectAfterUpdate) {
+			switch (resourceConfig.redirectAfterUpdate) {
 				case 'view':
-					redirect('/' + resourceConfig.model + '/' + data.id + '/show');
+					redirect(getRedirectPath(`${resourceConfig.model}/${data.id}/show`));
 					break;
 				case 'edit':
-					redirect('/' + resourceConfig.model + '/' + data.id);
+					redirect(getRedirectPath(`${resourceConfig.model}/${data.id}`));
 					break;
 				case 'list':
-                    redirect("/" + resourceConfig.model);
-                    break;
+					redirect(getRedirectPath(resourceConfig.model));
+					break;
 				default:
-					//redirect("/" + resourceConfig.model);
 					break;
 			}
 		}
@@ -126,7 +129,7 @@ export const ResourceTemplateEdit: FC<IResourceTemplate> = (props) => {
 			<DashAutoAdminSaveButton resourceConfig={resourceConfig} />
 		</Toolbar>
 	);
-
+   
 	return resourceConfig.editComponent ? (
 		<ResourceLayout resourceConfig={resourceConfig}>
 			<Edit>
@@ -147,6 +150,7 @@ export const ResourceTemplateEdit: FC<IResourceTemplate> = (props) => {
 		</ResourceLayout>
 	) : (
 		<ResourceLayout resourceConfig={resourceConfig}>
+            
 			<DashAutoEdit
 				//toolbar={<ToolBar />}
 				onError={onError}

@@ -5,7 +5,7 @@ import DASHModal from 'dash-modal';
 import { LaravelEchoProvider } from 'dash-admin/src/contexts/com/LaravelEchoContext';
 import DASHAppConstants from 'dash-constants';
 import { CacheInvalidatorContextProvider } from 'dash-admin/src/utils/cache/CacheInvalidatorContext';
-import { CacheInvalidatorListenerComponent, DASHGlobalErrorHandler, FCMProvider, Redirect, WSMessagesManager } from 'dash-admin';
+import { CacheInvalidatorListenerComponent, DASHGlobalErrorHandler, DashQueryClientContext, FCMProvider, Redirect, WSMessagesManager } from 'dash-admin';
 import { Theme } from '@mui/material';
 import { LocalizationProvider, LocalizationProviderProps } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -15,6 +15,7 @@ import { IDASHAppState } from 'dash-admin-state';
 import { Store } from 'redux';
 import { DashThemeProvider } from './DashThemeContext';
 import { ComponentRegistryProvider, IDashAutoAdminCustomFieldComponent } from 'dash-auto-admin';
+import { QueryClient } from '@tanstack/react-query';
 
 export interface IDomainAppProviders<U, A, R> extends React.PropsWithChildren {
     wsMessagesManager?: typeof WSMessagesManager
@@ -23,6 +24,7 @@ export interface IDomainAppProviders<U, A, R> extends React.PropsWithChildren {
     store?: Store<IDASHAppState<U, A, R>>
     extendedThemeOptions?: any
     dashAutoAdminComponents?: Record<string, React.FC<IDashAutoAdminCustomFieldComponent>>
+    queryClient?: QueryClient
 }
 
 
@@ -33,6 +35,7 @@ const DomainAppProviders = <U, A, R>({
     children,
     extendedThemeOptions,
     dashAutoAdminComponents,
+    queryClient
 
 }: IDomainAppProviders<U, A, R>): React.JSX.Element => {
    
@@ -40,6 +43,7 @@ const DomainAppProviders = <U, A, R>({
        <DashThemeProvider extendedOptions={extendedThemeOptions}>
         <LocalizationProvider dateAdapter={dateAdapter || AdapterDayjs}>
             <AuthContextProvider>
+                <DashQueryClientContext queryClient={queryClient}>
                 <ComponentRegistryProvider customComponents={dashAutoAdminComponents || {}}>
                     <DialogServiceProvider
                         component={DASHModal}
@@ -56,6 +60,7 @@ const DomainAppProviders = <U, A, R>({
                     </FCMProvider>
                     </DialogServiceProvider>
                 </ComponentRegistryProvider>
+                </DashQueryClientContext>
             </AuthContextProvider>
             </LocalizationProvider>
          </DashThemeProvider>

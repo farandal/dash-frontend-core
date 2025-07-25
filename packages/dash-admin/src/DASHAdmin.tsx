@@ -337,6 +337,7 @@ const DASHAdminApp: React.FC<IDASHAdmin<unknown, unknown, unknown, unknown>> = R
     ...(basePath ? { basename: basePath } : { basename: DASHAdminSystemConstants.system.URL_PREFIX }),
   };
 
+
   // Add this debug right before the AdminContext
 console.log('AdminContext Configuration:', {
     adminContextProps,

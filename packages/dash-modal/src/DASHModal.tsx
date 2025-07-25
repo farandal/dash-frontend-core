@@ -96,7 +96,7 @@ const DASHModal: React.FC<IAppDialogProps> = (props) => {
 
 	const handleOnClose: DialogProps['onClose'] = (_e, _r) => {
 		setIsModalOpen(false);
-		if (onCancel) { onCancel(); }
+		if (onClose) { onClose(); }
 	};
 
 	const handleOnConfirm = (_e:any) => {

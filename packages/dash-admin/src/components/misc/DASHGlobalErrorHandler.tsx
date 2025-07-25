@@ -15,32 +15,35 @@ interface IDashGlobalError {
     body: any;
 }
 const _checkError = (error: GlobalErrorHandlerEvent<any>): IDashGlobalError => {
-    const status = error.data.status;
-    let e: IDashGlobalError = { status: 500, body: "Error desconocido" };
-    
-    if (status >= 400 && status < 499) {
 
-    
-        let message = error.data.message;
+    let e: IDashGlobalError = { status: 500, body: "Error desconocido", ...error?.error ? error.error || {} : {} };
 
-        if (status === 401) message = 'No estás autenticado';
-        if (status === 403) message = 'No tienes permiso para acceder a este recurso';
-        if (status === 404) message = 'El recurso solicitado no fue encontrado';
-        if (status === 422) message = 'Error de validación';
-        
+    let _extra = "";
+    if (e.status >= 400 && e.status < 499) {
+
+
+        if (e.status === 401) _extra = 'No estás autenticado';
+        if (e.status === 403) _extra = 'No tienes permiso para acceder a este recurso';
+        if (e.status === 404) _extra = 'El recurso solicitado no fue encontrado';
+        if (e.status === 422) _extra = 'Error de validación';
+
         e = {
-            status: status,
-            body: message
+            status: e.status,
+            body: _extra + " " + e.body
         };
     }
-    
-    if (status >= 500) {
+    /*else if (e.status >= 400 && e.status < 500) {
+        e = {
+            status: e.status || 400,
+            body: 'Ocurrió un error en la solicitud. Por favor, inténtelo de nuevo.'
+        };
+    } else if (e.status >= 500) {
       
         e = {
-            status: status || 500,
+            status: e.status || 500,
             body: 'Ocurrió un error en el servidor. Por favor, inténtelo más tarde.'
         };
-    }
+    }*/
     
     return e;
 }
@@ -52,6 +55,7 @@ const DASHGlobalErrorHandler: React.FC<IDASHGlobalErrorHandler> = ({checkError})
     const dialog = useDialog();
 
     const showError = (parsedError: IDashGlobalError ,globalError:GlobalErrorHandlerEvent<any>) => {
+        
         globalError.config?.toast &&
             toast.error(<>{parsedError.body}</>, {
                 position: 'bottom-center',
@@ -61,7 +65,8 @@ const DASHGlobalErrorHandler: React.FC<IDASHGlobalErrorHandler> = ({checkError})
                 pauseOnHover: true,
                 draggable: true,
             });
-        globalError.config?.dialog &&
+        
+        /*globalError.config?.dialog &&*/
             dialog({
                 variant: 'danger',
                 title: 'Error',
@@ -71,6 +76,7 @@ const DASHGlobalErrorHandler: React.FC<IDASHGlobalErrorHandler> = ({checkError})
 
     const errorChangeHandler = (event: GlobalErrorHandlerEvent<any>) => {
         const globalError = event.data;
+        debugger;
         if (!!globalError?.error) {
             try {
                 showError(checkError ? checkError(globalError) : _checkError(globalError),globalError);

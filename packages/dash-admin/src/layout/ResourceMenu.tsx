@@ -43,7 +43,7 @@ const ResourceMenu: React.FC<IResourceMenu> = (props) => {
 
     const handleMenuClick = (menuItem, e) => {
         updatePageState(menuItem);
-        debugger;
+       
         let _redirect =  menuItem.redirect?.startsWith('/')
                     ? menuItem.redirect
                     : `/${localStorage.getItem('currentAppPath') || ''}/${menuItem.redirect}`.replace(/\/+/g, '/');
