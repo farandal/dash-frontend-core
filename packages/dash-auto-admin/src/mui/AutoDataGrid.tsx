@@ -107,4 +107,5 @@ const AutoDataGrid: React.FC<IAutoDataGrid> = ({
 };
 
 // Export a memoized version of the component
-export default memo(AutoDataGrid);
+//export default memo(AutoDataGrid);
+export default AutoDataGrid

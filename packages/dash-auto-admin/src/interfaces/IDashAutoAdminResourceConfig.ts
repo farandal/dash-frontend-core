@@ -333,6 +333,6 @@ export default interface IDashAutoAdminResourceConfig {
     recordRepresentation?: string;
     syncTabsWithLocation?: boolean;
 
-    contextComponent?:  ({resourceConfig,mode,children}:{resourceConfig:IDashAutoAdminResourceConfig,mode?:"create" | "edit",children?:ReactNode}) => JSX.Element | ReactNode;
+    contextComponent?:  ({resourceConfig,mode,children}:{resourceConfig:IDashAutoAdminResourceConfig,mode?:"create" | "edit" | "list",children?:ReactNode}) => JSX.Element | ReactNode;
     
 }

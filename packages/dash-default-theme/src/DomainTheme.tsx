@@ -11,11 +11,11 @@ export interface IDomainTheme<U = any, A = any> extends PropsWithChildren {
 
 
 // Memoized content wrapper to prevent children re-renders
-const MemoizedContent = React.memo(({ children }: { children: React.ReactNode }) => (
+const MemoizedContent = ({ children }: { children: React.ReactNode }) => (
     <Box className="dash-layout-content">
         {children}
     </Box>
-));
+);
 
 // Memoized footer wrapper
 const MemoizedFooter = React.memo(({ footerComponent }: { footerComponent?: JSX.Element }) => {

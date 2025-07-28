@@ -6,13 +6,15 @@ import {
 	DialogContent,
 	DialogTitle,
 	DialogProps,
+	IconButton,
 } from '@mui/material';
 
 import { useEffect, useState } from 'react';
 
 import InfoIcon from '@mui/icons-material/Info';	
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import ErrorIcon from '@mui/icons-material/Error';	
+import ErrorIcon from '@mui/icons-material/Error';
+import CloseIcon from '@mui/icons-material/Close';
 
 /* @ts-ignore Eslint not capable to find path to resource */
 import errorSound from './assets/modalError.mp3';
@@ -73,7 +75,7 @@ const DASHModal: React.FC<IAppDialogProps> = (props) => {
 		//closeText = null,
 		confirmText = 'Continuar',
 		cancelText = 'Cancelar',
-        closeText = 'Cerrar',
+        closeText = null,
 		title,
 		content = null,
 		className,
@@ -81,7 +83,7 @@ const DASHModal: React.FC<IAppDialogProps> = (props) => {
 		showCancelButton = undefined,
 		showConfirmButton = true,
 		dialogActions,
-		sound = false,
+		sound = true,
 		children,
 		...rest
 	} = props;
@@ -172,6 +174,27 @@ const DASHModal: React.FC<IAppDialogProps> = (props) => {
 	>
 		<DialogTitle id='alert-dialog-title'>
 			<Icon variant={variant}  />
+			{showCloseButton && !closeText && (
+                <IconButton
+                    aria-label="close"
+                    size='small'
+                    onClick={(e) => handleOnClose(e, 'backdropClick')}
+                    sx={{
+                        position: 'absolute',
+                        right: 5,
+                        top: 20,
+                        color: 'white',
+                        bgcolor: 'error.main',
+                        '&:hover': {
+                            bgcolor: 'error.dark',
+                        },
+                        borderRadius: '50%',
+                        padding: '8px',
+                    }}
+                >
+                    <CloseIcon />
+                </IconButton>
+			)}
 		</DialogTitle>
 
 		<DialogContent>
@@ -210,7 +233,7 @@ const DASHModal: React.FC<IAppDialogProps> = (props) => {
 			) : (
 				<></>
 			)}
-            {showCloseButton === true ? (
+            {showCloseButton === true && closeText ? (
 				<Button
 					variant={'contained'}
 					className='btn-width-md'

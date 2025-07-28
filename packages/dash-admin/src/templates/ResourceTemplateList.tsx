@@ -14,33 +14,6 @@ import { IResourceTemplate } from './ResourceTemplate';
 import { parseAxiosError } from '../helpers/parseAxiosError';
 import { useDashResource } from '../contexts/DashResourceContext';
 
-// Memoized DashAutoList wrapper
-const MemoizedDashAutoList = React.memo(({
-	resourceConfig,
-	onSubmit,
-	onError,
-	paginationProps
-}: {
-	resourceConfig: any;
-	onSubmit: (data: any) => void;
-	onError: (error: any) => void;
-	paginationProps: any;
-}) => (
-	<DashAutoList
-		resourceConfig={resourceConfig}
-		onSubmit={onSubmit}
-		onError={onError}
-		{...paginationProps}
-	/>
-), (prevProps, nextProps) => {
-	return (
-		prevProps.resourceConfig === nextProps.resourceConfig &&
-		prevProps.onSubmit === nextProps.onSubmit &&
-		prevProps.onError === nextProps.onError &&
-		JSON.stringify(prevProps.paginationProps) === JSON.stringify(nextProps.paginationProps)
-	);
-});
-
 // Memoized DashAutoDrawer wrapper
 const MemoizedDashAutoDrawer = React.memo(({
 	drawerProps
@@ -50,24 +23,6 @@ const MemoizedDashAutoDrawer = React.memo(({
 	<DashAutoDrawer {...drawerProps} />
 ), (prevProps, nextProps) => {
 	return JSON.stringify(prevProps.drawerProps) === JSON.stringify(nextProps.drawerProps);
-});
-
-// Memoized ResourceLayout wrapper
-const MemoizedResourceLayout = React.memo(({
-	resourceConfig,
-	children
-}: {
-	resourceConfig: any;
-	children: React.ReactNode;
-}) => (
-	<ResourceLayout resourceConfig={resourceConfig}>
-		{children}
-	</ResourceLayout>
-), (prevProps, nextProps) => {
-	return (
-		prevProps.resourceConfig === nextProps.resourceConfig &&
-		prevProps.children === nextProps.children
-	);
 });
 
 const ResourceTemplateListComponent: FC<IResourceTemplate> = (props) => {
@@ -188,23 +143,21 @@ const ResourceTemplateListComponent: FC<IResourceTemplate> = (props) => {
 		[resourceConfig.Pagination]
 	);
 
-	// Memoize the main content
-	const mainContent = useMemo(() => (
-		<MemoizedResourceLayout resourceConfig={resourceConfig}>
-			<MemoizedDashAutoList
+	// Remove mainContent useMemo and directly return the components
+	return (
+		<ResourceLayout resourceConfig={resourceConfig}>
+			<DashAutoList
 				resourceConfig={resourceConfig}
 				onSubmit={onSubmit}
 				onError={onError}
-				paginationProps={paginationProps}
+				{...paginationProps}
 			/>
 
 			{resourceConfig.drawer && (
 				<MemoizedDashAutoDrawer drawerProps={drawerProps} />
 			)}
-		</MemoizedResourceLayout>
-	), [resourceConfig, onSubmit, onError, paginationProps, drawerProps]);
-
-	return mainContent;
+		</ResourceLayout>
+	);
 };
 
 // Memoize the entire component based on resourceConfig
@@ -229,7 +182,7 @@ export const ResourceTemplateList = React.memo(
 	}
 );
 
-// Alternative approach: Create a wrapper that passes resourceConfig as prop
+// Modify the ResourceTemplateListWithConfig component
 export const ResourceTemplateListWithConfig = React.memo(({
 	resourceConfig
 }: {
@@ -350,18 +303,18 @@ export const ResourceTemplateListWithConfig = React.memo(({
 	);
 
 	return (
-		<MemoizedResourceLayout resourceConfig={resourceConfig}>
-			<MemoizedDashAutoList
+		<ResourceLayout resourceConfig={resourceConfig}>
+			<DashAutoList
 				resourceConfig={resourceConfig}
 				onSubmit={onSubmit}
 				onError={onError}
-				paginationProps={paginationProps}
+				{...paginationProps}
 			/>
 
 			{resourceConfig.drawer && (
 				<MemoizedDashAutoDrawer drawerProps={drawerProps} />
 			)}
-		</MemoizedResourceLayout>
+		</ResourceLayout>
 	);
 }, (prevProps, nextProps) => {
 	const resourceConfigEqual = prevProps.resourceConfig === nextProps.resourceConfig;
