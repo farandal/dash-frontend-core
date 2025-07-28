@@ -54,6 +54,7 @@ export interface IDASHAdmin<U, A, R, C> {
   customDict?: { [x: string]: string }
   customReplacements?: { [x: string]: string }
   basePath?: string;
+  AdminWrapper?: React.ComponentType<any>;
   children?: JSX.Element;
 }
 
@@ -234,6 +235,7 @@ const DASHAdminApp: React.FC<IDASHAdmin<unknown, unknown, unknown, unknown>> = R
     customReplacements,
     history,
     basePath,
+    AdminWrapper = (props) => props.children,
     children,
   } = props;
 
@@ -355,17 +357,19 @@ console.log('AdminContext Configuration:', {
     ...(Error && { error: Error }),
   }), [customNotification, customLayout, customLoginPage, customErrorPage]);
 
-
+ // TODO As AdminWrapper was added, possible to refactor and remove RADashComponent from here
   return children ? (
     <DictionaryProvider
       dictionary={memoizedDictionary}
       replacements={memoizedReplacements}
     >
       <AdminContext {...adminContextProps}>
+          <AdminWrapper/>
         <AdminUI {...adminUIProps}>
           {children}
         </AdminUI>
-       <RADashComponent />
+      
+        
       </AdminContext>
     </DictionaryProvider>
   ) : (
@@ -374,6 +378,7 @@ console.log('AdminContext Configuration:', {
       replacements={memoizedReplacements}
     >
       <AdminContext {...adminContextProps}>
+        <AdminWrapper/>
         <AsyncResources
           {...adminUIProps}
           resources={resources}
@@ -381,7 +386,8 @@ console.log('AdminContext Configuration:', {
           customAuthRoutes={customAuthRoutes}
           customRoutes={customRoutes}
         />
-        <RADashComponent />
+       
+      
       </AdminContext>
     </DictionaryProvider>
   );
@@ -400,7 +406,7 @@ console.log('AdminContext Configuration:', {
   );
 });
 
-DASHAdminApp.whyDidYouRender = true;
+//DASHAdminApp.whyDidYouRender = true;
 
 /**
  * The main DASHAdmin component

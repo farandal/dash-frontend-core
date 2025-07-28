@@ -54,8 +54,8 @@ export const DashThemeProvider: React.FC<DashThemeProviderProps> = ({ extendedOp
 
     const recreateTheme = (tenantSettings?: any, mode?: string) => {
         const settings = tenantSettings || getTenantSettings();
-        const themeMode = mode || currentMode;
-        
+        //const themeMode = mode || currentMode;
+        const themeMode = mode || document.documentElement.getAttribute('data-theme') || 'dark';
         
         console.log('Recreating MUI theme with tenant settings:', settings, 'mode:', themeMode);
     
@@ -72,7 +72,7 @@ export const DashThemeProvider: React.FC<DashThemeProviderProps> = ({ extendedOp
         
         setThemeOptions(newThemeOptions);
         setTheme(newTheme);
-
+        updateDomCssVariables(themeMode, settings?.colors, settings?.values);
         /*if (settings?.colors || settings?.values) {
             updateDomCssVariables(themeMode, settings?.colors, settings?.values);
         }*/
@@ -88,6 +88,9 @@ export const DashThemeProvider: React.FC<DashThemeProviderProps> = ({ extendedOp
                         console.log('Theme mode changed from', currentMode, 'to', newMode);
                         setCurrentMode(newMode);
                         const settings = getTenantSettings();
+                       
+                        console.log('Updating theme with new mode:', newMode, 'and settings:', settings);
+                     
                         updateDomCssVariables(newMode, settings?.colors, settings?.values);
                     }
                 }
@@ -119,6 +122,18 @@ export const DashThemeProvider: React.FC<DashThemeProviderProps> = ({ extendedOp
             console.log("Recreating MUI theme on mount");
             recreateTheme(tenantSettings, currentMode);
         }
+    }, []);
+
+    // Listen for DASHTRefreshTheme CustomEvent to trigger theme recreation
+    useEffect(() => {
+        const handler = (event: Event) => {
+            if (event.type === 'DASHTRefreshTheme') {
+                const tenantSettings = getTenantSettings();
+                recreateTheme(tenantSettings, currentMode);
+            }
+        };
+        window.addEventListener('DASHTRefreshTheme', handler);
+        return () => window.removeEventListener('DASHTRefreshTheme', handler);
     }, []);
 
     const contextValue: DashThemeContextType = {

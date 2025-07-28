@@ -19,6 +19,8 @@ export interface IAppDialogProps extends PropsWithChildren<Omit<ModalProps, 'con
 	cancelText?: React.ReactNode;
 	/** */
 	showCancelButton?: boolean;
+    /** */
+	showCloseButton?: boolean;
 	/** */
 	showConfirmButton?: boolean;
 	/** */

@@ -73,16 +73,22 @@ const DASHModal: React.FC<IAppDialogProps> = (props) => {
 		//closeText = null,
 		confirmText = 'Continuar',
 		cancelText = 'Cancelar',
+        closeText = 'Cerrar',
 		title,
 		content = null,
 		className,
-		showCancelButton = false,
+        showCloseButton = true,
+		showCancelButton = undefined,
 		showConfirmButton = true,
 		dialogActions,
 		sound = false,
 		children,
 		...rest
 	} = props;
+    // Show cancel button if cancelText is provided and showCancelButton is not explicitly set
+    const effectiveShowCancelButton = typeof showCancelButton === 'boolean'
+        ? showCancelButton
+        : !!cancelText;
 	const [isModalOpen, setIsModalOpen] = useState(open);
 
 	useEffect(() => {
@@ -161,7 +167,6 @@ const DASHModal: React.FC<IAppDialogProps> = (props) => {
 	return <Dialog
 		{...rest}
 		onClose={handleOnClose}
-		//onOk={handleOk}
 		className={(className ? className : '') + 'dash-modal-' + variant}
 		open={isModalOpen}
 	>
@@ -179,7 +184,7 @@ const DASHModal: React.FC<IAppDialogProps> = (props) => {
 
 		<DialogActions>
 			{dialogActions || <></>}
-			{showCancelButton === true ? (
+			{effectiveShowCancelButton ? (
 				<Button
 					variant={'contained'}
 					className='btn-width-md'
@@ -201,6 +206,18 @@ const DASHModal: React.FC<IAppDialogProps> = (props) => {
 					autoFocus
 				>
 					{confirmText}
+				</Button>
+			) : (
+				<></>
+			)}
+            {showCloseButton === true ? (
+				<Button
+					variant={'contained'}
+					className='btn-width-md'
+					color='primary'
+					onClick={(e) => handleOnClose(e,'backdropClick')}
+				>
+					{closeText}
 				</Button>
 			) : (
 				<></>

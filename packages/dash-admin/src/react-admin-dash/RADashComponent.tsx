@@ -12,32 +12,19 @@ declare global {
     }
 }
 
-const RADashComponent = () => {
-    // Debug control constant - set to false to disable all debugging
-    const DEBUG_ENABLED = false;
-
-    // React admin integration entry point
-    const { identity, isLoading: identityLoading } = useGetIdentity();
-    const authContext = useAuthContext();
-    const dialog = useDialog();
-    const location = useLocation();
-    const navigate = useNavigate();
-    
-    // Get resource definitions from react-admin
-    const resourceDefinitions = useResourceDefinitions();
-    
-    // Get Redux state for debugging
-    const reduxState = useSelector((state: any) => ({
-        resources: state.resources?.items || [],
-        auth: state.auth || {},
-        common: state.common || {},
-        settings: state.settings || {}
-    }));
-
-    // Enhanced route debugging
+// Debugging logic moved to a custom hook
+function useRADashDebug({
+    location,
+    resourceDefinitions,
+    reduxState,
+    authContext,
+    identity,
+    identityLoading,
+    dialog,
+    navigate,
+}) {
     useEffect(() => {
-        if (!DEBUG_ENABLED) return;
-
+        // Enhanced route debugging
         const debugInfo = {
             timestamp: new Date().toISOString(),
             location: {
@@ -92,7 +79,6 @@ const RADashComponent = () => {
         const currentPath = location.pathname;
         const matchingResources = reduxState.resources.filter(resource => {
             const resourcePath = resource.model;
-            
             const matches = currentPath.includes(resourcePath) || resourcePath === '/' && currentPath === '/';
             return matches;
         });
@@ -135,36 +121,30 @@ const RADashComponent = () => {
             routingIssues
         };
         
-    }, [DEBUG_ENABLED, location, resourceDefinitions, reduxState, authContext]);
+    }, [location, resourceDefinitions, reduxState, authContext]);
 
-    // Debug resource changes
     useEffect(() => {
-        if (!DEBUG_ENABLED) return;
-
+        // Debug resource changes
         console.group('📦 Resource Definitions Changed');
         console.log('Available Resources:', Object.keys(resourceDefinitions || {}));
         console.log('Resource Details:', resourceDefinitions);
         console.groupEnd();
-    }, [DEBUG_ENABLED, resourceDefinitions]);
+    }, [resourceDefinitions]);
 
-    // Debug auth changes
     useEffect(() => {
-        if (!DEBUG_ENABLED) return;
-
+        // Debug auth changes
         console.group('🔐 Auth Context Changed');
         console.log('Authenticated:', authContext.authenticated);
         console.log('User:', authContext.user);
         console.log('Identity Loading:', identityLoading);
         console.log('Identity:', identity);
         console.groupEnd();
-    }, [DEBUG_ENABLED, authContext.authenticated, authContext.user, identityLoading, identity]);
+    }, [authContext.authenticated, authContext.user, identityLoading, identity]);
 
-    // Global axios error handler
     useEffect(() => {
+        // Global axios error handler
         const handleGlobalAxiosError = (event) => {
-            if (DEBUG_ENABLED) {
-                console.error('🚨 Global Axios Error:', event.data);
-            }
+            console.error('🚨 Global Axios Error:', event.data);
             dialog({
                 variant: 'danger',
                 title: event.data?.name || "Error",
@@ -180,30 +160,26 @@ const RADashComponent = () => {
         return () => {
             window.removeEventListener('global-axios-error', handleGlobalAxiosError);
         };
-    }, [DEBUG_ENABLED, dialog]);    
+    }, [dialog]);    
 
-    // Debug React Admin routing errors
     useEffect(() => {
+        // Debug React Admin routing errors
         const handleReactAdminError = (error) => {
-            if (DEBUG_ENABLED) {
-                console.error('🚨 React Admin Error:', error);
-                
-                // Check if it's a routing error
-                if (error.message?.includes('404') || error.message?.includes('not found')) {
-                    console.group('🔍 Route Not Found Debug');
-                    console.log('Current path:', location.pathname);
-                    console.log('Available resources:', Object.keys(resourceDefinitions || {}));
-                    console.log('Redux resources:', reduxState.resources.map(r => r.model));
-                    console.log('Suggested fixes:');
-                    console.log('1. Check if resource model matches the URL path');
-                    console.log('2. Verify resource permissions/roles');
-                    console.log('3. Ensure resource is properly registered');
-                    console.groupEnd();
-                }
+            console.error('🚨 React Admin Error:', error);
+            // Check if it's a routing error
+            if (error.message?.includes('404') || error.message?.includes('not found')) {
+                console.group('🔍 Route Not Found Debug');
+                console.log('Current path:', location.pathname);
+                console.log('Available resources:', Object.keys(resourceDefinitions || {}));
+                console.log('Redux resources:', reduxState.resources.map(r => r.model));
+                console.log('Suggested fixes:');
+                console.log('1. Check if resource model matches the URL path');
+                console.log('2. Verify resource permissions/roles');
+                console.log('3. Ensure resource is properly registered');
+                console.groupEnd();
             }
         };
 
-        // Listen for unhandled errors
         window.addEventListener('error', handleReactAdminError);
         window.addEventListener('unhandledrejection', (event) => {
             handleReactAdminError(event.reason);
@@ -213,12 +189,10 @@ const RADashComponent = () => {
             window.removeEventListener('error', handleReactAdminError);
             window.removeEventListener('unhandledrejection', handleReactAdminError);
         };
-    }, [DEBUG_ENABLED, location.pathname, resourceDefinitions, reduxState.resources]);
+    }, [location.pathname, resourceDefinitions, reduxState.resources]);
 
-    // Add a helper function to manually trigger route analysis
     useEffect(() => {
-        if (!DEBUG_ENABLED) return;
-
+        // Add a helper function to manually trigger route analysis
         window.__DASH_DEBUG__ = {
             ...window.__DASH_DEBUG__,
             analyzeCurrentRoute: () => {
@@ -254,18 +228,13 @@ const RADashComponent = () => {
                 navigate(`/${resourceName}`);
             }
         };
-    }, [DEBUG_ENABLED, location, resourceDefinitions, reduxState, authContext, navigate]);
+    }, [location, resourceDefinitions, reduxState, authContext, navigate]);
+}
 
-    // Handle react-admin identity - delegate everything to AuthContext
-    // Deprecated, Dash handles auth now.
-    /*
-    useEffect(() => {
-        if (!identityLoading && identity) {
-            authContext.handleReactAdminIdentity(identity);
-        }
-    }, [identity, identityLoading, authContext]);
-    */
-
+const RADashComponent = () => {
+  
+   
+ 
     return null;
 };
 

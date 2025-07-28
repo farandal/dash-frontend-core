@@ -9,6 +9,7 @@ import {
 	useContext,
 	useState,
 } from 'react';
+import { Portal } from '@mui/material';
 
 export const DialogServiceContext =
 	createContext<(options: AppDialogOptions) => void>(null);
@@ -68,7 +69,7 @@ export const DialogServiceProvider = (props: IDialogServiceProviderProps) => {
 	};
 
 	return <>
-		<DialogComponent
+		<Portal><DialogComponent sx={{ zIndex: 1000000 }} // Ensure modal is on top
 			//open={Boolean(dialogState)}
 			{...dialogState}
 			/*...(dialogState?.onSubmit && { onSubmit:() => handleSubmit() })*/
@@ -77,6 +78,7 @@ export const DialogServiceProvider = (props: IDialogServiceProviderProps) => {
 			onClose={() => handleClose()}
 			onCancel={() => handleCancel()}
 		/>
+        </Portal>
 		<DialogServiceContext.Provider value={exposedDialogHook}>
 			{children}
 		</DialogServiceContext.Provider>

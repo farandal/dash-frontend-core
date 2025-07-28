@@ -106,9 +106,12 @@ const AppMaterialMenu: React.FC<IAppMenuExtended> = (props) => {
     // Load tenant logos from AuthPersistenceService
     useEffect(() => {
         const tenantImages = AuthPersistenceService.getTenantImages();
-
+        console.log('AppMaterialMenu Loaded: loading tenant images:', tenantImages);
         if (tenantImages) {
-            console.log('AppMaterialMenu: Loading tenant logos:', tenantImages);
+            //console.log('AppMaterialMenu: Loading tenant logos:', tenantImages);
+
+            
+
             setTenantLogos({
                 horizontalLogo: tenantImages.horizontal_logo?.original || null,
                 squaredLogo: tenantImages.squared_logo?.original || null
@@ -120,6 +123,12 @@ const AppMaterialMenu: React.FC<IAppMenuExtended> = (props) => {
                 squaredLogo: null
             });
         }
+
+
+    
+        //console.log('DASHTRefreshTheme');
+        window.dispatchEvent(new CustomEvent("DASHTRefreshTheme", {}));
+   
 
 
 

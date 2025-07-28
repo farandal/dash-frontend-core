@@ -222,35 +222,59 @@ export class AuthPersistenceService {
     }
   }
 
-  static getTenantImages(): any | null {
+static getTenantImages(): any | null {
     try {
-      const tenantImages = localStorage.getItem(this.TENANT_IMAGES_KEY);
-      return tenantImages ? JSON.parse(tenantImages) : null;
+        const tenantImages = localStorage.getItem(this.TENANT_IMAGES_KEY);
+        return tenantImages ? JSON.parse(tenantImages) : null;
     } catch (error) {
-      console.error('Failed to get tenant images:', error);
-      return null;
+        console.error('Failed to get tenant images:', error);
+        return null;
     }
-  }
+}
 
-  static getTenantSettings(): any | null {
+static setTenantImages(images: any): void {
     try {
-      const tenantSettings = localStorage.getItem(this.TENANT_SETTINGS_KEY);
-      return tenantSettings ? JSON.parse(tenantSettings) : null;
+        localStorage.setItem(this.TENANT_IMAGES_KEY, JSON.stringify(images));
     } catch (error) {
-      console.error('Failed to get tenant settings:', error);
-      return null;
+        console.error('Failed to set tenant images:', error);
     }
-  }
+}
 
-  static getSystemValues(): any | null {
+static getTenantSettings(): any | null {
     try {
-      const systemValues = localStorage.getItem(this.SYSTEM_VALUES_KEY);
-      return systemValues ? JSON.parse(systemValues) : null;
+        const tenantSettings = localStorage.getItem(this.TENANT_SETTINGS_KEY);
+        return tenantSettings ? JSON.parse(tenantSettings) : null;
     } catch (error) {
-      console.error('Failed to get system values:', error);
-      return null;
+        console.error('Failed to get tenant settings:', error);
+        return null;
     }
-  }
+}
+
+static setTenantSettings(settings: any): void {
+    try {
+        localStorage.setItem(this.TENANT_SETTINGS_KEY, JSON.stringify(settings));
+    } catch (error) {
+        console.error('Failed to set tenant settings:', error);
+    }
+}
+
+static getSystemValues(): any | null {
+    try {
+        const systemValues = localStorage.getItem(this.SYSTEM_VALUES_KEY);
+        return systemValues ? JSON.parse(systemValues) : null;
+    } catch (error) {
+        console.error('Failed to get system values:', error);
+        return null;
+    }
+}
+
+static setSystemValues(values: any): void {
+    try {
+        localStorage.setItem(this.SYSTEM_VALUES_KEY, JSON.stringify(values));
+    } catch (error) {
+        console.error('Failed to set system values:', error);
+    }
+}
 
   static getSystemValue(key: string): any | null {
     try {
@@ -274,27 +298,55 @@ export class AuthPersistenceService {
     localStorage.setItem('authenticated', 'false');
   }
 
-  static clearAllAuthData(): void {
-    // Complete cleanup including tenant data
-    localStorage.removeItem(this.AUTH_KEY);
-    localStorage.removeItem(this.TIMESTAMP_KEY);
-    localStorage.removeItem(this.TENANT_IMAGES_KEY);
-    localStorage.removeItem(this.TENANT_SETTINGS_KEY);
-    localStorage.removeItem(this.SYSTEM_VALUES_KEY);
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    localStorage.setItem('authenticated', 'false');
-  }
-
-  static getStoredAuthData(): any | null {
-    try {
-      const authData = localStorage.getItem(this.AUTH_KEY);
-      return authData ? JSON.parse(authData) : null;
-    } catch (error) {
-      console.error('Failed to get stored auth data:', error);
-      return null;
+    static clearAllAuthData(): void {
+        // Complete cleanup including tenant data
+        localStorage.removeItem(this.AUTH_KEY);
+        localStorage.removeItem(this.TIMESTAMP_KEY);
+        localStorage.removeItem(this.TENANT_IMAGES_KEY);
+        localStorage.removeItem(this.TENANT_SETTINGS_KEY);
+        localStorage.removeItem(this.SYSTEM_VALUES_KEY);
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        localStorage.setItem('authenticated', 'false');
     }
-  }
+
+    static getStoredAuthData(): {
+        token: string | null;
+        user: any | null;
+        systemValues: any | null;
+        auth: any | null;
+        tenantImages: any | null;
+        tenantSettings: any | null;
+    } | null {
+        try {
+            const token = localStorage.getItem('token');
+            const userData = localStorage.getItem('user');
+            const systemValuesData = localStorage.getItem(this.SYSTEM_VALUES_KEY);
+            const authData = localStorage.getItem(this.AUTH_KEY);
+            const tenantImagesData = localStorage.getItem(this.TENANT_IMAGES_KEY);
+            const tenantSettingsData = localStorage.getItem(this.TENANT_SETTINGS_KEY);
+
+            const user = userData ? JSON.parse(userData) : null;
+            const systemValues = systemValuesData ? JSON.parse(systemValuesData) : null;
+            const auth = authData ? JSON.parse(authData) : null;
+            const tenantImages = tenantImagesData ? JSON.parse(tenantImagesData) : null;
+            const tenantSettings = tenantSettingsData ? JSON.parse(tenantSettingsData) : null;
+
+            // Return in the format expected by setAuth
+            return {
+                token,
+                user,
+                systemValues,
+                auth: auth?.auth || null,
+                tenantImages,
+                tenantSettings
+            };
+        } catch (error) {
+            console.error('Failed to get stored auth data:', error);
+            return null;
+        }
+    }
+
 
   static isAuthValid(): boolean {
     return this.getAuth() !== null;
@@ -723,11 +775,8 @@ export const AuthContextProvider: FC<IAuthContextProvider> = (props) => {
       if (tenantSettings && lastTenantSettingsRef.current !== tenantSettingsKey) {
         console.log('Recreating MUI theme with tenant settings from auth context');
         lastTenantSettingsRef.current = tenantSettingsKey;
-        
-        setTimeout(() => {
-          // Ugly hack, but at this point the UI is not completed loaded, because its lazy loaded.
-          recreateTheme(tenantSettings);
-        }, 300);
+        recreateTheme(tenantSettings);
+       
        
       }
 

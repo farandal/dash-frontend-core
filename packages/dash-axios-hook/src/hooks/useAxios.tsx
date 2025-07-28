@@ -9,13 +9,15 @@ export const initAxios = (
 	options: Partial<AxiosRequestConfig<any>>,
 	CSRFAuth?: boolean,
 ) => {
-	const _options = {
-		headers: {
-			'Content-Type': 'application/json',
-			Accept: 'application/json',
-		},
-		...options,
-	};
+  const browserLanguage = typeof navigator !== 'undefined' && navigator.language ? navigator.language.split('-')[0] : 'es';
+  const _options = {
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept-Language': browserLanguage || 'es', // fallback to 'es' if not available
+      Accept: 'application/json',
+    },
+    ...options,
+  };
 
 	const instance = axios.create(_options);
 
@@ -41,10 +43,10 @@ export const initAxios = (
 			return response;
 		},
 		(error:AxiosError<IDashAutoAdminDefaultBackendStructure, any>) => {
-			window.dispatchEvent(new MessageEvent('original-axios-error', { data: {error:error} }));
+			//window.dispatchEvent(new MessageEvent('DASHGlobalError', { data: {error:error} }));
 
       window.dispatchEvent(
-        new MessageEvent('global-axios-error', {
+        new MessageEvent('DASHGlobalError', {
             data: processAxiosError(error, null, "list"),
             origin: "AxiosInterceptor"
         }),

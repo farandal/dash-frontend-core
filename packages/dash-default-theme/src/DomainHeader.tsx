@@ -63,22 +63,32 @@ const DomainHeader = <U, A>({
 
         
      
-       return <div className={pageSettings.title || HeaderToolBar ? "dash-header-content" : ""}>
-        {pageSettings.title ?
-        <div className='dash-header-inline'>
-            <span className='dash-header-inline-title'>
-                {pageSettings.title || ''}
-            </span>
-            <span className='dash-header-inline-subtitle'>
-                {pageSettings.subTitle}
-            </span>
-        </div> : <></>}
+    return (
+        <Box
+            className={pageSettings.title || HeaderToolBar ? "dash-header-content" : ""}
+            sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}
+        >
+            {pageSettings.title ? (
+                <Box className='dash-header-inline' sx={{ display: 'flex', flexDirection: 'row' }}>
+                    <span className='dash-header-inline-title'>
+                        {pageSettings.title || ''}
+                    </span>
+                    <span className='dash-header-inline-subtitle'>
+                        {pageSettings.subTitle}
+                    </span>
+                </Box>
+            ) : null}
 
-        {HeaderToolBar ? <ul className={`dash-header-items`}> 
-           <HeaderToolBar/>
-        </ul> : <></>}
-
-        </div>
+            {HeaderToolBar ? (
+                <Box
+                    className='dash-header-items'
+                    sx={{ display: 'flex', alignItems: 'center', marginLeft: 'auto' }}
+                >
+                    <HeaderToolBar />
+                </Box>
+            ) : null}
+        </Box>
+    );
        
     }
 
