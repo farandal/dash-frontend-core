@@ -261,10 +261,8 @@ const PermissionsSelectorBase: React.FC<IDashAutoAdminCustomFieldComponent> = ({
         return filtered;
     }, [permissionsData, debouncedGroupSearch, debouncedItemSearch]);
 
-    // Fetch permissions - FIXED: Only fetch once
+    // Fetch permissions - FIXED: Stable function reference
     const getPermissions = useCallback(async () => {
-        if (isInitialized) return; // Prevent multiple calls
-        
         try {
             const { data } = await axios.get('system/permissions/availablePermissions');
             setPermissionsData(groupPermissionsData(data));
@@ -272,52 +270,79 @@ const PermissionsSelectorBase: React.FC<IDashAutoAdminCustomFieldComponent> = ({
         } catch (error) {
             console.error('Failed to fetch permissions:', error);
         }
-    }, [axios, groupPermissionsData, isInitialized]);
+    }, [ groupPermissionsData]);
 
     // FIXED: Only fetch permissions once on mount
     useEffect(() => {
-        getPermissions();
-    }, []); // Empty dependency array
+        if (!isInitialized) {
+            getPermissions();
+        }
+    }, [getPermissions, isInitialized]);
 
-    // Handle form submission success
+    // Handle form submission success - FIXED: Remove refresh that causes infinite loop
     useEffect(() => {
         if (formState.isSubmitSuccessful) {
-            refresh();
+            // Don't refresh here as it causes infinite loop
+            // The parent component should handle post-save actions
         }
-    }, [formState.isSubmitSuccessful, refresh]);
+    }, [formState.isSubmitSuccessful]);
 
-    // Initialize parsed values from record - FIXED: Better dependency management
+    // Initialize parsed values from record - FIXED: Correct field access and dependencies
     useEffect(() => {
-        if (record && record?.id && record.permissions && permissionsData.length > 0) {
-            const checked = permissionsData.map((tab) => {
-                return tab.map((permission) => {
-                    return {
-                        group: permission.group,
-                        name: permission.name,
-                        checked: record.permissions.some((element) => element.route_name === permission.name),
-                    };
-                });
-            });
-
-            const parsedCheckedFiltered: IPermissionItem[] = [];
-            checked.forEach((checkedItem) => {
-                checkedItem.forEach((item) => {
-                    if (item.checked) {
-                        parsedCheckedFiltered.push({
-                            group: item.group,
-                            name: item.name,
-                            checked: true,
-                            value: JSON.stringify(item),
+        if (record && record.id && permissionsData.length > 0) {
+            // Check multiple possible field names for permissions
+            const recordPermissions = record.permissions || record.permission_objects || [];
+            
+            if (recordPermissions.length > 0) {
+                const checked = permissionsData.map((tab) => {
+                    return tab.map((permission) => {
+                        // Check against different possible field structures
+                        const isChecked = recordPermissions.some((element) => {
+                            // Handle different permission record structures
+                            if (typeof element === 'string') {
+                                return element === permission.name;
+                            }
+                            // Handle object with route_name field
+                            if (element.route_name) {
+                                return element.route_name === permission.name;
+                            }
+                            // Handle object with name field
+                            if (element.name) {
+                                return element.name === permission.name;
+                            }
+                            return false;
                         });
-                    }
+                        
+                        return {
+                            group: permission.group,
+                            name: permission.name,
+                            checked: isChecked,
+                        };
+                    });
                 });
-            });
 
-            setParsedValues(parsedCheckedFiltered);
+                const parsedCheckedFiltered: IPermissionItem[] = [];
+                checked.forEach((checkedItem) => {
+                    checkedItem.forEach((item) => {
+                        if (item.checked) {
+                            parsedCheckedFiltered.push({
+                                group: item.group,
+                                name: item.name,
+                                checked: true,
+                                value: JSON.stringify(item),
+                            });
+                        }
+                    });
+                });
+
+                setParsedValues(parsedCheckedFiltered);
+            } else {
+                setParsedValues([]);
+            }
         } else if (!record?.id) {
             setParsedValues([]);
         }
-    }, [permissionsData, record?.permissions, record?.id]);
+    }, [permissionsData, record?.permissions, record?.permission_objects, record?.id]);
 
     // Toggle card expansion
     const toggleCard = useCallback((index: number) => {
@@ -375,6 +400,8 @@ const handlePermissionToggle = useCallback((permission: IPermissionItem, event: 
     const isChecked = event.target.checked;
     form.setValue('dirty', true, { shouldDirty: true });
 
+    console.log(`Toggling permission: ${permission.name}, checked: ${isChecked}`);
+
     setParsedValues(prev => {
         let newValues;
         if (isChecked) {
@@ -395,6 +422,8 @@ const handlePermissionToggle = useCallback((permission: IPermissionItem, event: 
             newValues = prev.filter(p => p.name !== permission.name);
         }
         
+        console.log('Updated permissions:', newValues.map(p => p.name));
+        
         // Update both form controllers
         permissionObjectsController.field.onChange(newValues);
         permissionsController.field.onChange(newValues.map(p => p.name));
@@ -408,6 +437,8 @@ const handleSelectAllGroup = useCallback((tab: IPermissionItem[], event: React.C
     
     const isChecked = event.target.checked;
     form.setValue('dirty', true, { shouldDirty: true });
+
+    console.log(`Select all group: ${tab[0]?.group}, checked: ${isChecked}`);
 
     setParsedValues(prev => {
         let newValues;
@@ -435,12 +466,14 @@ const handleSelectAllGroup = useCallback((tab: IPermissionItem[], event: React.C
             newValues = prev.filter(p => p.group !== tab[0]?.group);
         }
         
+        console.log('Updated permissions after group selection:', newValues.map(p => p.name));
+        
         // Update both form controllers
         permissionObjectsController.field.onChange(newValues);
         permissionsController.field.onChange(newValues.map(p => p.name));
         return newValues;
     });
-}, [form, permissionObjectsController, permissionsData]);
+}, [form, permissionObjectsController, permissionsController]);
 
 // Update the handleSelectAllPermissions function to ensure it works with all permissions
 const handleSelectAllPermissions = useCallback(() => {
