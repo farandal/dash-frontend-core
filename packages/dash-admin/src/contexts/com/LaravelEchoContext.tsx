@@ -1,18 +1,18 @@
 import LaravelEchoMgr from './LaravelEchoMgr';
-import { INotificationPayloadBase } from './components/notificationFormats';
+import { IDashNotificationPayloadBase } from './components/notificationFormats';
 import React, { FC, useEffect } from 'react';
 
 export type ILaravelEchoContext = {
-  events: INotificationPayloadBase[];
-  lastEvent: INotificationPayloadBase;
+  events: IDashNotificationPayloadBase[];
+  lastEvent: IDashNotificationPayloadBase;
   clear: () => void;
 };
 
 export interface ILaravelEchoProvider {
   children: React.ReactNode;
   manager?: () => {
-    events: INotificationPayloadBase[];
-    lastEvent: INotificationPayloadBase;
+    events: IDashNotificationPayloadBase[];
+    lastEvent: IDashNotificationPayloadBase;
     clear: () => void;
   };
 }

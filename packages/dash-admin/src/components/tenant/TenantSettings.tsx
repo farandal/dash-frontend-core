@@ -27,7 +27,7 @@ const TenantSettingsEdit: React.FC<IDashAutoAdminCustomFieldComponent> = ({ meth
         //`system/tenant/settings/formats`
         'system/tenant/systemSettingFormats'
       );
-
+      debugger;
       setSettingsFormats(data.data);
     };
 
@@ -187,7 +187,7 @@ const TenantSettingsView: React.FC<IDashAutoAdminCustomFieldComponent> = ({ meth
        //`system/tenant/settings/formats`
        'system/tenant/systemSettingFormats'
       );
-
+debugger;
       setSettingsFormats(data.data.setting_formats);
     };
 

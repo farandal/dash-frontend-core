@@ -54,7 +54,7 @@ export interface IDASHAdmin<U, A, R, C> {
   customDict?: { [x: string]: string }
   customReplacements?: { [x: string]: string }
   basePath?: string;
-  AdminWrapper?: React.ComponentType<any>;
+  AdminHook?: React.ComponentType<any>;
   children?: JSX.Element;
 }
 
@@ -235,7 +235,7 @@ const DASHAdminApp: React.FC<IDASHAdmin<unknown, unknown, unknown, unknown>> = R
     customReplacements,
     history,
     basePath,
-    AdminWrapper = (props) => props.children,
+    AdminHook = (props) => props.children,
     children,
   } = props;
 
@@ -357,14 +357,14 @@ console.log('AdminContext Configuration:', {
     ...(Error && { error: Error }),
   }), [customNotification, customLayout, customLoginPage, customErrorPage]);
 
- // TODO As AdminWrapper was added, possible to refactor and remove RADashComponent from here
+ // TODO As AdminHook was added, possible to refactor and remove RADashComponent from here
   return children ? (
     <DictionaryProvider
       dictionary={memoizedDictionary}
       replacements={memoizedReplacements}
     >
       <AdminContext {...adminContextProps}>
-          <AdminWrapper/>
+          <AdminHook/>
         <AdminUI {...adminUIProps}>
           {children}
         </AdminUI>
@@ -378,7 +378,7 @@ console.log('AdminContext Configuration:', {
       replacements={memoizedReplacements}
     >
       <AdminContext {...adminContextProps}>
-        <AdminWrapper/>
+        <AdminHook/>
         <AsyncResources
           {...adminUIProps}
           resources={resources}

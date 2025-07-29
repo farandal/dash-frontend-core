@@ -13,7 +13,8 @@ export const initAxios = (
   const _options = {
     headers: {
       'Content-Type': 'application/json',
-      'Accept-Language': browserLanguage || 'es', // fallback to 'es' if not available
+      //'Accept-Language': browserLanguage || 'es', // fallback to 'es' if not available
+      'Accept-Language':'es',
       Accept: 'application/json',
     },
     ...options,

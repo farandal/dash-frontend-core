@@ -1,11 +1,11 @@
 import { useContext, useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { toast } from 'react-toastify';
-import { IAuthContext, ILaravelEchoManager, NotificationComponent, INotificationPayloadBase } from 'dash-admin';
+import { IAuthContext, ILaravelEchoManager, NotificationComponent, IDashNotificationPayloadBase } from 'dash-admin';
 import { AuthContext, NotificationWrapper, useLaravelEcho } from 'dash-admin';
 
 const WSPusherManager = (): ILaravelEchoManager => {
-  const [events, setEvents] = useState<INotificationPayloadBase[]>([]);
-  const [lastEvent, setLastEvent] = useState<INotificationPayloadBase>(null);
+  const [events, setEvents] = useState<IDashNotificationPayloadBase[]>([]);
+  const [lastEvent, setLastEvent] = useState<IDashNotificationPayloadBase>(null);
   const authContext: IAuthContext = useContext(AuthContext);
   const initialized = useRef(false);
 
@@ -16,7 +16,7 @@ const WSPusherManager = (): ILaravelEchoManager => {
   );
 
   // Create stable event handlers
-  const handlePublicEvent = useCallback((notification: INotificationPayloadBase) => {
+  const handlePublicEvent = useCallback((notification: IDashNotificationPayloadBase) => {
     console.log('public', notification);
     setEvents(prev => [...prev, notification]);
     setLastEvent(notification);

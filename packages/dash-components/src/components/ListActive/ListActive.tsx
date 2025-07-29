@@ -22,6 +22,7 @@ const ListActive = ({
     inactiveLabel = 'Inactivo',
     enableLabel = 'Activar',
     disableLabel = 'Desactivar',
+    showLabel = false,
 }: IListActive) => {
 	const [ ,setLoading] = useState<boolean>(true);
 	const [update, { isLoading: updateLoading }] =
@@ -33,18 +34,22 @@ const ListActive = ({
 
     const onChange = useCallback(
         async (value: boolean) => {
-            window.dispatchEvent(
+            /*window.dispatchEvent(
                 new MessageEvent('dash-global-loader', { data: true })
-            );
+            );*/
             
             try {
                 await update(
-                    resourceConfig.model + '/change-status/' + record.id,
+                    resourceConfig.model + '/partial/' + record.id,
                     {
                         id: record.id,
-                        data: { is_active: value },
+                        data: { [attribute.attribute]: value },
                         previousData: record,
+                        meta: {
+                            method: 'POST',
+                        }
                     },
+
                     {
                         onSuccess: () => {
                             // Force a refresh of the record context
@@ -52,9 +57,9 @@ const ListActive = ({
                         },
                         onSettled: (data, error) => {
                             if (error) onError(error);
-                            window.dispatchEvent(
+                           /* window.dispatchEvent(
                                 new MessageEvent('dash-global-loader', { data: false })
-                            );
+                            );*/
                         },
                     }
                 );
@@ -68,8 +73,8 @@ const ListActive = ({
 	useEffect(() => {
 		setLoading(false);
 	}, [record]);
-	const is_active = record?.is_active ? true : false;
-	const textSwitch = record?.is_active ? disableLabel : enableLabel;
+	const is_active = record[attribute.attribute] ? true : false;
+	const textSwitch = record[attribute.attribute] ? disableLabel : enableLabel;
 	switch (method) {
 		case 'create':
         case 'edit':
@@ -81,10 +86,10 @@ const ListActive = ({
 				<div>
 					<Box>
 						<Switch
-                           
+                           size='small'
 							onChange={(e, value) => onChange(value)}
 							{...(is_active === true && { defaultChecked: true })}
-						/>{is_active ? activeLabel : inactiveLabel}
+						/>{showLabel ? (is_active ? activeLabel : inactiveLabel) : <></>}
 					</Box>
 				</div>
 			)
