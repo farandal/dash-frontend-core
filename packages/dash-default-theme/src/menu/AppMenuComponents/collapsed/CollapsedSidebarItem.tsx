@@ -154,6 +154,15 @@ const CollapsedSidebarItem = ({
 
     const hasChildren = item.children && item.children.length > 0;
 
+    // Helper to close submenu and optionally handle click
+    const handleSubmenuItemClick = (e, childItem) => {
+        setOpen(false);
+        // Optionally, you can call any navigation logic here if needed
+        // But SidebarItem already handles navigation
+        // If you want to prevent double navigation, you can stop propagation
+        // e.stopPropagation();
+    };
+
     return hasChildren ? (
         <>
             <div ref={itemRef}>
@@ -180,7 +189,6 @@ const CollapsedSidebarItem = ({
                                     zIndex: 10000,
                                     position: 'absolute',
                                     top: menuPosition.top,
-                                    //left: navSize === 'small' ? '64px' : '240px'
                                     left: 58
                                 }}
                             >
@@ -193,6 +201,8 @@ const CollapsedSidebarItem = ({
                                             item={item}
                                             key={index}
                                             hasChildren={item.children && item.children.length > 0}
+                                            // Add onClick to close the submenu
+                                            onClick={(e) => handleSubmenuItemClick(e, item)}
                                         />
                                     );
                                 })}

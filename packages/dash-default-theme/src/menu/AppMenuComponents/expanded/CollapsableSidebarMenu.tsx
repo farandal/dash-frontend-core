@@ -43,14 +43,12 @@ const CollapsableSidebarMenu = ({
   const navigate = useNavigate();
 
   const playClick = () => {
-
     if (!!DASHAppConstants.system.UI_SOUNDS) {
       const audio = new Audio(clickSound);
       audio.load();
       audio.play();
     }
   };
-
 
   const updatePageState = () => {
     const newPageState: IPageState = {
@@ -61,24 +59,28 @@ const CollapsableSidebarMenu = ({
     dispatch(DASH_REDUX_ACTIONS.updatePage(newPageState));
   };
 
+  // Handle expand/collapse icon click
+  const handleExpandClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    playClick();
+    setLocalOpen(!localOpen);
+  };
 
   return (
     <>
       <ListItemButton
         selected={localOpen}
         className={'sidebar-list-menu-item'}
-
         onClick={(e) => {
-          
-          playClick();
-          setLocalOpen(!localOpen);
-
-          //if ((e.target as any)?.localName === "svg") return;
-
-          // TODO: if main clickable prop, then...
-          if (!isCurrentPath(loc.pathname, item)) {
-            updatePageState();
-            navigate(item.to || item.model);
+          // Only handle click if it's not on the expand icon
+          if (!(e.target as HTMLElement).closest('.expand-icon')) {
+            playClick();
+            setLocalOpen(!localOpen);
+            
+            if (!isCurrentPath(loc.pathname, item)) {
+              updatePageState();
+              navigate(item.to || item.model);
+            }
           }
         }}
       >
@@ -90,8 +92,14 @@ const CollapsableSidebarMenu = ({
             primary={<Typography>{item.label}</Typography>}
           />
         )}
-        {navExpanded &&
-          (localOpen ? <ExpandLessOutlinedIcon className='expand-icon less' /> : <ExpandMoreOutlinedIcon  className='expand-icon more' />)}
+        {navExpanded && (
+          <div onClick={handleExpandClick}>
+            {localOpen ? 
+              <ExpandLessOutlinedIcon className='expand-icon less' /> : 
+              <ExpandMoreOutlinedIcon className='expand-icon more' />
+            }
+          </div>
+        )}
       </ListItemButton>
       {navExpanded && (
         <Collapse in={localOpen} timeout='auto'>
