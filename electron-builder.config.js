@@ -87,7 +87,7 @@ module.exports = {
     // Disable notarization for now (enable later with proper credentials)
     notarize: false,
     // Allow executing binaries from Resources folder
-    binaries: ['Contents/Resources/python-service/ws_service']
+    binaries: ['Contents/Resources/dash-python-service/ws_service']
   },
   linux: {
    // icon: path.resolve(__dirname, './icons/png/'),

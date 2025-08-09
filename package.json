@@ -14,7 +14,16 @@
     "new": "chmod +x ./new.sh && sh ./new.sh",
     "dev": "cd apps/dash && yarn dev",
     "dev:prod": "cd apps/dash && yarn dev:prod",
-    "dev:ngrok": "cross-env MODE=development CUSTOM_MODE=pinoywok.ngrok TARGET_TYPE=web PLATFORM=web NODE_OPTIONS=--max-old-space-size=4048 node build_config.js && cd apps/dash && yarn dev:ngrok",
+    
+    "dev:pinoywok:ngrok": "cross-env MODE=development CUSTOM_MODE=pinoywok.ngrok TARGET_TYPE=web PLATFORM=web NODE_OPTIONS=--max-old-space-size=4048 node build_config.js && cd apps/dash && yarn dev:pinoywok:ngrok",
+    "dev:kitchntabs:ngrok": "cross-env MODE=development CUSTOM_MODE=kitchntabs.ngrok TARGET_TYPE=web PLATFORM=web NODE_OPTIONS=--max-old-space-size=4048 node build_config.js && cd apps/dash && yarn dev:kitchntabs:ngrok",
+    "dev:kitchntabs:production": "cross-env MODE=development CUSTOM_MODE=kitchntabs.production TARGET_TYPE=web PLATFORM=web NODE_OPTIONS=--max-old-space-size=4048 node build_config.js && cd apps/dash && yarn dev:kitchntabs:production",
+   
+    "dev:android:kitchntabs:ngrok": "cross-env MODE=development CUSTOM_MODE=kitchntabs.ngrok TARGET_TYPE=mobile PLATFORM=android NODE_OPTIONS=--max-old-space-size=4048 node build_config.js && turbo build && cap run android",
+    "dev:android:kitchntabs:production": "cross-env MODE=development CUSTOM_MODE=kitchntabs.production TARGET_TYPE=mobile PLATFORM=android NODE_OPTIONS=--max-old-space-size=4048 node build_config.js && turbo build && cap run android",
+    "release:android:kitchntabs:production": "NODE_ENV=production turbo build && cap sync android && cd ./android && ./gradlew bundleRelease",
+
+
     "dev-win": "cd apps/dash && yarn dev-win",
     "build": "rimraf node_modules/.turbo node_modules/.vite && turbo build --filter=!./packages/react-18-beautiful-dnd-grid --force",
     "build-win": "rimraf node_modules/.turbo node_modules/.vite && turbo build --filter=!./packages/react-18-beautiful-dnd-grid --force",
@@ -46,6 +55,8 @@
     "test": "turbo run test",
     "types:check": "turbo run types:check",
     "build:config": "node build_config.js",
+    "build:config:production:web:kitchntabs": "cross-env MODE=production CUSTOM_MODE=kitchntabs.production TARGET_TYPE=desktop PLATFORM=web NODE_OPTIONS=--max-old-space-size=4048 node build_config.js",
+    "build:config:android:kitchntabs": "cross-env MODE=production CUSTOM_MODE=kitchntabs.production TARGET_TYPE=mobile PLATFORM=android NODE_OPTIONS=--max-old-space-size=4048 node build_config.js",
     "build:config:android:ngrok": "cross-env MODE=production CUSTOM_MODE=pinoywok.ngrok TARGET_TYPE=mobile PLATFORM=android NODE_OPTIONS=--max-old-space-size=4048 node build_config.js",
     "build:config:android:prod": "cross-env MODE=production CUSTOM_MODE=pinoywok.ngrok TARGET_TYPE=mobile PLATFORM=android NODE_OPTIONS=--max-old-space-size=4048 node build_config.js"
   },
