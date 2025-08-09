@@ -79,13 +79,13 @@ const DashAutoEdit: React.FC<IAutoForm> = ({
 
    
    
-	return (
-		<Edit
+	return <Edit
             
 			{...(id && { id })}
 			actions={actions || <EditActions />}
 			mutationMode={resourceConfig.mutationMode}
 			title={<AutoTitle resourceConfig={resourceConfig} />}
+            {...resourceConfig?.editProps || {}}
 		>
              
 			<AutoTabbedForm
@@ -102,7 +102,7 @@ const DashAutoEdit: React.FC<IAutoForm> = ({
 			/>
       
 		</Edit>
-	);
+	
 };
 
 export default DashAutoEdit;

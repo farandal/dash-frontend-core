@@ -36,6 +36,7 @@ interface Props<RecordType extends RaRecord = any> {
     children?: React.JSX.Element;
     showIcon?: boolean;
     title?: string;
+    icon?: React.JSX.Element;
 }
 /* @ts-ignore Expected Cannot use namespace 'RaRecord' as a type.ts(2709) */
 export type ShowButtonProps<RecordType extends RaRecord = any> =
@@ -77,6 +78,7 @@ const DashResourceButton = <RecordType extends RaRecord = any>(
         resource: _inputResource,
         showIcon = true,
         title,
+        icon,
         ...rest
     } = componentProps;
 
@@ -183,6 +185,7 @@ const DashResourceButton = <RecordType extends RaRecord = any>(
             {...restWithoutTitle}
         >
             {showIcon && (
+                icon ? icon :
                 mode === 'edit' ? <Edit /> :
                     mode === 'show' ? <Visibility /> :
                         mode === 'create' ? <Add /> :
@@ -215,5 +218,6 @@ export default memo(
             ? props.record.id === nextProps.record.id
             : props.record == nextProps.record) && // eslint-disable-line eqeqeq
         props.label === nextProps.label &&
-        props.showIcon === nextProps.showIcon,
+        props.showIcon === nextProps.showIcon &&
+        props.icon === nextProps.icon,
 );

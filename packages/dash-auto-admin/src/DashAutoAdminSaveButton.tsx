@@ -11,9 +11,11 @@ export interface IDashAutoAdminSaveButton extends SaveButtonProps {
 
 const DashAutoAdminSaveButton: FC<IDashAutoAdminSaveButton> = (props) => {
   const { resourceConfig, ...rest } = props;
+
   const alwaysEnabled = resourceConfig?.saveButtonAlwaysEnabled === true ? true : false;
 
   return (<>
+ 
     <SaveButton
       {...rest}
       alwaysEnable={alwaysEnabled}

@@ -85,7 +85,7 @@ export const ListEditButton:FC<IToolbarButton> = (props) => {
 	if ( resourceConfig.listEditButton) {
 		if ( resourceConfig.listEditButton.component ) Component = resourceConfig.listEditButton.component;
 		if (resourceConfig.listEditButton.enabled === false || resourceConfig?.edit === false) return <></>;
-        if(!resourceConfig.listViewButton?.size) { resourceConfig.listViewButton.size = 'small' };
+        if(resourceConfig.listViewButton && !resourceConfig.listViewButton?.size) { resourceConfig.listViewButton.size = 'small' };
 	}
 
     return <DashResourceButton mode='edit' resourceConfig={resourceConfig} {...resourceConfig.listViewButton?.props || {}} />;

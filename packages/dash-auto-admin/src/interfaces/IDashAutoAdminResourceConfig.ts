@@ -334,5 +334,5 @@ export default interface IDashAutoAdminResourceConfig {
     syncTabsWithLocation?: boolean;
 
     contextComponent?:  ({resourceConfig,mode,children}:{resourceConfig:IDashAutoAdminResourceConfig,mode?:"create" | "edit" | "list",children?:ReactNode}) => JSX.Element | ReactNode;
-    
+    editProps?: any; // TODO Map this with react admin Edit Props.
 }
