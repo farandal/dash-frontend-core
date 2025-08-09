@@ -1,6 +1,10 @@
 import { Avatar } from '@mui/material';
 import React from 'react';
 
+import Logo from '@app/assets/logo-horizontal.png';
+import LogoSquared from  '@app/assets/logo-squared.png';
+import BackImage from  '@app/assets/login-back.png';
+
 interface TenantAvatarComponentProps {
     imageUrl?: string | null;
     size?: number;
@@ -30,14 +34,14 @@ const TenantAvatarComponent: React.FC<TenantAvatarComponentProps> = ({
                 />
             ) : (
                 <Avatar 
+                src={LogoSquared}
                     sx={{ 
                         width: '100%', 
                         height: '100%', 
                     }}
                     variant="square"
-                >
-                    T
-                </Avatar>
+                />
+                
             )}
         </div>
     );

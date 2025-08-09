@@ -25,9 +25,9 @@ const ListActive = ({
     showLabel = false,
 }: IListActive) => {
 	const [ ,setLoading] = useState<boolean>(true);
-	const [update, { isLoading: updateLoading }] =
-		useUpdate();
+	const [update, { isLoading: updateLoading }] = useUpdate();
 	const record: any = useRecordContext();
+	const [is_active, setIsActive] = useState<boolean>(false);
 	const onError = (error: any) => {
 		console.error(error);
 	};
@@ -53,7 +53,7 @@ const ListActive = ({
                     {
                         onSuccess: () => {
                             // Force a refresh of the record context
-                            record.is_active = value;
+                            setIsActive(value);
                         },
                         onSettled: (data, error) => {
                             if (error) onError(error);
@@ -72,10 +72,15 @@ const ListActive = ({
 
 	useEffect(() => {
 		setLoading(false);
-	}, [record]);
-	const is_active = record[attribute.attribute] ? true : false;
-	const textSwitch = record[attribute.attribute] ? disableLabel : enableLabel;
-	switch (method) {
+       
+		if (record && attribute && attribute.attribute in record) {
+			setIsActive(!!record[attribute.attribute]);
+		}
+	}, [record, attribute]);
+
+	//const textSwitch = record[attribute.attribute] ? disableLabel : enableLabel;
+	
+    switch (method) {
 		case 'create':
         case 'edit':
 			return AttributeToInput(method, resourceConfig, {...attribute,custom:false,type:Boolean})
@@ -88,7 +93,7 @@ const ListActive = ({
 						<Switch
                            size='small'
 							onChange={(e, value) => onChange(value)}
-							{...(is_active === true && { defaultChecked: true })}
+							checked={is_active}
 						/>{showLabel ? (is_active ? activeLabel : inactiveLabel) : <></>}
 					</Box>
 				</div>
