@@ -1,0 +1,680 @@
+import { defaultTheme } from 'react-admin';
+import { deepmerge } from '@mui/utils';
+
+const getAllCssVariablesFromStyleSheets = (selector: string) => {
+  const cssVariables = {};
+
+  for (let i = 0; i < document.styleSheets.length; i++) {
+    try {
+      const styleSheet = document.styleSheets[i];
+      if (!styleSheet.cssRules) continue;
+
+      for (let j = 0; j < styleSheet.cssRules.length; j++) {
+        const rule = styleSheet.cssRules[j];
+
+        /* @ts-ignore */
+        if (rule.selectorText === selector) {
+          /* @ts-ignore */
+          const style = rule.style;
+
+          for (let k = 0; k < style.length; k++) {
+            const prop = style[k];
+            if (prop.startsWith('--')) {
+              cssVariables[prop] = style.getPropertyValue(prop).trim();
+            }
+          }
+        }
+      }
+    } catch (e) {
+      console.warn('Could not access stylesheet:', e);
+    }
+  }
+
+  return cssVariables;
+};
+
+export const defaultOptions = (options) => {
+  const { tenantSettings, colors, ...otherOptions } = options || {};
+  const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+  const cssVars = getAllCssVariablesFromStyleSheets(":root");
+
+  const _color = (key, colorKey, mode = null) => {
+    if (colors) {
+      const colorValue = colors[`${colorKey}--${mode || currentTheme}`];
+      return colorValue ? { [key]: colorValue } : {};
+    } else if (cssVars[`--${colorKey}--${mode || currentTheme}`]) {
+      const cssVarValue = cssVars[`--${colorKey}--${mode || currentTheme}`];
+      return cssVarValue ? { [key]: cssVarValue } : {};
+    } else {
+      return {};
+    }
+  };
+
+  const createPalette = (mode = 'light') => {
+    const palette = {
+      mode,
+      background: {
+        ..._color('default', 'module-bg', mode),
+        ..._color('paper', 'module-bg', mode)
+      },
+      primary: {
+        ..._color('main', 'primary-color', mode),
+        ..._color('contrastText', 'primary-contrast', mode)
+      },
+      secondary: {
+        ..._color('main', 'secondary-color', mode)
+      },
+      text: {
+        ..._color('primary', 'text-color', mode),
+        ..._color('secondary', 'text-light', mode),
+        ..._color('disabled', 'disabled-color', mode)
+      },
+      action: {
+        ..._color('active', 'component-active-bg', mode),
+        ..._color('hover', 'component-hover-bg', mode),
+        ..._color('disabled', 'disabled-color', mode),
+        ..._color('disabledBackground', 'disabled-bg', mode)
+      },
+      //..._color('divider', 'component-border-split', mode),
+      ..._color('border', 'border-color', mode),
+      error: {
+        ..._color('main', 'alert-error-bg', mode),
+        ..._color('contrastText', 'alert-error-title', mode)
+      },
+      warning: {
+        ..._color('main', 'alert-warning-bg', mode),
+        ..._color('contrastText', 'alert-warning-title', mode)
+      },
+      info: {
+        ..._color('main', 'alert-info-bg', mode),
+        ..._color('contrastText', 'alert-info-title', mode)
+      },
+      success: {
+        ..._color('main', 'alert-success-bg', mode),
+        ..._color('contrastText', 'alert-success-title', mode)
+      },
+      common: {
+        ..._color('black', 'text-color', mode),
+        ..._color('white', 'text-contrast', mode)
+      },
+     /* variant: {
+        ..._color('containedBg', 'btn-bg', mode),
+
+      }*/
+    };
+
+    // Filter out empty objects and undefined values
+    return Object.fromEntries(
+      Object.entries(palette).filter(([_, value]) => {
+        if (typeof value === 'object' && value !== null) {
+          return Object.keys(value).length > 0;
+        }
+        return value !== undefined;
+      })
+    );
+  };
+
+  return {
+    cssVariables: {
+      cssVarPrefix: 'dash', // Your custom prefix
+      colorSchemeSelector: 'data-theme', // Tell MUI to use data attributes
+    },
+    // Enable both light and dark color schemes
+    /*colorSchemes: {
+      light: true,
+      dark: true,
+    },*/
+
+    colorSchemes: {
+      light: {
+        palette: createPalette('light')
+      },
+      dark: {
+        palette: createPalette('dark')
+      },
+      /*system: {
+        palette: createPalette('dark')
+      },*/
+    },
+
+    defaultColorScheme: currentTheme,
+
+
+    palette: createPalette(currentTheme),
+
+
+    // Don't put your custom CSS variables in the palette
+    // Instead, use them directly in component overrides
+    typography: {
+      allVariants: {
+        //color: 'var(--text-color)', // Keep using your CSS variables here
+      },
+    },
+    components: {
+      // Override ALL color usage in component overrides
+      MuiCssBaseline: {
+        styleOverrides: {
+          body: {
+            backgroundColor: `var(--body-bg${currentTheme === 'dark' ? '--dark' : '--light'})`,
+            color: `var(--text-color${currentTheme === 'dark' ? '--dark' : '--light'})`,
+          },
+        },
+      },
+
+
+      /* MuiIconButton: {
+         styleOverrides: {
+           root: {
+             backgroundColor: 'var(--btn-bg)',
+             color: 'var(--btn-color)',
+
+             '&.MuiIconButton-containedPrimary': {
+               backgroundColor: 'var(--primary-color)',
+               color: 'var(--btn-color)',
+               '&:hover': {
+                 backgroundColor: 'var(--highlight-color)',
+               },
+             },
+             '&.MuiIconButton-containedSecondary': {
+               backgroundColor: 'var(--secondary-color)',
+               color: 'var(--btn-color)',
+               '&:hover': {
+                 backgroundColor: 'var(--highlight-color)',
+               },
+             },
+             '&.MuiIconButton-outlinedPrimary': {
+               backgroundColor: 'inherit',
+               borderColor: 'var(--primary-color)',
+               color: 'var(--text-color)',
+               '&:hover': {
+                 borderColor: 'var(--highlight-color)',
+               },
+             },
+             '&.MuiIconButton-outlinedSecondary': {
+               backgroundColor: 'inherit',
+               borderColor: 'var(--primary-color)',
+               color: 'var(--text-color)',
+               '&:hover': {
+                 borderColor: 'var(--highlight-color)',
+               },
+             },
+           },
+         },
+       },*/
+      MuiButton: {
+        styleOverrides: {
+          root: {
+        backgroundColor: `var(--btn-bg${currentTheme === 'dark' ? '--dark' : '--light'})`,
+        color: `var(--btn-color${currentTheme === 'dark' ? '--dark' : '--light'})`,
+
+        '&.MuiButton-containedPrimary': {
+          backgroundColor: `var(--primary-color${currentTheme === 'dark' ? '--dark' : '--light'})`,
+          color: `var(--btn-color${currentTheme === 'dark' ? '--dark' : '--light'})`,
+          '&:hover': {
+            backgroundColor: `var(--highlight-color${currentTheme === 'dark' ? '--dark' : '--light'})`,
+          },
+        },
+        '&.MuiButton-containedSecondary': {
+          backgroundColor: `var(--secondary-color${currentTheme === 'dark' ? '--dark' : '--light'})`,
+          color: `var(--btn-color${currentTheme === 'dark' ? '--dark' : '--light'})`,
+          '&:hover': {
+            backgroundColor: `var(--highlight-color${currentTheme === 'dark' ? '--dark' : '--light'})`,
+          },
+        },
+        '&.MuiButton-outlinedPrimary': {
+          backgroundColor: 'inherit',
+          borderColor: `var(--primary-color${currentTheme === 'dark' ? '--dark' : '--light'})`,
+          color: `var(--text-color${currentTheme === 'dark' ? '--dark' : '--light'})`,
+          '&:hover': {
+            borderColor: `var(--highlight-color${currentTheme === 'dark' ? '--dark' : '--light'})`,
+          },
+        },
+        '&.MuiButton-outlinedSecondary': {
+          backgroundColor: 'inherit',
+          borderColor: `var(--primary-color${currentTheme === 'dark' ? '--dark' : '--light'})`,
+          color: `var(--text-color${currentTheme === 'dark' ? '--dark' : '--light'})`,
+          '&:hover': {
+            borderColor: `var(--highlight-color${currentTheme === 'dark' ? '--dark' : '--light'})`,
+          },
+        },
+        '&.MuiButton-textPrimary': {
+          color: `var(--link-color${currentTheme === 'dark' ? '--dark' : '--light'})`,
+          background: 'none',
+          '&:hover': {
+            color: `var(--highlight-color${currentTheme === 'dark' ? '--dark' : '--light'})`,
+            textDecoration: 'underline',
+            background: 'none',
+          },
+        },
+        '&.MuiButton-textSecondary': {
+          color: `var(--text-light-color${currentTheme === 'dark' ? '--dark' : '--light'})`,
+          background: 'none',
+          '&:hover': {
+            color: `var(--highlight-color${currentTheme === 'dark' ? '--dark' : '--light'})`,
+            textDecoration: 'underline',
+            background: 'none',
+          },
+        },
+          },
+        },
+      },
+      MuiDialog: {
+        styleOverrides: {
+          root: {
+        zIndex: 100
+          }
+        }
+      },
+      MuiTooltip: {
+        styleOverrides: {
+          tooltip: {
+        backgroundColor: `var(--module-bg${currentTheme === 'dark' ? '--dark' : '--light'})`,
+        color: `var(--text-color${currentTheme === 'dark' ? '--dark' : '--light'})`,
+        border: `1px solid var(--border-color${currentTheme === 'dark' ? '--dark' : '--light'})`,
+        fontSize: '0.75rem',
+        maxWidth: 300,
+        '& .MuiTooltip-arrow': {
+          color: `var(--module-bg${currentTheme === 'dark' ? '--dark' : '--light'})`,
+          '&::before': {
+            border: `1px solid var(--border-color${currentTheme === 'dark' ? '--dark' : '--light'})`,
+          },
+        },
+          },
+          popper: {
+        '&[data-popper-placement*="bottom"] .MuiTooltip-tooltip': {
+          marginTop: '8px',
+        },
+        '&[data-popper-placement*="top"] .MuiTooltip-tooltip': {
+          marginBottom: '8px',
+        },
+        '&[data-popper-placement*="right"] .MuiTooltip-tooltip': {
+          marginLeft: '8px',
+        },
+        '&[data-popper-placement*="left"] .MuiTooltip-tooltip': {
+          marginRight: '8px',
+        },
+          },
+        },
+      },
+      MuiTabs: {
+        styleOverrides: {
+          indicator: {
+        backgroundColor: `var(--highlight-color${currentTheme === 'dark' ? '--dark' : '--light'})`,
+          },
+        },
+      },
+
+      RaReferenceField: {
+        styleOverrides: {
+          root: {
+        '& .RaReferenceField-link>*': {
+          color: `var(--text-color${currentTheme === 'dark' ? '--dark' : '--light'})`,
+        },
+          },
+        },
+      },
+      RaSingleFieldList: {
+        styleOverrides: {
+          root: {
+        '& .RaSingleFieldList-link>*': {
+          color: `var(--text-color${currentTheme === 'dark' ? '--dark' : '--light'})`,
+        },
+          },
+        },
+      },
+      MuiInputAdornment: {
+        styleOverrides: {
+          root: {
+        '& svg': {
+          color: `var(--highlight-color${currentTheme === 'dark' ? '--dark' : '--light'})`,
+        },
+          },
+        },
+      },
+      MuiTab: {
+        styleOverrides: {
+          root: {
+        '&.MuiButtonBase-root': {
+          '&.Mui-selected': {
+            color: `var(--highlight-color${currentTheme === 'dark' ? '--dark' : '--light'})`,
+            backgroundColor: `var(--tab-selected-bg${currentTheme === 'dark' ? '--dark' : '--light'})`,
+          },
+          '&.MuiTab-textColorPrimary': {
+            color: `var(--table-color${currentTheme === 'dark' ? '--dark' : '--light'})`,
+          },
+        },
+          },
+        },
+      },
+      MuiAlert: {
+        styleOverrides: {
+          root: {
+        '&.MuiAlert-standardInfo': {
+          backgroundColor: `var(--module-bg${currentTheme === 'dark' ? '--dark' : '--light'})`,
+          color: `var(--text-color${currentTheme === 'dark' ? '--dark' : '--light'})`,
+          '& .MuiAlert-icon': {
+            color: `var(--highlight-color${currentTheme === 'dark' ? '--dark' : '--light'})`,
+          },
+          '& .MuiAlertTitle-root': {
+            color: `var(--text-color${currentTheme === 'dark' ? '--dark' : '--light'})`,
+          },
+        },
+        '&.MuiAlert-standardError': {
+          backgroundColor: `var(--dash-alert-error-bg${currentTheme === 'dark' ? '--dark' : '--light'})`,
+          color: `var(--dash-alert-error-title${currentTheme === 'dark' ? '--dark' : '--light'})`,
+        },
+        '&.MuiAlert-standardWarning': {
+          backgroundColor: `var(--dash-alert-warning-bg${currentTheme === 'dark' ? '--dark' : '--light'})`,
+          color: `var(--dash-alert-warning-title${currentTheme === 'dark' ? '--dark' : '--light'})`,
+        },
+        '&.MuiAlert-standardSuccess': {
+          backgroundColor: `var(--dash-alert-success-bg${currentTheme === 'dark' ? '--dark' : '--light'})`,
+          color: `var(--dash-alert-success-title${currentTheme === 'dark' ? '--dark' : '--light'})`,
+        },
+          },
+        },
+      },
+      MuiAccordion: {
+        styleOverrides: {
+          root: {
+        backgroundColor: `var(--module-bg${currentTheme === 'dark' ? '--dark' : '--light'})`,
+        '&.MuiPaper-root': {
+          backgroundColor: `var(--module-bg${currentTheme === 'dark' ? '--dark' : '--light'})`,
+        },
+          },
+        },
+      },
+      MuiAccordionSummary: {
+        styleOverrides: {
+          expandIconWrapper: {
+        color: 'inherit',
+        '& .MuiSvgIcon-root': {
+          color: 'inherit',
+        },
+          },
+        },
+      },
+      MuiBox: {
+        styleOverrides: {
+          root: {
+        display: 'flex !important',
+          },
+        },
+      },
+         /* MuiCard: {
+        styleOverrides: {
+          root: {
+        backgroundColor: `var(--module-bg${currentTheme === 'dark' ? '--dark' : '--light'})`,
+          },
+        },
+      },
+      MuiPaper: {
+        styleOverrides: {
+          root: {
+        marginBottom: 8,
+        backgroundColor: `var(--module-bg${currentTheme === 'dark' ? '--dark' : '--light'})`, // Use the correct variable name
+        color: `var(--text-color${currentTheme === 'dark' ? '--dark' : '--light'})`,
+          },
+        },
+      },
+      */
+      MuiAppBar: {
+        styleOverrides: {
+          root: {
+        backgroundColor: `var(--primary-color${currentTheme === 'dark' ? '--dark' : '--light'})`,
+        color: `var(--text-contrast-color${currentTheme === 'dark' ? '--dark' : '--light'})`,
+          },
+        },
+      },
+      /*MuiChip: {
+        styleOverrides: {
+          root: {
+        '&.MuiChip-colorPrimary': {
+          backgroundColor: `var(--primary-color${currentTheme === 'dark' ? '--dark' : '--light'})`,
+          color: `var(--text-light-color${currentTheme === 'dark' ? '--dark' : '--light'})`,
+        },
+        '&.MuiChip-colorSecondary': {
+          backgroundColor: `var(--secondary-color${currentTheme === 'dark' ? '--dark' : '--light'})`,
+          color: `var(--text-light-color${currentTheme === 'dark' ? '--dark' : '--light'})`,
+        },
+          },
+        },
+      },*/
+      MuiTextField: {
+        styleOverrides: {
+          root: {
+        '& .MuiOutlinedInput-root': {
+          '& fieldset': {
+            borderColor: `var(--border-color${currentTheme === 'dark' ? '--dark' : '--light'})`,
+          },
+          '&:hover fieldset': {
+            borderColor: `var(--primary-color${currentTheme === 'dark' ? '--dark' : '--light'})`,
+          },
+          '&.Mui-focused fieldset': {
+            borderColor: `var(--primary-color${currentTheme === 'dark' ? '--dark' : '--light'})`,
+          },
+        },
+        '& .MuiInputLabel-root': {
+          color: `var(--text-light-color${currentTheme === 'dark' ? '--dark' : '--light'})`,
+          '&.Mui-focused': {
+            color: `var(--primary-color${currentTheme === 'dark' ? '--dark' : '--light'})`,
+          },
+        },
+        '& .MuiInputBase-input': {
+          color: `var(--text-color${currentTheme === 'dark' ? '--dark' : '--light'})`,
+        },
+          },
+        },
+      },
+      // Add more component overrides as needed for other elements that use primary/secondary colors
+      MuiIconButton: {
+        styleOverrides: {
+          root: {
+        color: `var(--text-color${currentTheme === 'dark' ? '--dark' : '--light'})`,
+        '&:hover': {
+          backgroundColor: `var(--component-hover-bg${currentTheme === 'dark' ? '--dark' : '--light'})`,
+        },
+          },
+        },
+      },
+      MuiTable: {
+        styleOverrides: {
+          root: {
+        backgroundColor: `var(--component-bg${currentTheme === 'dark' ? '--dark' : '--light'})`,
+        color: `var(--text-color${currentTheme === 'dark' ? '--dark' : '--light'})`,
+          },
+        },
+      },
+
+      MuiTableHead: {
+        styleOverrides: {
+          root: {
+        backgroundColor: `var(--table-header-bg${currentTheme === 'dark' ? '--dark' : '--light'}) !important`,
+        color: `var(--table-header-color${currentTheme === 'dark' ? '--dark' : '--light'}) !important`,
+          },
+        },
+      },
+      MuiTableRow: {
+        styleOverrides: {
+          root: {
+        '&:hover': {
+          backgroundColor: `var(--component-hover-bg${currentTheme === 'dark' ? '--dark' : '--light'})`,
+        },
+        '&.MuiTableRow-head': {
+            backgroundColor: `var(--table-header-bg${currentTheme === 'dark' ? '--dark' : '--light'}) !important`,
+            color: `var(--table-header-color${currentTheme === 'dark' ? '--dark' : '--light'}) !important`,
+        },
+          },
+        },
+      },
+      MuiTableCell: {
+        styleOverrides: {
+          root: {
+        textWrapMode: 'nowrap',
+        borderColor: `var(--border-color-split${currentTheme === 'dark' ? '--dark' : '--light'})`,
+        color: `var(--text-color${currentTheme === 'dark' ? '--dark' : '--light'})`,
+        //borderBottom: `1px solid var(--border-color${currentTheme === 'dark' ? '--dark' : '--light'})`,
+        '& .MuiTableSortLabel-root, & .MuiTableSortLabel-icon': {
+          color: `var(--table-header-color${currentTheme === 'dark' ? '--dark' : '--light'}) !important`,
+        },
+          },
+          head: {
+        fontWeight: 600,
+        color: `var(--table-header-color${currentTheme === 'dark' ? '--dark' : '--light'}) !important`,
+        backgroundColor: `var(--table-header-bg${currentTheme === 'dark' ? '--dark' : '--light'}) !important`,
+          },
+        },
+      },
+      MuiDataGrid: {
+        styleOverrides: {
+          root: {
+
+        backgroundColor: `var(--component-bg${currentTheme === 'dark' ? '--dark' : '--light'})`,
+        color: `var(--text-color${currentTheme === 'dark' ? '--dark' : '--light'})`,
+        border: `1px solid var(--dash-border-color${currentTheme === 'dark' ? '--dark' : '--light'})`,
+        '& .MuiDataGrid-main': {
+          backgroundColor: `var(--component-bg${currentTheme === 'dark' ? '--dark' : '--light'})`,
+        },
+        '& .MuiDataGrid-overlay': {
+          backgroundColor: `var(--component-bg${currentTheme === 'dark' ? '--dark' : '--light'})`,
+          color: `var(--text-color${currentTheme === 'dark' ? '--dark' : '--light'})`,
+        },
+        // Add this to target the header row specifically
+        '& .MuiDataGrid-columnHeaderRow': {
+          color: `var(--table-header-color${currentTheme === 'dark' ? '--dark' : '--light'}) !important`,
+          backgroundColor: `var(--table-header-bg${currentTheme === 'dark' ? '--dark' : '--light'}) !important`,
+        },
+        // Also target the container that holds the header
+        '& .MuiDataGrid-container--top [role=row]': {
+           color: `var(--table-header-color${currentTheme === 'dark' ? '--dark' : '--light'}) !important`,
+          backgroundColor: `var(--table-header-bg${currentTheme === 'dark' ? '--dark' : '--light'}) !important`,
+        },
+          },
+           columnHeader: {
+          color: `var(--table-header-color${currentTheme === 'dark' ? '--dark' : '--light'}) !important`,
+          backgroundColor: `var(--table-header-bg${currentTheme === 'dark' ? '--dark' : '--light'}) !important`,
+          '&  .MuiSvgIcon-root': {
+          color: `var(--highlight-color${currentTheme === 'dark' ? '--dark' : '--light'}) !important`,
+
+        },
+
+          },
+          columnHeaders: {
+        backgroundColor: `var(--primary-contrast${currentTheme === 'dark' ? '--dark' : '--light'})`,
+        color: `var(--btn-primary-color${currentTheme === 'dark' ? '--dark' : '--light'})`,
+        borderBottom: `1px solid var(--border-color${currentTheme === 'dark' ? '--dark' : '--light'})`,
+        '& .MuiDataGrid-columnHeaderTitle': {
+          color: `var(--btn-primary-color${currentTheme === 'dark' ? '--dark' : '--light'})`,
+          fontWeight: 600,
+        },
+        '& .MuiDataGrid-iconSeparator': {
+          color: `var(--btn-primary-color${currentTheme === 'dark' ? '--dark' : '--light'})`,
+        },
+        '& .MuiDataGrid-sortIcon': {
+          color: `var(--btn-primary-color${currentTheme === 'dark' ? '--dark' : '--light'})`,
+        },
+        '& .MuiDataGrid-menuIcon': {
+          color: `var(--btn-primary-color${currentTheme === 'dark' ? '--dark' : '--light'})`,
+        },
+          },
+           // Add this new selector for the column header row
+          columnHeaderRow: {
+          color: `var(--table-header-color${currentTheme === 'dark' ? '--dark' : '--light'}) !important`,
+          backgroundColor: `var(--table-header-bg${currentTheme === 'dark' ? '--dark' : '--light'}) !important`,
+          },
+          cell: {
+        borderBottom: `1px solid var(--border-color${currentTheme === 'dark' ? '--dark' : '--light'})`,
+        color: `var(--text-color${currentTheme === 'dark' ? '--dark' : '--light'})`,
+        '&:focus': {
+          outline: `1px solid var(--primary-color${currentTheme === 'dark' ? '--dark' : '--light'})`,
+        },
+        '&.MuiDataGrid-cell--editing': {
+          backgroundColor: `var(--component-active-bg${currentTheme === 'dark' ? '--dark' : '--light'})`,
+        },
+          },
+          row: {
+        backgroundColor: `var(--component-bg${currentTheme === 'dark' ? '--dark' : '--light'})`,
+        '&:hover': {
+          backgroundColor: `var(--component-hover-bg${currentTheme === 'dark' ? '--dark' : '--light'})`,
+        },
+        '&.Mui-selected': {
+          backgroundColor: `var(--component-active-bg${currentTheme === 'dark' ? '--dark' : '--light'})`,
+          '&:hover': {
+            backgroundColor: `var(--component-hover-bg${currentTheme === 'dark' ? '--dark' : '--light'})`,
+          },
+        },
+        '&.MuiDataGrid-row--odd': {
+          backgroundColor: `var(--body-bg${currentTheme === 'dark' ? '--dark' : '--light'})`,
+        },
+          },
+          footerContainer: {
+        backgroundColor: `var(--component-bg${currentTheme === 'dark' ? '--dark' : '--light'})`,
+        borderTop: `1px solid var(--border-color-split${currentTheme === 'dark' ? '--dark' : '--light'})`,
+        color: `var(--text-color${currentTheme === 'dark' ? '--dark' : '--light'})`,
+          },
+          toolbarContainer: {
+        backgroundColor: `var(--component-bg${currentTheme === 'dark' ? '--dark' : '--light'})`,
+        borderBottom: `1px solid var(--border-color-split${currentTheme === 'dark' ? '--dark' : '--light'})`,
+        color: `var(--text-color${currentTheme === 'dark' ? '--dark' : '--light'})`,
+        '& .MuiButton-root': {
+          color: `var(--btn-color${currentTheme === 'dark' ? '--dark' : '--light'})`,
+          '&:hover': {
+            backgroundColor: `var(--btn-hover-bg${currentTheme === 'dark' ? '--dark' : '--light'})`,
+          },
+        },
+          },
+          filterForm: {
+        backgroundColor: `var(--component-bg${currentTheme === 'dark' ? '--dark' : '--light'})`,
+        color: `var(--text-color${currentTheme === 'dark' ? '--dark' : '--light'})`,
+          },
+          panel: {
+        backgroundColor: `var(--component-bg${currentTheme === 'dark' ? '--dark' : '--light'})`,
+        color: `var(--text-color${currentTheme === 'dark' ? '--dark' : '--light'})`,
+        border: `1px solid var(--dash-border-color${currentTheme === 'dark' ? '--dark' : '--light'})`,
+          },
+          panelHeader: {
+        backgroundColor: `var(--primary-contrast${currentTheme === 'dark' ? '--dark' : '--light'})`,
+        borderBottom: `1px solid var(--border-color-split${currentTheme === 'dark' ? '--dark' : '--light'})`,
+          },
+          panelContent: {
+        backgroundColor: `var(--component-bg${currentTheme === 'dark' ? '--dark' : '--light'})`,
+          },
+          columnMenu: {
+        backgroundColor: `var(--component-bg${currentTheme === 'dark' ? '--dark' : '--light'})`,
+        color: `var(--text-color${currentTheme === 'dark' ? '--dark' : '--light'})`,
+        '& .MuiMenuItem-root': {
+          color: `var(--text-color${currentTheme === 'dark' ? '--dark' : '--light'})`,
+          '&:hover': {
+            backgroundColor: `var(--component-hover-bg${currentTheme === 'dark' ? '--dark' : '--light'})`,
+          },
+        },
+          },
+        },
+      },
+
+    }
+  };
+
+}
+
+export const appTheme = (muiThemeOptions?: any, options?: {
+  tenantSettings?: any;
+  colors?: any;
+  [key: string]: any;
+}) => {
+  const { tenantSettings, colors, ...otherOptions } = options || {};
+
+  const baseTheme = {
+    cssVariables: true,
+    ...defaultOptions(options),
+  };
+
+  const theme = muiThemeOptions
+    ? deepmerge(deepmerge(defaultTheme, baseTheme), muiThemeOptions)
+    : deepmerge(defaultTheme, baseTheme);
+
+  return theme;
+};
+
+export default appTheme;
+

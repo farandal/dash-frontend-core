@@ -35,7 +35,7 @@ const getAllCssVariablesFromStyleSheets = (selector: string) => {
 
 export const defaultOptions = (options) => {
   const { tenantSettings, colors, ...otherOptions } = options || {};
-  const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+  const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
   const cssVars = getAllCssVariablesFromStyleSheets(":root");
 
   const _color = (key, colorKey, mode = null) => {
@@ -97,10 +97,10 @@ export const defaultOptions = (options) => {
         ..._color('black', 'text-color', mode),
         ..._color('white', 'text-contrast', mode)
       },
-     /* variant: {
-        ..._color('containedBg', 'btn-bg', mode),
+      /* variant: {
+         ..._color('containedBg', 'btn-bg', mode),
 
-      }*/
+       }*/
     };
 
     // Filter out empty objects and undefined values
@@ -114,7 +114,7 @@ export const defaultOptions = (options) => {
     );
   };
 
-    return {
+  return {
     cssVariables: {
       cssVarPrefix: 'dash', // Your custom prefix
       colorSchemeSelector: 'data-theme', // Tell MUI to use data attributes
@@ -160,15 +160,7 @@ export const defaultOptions = (options) => {
           },
         },
       },
-      MuiPaper: {
-        styleOverrides: {
-          root: {
-            marginBottom: 8,
-            backgroundColor: 'var(--module-bg)', // Use the correct variable name
-            color: 'var(--text-color)',
-          },
-        },
-      },
+
 
       /* MuiIconButton: {
          styleOverrides: {
@@ -409,13 +401,23 @@ export const defaultOptions = (options) => {
           },
         },
       },
-      MuiCard: {
-        styleOverrides: {
-          root: {
-            backgroundColor: 'var(--module-bg)',
-          },
-        },
-      },
+      /* MuiCard: {
+         styleOverrides: {
+           root: {
+             backgroundColor: 'var(--module-bg)',
+           },
+         },
+       },
+       MuiPaper: {
+         styleOverrides: {
+           root: {
+             marginBottom: 8,
+             backgroundColor: 'var(--module-bg)', // Use the correct variable name
+             color: 'var(--text-color)',
+           },
+         },
+       },
+       */
       MuiAppBar: {
         styleOverrides: {
           root: {
@@ -438,6 +440,21 @@ export const defaultOptions = (options) => {
           },
         },
       },*/
+      MuiInputBase: {
+      styleOverrides: {
+        input: {
+          '&::placeholder': {
+            color: 'var(--highlight-color)',
+            opacity: 1,
+          },
+          // For WebKit browsers
+          '&::-webkit-input-placeholder': {
+            color: 'var(--highlight-color)',
+            opacity: 1,
+          },
+        },
+      },
+    },
       MuiTextField: {
         styleOverrides: {
           root: {
@@ -460,6 +477,27 @@ export const defaultOptions = (options) => {
             },
             '& .MuiInputBase-input': {
               color: 'var(--text-color)',
+              // Add placeholder styling here
+              '&::placeholder': {
+                color: 'var(--highlight-color)',
+                opacity: 0.7,
+              },
+              '&::-webkit-input-placeholder': {
+                color: 'var(--highlight-color)',
+                opacity: 0.7,
+              },
+              '&::-moz-placeholder': {
+                color: 'var(--highlight-color)',
+                opacity: 0.7,
+              },
+              '&:-ms-input-placeholder': {
+                color: 'var(--highlight-color)',
+                opacity: 0.7,
+              },
+              '&:-moz-placeholder': {
+                color: 'var(--highlight-color)',
+                opacity: 0.7,
+              },
             },
           },
         },
@@ -499,8 +537,8 @@ export const defaultOptions = (options) => {
               backgroundColor: 'var(--component-hover-bg)',
             },
             '&.MuiTableRow-head': {
-                backgroundColor: 'var(--table-header-bg) !important',
-                color: 'var(--table-header-color) !important',
+              backgroundColor: 'var(--table-header-bg) !important',
+              color: 'var(--table-header-color) !important',
             },
           },
         },
@@ -544,14 +582,14 @@ export const defaultOptions = (options) => {
             },
             // Also target the container that holds the header
             '& .MuiDataGrid-container--top [role=row]': {
-               color: 'var(--table-header-color) !important',
+              color: 'var(--table-header-color) !important',
               backgroundColor: 'var(--table-header-bg) !important',
             },
           },
-           columnHeader: {
-              color: 'var(--table-header-color) !important',
-              backgroundColor: 'var(--table-header-bg) !important',
-              '&  .MuiSvgIcon-root': {
+          columnHeader: {
+            color: 'var(--table-header-color) !important',
+            backgroundColor: 'var(--table-header-bg) !important',
+            '&  .MuiSvgIcon-root': {
               color: 'var(--highlight-color) !important',
 
             },
@@ -575,10 +613,10 @@ export const defaultOptions = (options) => {
               color: 'var(--btn-primary-color)',
             },
           },
-           // Add this new selector for the column header row
+          // Add this new selector for the column header row
           columnHeaderRow: {
-              color: 'var(--table-header-color) !important',
-              backgroundColor: 'var(--table-header-bg) !important',
+            color: 'var(--table-header-color) !important',
+            backgroundColor: 'var(--table-header-bg) !important',
           },
           cell: {
             borderBottom: '1px solid var(--border-color)',

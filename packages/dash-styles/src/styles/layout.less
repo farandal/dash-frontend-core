@@ -2,27 +2,42 @@
   padding: 0 !important;
 }
 
-.framed-layout{
-  > #root{
-      border-radius: 22px;
-      background-color: var(--framed_layout-bg, @framed_layout-bg);
-      > div > div > .lite{
-          background-color: transparent;
-      }
-      .dash-app-layout {
-          .dash-app-module {
-            //padding:8px;
-          }
-          .dash-layout-content, .dash-layout-footer{
-              background-color: transparent;
-              border-top: unset;
-          }
-      }
-  }
+html {
+        height: 100vh;
 
 }
 
+bod,#root {
+height: 100vh;
+}
 
+@media (min-width: @mq-sm) {
+
+  body.framed-layout {
+padding:8px;
+}
+
+  .framed-layout {
+    > #root {
+      height: calc(100vh - 16px);
+      border-radius: 22px;
+      background-color: var(--framed_layout-bg, @framed_layout-bg);
+      > div > div > .lite {
+        background-color: transparent;
+      }
+      .dash-app-layout {
+        .dash-app-module {
+          //padding:8px;
+        }
+        .dash-layout-content,
+        .dash-layout-footer {
+          background-color: transparent;
+          border-top: unset;
+        }
+      }
+    }
+  }
+}
 
 /* Prevent layout shifts during route transitions */
 .dash-layout-content {
@@ -42,7 +57,8 @@
 }
 */
 .dash-app-layout {
-  min-height: 100vh;
+  //min-height: 100vh;
+  height: 100%;
 }
 
 /*.framed-layout .dash-app-layout {
@@ -88,12 +104,29 @@
   }
 }
 
-body.framed-layout{
-  //padding: 8px;
+    /* Firefox */
+    #dash-app-layout > div.dash-app-layout-content.MuiBox-root {
+      overflow: auto;
+      height: 100vh;
+    }
 
-  //background-color: var(--body-bg, @body-bg);
-}
+    @media (max-width: @mq-sm) {
+      #dash-app-layout > div.dash-app-layout-content.MuiBox-root {
+        overflow: auto;
+        -ms-overflow-style: none; /* IE and Edge */
+        scrollbar-width: none;    /* Firefox */
+      }
+      #dash-app-layout > div.dash-app-layout-content.MuiBox-root::-webkit-scrollbar {
+        display: none;            /* Chrome, Safari, Opera */
+      }
+    }
 
+
+
+// cannot apply this because it hides the table
+/*.RaList-noResults, .RaList-main {
+    height: calc(100vh - 180px);
+}*/
 
 .framed-layout #root {
   box-shadow: unset;
@@ -122,6 +155,7 @@ body.framed-layout{
         //min-height: calc(100vh - 70px);
         .dash-module-box-content{
             padding: 0;
+                //height: calc(100vh - 140px); // Approximate size of the header in mobile
         }
     .dash-box{
       width: 100%;

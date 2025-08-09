@@ -372,6 +372,25 @@
     }
 }
 
+@media (max-width: @mq-sm) {
+  .dash-header {
+    position: fixed;
+    z-index: 1000;
+  }
+
+
+  #dash-app-layout > div.dash-app-layout-content.MuiBox-root > div.dash-layout-content.MuiBox-root {
+     padding-top: 105px; //HEADER SIZE IN MOBILE
+  }
+
+  .dash-header-container .dash-header-content .dash-header-items {
+
+    position: absolute;
+    top: 0;
+    right: 0;
+  }
+
+}
 
 .dash-header-inline{
     display: flex;
@@ -458,9 +477,9 @@
                             height: 100%;
                             object-fit: contain;
 
-                            @media (max-width:  @mq-sm) {
+                           /* @media (max-width:  @mq-sm) {
                                 filter: brightness(0) invert(1);
-                            }
+                            }*/
                         }
                     }
                     &-avatar{
