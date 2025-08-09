@@ -59,6 +59,7 @@ const ResourceLayout: React.FC<IResourceLayout> = (props) => {
 
 	// Memoize the condition for showing the menu
 	const shouldShowMenu = useMemo(() => {
+      
 		return (resourceConfig.mainAction ||
 			(resourceConfig.menu && resourceConfig.menu.length > 0)) &&
 			!resourceMenuDisabled;

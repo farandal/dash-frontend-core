@@ -1,3 +1,5 @@
+import SystemRequestsCache from './contexts/SystemRequestsCache';
+
 /** INTERFACES */
 export type { IAuthContext } from './contexts/auth'
 export type { ILaravelEchoManager } from './contexts/com/LaravelEchoMgr'
@@ -46,7 +48,7 @@ export { useAuthContext } from "./contexts/auth/AuthContext";
 
 export {default as LaravelEchoContext} from "./contexts/com/LaravelEchoContext"
 export {default as DashQueryClientContext, useDashQueryClient} from "./contexts/DashQueryClientContext"
-
+export { default as SystemRequestsCache, useSystemRequestsCache } from './contexts/SystemRequestsCache';
 export type {ILaravelEchoContext} from "./contexts/com/LaravelEchoContext"
 
 export {default as DASHGlobalErrorHandler} from "./components/misc/DASHGlobalErrorHandler"

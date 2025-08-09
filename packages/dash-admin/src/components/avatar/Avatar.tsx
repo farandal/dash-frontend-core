@@ -5,6 +5,7 @@ import { Box } from '@mui/material';
 import { WithRecord } from 'react-admin';
 import SingleImageUploader from './SingleImageUploader';
 import { useFormContext } from 'react-hook-form';
+import AvatarMui from '@mui/material/Avatar';
 
 export type AvatarComponent = IDashAutoAdminCustomFieldComponent;
 
@@ -25,10 +26,9 @@ export const AvatarHandler: React.FC<AvatarComponent> = (props) => {
 		<>
 			<SingleImageUploader
 				classNamePrefix='dash-profile'
-				//{...method === "edit" && { currentUrl:record[_attributeName]} }
-                {...method === "edit" && { currentUrl: `${record.image_path}`} }
-                /*...method === "edit" && { currentUrl: `${new URL(record.image_url).origin}/${record.image_path}`} */
-               
+				{...(method === "edit" && record && record[_attributeName]
+					? { currentUrl: record[_attributeName] }
+					: {})}
 				onChange={onChange}
 			/>
 			{errors[attribute.attribute] && (
@@ -39,14 +39,29 @@ export const AvatarHandler: React.FC<AvatarComponent> = (props) => {
 		</>
 	);
 };
+
+export const AvatarDisplay: React.FC<AvatarComponent> = (props) => {
+	const { attribute } = props;
+	const record = useRecordContext();
+	const _attributeName = attribute.listAttribute || attribute.attribute;
+	const imageUrl = record?.[_attributeName];
+   
+	return (
+		<Box display="flex" alignItems="center">
+			<AvatarMui src={imageUrl} alt="avatar" />
+		</Box>
+	);
+};
+
 const Avatar = ({ method, attribute,resourceConfig }: IDashAutoAdminCustomFieldComponent) => {
 	switch (method) {
 		case 'edit':
-			return <AvatarHandler attribute={attribute} method={method} resourceConfig={resourceConfig} />;
-		case 'create':
+        case 'create':
 			return <AvatarHandler attribute={attribute} method={method} resourceConfig={resourceConfig} />;
 		case 'view':
-			return <></>;
+        case 'list':
+			return <AvatarDisplay  attribute={attribute} method={method} resourceConfig={resourceConfig} />;
 	}
 };
 export default Avatar;
+

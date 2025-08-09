@@ -17,7 +17,8 @@ import tenantSystemAdminSchema from './schemas/tenant_superadmin';
 import { TableContainer } from '@mui/material';
 import constants from './config/DASHAdminSystemConstants';
 import ResourceTemplate from './templates/ResourceTemplate';
-
+import TenantSettingsFormatsProvider from './components/tenant/TenantSettingsContext';
+// @deprecated, dont use!
 export const GroupIcons = {
   Administración: <Settings />,
   'Logs y Notificaciones': <Notifications />,
@@ -79,16 +80,7 @@ const resources: IAppResourceConfig[] = [
     dataGridWrapper: (props: any) => (
       <TableContainer sx={{ maxHeight: 800 }}>{props.children}</TableContainer>
     ),
-    postFormatter: (data: any) => {
-       
-      delete data.permissions
-      return data
-    },
-    formPostFormatter: (data: any) => {
-      
-      delete data.permissions
-      return data
-    }
+    saveButtonAlwaysEnabled: true
     /* references: [
              { reference: 'permission', tab: 'Permisos', target: 'role_id', schema: permissionSchema, type: "ReferenceManyField" },
          ],*/
@@ -172,6 +164,11 @@ JSON.parse(constants.system.ENABLE_TENANT_IMPERSONATION) &&
     trash: true,
     model: 'system/tenant',
     label: 'Cliente',
+    contextComponent: ({ resourceConfig,mode,children }) => {
+        console.log("TenantSettingsFormatsProvider", resourceConfig, mode);
+        debugger;
+      return <TenantSettingsFormatsProvider>{children}</TenantSettingsFormatsProvider>
+    },
     schema: tenantSystemAdminSchema,
     drawer: false,
     edit: true,

@@ -4,7 +4,7 @@
 
 
 
-import { FC } from 'react';
+import { FC, useEffect } from 'react';
 
 
 //import { Outlet } from 'react-router';
@@ -33,6 +33,9 @@ export const ResourceTemplateShow: FC<IResourceTemplate> = (props) => {
 	/*const ShowActions = ({ edit }) => (
     <TopToolbar>{edit !== false && <EditButton />}</TopToolbar>
   );*/
+  /*useEffect(() => {
+    debugger;
+  },[]);*/
 
 	return resourceConfig.showComponent ? (
 		<ResourceLayout resourceConfig={resourceConfig}>

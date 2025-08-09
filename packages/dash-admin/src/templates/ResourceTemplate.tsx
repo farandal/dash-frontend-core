@@ -42,7 +42,7 @@ export const ResourceTemplate = (resourceConfig:IDashAutoAdminResourceConfig) =>
     const URL_PREFIX = DASHAdminSystemConstants.system.URL_PREFIX;
     const PATH = resourceConfig.model;
 
-    if (debug) {
+    /*if (debug) {
       
         console.info(`${PATH} ResourceTemplate`, {
             path: resourceConfig.path,
@@ -56,15 +56,15 @@ export const ResourceTemplate = (resourceConfig:IDashAutoAdminResourceConfig) =>
             },
         });
         
-    }
+    }*/
     const a = '*';
     const idParamName = resourceConfig?.idParamName || 'id';
     //const { [idParamName]: id, [a]: all } = useParams();
    
-   /* useEffect(()=> {
-        debugger;
-        console.log("RESOURCE TMPLATE")
-    },[])*/
+   /*useEffect(()=> {
+       console.log('ResourceTemplate useEffect', resourceConfig);
+        console.log('ResourceTemplate _view', _view);
+    },[]);*/
     
     return (
         <>
@@ -203,11 +203,13 @@ export const ResourceTemplate = (resourceConfig:IDashAutoAdminResourceConfig) =>
                     return <ResourceTemplateCreate resourceConfig={resourceConfig} />;
                 } }}
 
-                 {..._view && {view : () => {
+                 {..._view && {show : () => {
+                    
                     return <ResourceTemplateShow resourceConfig={resourceConfig} />;
                 } }}
 
                   {..._edit && {edit : () => {
+                 
                     return <ResourceTemplateEdit resourceConfig={resourceConfig} />;
                 } }}
 

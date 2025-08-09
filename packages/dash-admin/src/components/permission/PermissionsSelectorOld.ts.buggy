@@ -1,0 +1,1085 @@
+import React, { useCallback, useEffect, useState, useMemo, useRef } from 'react';
+import { useRecordContext, useRefresh, CheckboxGroupInput, Loading, useEditContext, useGetOne } from 'react-admin';
+import { useController, useFormContext, useFormState } from 'react-hook-form';
+import { IDashAutoAdminCustomFieldComponent } from 'dash-auto-admin';
+import { useAxios } from 'dash-axios-hook';
+import { 
+    Grid, 
+    Card, 
+    CardContent, 
+    Typography, 
+    Button, 
+    Box,
+    Chip,
+    Divider,
+    Stack,
+    Toolbar,
+    Paper,
+    TextField,
+    InputAdornment,
+    CircularProgress
+} from '@mui/material';
+import { 
+    SelectAll as SelectAllIcon, 
+    DeselectOutlined as DeselectAllIcon,
+    Search as SearchIcon,
+    Clear as ClearIcon,
+    FilterList as FilterIcon
+} from '@mui/icons-material';
+
+import {useAvailablePermissionsFormats} from "./AvailablePermissionsContext";
+import { useSystemRequestsCache } from '../../contexts/SystemRequestsCache';
+import { NotFound } from 'dash-components';
+
+interface IPermissions {
+    group: string;
+    name: string;
+    route_name: string;
+}
+
+interface IPermissionItem {
+    group: string;
+    name: string;
+    route_name: string;
+    checked?: boolean;
+    value?: string;
+}
+
+// Styles for HTML checkboxes
+const checkboxStyles = {
+    checkbox: {
+        marginRight: '8px',
+        cursor: 'pointer',
+        accentColor: '#1976d2'
+    },
+    checkboxLabel: {
+        display: 'flex',
+        alignItems: 'center',
+        fontSize: '14px',
+        cursor: 'pointer',
+        padding: '4px 0',
+        margin: 0,
+        userSelect: 'none' as const
+    },
+    selectAllLabel: {
+        display: 'flex',
+        alignItems: 'center',
+        fontSize: '14px',
+        fontWeight: 'bold',
+        cursor: 'pointer',
+        margin: 0,
+        userSelect: 'none' as const
+    }
+};
+
+const PermissionsSelectorView: React.FC<IDashAutoAdminCustomFieldComponent> = ({
+    method,
+    attribute,
+}) => {
+    const record = useRecordContext();
+    const [permissions, setPermissions] = useState<IPermissions[][]>([]);
+
+    useEffect(() => {
+
+        if (record?.permissions) {
+        
+            const groupedPermissions = record.permissions.reduce((acc, permission) => {
+                const group = acc.find(g => g[0]?.group === permission.group);
+                if (group) {
+                    group.push(permission);
+                } else {
+                    acc.push([permission]);
+                }
+                return acc;
+            }, [] as any[]);
+            setPermissions(groupedPermissions);
+        }
+    }, [record?.permissions]);
+
+    if (!record?.permissions || record.permissions.length === 0) {
+        return (
+            <Box sx={{ p: 2, textAlign: 'center' }}>
+                <Typography variant="body2" color="text.secondary">
+                    No permissions assigned
+                </Typography>
+            </Box>
+        );
+    }
+
+    return (
+        <Box sx={{ p: 2 }}>
+            <Typography variant="h6" sx={{ mb: 3 }}>
+                Assigned Permissions ({record.permissions.length})
+            </Typography>
+            <Grid container spacing={3}>
+                {permissions?.map((tab, index) => (
+                    <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={index}>
+                        <Card 
+                            variant="outlined" 
+                            sx={{ 
+                                height: '100%',
+                                display: 'flex',
+                                flexDirection: 'column'
+                            }}
+                        >
+                            <CardContent sx={{ flexGrow: 1 }}>
+                                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+                                    <Typography variant="subtitle1" sx={{ fontWeight: 600, fontSize: '1rem' }}>
+                                        {tab[0]?.group.charAt(0).toUpperCase() + tab[0]?.group.slice(1)}
+                                    </Typography>
+                                    <Chip 
+                                        label={tab.length}
+                                        size="small"
+                                        color="primary"
+                                    />
+                                </Box>
+                                <Stack spacing={0.5}>
+                                    {tab.map((item, i) => (
+                                        <Typography key={i} variant="body2" sx={{ color: 'text.secondary', fontSize: '0.875rem' }}>
+                                            • {item.name.split('.').pop()}
+                                        </Typography>
+                                    ))}
+                                </Stack>
+                            </CardContent>
+                        </Card>
+                    </Grid>
+                ))}
+            </Grid>
+        </Box>
+    );
+};
+
+const PermissionsSelectorBase: React.FC<IDashAutoAdminCustomFieldComponent & { record: any }> = ({
+    method,
+    attribute,
+    resourceConfig,
+    record = null
+}) => {
+    const [permissionsData, setPermissionsData] = useState<IPermissions[][]>([]);
+    const [parsedValues, setParsedValues] = useState<IPermissionItem[]>(null);
+    const [expandedCards, setExpandedCards] = useState<{ [key: number]: boolean }>({});
+    const [isInitialized, setIsInitialized] = useState(false);
+    const [groupSearchTerm, setGroupSearchTerm] = useState<string>('');
+    const [itemSearchTerm, setItemSearchTerm] = useState<string>('');
+    // Add debounced search states
+    const [debouncedGroupSearch, setDebouncedGroupSearch] = useState<string>('');
+    const [debouncedItemSearch, setDebouncedItemSearch] = useState<string>('');
+    
+    // Add refs for timeout management
+    const groupSearchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const itemSearchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    
+    const axios = useAxios();
+    const refresh = useRefresh();
+    const form = useFormContext();
+    const formState = useFormState();
+
+    const permissionObjectsController = useController({
+        name: 'permission_objects',
+    });
+
+    const permissionsController = useController({
+        name: 'permissions',
+    });
+
+    // Number of items to show initially (before expand)
+    const INITIAL_ITEMS_COUNT = 6;
+
+    // Memoize the groupPermissionsData function
+    const groupPermissionsData = useCallback((permissionItems: IPermissionItem[]) => {
+        // Group by "group" extracted from permission name (everything except last dot part)
+        const groupMap: { [group: string]: IPermissionItem[] } = {};
+        permissionItems.forEach(item => {
+            // Extract group from name (everything except last part)
+            const parts = item.name.split('.');
+            const group = parts.length > 1 ? parts.slice(0, -1).join('.') : 'Other';
+            if (!groupMap[group]) groupMap[group] = [];
+            groupMap[group].push({ ...item, group });
+        });
+
+        // Convert to array of arrays, sort groups alphabetically
+        const grouped = Object.entries(groupMap)
+            .sort((a, b) => a[0].localeCompare(b[0]))
+            .map(([group, items]) => items);
+
+        return grouped;
+    }, []);
+
+    // Debounce group search
+    useEffect(() => {
+        if (groupSearchTimeoutRef.current) {
+            clearTimeout(groupSearchTimeoutRef.current);
+        }
+
+        groupSearchTimeoutRef.current = setTimeout(() => {
+            // Only update if search term has 3+ characters or is empty (to allow clearing)
+            if (groupSearchTerm.length >= 3 || groupSearchTerm.length === 0) {
+                setDebouncedGroupSearch(groupSearchTerm);
+            }
+        }, 1000);
+
+        return () => {
+            if (groupSearchTimeoutRef.current) {
+                clearTimeout(groupSearchTimeoutRef.current);
+            }
+        };
+    }, [groupSearchTerm]);
+
+    // Debounce item search
+    useEffect(() => {
+        if (itemSearchTimeoutRef.current) {
+            clearTimeout(itemSearchTimeoutRef.current);
+        }
+
+        itemSearchTimeoutRef.current = setTimeout(() => {
+            // Only update if search term has 3+ characters or is empty (to allow clearing)
+            if (itemSearchTerm.length >= 3 || itemSearchTerm.length === 0) {
+                setDebouncedItemSearch(itemSearchTerm);
+            }
+        }, 1000);
+
+        return () => {
+            if (itemSearchTimeoutRef.current) {
+                clearTimeout(itemSearchTimeoutRef.current);
+            }
+        };
+    }, [itemSearchTerm]);
+
+    // Filter permissions based on debounced search terms
+    const filteredPermissionsData = useMemo(() => {
+        let filtered = permissionsData;
+
+        // First filter by group name if debounced group search term exists and has 3+ chars
+        if (debouncedGroupSearch.trim() && debouncedGroupSearch.length >= 3) {
+            const groupSearchLower = debouncedGroupSearch.toLowerCase().trim();
+            filtered = filtered.filter(tab => {
+                const groupName = tab[0]?.group.toLowerCase();
+                return groupName.includes(groupSearchLower);
+            });
+        }
+
+        // Then filter items within each group if debounced item search term exists and has 3+ chars
+        if (debouncedItemSearch.trim() && debouncedItemSearch.length >= 3) {
+            const itemSearchLower = debouncedItemSearch.toLowerCase().trim();
+            filtered = filtered.map(tab => {
+                const filteredItems = tab.filter(permission => {
+                    const permissionName = permission.name.toLowerCase();
+                    const shortName = permission.name.split('.').pop()?.toLowerCase() || '';
+                    return permissionName.includes(itemSearchLower) || shortName.includes(itemSearchLower);
+                });
+                return filteredItems;
+            }).filter(tab => tab.length > 0); // Remove groups with no matching items
+        }
+
+        return filtered;
+    }, [permissionsData, debouncedGroupSearch, debouncedItemSearch]);
+
+    // Fetch permissions - FIXED: Stable function reference
+    /*const getPermissions = useCallback(async () => {
+        try {
+            const { data } = await axios.get('system/permissions/availablePermissions');
+            setPermissionsData(groupPermissionsData(data));
+            setIsInitialized(true);
+        } catch (error) {
+            console.error('Failed to fetch permissions:', error);
+        }
+    }, [ groupPermissionsData]);*/
+
+    //const { formats: availablePermissions, loading: permissionsLoading } = useAvailablePermissionsFormats();
+
+    const { formats: availablePermissions, loading } = useSystemRequestsCache();
+
+    // FIXED: Only fetch permissions once on mount
+    useEffect(() => {
+        if (!isInitialized && availablePermissions) {
+
+         
+            // Normalize availablePermissions to always have route_name
+            const perms = Array.isArray(availablePermissions.data)
+                ? availablePermissions.data
+                : Array.isArray(availablePermissions)
+                    ? availablePermissions
+                    : [];
+
+            // Add missing permissions from record.permission_objects
+            /*let allPermissions = [...perms];
+            if (record && Array.isArray(record.permission_objects)) {
+                record.permission_objects.forEach((perm: any) => {
+                    if (
+                        !allPermissions.some(
+                            (p) => p.route_name === perm.route_name
+                        )
+                    ) {
+                        allPermissions.push(perm);
+                    }
+                });
+            }*/
+
+            setPermissionsData(groupPermissionsData(perms));
+            setIsInitialized(true);
+        }
+    }, [availablePermissions, isInitialized, groupPermissionsData, record]);
+
+    // Use the record prop directly
+    const effectiveRecord = record;
+
+    // Initialize parsed values from record - only after permissionsData is loaded and not loading
+    useEffect(() => {
+        if (!loading && effectiveRecord && effectiveRecord.id && permissionsData.length > 0) {
+            // Prefer permission_objects if present, else fallback to permissions (array of names)
+            const recordPermissions: any[] = effectiveRecord.permission_objects || [];
+            /*if (Array.isArray(effectiveRecord.permission_objects) && effectiveRecord.permission_objects.length > 0) {
+                recordPermissions = effectiveRecord.permission_objects;
+                console.log("Using permission_objects:", recordPermissions.length);
+            } else if (Array.isArray(effectiveRecord.permissions) && effectiveRecord.permissions.length > 0) {
+                // Convert permission names to objects with route_name set properly
+                recordPermissions = effectiveRecord.permissions.map((name: string) => ({ 
+                    route_name: name,
+                    name: name 
+                }));
+                console.log("Using permissions array:", recordPermissions.length);
+            }*/
+          
+            if (recordPermissions.length > 0) {
+                console.log("Record has permissions:", recordPermissions.length);
+                
+                // Create Sets for faster lookups
+                const recordRouteNames = new Set(recordPermissions.map(p => p.route_name));
+                
+                // Check if any permissions from record match available permissions
+                const availableRouteNames = new Set(permissionsData.flat().map(p => p.name));
+                const matchCount = [...recordRouteNames].filter(name => availableRouteNames.has(name)).length;
+                console.log(`Matching route_names: ${matchCount} of ${recordRouteNames.size}`);
+                
+                // If there are no matches, we need a more flexible approach
+                if (matchCount === 0) {
+                    console.log("No exact matches found - using fallback matching");
+                    // We'll directly use the record permissions
+                    const parsedCheckedFiltered: IPermissionItem[] = recordPermissions.map(p => ({
+                        group: p.group || p.route_name.split('.').slice(0, -1).join('.'),
+                        name: p.name || p.route_name,
+                        route_name: p.route_name,
+                        checked: true,
+                        value: JSON.stringify(p),
+                    }));
+                    
+                    console.log("Using fallback permissions:", parsedCheckedFiltered.length);
+                    setParsedValues(parsedCheckedFiltered);
+                } else {
+                    // Regular matching works fine
+                    const parsedCheckedFiltered: IPermissionItem[] = [];
+                    permissionsData.forEach(tab => {
+                        tab.forEach(permission => {
+                            if (recordRouteNames.has(permission.name)) {
+                                parsedCheckedFiltered.push({
+                                    group: permission.group,
+                                    name: permission.name,
+                                    route_name: permission.name,
+                                    checked: true,
+                                    value: JSON.stringify(permission),
+                            });
+                            }
+                        });
+                    });
+                    // Remove debugger statement
+                    console.log("Matched permissions:", parsedCheckedFiltered.length);
+                    setParsedValues(parsedCheckedFiltered);
+                }
+            } else {
+                console.log("No record permissions found");
+                setParsedValues([]);
+            }
+        } else if (!loading && !effectiveRecord?.id) {
+            setParsedValues([]);
+        }
+    }, [permissionsData, effectiveRecord?.permissions, effectiveRecord?.permission_objects, effectiveRecord?.id, loading]);
+    
+    // Toggle card expansion
+    const toggleCard = useCallback((index: number) => {
+        setExpandedCards(prev => ({
+            ...prev,
+            [index]: !prev[index]
+        }));
+    }, []);
+
+    // Handle search input changes
+    const handleGroupSearchChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+        setGroupSearchTerm(event.target.value);
+    }, []);
+
+    const handleItemSearchChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+        setItemSearchTerm(event.target.value);
+    }, []);
+
+    // Clear search functions - updated to clear debounced values
+    const handleClearGroupSearch = useCallback(() => {
+        setGroupSearchTerm('');
+        setDebouncedGroupSearch('');
+        if (groupSearchTimeoutRef.current) {
+            clearTimeout(groupSearchTimeoutRef.current);
+        }
+    }, []);
+
+    const handleClearItemSearch = useCallback(() => {
+        setItemSearchTerm('');
+        setDebouncedItemSearch('');
+        if (itemSearchTimeoutRef.current) {
+            clearTimeout(itemSearchTimeoutRef.current);
+        }
+    }, []);
+
+    const handleClearAllSearches = useCallback(() => {
+        setGroupSearchTerm('');
+        setItemSearchTerm('');
+        setDebouncedGroupSearch('');
+        setDebouncedItemSearch('');
+        if (groupSearchTimeoutRef.current) {
+            clearTimeout(groupSearchTimeoutRef.current);
+        }
+        if (itemSearchTimeoutRef.current) {
+            clearTimeout(itemSearchTimeoutRef.current);
+        }
+    }, []);
+
+
+
+// Update the handlePermissionToggle function to use route_name and checked: true
+const handlePermissionToggle = useCallback((permission: IPermissionItem, event: React.ChangeEvent<HTMLInputElement>) => {
+    event.stopPropagation();
+    const isChecked = event.target.checked;
+    form.setValue('dirty', true, { shouldDirty: true });
+
+    setParsedValues(prev => {
+        let newValues;
+        if (isChecked) {
+            const exists = prev.some(p => p.route_name === permission.route_name);
+            if (!exists) {
+                // Add permission object with checked: true
+                newValues = [
+                    ...prev,
+                    {
+                        ...permission,
+                        checked: true,
+                    }
+                ];
+            } else {
+                newValues = prev;
+            }
+        } else {
+            // Remove permission object
+            newValues = prev.filter(p => p.route_name !== permission.route_name);
+        }
+        return newValues;
+    });
+}, [form]);
+
+// Update the handleSelectAllGroup function to use checked: true
+const handleSelectAllGroup = useCallback((tab: IPermissionItem[], event: React.ChangeEvent<HTMLInputElement>) => {
+    event.stopPropagation();
+    const isChecked = event.target.checked;
+    form.setValue('dirty', true, { shouldDirty: true });
+
+    setParsedValues(prev => {
+        let newValues;
+        const groupRouteNames = tab.map(item => item.route_name);
+        if (isChecked) {
+            // Add all group permissions with checked: true if not already present
+            const toAdd = tab.filter(item => !prev.some(p => p.route_name === item.route_name))
+                .map(item => ({
+                    ...item,
+                    checked: true,
+                }));
+            newValues = [...prev, ...toAdd];
+        } else {
+            // Remove all group permissions
+            newValues = prev.filter(p => !groupRouteNames.includes(p.route_name));
+        }
+        return newValues;
+    });
+}, [form]);
+
+// Update the handleSelectAllPermissions function to use checked: true
+const handleSelectAllPermissions = useCallback(() => {
+    form.setValue('dirty', true, { shouldDirty: true });
+    const allPermissions = permissionsData.flat().map(permission => ({
+        ...permission,
+        checked: true,
+    }));
+    setParsedValues(allPermissions);
+}, [form, permissionsData]);
+
+// Update the handleDeselectAllPermissions function
+const handleDeselectAllPermissions = useCallback(() => {
+    form.setValue('dirty', true, { shouldDirty: true });
+    setParsedValues([]);
+}, [form]);
+
+// --- Synchronize form state with parsedValues in a useEffect ---
+useEffect(() => {
+    if(!parsedValues) return;
+    // Always update permission_objects with the array of permission objects (with checked: true)
+    permissionObjectsController.field.onChange(parsedValues.map(p => ({ ...p, checked: true })));
+    // Optionally update permissions with just the route_names
+    permissionsController.field.onChange(parsedValues.map(p => p.route_name));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+}, [parsedValues]);
+
+    if (!permissionsData || !permissionsData.length) return <Loading />;
+    if (!effectiveRecord) return <Loading />;
+
+    // Calculate statistics for the toolbar
+    const totalPermissions = permissionsData.flat().length;
+    const selectedPermissions = parsedValues ? parsedValues.length : 0;
+    const isAllSelected = selectedPermissions === totalPermissions;
+    const isNoneSelected = selectedPermissions === 0;
+
+    // Check if any search is active - updated to use debounced values
+    const hasActiveSearch = debouncedGroupSearch.trim() || debouncedItemSearch.trim();
+    const filteredGroupsCount = filteredPermissionsData.length;
+    const totalFilteredItems = filteredPermissionsData.reduce((sum, group) => sum + group.length, 0);
+
+    if(!parsedValues) { return <CircularProgress />; }
+    return (
+        <Box sx={{ p: 2 }}>
+            {/* Global Selection Toolbar */}
+            <Paper 
+                elevation={1} 
+                sx={{ 
+                    mb: 3, 
+                    borderRadius: 2,
+                    overflow: 'hidden'
+                }}
+            >
+                <Toolbar 
+                    sx={{ 
+                        display: 'flex', 
+                        justifyContent: 'space-between', 
+                        alignItems: 'center',
+                        minHeight: '64px !important',
+                        px: 3,
+                        bgcolor: 'background.default'
+                    }}
+                >
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                        <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                            Permissions Selection
+                        </Typography>
+                        <Chip 
+                            label={`${selectedPermissions} / ${totalPermissions} selected`}
+                            color={isAllSelected ? 'success' : selectedPermissions > 0 ? 'warning' : 'default'}
+                            variant="outlined"
+                        />
+                    </Box>
+                    
+                    <Box sx={{ display: 'flex', gap: 1 }}>
+                        <Button
+                            variant="outlined"
+                            startIcon={<SelectAllIcon />}
+                            onClick={handleSelectAllPermissions}
+                            disabled={isAllSelected}
+                            size="small"
+                            sx={{ textTransform: 'none' }}
+                        >
+                            Select All
+                        </Button>
+                        <Button
+                            variant="outlined"
+                            startIcon={<DeselectAllIcon />}
+                            onClick={handleDeselectAllPermissions}
+                            disabled={isNoneSelected}
+                            size="small"
+                            color="secondary"
+                            sx={{ textTransform: 'none' }}
+                        >
+                            Deselect All
+                        </Button>
+                    </Box>
+                </Toolbar>
+            </Paper>
+
+            {/* Search Inputs */}
+            <Paper 
+                elevation={1} 
+                sx={{ 
+                    mb: 3, 
+                    p: 3,
+                    borderRadius: 2,
+                    bgcolor: 'background.paper'
+                }}
+            >
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+                    <FilterIcon color="primary" />
+                    <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                        Search & Filter
+                    </Typography>
+                    {hasActiveSearch && (
+                        <Button
+                            size="small"
+                            variant="outlined"
+                            color="secondary"
+                            onClick={handleClearAllSearches}
+                            startIcon={<ClearIcon />}
+                            sx={{ textTransform: 'none' }}
+                        >
+                            Clear All Filters
+                        </Button>
+                    )}
+                </Box>
+
+                <Grid container spacing={2}>
+                    {/* Group Search */}
+                    <Grid size={{ xs: 12, md: 6 }}>
+                        <TextField
+                            fullWidth
+                            variant="outlined"
+                            label="Search by Group Name"
+                            placeholder="e.g., user, admin, system... (min 3 chars)"
+                            value={groupSearchTerm}
+                            onChange={handleGroupSearchChange}
+                            helperText={
+                                groupSearchTerm.length > 0 && groupSearchTerm.length < 3 
+                                    ? `Type ${3 - groupSearchTerm.length} more character${3 - groupSearchTerm.length !== 1 ? 's' : ''} to search`
+                                    : groupSearchTerm.length >= 3 && groupSearchTerm !== debouncedGroupSearch
+                                    ? "Searching..."
+                                    : ""
+                            }
+                            InputProps={{
+                                startAdornment: (
+                                    <InputAdornment position="start">
+                                        <SearchIcon color="action" />
+                                    </InputAdornment>
+                                ),
+                                endAdornment: groupSearchTerm && (
+                                    <InputAdornment position="end">
+                                        <Button
+                                            size="small"
+                                            onClick={handleClearGroupSearch}
+                                            sx={{ 
+                                                minWidth: 'auto',
+                                                p: 0.5,
+                                                color: 'text.secondary',
+                                                '&:hover': {
+                                                    color: 'text.primary',
+                                                    bgcolor: 'action.hover'
+                                                }
+                                            }}
+                                        >
+                                            <ClearIcon fontSize="small" />
+                                        </Button>
+                                    </InputAdornment>
+                                )
+                            }}
+                            sx={{
+                                '& .MuiOutlinedInput-root': {
+                                    '&:hover': {
+                                        '& .MuiOutlinedInput-notchedOutline': {
+                                            borderColor: 'primary.main',
+                                        },
+                                    },
+                                },
+                            }}
+                        />
+                    </Grid>
+
+                    {/* Item Search */}
+                    <Grid size={{ xs: 12, md: 6 }}>
+                        <TextField
+                            fullWidth
+                            variant="outlined"
+                            label="Search by Permission Name"
+                            placeholder="e.g., create, edit, delete, view... (min 3 chars)"
+                            value={itemSearchTerm}
+                            onChange={handleItemSearchChange}
+                            helperText={
+                                itemSearchTerm.length > 0 && itemSearchTerm.length < 3 
+                                    ? `Type ${3 - itemSearchTerm.length} more character${3 - itemSearchTerm.length !== 1 ? 's' : ''} to search`
+                                    : itemSearchTerm.length >= 3 && itemSearchTerm !== debouncedItemSearch
+                                    ? "Searching..."
+                                    : ""
+                            }
+                            InputProps={{
+                                startAdornment: (
+                                    <InputAdornment position="start">
+                                        <SearchIcon color="action" />
+                                    </InputAdornment>
+                                ),
+                                endAdornment: itemSearchTerm && (
+                                    <InputAdornment position="end">
+                                        <Button
+                                            size="small"
+                                            onClick={handleClearItemSearch}
+                                            sx={{ 
+                                                minWidth: 'auto',
+                                                p: 0.5,
+                                                color: 'text.secondary',
+                                                '&:hover': {
+                                                    color: 'text.primary',
+                                                    bgcolor: 'action.hover'
+                                                }
+                                            }}
+                                        >
+                                            <ClearIcon fontSize="small" />
+                                        </Button>
+                                    </InputAdornment>
+                                )
+                            }}
+                            sx={{
+                                '& .MuiOutlinedInput-root': {
+                                    '&:hover': {
+                                        '& .MuiOutlinedInput-notchedOutline': {
+                                            borderColor: 'primary.main',
+                                        },
+                                    },
+                                },
+                            }}
+                        />
+                    </Grid>
+                </Grid>
+
+                {/* Search Results Summary */}
+                {hasActiveSearch && (
+                    <Box sx={{ mt: 2, p: 2, bgcolor: 'action.hover', borderRadius: 1 }}>
+                        <Typography variant="body2" color="text.secondary">
+                            <strong>Search Results:</strong> {filteredGroupsCount} group{filteredGroupsCount !== 1 ? 's' : ''} 
+                            {' '}({totalFilteredItems} permission{totalFilteredItems !== 1 ? 's' : ''}) 
+                            {' '}of {permissionsData.length} total groups ({totalPermissions} total permissions)
+                        </Typography>
+                        {debouncedGroupSearch && (
+                            <Typography variant="caption" color="primary" sx={{ display: 'block', mt: 0.5 }}>
+                                • Group filter: "{debouncedGroupSearch}"
+                            </Typography>
+                        )}
+                        {debouncedItemSearch && (
+                            <Typography variant="caption" color="primary" sx={{ display: 'block', mt: 0.5 }}>
+                                • Permission filter: "{debouncedItemSearch}"
+                            </Typography>
+                        )}
+                        {/* Show typing indicator */}
+                        {(groupSearchTerm !== debouncedGroupSearch || itemSearchTerm !== debouncedItemSearch) && (
+                            <Typography variant="caption" color="text.disabled" sx={{ display: 'block', mt: 0.5, fontStyle: 'italic' }}>
+                                • Updating results...
+                            </Typography>
+                        )}
+                    </Box>
+                )}
+            </Paper>
+
+            {/* No Results Message */}
+            {hasActiveSearch && filteredPermissionsData.length === 0 && (
+                <Paper 
+                    sx={{ 
+                        p: 4, 
+                        textAlign: 'center',
+                        bgcolor: 'background.default',
+                        border: '1px dashed',
+                        borderColor: 'divider'
+                    }}
+                >
+                    <SearchIcon sx={{ fontSize: 48, color: 'text.disabled', mb: 2 }} />
+                    <Typography variant="h6" color="text.secondary" gutterBottom>
+                        No permissions found
+                    </Typography>
+                    <Typography variant="body2" color="text.disabled" sx={{ mb: 2 }}>
+                        No permissions match your search criteria
+                        {debouncedGroupSearch && ` for group "${debouncedGroupSearch}"`}
+                        {debouncedItemSearch && ` for permission "${debouncedItemSearch}"`}
+                    </Typography>
+                    <Button 
+                        variant="outlined" 
+                        size="small" 
+                        onClick={handleClearAllSearches}
+                        startIcon={<ClearIcon />}
+                    >
+                        Clear All Filters
+                    </Button>
+                </Paper>
+            )}
+
+            {/* Permissions Grid */}
+            {filteredPermissionsData.length > 0 && (
+                <Grid container spacing={3}>
+                    {filteredPermissionsData.map((tab, index) => {
+                        // Use the group extracted from the permission name
+                        const groupLabel = tab[0]?.group || 'Other';
+                        
+                        // Find the original index for expanded cards state
+                        const originalIndex = permissionsData.findIndex(originalTab => 
+                            originalTab[0]?.group === tab[0]?.group
+                        );
+                        
+                        const isExpanded = expandedCards[originalIndex] || false;
+                    
+                        const groupPermissions = parsedValues.filter(p => p.group === tab[0].group);
+                        
+                        // For "select all" checkbox, we need to check against the original full group
+                        const originalGroup = permissionsData[originalIndex] || tab;
+                        const isAllSelectedInOriginalGroup = groupPermissions.length === originalGroup.length;
+                        
+                        // For display purposes, use filtered items
+                        const hasMoreItems = tab.length > INITIAL_ITEMS_COUNT;
+                        const visibleItems = isExpanded ? tab : tab.slice(0, INITIAL_ITEMS_COUNT);
+                        const remainingCount = tab.length - INITIAL_ITEMS_COUNT;
+
+                        return (
+                            <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={`${groupLabel}-${index}`}>
+                                <Card 
+                                    variant="outlined" 
+                                    sx={{ 
+                                        height: '100%',
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        transition: 'all 0.2s ease-in-out',
+                                        '&:hover': {
+                                            boxShadow: 3,
+                                            borderColor: 'primary.main'
+                                        },
+                                        // Highlight if search is active
+                                        ...(hasActiveSearch && {
+                                            border: '2px solid',
+                                            borderColor: 'primary.light',
+                                            bgcolor: 'primary.50'
+                                        })
+                                    }}
+                                >
+                                    <CardContent sx={{ 
+                                        flexGrow: 1, 
+                                        display: 'flex', 
+                                        flexDirection: 'column',
+                                        p: 2,
+                                        '&:last-child': { pb: 2 }
+                                    }}>
+                                        {/* Card Header */}
+                                        <Box sx={{ 
+                                            display: 'flex', 
+                                            alignItems: 'center', 
+                                            justifyContent: 'space-between', 
+                                            mb: 2,
+                                            minHeight: '32px'
+                                        }}>
+                                            <Box>
+                                                <Typography 
+                                                    variant="subtitle1" 
+                                                    sx={{ 
+                                                        fontWeight: 600,
+                                                        fontSize: '1rem',
+                                                        lineHeight: 1.2,
+                                                        overflow: 'hidden',
+                                                        textOverflow: 'ellipsis',
+                                                        whiteSpace: 'nowrap',
+                                                        flex: 1,
+                                                        mr: 1
+                                                    }}
+                                                >
+                                                    {groupLabel}
+                                                </Typography>
+                                                <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.75rem', display: 'block' }}>
+                                                    {groupLabel}
+                                                </Typography>
+                                            </Box>
+                                            <Box sx={{ display: 'flex', gap: 0.5 }}>
+                                                <Chip 
+                                                    label={`${groupPermissions.length}/${originalGroup.length}`}
+                                                    size="small"
+                                                    color={isAllSelectedInOriginalGroup ? 'success' : groupPermissions.length > 0 ? 'warning' : 'default'}
+                                                    sx={{ fontSize: '0.75rem', height: 24 }}
+                                                />
+                                                {debouncedItemSearch && tab.length !== originalGroup.length && (
+                                                    <Chip 
+                                                        label={`${tab.length} shown`}
+                                                        size="small"
+                                                        variant="outlined"
+                                                        color="primary"
+                                                        sx={{ fontSize: '0.7rem', height: 24 }}
+                                                    />
+                                                )}
+                                            </Box>
+                                        </Box>
+                                        
+                                        {/* Select All Checkbox */}
+                                        <Box sx={{ mb: 2 }}>
+                                            <label style={checkboxStyles.selectAllLabel}>
+                                                <input
+                                                    type="checkbox"
+                                                    style={checkboxStyles.checkbox}
+                                                    checked={isAllSelectedInOriginalGroup}
+                                                    onChange={(event) => handleSelectAllGroup(originalGroup, event)}
+                                                />
+                                                Seleccionar Todos
+                                                {debouncedItemSearch && tab.length !== originalGroup.length && (
+                                                    <Typography 
+                                                        variant="caption" 
+                                                        sx={{ ml: 1, color: 'text.secondary' }}
+                                                    >
+                                                        (all {originalGroup.length})
+                                                    </Typography>
+                                                )}
+                                            </label>
+                                            <Divider sx={{ mt: 1 }} />
+                                        </Box>
+                                        
+                                        {/* Permissions List */}
+                                        <Box sx={{ flexGrow: 1, mb: hasMoreItems ? 2 : 0 }}>
+                                            <Grid container spacing={1}>
+                                                {visibleItems.map((permission, i) => {
+                                                    const isChecked = parsedValues.some(p => p.route_name === permission.route_name);
+                                                    const permissionDisplayName = permission.name.split('.').pop();
+                                                    const shouldHighlight = debouncedItemSearch && (
+                                                        permission.name.toLowerCase().includes(debouncedItemSearch.toLowerCase()) ||
+                                                        permissionDisplayName?.toLowerCase().includes(debouncedItemSearch.toLowerCase())
+                                                    );
+                                                    return (
+                                                        <Grid size={12} key={i}>
+                                                            <label style={checkboxStyles.checkboxLabel}>
+                                                                <input
+                                                                    type="checkbox"
+                                                                    style={checkboxStyles.checkbox}
+                                                                    checked={isChecked}
+                                                                    onChange={(event) => handlePermissionToggle(permission, event)}
+                                                                />
+                                                                <Box>
+                                                                    <Typography 
+                                                                        variant="caption" 
+                                                                        sx={{ 
+                                                                            fontSize: '0.8rem',
+                                                                            lineHeight: 1.3,
+                                                                            overflow: 'hidden',
+                                                                            textOverflow: 'ellipsis',
+                                                                            whiteSpace: 'nowrap',
+                                                                            ...(shouldHighlight && {
+                                                                                bgcolor: 'warning.light',
+                                                                                color: 'warning.contrastText',
+                                                                                px: 0.5,
+                                                                                borderRadius: 0.5,
+                                                                                fontWeight: 600
+                                                                            })
+                                                                        }}
+                                                                    >
+                                                                        {permissionDisplayName}
+                                                                    </Typography>
+                                                                    <Typography variant="caption" sx={{ color: 'text.disabled', fontSize: '0.7rem', ml: 1 }}>
+                                                                        {permission.name}
+                                                                    </Typography>
+                                                                </Box>
+                                                            </label>
+                                                        </Grid>
+                                                    );
+                                                })}
+                                            </Grid>
+                                        </Box>
+                                        
+                                        {/* Expand/Collapse Button - Fixed at bottom */}
+                                        {hasMoreItems && (
+                                            <Box sx={{ 
+                                                display: 'flex', 
+                                                justifyContent: 'center',
+                                                mt: 'auto',
+                                                pt: 1,
+                                                borderTop: '1px solid',
+                                                borderColor: 'divider'
+                                            }}>
+                                                <Button
+                                                    size="small"
+                                                    variant="text"
+                                                    onClick={() => toggleCard(originalIndex)}
+                                                    sx={{ 
+                                                        fontSize: '0.75rem',
+                                                        minHeight: '28px',
+                                                        textTransform: 'none'
+                                                    }}
+                                                >
+                                                    {isExpanded 
+                                                        ? 'Show Less ▲' 
+                                                        : `Show ${remainingCount} More ▼`
+                                                    }
+                                                </Button>
+                                            </Box>
+                                        )}
+                                    </CardContent>
+                                </Card>
+                            </Grid>
+                        );
+                    })}
+                </Grid>
+            )}
+
+            {/* Hidden CheckboxGroupInput for form integration */}
+            <Box sx={{ display: 'none' }}>
+                <CheckboxGroupInput
+                    source="permission_objects"
+                    parse={(raw) => {
+                        try {
+                            const _return: IPermissionItem[] = [];
+                            raw.forEach((route_name) => {
+                                let found: IPermissionItem | undefined;
+                                permissionsData.some((_tab) => {
+                                    const founded = _tab.find((toFind) => toFind.route_name === route_name);
+                                    if (founded) {
+                                        found = {
+                                            ...founded,
+                                            checked: true,
+                                        };
+                                        return true;
+                                    }
+                                    return false;
+                                });
+                                if (found) {
+                                    _return.push(found);
+                                }
+                            });
+                            return _return;
+                        } catch (error) {
+                            console.log(error);
+                            return raw;
+                        }
+                    }}
+                    format={() => {
+                        try {
+                            return parsedValues.map((item) => item.route_name);
+                        } catch (error) {
+                            console.log(error);
+                            return [];
+                        }
+                    }}
+                    choices={permissionsData.flat().map((item, i) => ({
+                        ...item,
+                        value: item.route_name,
+                        id: `${item.group}_${item.route_name}_${i}`,
+                    }))}
+                    optionText={(record) => record.name.split('.').pop()}
+                    optionValue="route_name"
+                />
+            </Box>
+        </Box>
+    );
+};
+
+const PermissionsSelectorEdit: React.FC<IDashAutoAdminCustomFieldComponent> = (props) => {
+    const { record: contextRecord, resource, isPending,isLoading} = useEditContext();
+    if (isPending || isLoading) return <CircularProgress />;
+    return <PermissionsSelectorBase {...props} record={contextRecord} />;
+};
+
+const PermissionsSelectorCreate: React.FC<IDashAutoAdminCustomFieldComponent> = (props) => {
+    return <PermissionsSelectorBase {...props} record={{}} />;
+};
+
+const PermissionsSelector = ({
+    method,
+    attribute,
+    resourceConfig
+}: IDashAutoAdminCustomFieldComponent) => {
+
+    switch (method) {
+        case 'edit':
+            return <PermissionsSelectorEdit attribute={attribute} method={method} resourceConfig={resourceConfig} />;
+        case 'create':
+            return <PermissionsSelectorCreate attribute={attribute} method={method} resourceConfig={resourceConfig} />;
+        case 'view':
+            return <><NotFound/></>
+            //<PermissionsSelectorView attribute={attribute} method={method} resourceConfig={resourceConfig} />;
+        default:
+            return null;
+    }
+};
+
+export default PermissionsSelector;

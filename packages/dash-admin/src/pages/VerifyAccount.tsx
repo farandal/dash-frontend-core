@@ -23,13 +23,37 @@ const VerifyAccount: React.FC<VerifyAccountProps> = ({
 
 	const verify = async () => {
 		try {
+			const verificationUrlParam = searchParams.get('verification_url');
+			if (verificationUrlParam) {
+				// Use the full verification URL directly
+				const res = await axios.get(verificationUrlParam);
+				switch (res.status) {
+					case 200:
+						setStatus('success');
+						setMessage('Cuenta verificada correctamente. Redirigiendo al login...');
+						setTimeout(() => navigate('/login'), 3000);
+						break;
+					case 204:
+						setStatus('success');
+						setMessage('Cuenta ya verificada. Redirigiendo al login...');
+						setTimeout(() => navigate('/login'), 3000);
+						break;
+					default:
+						setStatus('error');
+						setMessage('Error al verificar la cuenta. Por favor, intente nuevamente.');
+						setTimeout(() => navigate('/login'), 3000);
+						break;
+				}
+				return;
+			}
+
 			const id = searchParams.get('id');
 			const hash = searchParams.get('hash');
 
 			if (!id || !hash) {
 				setStatus('error');
 				setMessage('Link de verificación inválido.');
-				setTimeout(() => navigate('/login'), 3000);
+				setTimeout(() => navigate('/login'),8000);
 				return;
 			}
 
@@ -51,14 +75,14 @@ const VerifyAccount: React.FC<VerifyAccountProps> = ({
 				default:
 					setStatus('error');
 					setMessage('Error al verificar la cuenta. Por favor, intente nuevamente.');
-					setTimeout(() => navigate('/login'), 3000);
+					setTimeout(() => navigate('/login'), 8000);
 					break;
 			}
 		} catch (error) {
 			console.error('Verification error:', error);
 			setStatus('error');
 			setMessage('Error al verificar la cuenta. Por favor, intente nuevamente.');
-			setTimeout(() => navigate('/login'), 3000);
+			setTimeout(() => navigate('/login'), 8000);
 		}
 	};
 
@@ -71,13 +95,29 @@ const VerifyAccount: React.FC<VerifyAccountProps> = ({
 		
 		>
 			<div className="dash-app-login-form">
-				<h1 className="dash-app-login-form-title">Verificación de Cuenta</h1>
-				<div className="dash-app-form-item">
-					{status === 'loading' && <CircularProgress size={60} thickness={4} />}
-					<Typography variant="body1" sx={{ mt: 2 }}>
-						{message}
-					</Typography>
-				</div>
+                <Box
+                    sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        boxShadow: 3,
+                        borderRadius: 2,
+                        p: 4,
+                        minWidth: 320,
+                        minHeight: 200,
+                        backgroundColor: 'background.paper',
+                        mx: 'auto',
+                        my: 8,
+                    }}
+                >
+                    <h1 className="dash-app-login-form-title">Verificación de Cuenta</h1>
+                    {status === 'loading' && <CircularProgress size={60} thickness={4} />}
+                    <Typography sx={{ mt: 2, textAlign: 'center' }}>
+                        {message}
+                    </Typography>
+                </Box>
+				
 			</div>
 		</FullLayoutMarkup>
 	);

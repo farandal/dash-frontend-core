@@ -98,7 +98,7 @@ const Profile: FC = (_props) => {
 			   
 			// Refresh the auth context with updated user data
 			try {
-           debugger;
+           
 				await fetchAuth();
 				console.log('Auth context refreshed after profile update');
 			} catch (authError) {
@@ -107,17 +107,24 @@ const Profile: FC = (_props) => {
 			}
 
             notify('Usuario actualizado correctamente', { type:'success' });
-			
 			refresh();
 		} catch (error: any) {
-			notify(`Error al actualizar el usuario, ${error?.body?.message || ''}`, {
-				type: 'error',
-			});
 
-			if (error?.response?.data?.errors) {
+        
+			// Handle backend error messages gracefully
+			let mainMessage = error?.response?.data?.message || error?.body?.message || '';
+			let fieldErrors = error?.response?.data?.errors || error?.body?.errors || error;
+			if (mainMessage) {
+				notify(`Error al actualizar el usuario, ${mainMessage}`, { type: 'error' });
+			} else {
+				notify('Error al actualizar el usuario', { type: 'error' });
+			}
+			if (fieldErrors && typeof fieldErrors === 'object') {
 				const errors: any = {};
-				Object.keys(error.response.data.errors).forEach((key) => {
-					errors[key] = error.response.data.errors[key].join(' , ');
+				Object.keys(fieldErrors).forEach((key) => {
+					errors[key] = Array.isArray(fieldErrors[key])
+						? fieldErrors[key].join(' , ')
+						: fieldErrors[key];
 				});
 				return errors;
 			}
@@ -151,7 +158,7 @@ const Profile: FC = (_props) => {
 				<Form
 					onSubmit={handleSubmit}
 					validate={validateUserCreation}
-					defaultValues={{ name: user?.name, email: user?.email }}
+					defaultValues={{ name: user?.name, email: user?.email, lastname: user?.lastname }}
 					className='dash-form'
 				>
                    

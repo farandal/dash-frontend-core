@@ -1,4 +1,4 @@
-import { Alert, Button, Input, InputLabel, TextField } from '@mui/material';
+import { Alert, Box, Button, Input, InputLabel, TextField } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import useAxios from '../hooks/axios';
@@ -25,10 +25,14 @@ const ChangePassword: React.FC<ChangePasswordProps> = ({
 	const navigate = useNavigate();
 	let [searchParams] = useSearchParams();
 	const urlQuery: any = getUrlParamsObject(searchParams.entries());
+	// Fix: Remove any trailing non-email characters (like parenthesis) from email param
+	const cleanEmail = urlQuery?.email ? decodeURIComponent(urlQuery.email).replace(/[)\]\s]+$/, '') : '';
+
 	const [password, setPassword] = useState('');
 	const [rePassword, setRePassword] = useState('');
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState('');
+	const [success, setSuccess] = useState(false);
 	const { axios } = useAxios();
 
 	useEffect(() => {
@@ -47,20 +51,24 @@ const ChangePassword: React.FC<ChangePasswordProps> = ({
 					password,
 					password_confirmation: rePassword,
 					token: urlQuery?.token,
-					email: urlQuery?.email,
+					email: cleanEmail,
 				});
-				//notify(data.message);
-				navigate('/login');
+				setSuccess(true);
+				// Optionally show notification here
 			} catch (error: any) {
-				console.log(JSON.stringify(error));
-				if (error.status === 422 && typeof error.body.message === 'string') {
-					setError(error.body.message);
-                }
-				else {
-					/*notify(error?.body?.message || 'Error al cambiar contraseña', {
-						type: 'error',
-					});*/
-                }
+				let errorMsg = 'Error al cambiar contraseña';
+				if (error?.response?.data) {
+					const resp = error.response.data;
+					// Prefer error from errors.email, then message, then fallback
+					if (resp.errors && resp.errors.email && resp.errors.email.length > 0) {
+						errorMsg = resp.errors.email[0];
+					} else if (resp.message) {
+						errorMsg = resp.message;
+					}
+				} else if (error?.message) {
+					errorMsg = error.message;
+				}
+				setError(errorMsg);
 			} finally {
 				setLoading(false);
 			}
@@ -70,67 +78,99 @@ const ChangePassword: React.FC<ChangePasswordProps> = ({
 	};
 
 	return (
-		 <FullLayoutMarkup
-           
-        >
-			<form 
-				onSubmit={handleSubmit} 
-				className="dash-app-login-form"
-				autoComplete="on"
-				method="post"
-			>
-				<h1 className="dash-app-login-form-title">Cambiar Contraseña</h1>
-
-				{error && (
-					<Alert severity="error" sx={{ mb: 2 }}>
-						{error}
+		<FullLayoutMarkup>
+			{success ? (
+				<Box
+					sx={{
+						display: 'flex',
+						flexDirection: 'column',
+						alignItems: 'center',
+						justifyContent: 'center',
+						boxShadow: 3,
+						borderRadius: 2,
+						p: 4,
+						minWidth: 320,
+						minHeight: 200,
+						bgcolor: 'background.paper',
+						mt: 8,
+						mx: 'auto',
+					}}
+				>
+					<h1 className="dash-app-login-form-title" style={{ margin: 0 }}>Contraseña cambiada</h1>
+					<Alert severity="success" sx={{ mt: 2, mb: 2 }}>
+						Tu contraseña ha sido cambiada correctamente.
 					</Alert>
-				)}
-
-				<div className="dash-app-form-item">
-					<TextField
-						label="Contraseña"
-						placeholder="Contraseña"
-						required
-						type="password"
-						value={password}
-						onChange={(e) => {
-							setError('');
-							setPassword(e.target.value);
-						}}
-						className="dash-app-form-item-input"
-						disabled={loading}
-					/>
-				</div>
-
-				<div className="dash-app-form-item">
-					<TextField
-						label="Repetir Contraseña"
-						placeholder="Repetir Contraseña"
-						required
-						type="password"
-						value={rePassword}
-						onChange={(e) => {
-							setError('');
-							setRePassword(e.target.value);
-						}}
-						className="dash-app-form-item-input"
-						disabled={loading}
-					/>
-				</div>
-
-				<div className="dash-app-form-item mt-1">
 					<Button
-						type="submit"
 						variant="contained"
-						className="submit"
-						disabled={loading}
-						sx={{ mb: 2, width: '100%' }}
+						color="primary"
+						onClick={() => navigate('/login')}
+						sx={{ mt: 2 }}
 					>
-						{loading ? 'Cargando...' : 'Cambiar Contraseña'}
+						Ir al Login
 					</Button>
-				</div>
-			</form>
+				</Box>
+			) : (
+				<form 
+					onSubmit={handleSubmit} 
+					className="dash-app-login-form"
+					autoComplete="on"
+					method="post"
+				>
+					<h1 className="dash-app-login-form-title">Cambiar Contraseña</h1>
+
+					{error && (
+						<Alert severity="error" sx={{ mb: 2 }}>
+							{error}
+						</Alert>
+					)}
+
+					<div className="dash-app-form-item">
+						<TextField
+							fullWidth
+							label="Contraseña"
+							placeholder="Contraseña"
+							required
+							type="password"
+							value={password}
+							onChange={(e) => {
+								setError('');
+								setPassword(e.target.value);
+							}}
+							className="dash-app-form-item-input"
+							disabled={loading}
+						/>
+					</div>
+
+					<div className="dash-app-form-item">
+						<TextField
+							fullWidth
+							label="Repetir Contraseña"
+							placeholder="Repetir Contraseña"
+							required
+							type="password"
+							value={rePassword}
+							onChange={(e) => {
+								setError('');
+								setRePassword(e.target.value);
+							}}
+							className="dash-app-form-item-input"
+							disabled={loading}
+						/>
+					</div>
+
+					<div className="dash-app-form-item mt-1">
+						<Button
+							type="submit"
+							variant="contained"
+							className="submit"
+							disabled={loading}
+							sx={{ mb: 2, width: '100%' }}
+						>
+							{loading ? 'Cargando...' : 'Cambiar Contraseña'}
+						</Button>
+					</div>
+				</form>
+			)}
 		</FullLayoutMarkup>
 	);
 };

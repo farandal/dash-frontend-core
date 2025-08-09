@@ -94,8 +94,8 @@ const useLaravelEcho = ({
 
     }, [auth])
 
-    //const isProd = getEnv('APP_ENV') === 'production';
-    const isProd = false;
+    const isProd = getEnv('APP_ENV') === 'production';
+    //const isProd = false;
     const log = (message: string, data?: any) => {
         if (debug) {
             console.log(`%c📡 ${message}`, 'color: #2196F3; font-weight: bold; font-size: 12px;', data || '');
@@ -197,29 +197,34 @@ const useLaravelEcho = ({
                 }
             } : undefined;
 
-            try {
-                
-                const completeConfig = {
-                    broadcaster: 'pusher',
-                    key: getEnv('APP_SOCKETS_KEY') || 'dash',
-                    //wsPath:  getEnv('APP_SOCKETS_APP_PATH') || 'app',
-                    wsHost: getEnv('APP_SOCKETS_HOST') || window.location.hostname,
-                    ...(getEnv('APP_SOCKETS_PORT') ? { wsPort: getEnv('APP_SOCKETS_PORT') } : {}),                    
-                    secure: isProd,
-                    forceTLS: isProd,
-                    encrypted: isProd,
-                    useTLS: isProd,
+       
+           try {
+   const socketHostEnv = getEnv('APP_SOCKETS_HOST');
+    const socketScheme = getEnv('APP_SOCKETS_SCHEME')?.toLowerCase();
+    const isSSL = socketScheme === 'https';
 
-                    disableStats: !isProd,
-                    enabledTransports: isProd ? ['wss','ws'] : ['ws'],                    
-                    disableCluster: true,
-                    cluster: 'mt1',
-                    logToConsole: debug,
-                    activityTimeout: 120000,
-                    pongTimeout: 30000,
-                };
+    // Use host from env or fallback to window.location.hostname
+    const wsHost = socketHostEnv || window.location.hostname;
 
-               
+    const portEnv = getEnv('APP_SOCKETS_PORT');
+    const completeConfig = {
+        broadcaster: 'pusher',
+        key: getEnv('APP_SOCKETS_KEY') || 'dash',
+        wsHost,
+        ...(portEnv && portEnv !== '' ? { wsPort: portEnv } : {}),
+        secure: isSSL,
+        forceTLS: isSSL,
+        encrypted: isSSL,
+        useTLS: isSSL,
+        disableStats: !isSSL,
+        enabledTransports: isSSL ? ['wss', 'ws'] : ['ws'],
+        disableCluster: true,
+        cluster: 'mt1',
+        logToConsole: debug,
+        activityTimeout: 120000,
+        pongTimeout: 30000,
+    };
+                console.log(completeConfig);
 
                 if (authConfig) {
                     const baseUrl = getEnv('APP_BACKEND_URL') || window.location.origin;

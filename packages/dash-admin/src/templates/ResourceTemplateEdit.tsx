@@ -92,7 +92,7 @@ export const ResourceTemplateEdit: FC<IResourceTemplate> = (props) => {
 		}
 
 
-		if (resourceConfig.refreshAfter) {
+		if (resourceConfig?.refreshAfter !== false) {
 			refresh();
 		}
 	};

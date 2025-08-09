@@ -67,6 +67,8 @@ const tenantSystemAdminSchema: IDashAutoAdminAttribute[] = [
 		custom: true,
 		inList: false, // No se puede mostrar en el listado, porque el backend no trae el listado de imagnes en la lista
 		component: TenantSettings,
+        inCreate: false,
+        inShow:false
 	},
 
 	{
@@ -75,6 +77,7 @@ const tenantSystemAdminSchema: IDashAutoAdminAttribute[] = [
 		attribute: 'public_name',
 		type: String,
 		inList: false,
+         inCreate: false,
 	},
 
 	{
@@ -83,6 +86,7 @@ const tenantSystemAdminSchema: IDashAutoAdminAttribute[] = [
 		attribute: 'address',
 		type: String,
 		inList: false,
+         inCreate: false,
 	},
 
 	{
@@ -91,6 +95,7 @@ const tenantSystemAdminSchema: IDashAutoAdminAttribute[] = [
 		attribute: 'phone',
 		type: String,
 		inList: false,
+         inCreate: false,
 	},
 
 	{
@@ -99,6 +104,7 @@ const tenantSystemAdminSchema: IDashAutoAdminAttribute[] = [
 		attribute: 'mobile',
 		type: String,
 		inList: false,
+         inCreate: false,
 	},
 
 	{
@@ -107,6 +113,7 @@ const tenantSystemAdminSchema: IDashAutoAdminAttribute[] = [
 		attribute: 'contact_name',
 		type: String,
 		inList: false,
+         inCreate: false,
 	},
 
 	{
@@ -115,6 +122,7 @@ const tenantSystemAdminSchema: IDashAutoAdminAttribute[] = [
 		attribute: 'contact_email',
 		type: String,
 		inList: false,
+         inCreate: false,
 	},
 
 	{
@@ -123,6 +131,7 @@ const tenantSystemAdminSchema: IDashAutoAdminAttribute[] = [
 		attribute: 'contact_phone',
 		type: String,
 		inList: false,
+         inCreate: false,
 	},
 ];
 

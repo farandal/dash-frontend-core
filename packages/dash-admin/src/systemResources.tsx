@@ -18,6 +18,9 @@ import Person from '@mui/icons-material/Person';
 import { lazy } from 'react';
 import subscriptionPlanSchema from './schemas/subscription/subscriptionPlanSchema';
 import subscriptionSchema from './schemas/subscription/subscriptionSchema';
+import TenantSettingsFormatsProvider from './components/tenant/TenantSettingsContext';
+import { AvailablePermissionsContext } from './components/permission/AvailablePermissionsContext';
+import SystemRequestsCache from './contexts/SystemRequestsCache';
 
 const TableContainer = lazy(() => import('@mui/material/TableContainer'));
 
@@ -48,9 +51,17 @@ const systemResources: IAppResourceConfig[] = [
         roles: [DASHAppConstants.system.SYSTEM_ROLE],
         component: ResourceTemplate,
         customRoutes: (resourceConfig) => TenantImpersonateResource(resourceConfig),
+        contextComponent: ({ resourceConfig, mode, children }) => {
+            console.log("TenantSettingsFormatsProvider", resourceConfig, mode);  
+            return mode === "list" ? children : <SystemRequestsCache
+                cacheKey="tenant_settings_cache"
+                apiUrl="system/tenant/systemSettingFormats"
+                cacheSeconds={300}
+            >{children}</SystemRequestsCache>
+        },
         model: 'system/tenant',
         label: 'Clientes',
-       
+
         schema: tenantSystemAdminSchema,
         //references: [{ reference: 'roles', target: 'role', schema: rolesSchema }]
         //references: [{ reference: 'roles', target: 'gitid', schema: roleSchema }],
@@ -60,24 +71,38 @@ const systemResources: IAppResourceConfig[] = [
             title: 'Clientes',
             redirect: '/system/tenant',
         },
-       
+
         {
-                title: "Papelera",
-                redirect: "/system/tenant/trash",
-            },
-             {
+            title: "Papelera",
+            redirect: "/system/tenant/trash",
+        },
+        {
             title: 'Impersonar',
             redirect: '/system/tenant/impersonate',
         },
 
         ],
-        create: true,
+        //create: true,
+        refreshAfter: true,
+        toolbarCreateButton: { enabled: true },
+
+         referenceFilters: [
+            {
+                id: "Nombre",
+                label: "Nombre", // filter label'
+                source: "name", // id field
+                reference: null,
+                optionText: null,
+                alwaysOn: true,
+            },
+        ],
 
         mainAction: {
             title: 'Crear cliente',
-            redirect: '/system/tenant/create',
-            //mode: 'create',
-            //fn: 'redirect'
+            fn: "redirect",
+            // type: "ghost",
+            mode: "create",
+            redirect: "create",
         },
 
         search: false,
@@ -91,6 +116,11 @@ const systemResources: IAppResourceConfig[] = [
         redirectAfterUpdate: false,
 
         mutationMode: 'pessimistic',
+        editProps: {
+            queryOptions:{ meta: { forceFetch: true } },
+            undoable:false,
+            emptyWhileLoading: true
+        },
         dataGridProps: { stickyHeader: true },
         dataGridWrapper: (props: any) => <TableContainer sx={{ maxHeight: 800 }} >{props.children}</TableContainer>,
         //listEditButton: { enabled: true },
@@ -151,19 +181,46 @@ const systemResources: IAppResourceConfig[] = [
                 redirect: '/system/role',
             },
         ],
+
+         contextComponent: ({ resourceConfig, mode, children }) => {
+            console.log("TenantSettingsFormatsProvider", resourceConfig, mode);
+
+            return mode === "list" ? children : <SystemRequestsCache
+                cacheKey="system_available_permissions_cache"
+                apiUrl="system/permissions/availablePermissions"
+                cacheSeconds={300}
+            >{children}</SystemRequestsCache>
+        },
+
+        referenceFilters: [
+            {
+                id: "Nombre",
+                label: "Nombre", // filter label'
+                source: "name", // id field
+                reference: null,
+                optionText: null,
+                alwaysOn: true,
+            },
+        ],
+        toolbarCreateButton: { enabled: true },
+
         mainAction: {
             title: 'Agregar Rol',
+            fn: "redirect",
             // type: "ghost",
-            redirect: '/system/role/create',
+            mode: "create",
+            redirect: "create",
         },
+
+        view:false,
         schema: roleSchema,
-        mutationMode: 'pessimistic',
-        redirectAfterUpdate: false,
+      
+       
 
         dataGridProps: { stickyHeader: true },
         listEditButton: { enabled: true },
         listViewButton: { enabled: false },
-        toolbarCreateButton: { enabled: false },
+
         toolbarDeleteButton: { enabled: false },
         toolbarListButton: { enabled: false },
         toolbarSaveButton: { enabled: true },
@@ -172,6 +229,19 @@ const systemResources: IAppResourceConfig[] = [
 
 
         formGroupMode: 'groups',
+
+        mutationMode: 'pessimistic',
+        editProps: {
+            queryOptions:{ meta: { forceFetch: true } },
+            undoable:false,
+            emptyWhileLoading: true
+        },
+
+        saveButtonAlwaysEnabled: true,
+        refreshAfter: true,
+        //redirect: "list",
+        //redirectAfterCreate: true,
+        //redirectAfterUpdate: true,
 
         dataGridWrapper: (props: any) => (
             <TableContainer sx={{ maxHeight: 800 }}>{props.children}</TableContainer>
@@ -189,7 +259,7 @@ const systemResources: IAppResourceConfig[] = [
         ...drawerSettings,
     },
 
-
+/*
     {
         roles: [DASHAppConstants.system.SYSTEM_ROLE],
         component: ResourceTemplate,
@@ -226,9 +296,9 @@ const systemResources: IAppResourceConfig[] = [
         dataGridWrapper: (props: any) => (
             <TableContainer sx={{ maxHeight: 800 }}>{props.children}</TableContainer>
         ),
-      
+
         postFormatter: (params, _) => {
-           
+
             return params
         },
         ...drawerSettings,
@@ -272,14 +342,14 @@ const systemResources: IAppResourceConfig[] = [
         dataGridWrapper: (props: any) => (
             <TableContainer sx={{ maxHeight: 800 }}>{props.children}</TableContainer>
         ),
-      
+
         postFormatter: (params, _) => {
-           
+
             return params
         },
         ...drawerSettings,
     },
-
+*/
     {
         roles: [DASHAppConstants.system.SYSTEM_ROLE],
         component: ResourceTemplate,
@@ -287,6 +357,7 @@ const systemResources: IAppResourceConfig[] = [
         model: 'system/user',
         group: 'Recursos de sistema',
         label: 'Usuarios',
+        refreshAfter: true,
         referenceFilters: [
             // TODO: Cuando se cambia el cliente se debn mostrar sólo los CP de este filtro
             {
@@ -443,38 +514,38 @@ const systemResources: IAppResourceConfig[] = [
                 //componentProps: {multiple:false},
                 //componentProps: { options: {fullwidth: true} },
                 component: SelectInput,
-                    fieldProps: {
-                        allowEmpty: true,  // Allow empty selection
-                        emptyText: 'Sin cliente', // Text for empty option
-                    },
-                    componentProps: {
-                        parse: (value: any) => {
-                            console.log('Parsing tenant_id value:', value); // Debug log
-                            // Convert empty string or falsy values to null
-                            if (value === '' || value === undefined || value === 'null') {
-                                console.log('Converting to null');
-                                return null;
-                            }
-                            // Convert string numbers to actual numbers
-                            if (typeof value === 'string' && !isNaN(Number(value))) {
-                                const numValue = Number(value);
-                                console.log('Converting to number:', numValue);
-                                return numValue;
-                            }
-                            console.log('Returning original value:', value);
-                            return value;
-                        },
-                        format: (value: any) => {
-                            console.log('Formatting tenant_id value:', value); // Debug log
-                            // Format null/undefined as empty string for display
-                            if (value === null || value === undefined) {
-                                return '';
-                            }
-                            return value;
+                fieldProps: {
+                    allowEmpty: true,  // Allow empty selection
+                    emptyText: 'Sin cliente', // Text for empty option
+                },
+                componentProps: {
+                    parse: (value: any) => {
+                        console.log('Parsing tenant_id value:', value); // Debug log
+                        // Convert empty string or falsy values to null
+                        if (value === '' || value === undefined || value === 'null') {
+                            console.log('Converting to null');
+                            return null;
                         }
+                        // Convert string numbers to actual numbers
+                        if (typeof value === 'string' && !isNaN(Number(value))) {
+                            const numValue = Number(value);
+                            console.log('Converting to number:', numValue);
+                            return numValue;
+                        }
+                        console.log('Returning original value:', value);
+                        return value;
                     },
-                    processor: 'Null',
-                
+                    format: (value: any) => {
+                        console.log('Formatting tenant_id value:', value); // Debug log
+                        // Format null/undefined as empty string for display
+                        if (value === null || value === undefined) {
+                            return '';
+                        }
+                        return value;
+                    }
+                },
+                processor: 'Null',
+
             },
             {
                 attribute: 'active',

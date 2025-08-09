@@ -1,51 +1,25 @@
 import { DashAutoFormGroups, DashAutoFormTabs, IDashAutoAdminCustomFieldComponent } from "dash-auto-admin";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext, createContext, useRef } from "react";
 import { useGetList, Loading, useRecordContext } from "react-admin";
-
 import { useAxios } from 'dash-axios-hook';
 import { useFormContext, useWatch } from "react-hook-form";
 import { Tenant } from "dash-admin/src/interfaces/Tenant";
 import MUISimpleJsonTable from "../misc/MuiSimpleJsonTable";
-
-
+import {useTenantSettingsFormats} from "./TenantSettingsContext";
+import { useSystemRequestsCache } from "../../contexts/SystemRequestsCache";
 const TenantSettingsEdit: React.FC<IDashAutoAdminCustomFieldComponent> = ({ method, attribute, tenant }) => {
-  //const tenant: Tenant = useRecordContext();
-  const axios = useAxios();
-  /*if (!tenant?.settings) return <Loading />*/
-  const [settingsFormats, setSettingsFormats] = useState(null);
-  const [settingFormatsSchema, setSettingFormatsSchema] = useState<any>(null);
+const [settingFormatsSchema, setSettingFormatsSchema] = useState<any>(null);
   const formContext = useFormContext();
   const formValues = useWatch({
     control: formContext.control
   });
 
-
-
-  useEffect(() => {
-    const fetchSettingFormats = async () => {
-      const { data } = await axios.get(
-        //`system/tenant/settings/formats`
-        'system/tenant/systemSettingFormats'
-      );
-      debugger;
-      setSettingsFormats(data.data);
-    };
-
-    fetchSettingFormats();
-  }, [])
-
-
-
-
-  //const redirect = useRedirect();
-  //const { axios } = useAxios();
+    const { formats: settingsFormats, loading } = useSystemRequestsCache();
 
   useEffect(() => {
-  
-
-    if (settingsFormats) {
+    if (settingsFormats && settingsFormats.data) {
      
-      const parsedSchema = settingsFormats.map((entry) => {
+      const parsedSchema = settingsFormats.data.map((entry) => {
         const defaultValue =
           (tenant.settings && tenant.settings[entry.attribute]) ||
           entry?.default_value;
@@ -82,7 +56,7 @@ const TenantSettingsEdit: React.FC<IDashAutoAdminCustomFieldComponent> = ({ meth
   /*const readOnlyComponent = ({...props}) => {
       return <>{props.defaultValue}</>
   }*/
-  if (!settingFormatsSchema) return <Loading />
+  //if (!settingFormatsSchema || loading) return <Loading />
   return <section>
   
     {settingFormatsSchema ? (
@@ -101,10 +75,7 @@ const TenantSettingsEdit: React.FC<IDashAutoAdminCustomFieldComponent> = ({ meth
 }
 
 const TenantSettingsCreate: React.FC<IDashAutoAdminCustomFieldComponent> = ({ method, attribute }) => {
-  //const tenant: Tenant = useRecordContext();
-  const axios = useAxios();
-  /*if (!tenant?.settings) return <Loading />*/
-  const [settingsFormats, setSettingsFormats] = useState(null);
+  
   const [settingFormatsSchema, setSettingFormatsSchema] = useState<any>(null);
   const formContext = useFormContext();
   const formValues = useWatch({
@@ -112,53 +83,26 @@ const TenantSettingsCreate: React.FC<IDashAutoAdminCustomFieldComponent> = ({ me
   });
 
 
+   const { formats: settingsFormats, loading } = useSystemRequestsCache();
 
   useEffect(() => {
-    const fetchSettingFormats = async () => {
-      const { data } = await axios.get(
-        //`system/tenant/settings/formats`
-        'system/tenant/systemSettingFormats'
-      );
 
-      setSettingsFormats(data.data);
-    };
-
-    fetchSettingFormats();
-  }, [])
-
-
-
-
-  //const redirect = useRedirect();
-  //const { axios } = useAxios();
-
-  useEffect(() => {
-  
-
-    if (settingsFormats) {
-   
-      const parsedSchema = settingsFormats.map((entry) => {
-       
-
-        return {
-          ...entry,
-         
-          ...(method === 'view' && {
-            readOnly: true,
-          }),
-        };
-      });
-
-      console.log('SCHEMA', parsedSchema);
+    if (!loading && settingsFormats && settingsFormats.data) {
+      const parsedSchema = settingsFormats.data.map((entry) => ({
+        ...entry,
+        ...(method === 'view' && {
+          readOnly: true,
+        }),
+      }));
 
       setSettingFormatsSchema(parsedSchema);
 
     }
 
-  }, [settingsFormats])
+  }, [settingsFormats, loading])
 
  
-  if (!settingFormatsSchema) return <Loading />
+  //if (!settingFormatsSchema || loading) return <Loading />
   return <section>
   
     {settingFormatsSchema ? (
@@ -175,26 +119,8 @@ const TenantSettingsCreate: React.FC<IDashAutoAdminCustomFieldComponent> = ({ me
 
 const TenantSettingsView: React.FC<IDashAutoAdminCustomFieldComponent> = ({ method, attribute, tenant }) => {
 
-  /*if (!tenant?.settings) return <Loading />*/
-  const axios = useAxios();
-
-  const [settingFormats, setSettingsFormats] = useState(null);
-  const [settingFormatsSchema, setSettingFormatsSchema] = useState<any>(null);
-
-  useEffect(() => {
-    const fetchSettingFormats = async () => {
-      const { data } = await axios.get(
-       //`system/tenant/settings/formats`
-       'system/tenant/systemSettingFormats'
-      );
-debugger;
-      setSettingsFormats(data.data.setting_formats);
-    };
-
-    fetchSettingFormats();
-  }, [])
-
-
+  const { formats: settingFormats, loading } = useTenantSettingsFormats();
+  const [settingFormatsParsedValues, setSettingFormatsParsedValues] = useState<any>(null);
 
   const parseValue = (value) => {
     switch (typeof value) {
@@ -207,14 +133,7 @@ debugger;
     }
   }
 
-  const [settingFormatsParsedValues, setSettingFormatsParsedValues] = useState<any>(null);
-
-  //const redirect = useRedirect();
-  //const { axios } = useAxios();
-
-
   useEffect(() => {
-
     let object = {};
     if (settingFormats && tenant) {
 
@@ -231,7 +150,7 @@ debugger;
 
     }
 
-  }, [settingFormats])
+  }, [settingFormats, tenant])
 
 
   return settingFormatsParsedValues ? <MUISimpleJsonTable tableData={settingFormatsParsedValues} vertical={true} /> : <Loading />
@@ -253,4 +172,4 @@ const TenantSettings = ({ method, attribute, resourceConfig }: IDashAutoAdminCus
   }
 }
 
-export default TenantSettings
+export default TenantSettings;

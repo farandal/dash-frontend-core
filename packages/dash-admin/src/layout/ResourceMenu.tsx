@@ -75,7 +75,7 @@ const ResourceMenu: React.FC<IResourceMenu> = (props) => {
         setResourceMenu(val);
     }, [loc]);
 
-    const refresh = useRefresh();
+    //const refresh = useRefresh();
 
     return (
         <div className={`dash-module-${resourceMenuPosition}`}>
@@ -101,7 +101,7 @@ const ResourceMenu: React.FC<IResourceMenu> = (props) => {
                             </DashResourceButton>*/}
 
 
-                            {(!resourceConfig.toolbarCreateButton?.enabled === false) && <DashResourceButton
+                            {(resourceConfig.toolbarCreateButton?.enabled !== false) && <DashResourceButton
                                 resourceConfig={resourceConfig}
                                 label={resourceConfig.mainAction.title}
                                 mode={resourceConfig.mainAction?.mode || 'create'}  >
