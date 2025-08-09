@@ -76,8 +76,9 @@ const SidebarItem: FC<ISidebarItem> = (props) => {
                     onClick(e);
                 }
 
-                e.preventDefault();
-                 //if ((e.target as any)?.localName === 'svg') return;
+                //e.preventDefault();
+                e.stopPropagation();
+                //if ((e.target as any)?.localName === 'svg') return;
 
                 if (!hasChildren) {
                     if (!isCurrentPath(loc.pathname, item)) {
@@ -99,6 +100,8 @@ const SidebarItem: FC<ISidebarItem> = (props) => {
     );
 };
 
+const SUBMENU_SCROLL_THRESHOLD = 10; // You can change this value as needed
+
 const CollapsedSidebarItem = ({
     item,
     navSize,
@@ -111,32 +114,14 @@ const CollapsedSidebarItem = ({
     const [webView, setWebView] = useState<boolean>(false);
     const [open, setOpen] = useState(false);
     const itemRef = useRef<HTMLDivElement>(null);
-    const [menuPosition, setMenuPosition] = useState({ top: 0 });
 
     const openMenuOnHover = (event) => {
-    
-        
-            setOpen(true);
-           
-
-        if (itemRef.current) {
-            const rect = itemRef.current.getBoundingClientRect();
-            setMenuPosition({ top: rect.top });
-        }
+        setOpen(true);
     };
 
     const openMenuOnClick = (event) => {
-      
-              
-               //event.preventDefault();
-               //event.stopPropagation();
-               setOpen(prevOpen => !prevOpen);
-          
-           if (itemRef.current) {
-               const rect = itemRef.current.getBoundingClientRect();
-               setMenuPosition({ top: rect.top });
-           }
-       };
+        setOpen(prevOpen => !prevOpen);
+    };
 
     const closeMenu = (event) => {
         if (!webView) {
@@ -163,6 +148,48 @@ const CollapsedSidebarItem = ({
         // e.stopPropagation();
     };
 
+    // Calculate submenu position and style based on number of children
+    let submenuStyle: React.CSSProperties = {};
+    let submenuPosition: { top?: number; left?: number } = {};
+
+    const renderAtTop = item.children && item.children.length > SUBMENU_SCROLL_THRESHOLD;
+
+    if (renderAtTop) {
+        submenuStyle = {
+            zIndex: 10000,
+            position: 'fixed',
+            top: 0,
+            left: 58, // adjust as needed for your sidebar width
+            maxHeight: '100vh',
+            overflowY: 'auto',
+            width: '260px',
+            background: '#fff',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+            borderRadius: 4,
+        };
+    } else {
+        // Position next to the sidebar item
+        if (itemRef.current) {
+            const rect = itemRef.current.getBoundingClientRect();
+            submenuPosition = {
+                top: rect.top,
+                left: rect.right,
+            };
+        }
+        submenuStyle = {
+            zIndex: 10000,
+            position: 'fixed',
+            top: submenuPosition.top || 0,
+            left: submenuPosition.left || 58,
+            maxHeight: '80vh',
+            overflowY: 'auto',
+            width: '260px',
+            background: '#fff',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+            borderRadius: 4,
+        };
+    }
+
     return hasChildren ? (
         <>
             <div ref={itemRef}>
@@ -172,6 +199,7 @@ const CollapsedSidebarItem = ({
                     onMouseEnter={!webView ? openMenuOnHover: null}
                     onMouseLeave={closeMenu}
                     onClick={webView ? openMenuOnClick : null}
+                    onTouchStart={closeMenu} 
                     item={item}
                     showText={false}
                     navSize={navSize}
@@ -180,16 +208,18 @@ const CollapsedSidebarItem = ({
                     hasChildren={hasChildren}
                 >
                     {open && ReactDOM.createPortal(
-                        <div className="sidebar-collapsed-menu ">
+                        <div
+                            className="sidebar-collapsed-menu"
+                            style={submenuStyle}
+                        >
                             <ul
                                 id={'menu-' + item.key}
                                 key={'menu-' + item.key}
                                 className={`dropdown ${open ? 'show' : ''}`}
                                 style={{
-                                    zIndex: 10000,
-                                    position: 'absolute',
-                                    top: menuPosition.top,
-                                    left: 58
+                                    margin: 0,
+                                    padding: 0,
+                                    listStyle: 'none',
                                 }}
                             >
                                 {item.children?.map((item, index) => {
@@ -201,12 +231,12 @@ const CollapsedSidebarItem = ({
                                             item={item}
                                             key={index}
                                             hasChildren={item.children && item.children.length > 0}
-                                            // Add onClick to close the submenu
                                             onClick={(e) => handleSubmenuItemClick(e, item)}
                                         />
                                     );
                                 })}
-                            </ul></div>,
+                            </ul>
+                        </div>,
                         document.body
                     )}
                 </SidebarItem>

@@ -36,7 +36,7 @@ interface DashThemeProviderProps {
 export const DashThemeProvider: React.FC<DashThemeProviderProps> = ({ extendedOptions, children }) => {
     // Track current theme mode from data-theme attribute
     const [currentMode, setCurrentMode] = useState<string>(() => 
-        document.documentElement.getAttribute('data-theme') || 'light'
+        document.documentElement.getAttribute('data-theme') || 'dark'
     );
 
     const [themeOptions, setThemeOptions] = useState<ReturnType<typeof appTheme>>(() => 
@@ -83,7 +83,7 @@ export const DashThemeProvider: React.FC<DashThemeProviderProps> = ({ extendedOp
         const observer = new MutationObserver((mutations) => {
             mutations.forEach((mutation) => {
                 if (mutation.type === 'attributes' && mutation.attributeName === 'data-theme') {
-                    const newMode = document.documentElement.getAttribute('data-theme') || 'light';
+                    const newMode = document.documentElement.getAttribute('data-theme') || 'dark';
                     if (newMode !== currentMode) {
                         console.log('Theme mode changed from', currentMode, 'to', newMode);
                         setCurrentMode(newMode);
