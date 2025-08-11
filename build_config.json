@@ -1,12 +1,11 @@
 {
   "mode": "development",
-  "customMode": "kitchntabs.production",
+  "customMode": "kitchntabs.ngrok",
   "targetType": "desktop",
   "platform": "electron",
-  "nodeOptions": "--max-old-space-size=4048",
-  "timestamp": "2025-08-11T02:08:47.879Z",
-  "buildId": "build-1754878127880-3lrawz",
-  "memoryLimit": 4048,
+  "nodeOptions": null,
+  "timestamp": "2025-08-11T17:18:56.041Z",
+  "buildId": "build-1754932736043-u458ag",
   "platformConfig": {
     "buildType": "electron",
     "outputDir": "build",
@@ -23,7 +22,7 @@
     ]
   },
   "customModeConfig": {
-    "apiBaseUrl": "https://api.kitchntabs.com",
+    "apiBaseUrl": "https://pw-api.ngrok.dev",
     "environment": "development",
     "debugMode": true,
     "features": {
@@ -32,9 +31,9 @@
       "mockData": false
     },
     "envVars": {
-      "VITE_APP_BACKEND_URL": "https://api.kitchntabs.com",
-      "VITE_APP_ADMIN_API_URL": "https://api.kitchntabs.com/api",
-      "VITE_APP_SOCKETS_HOST": "ws.kitchntabs.com",
+      "VITE_APP_BACKEND_URL": "https://pw-api.ngrok.dev",
+      "VITE_APP_ADMIN_API_URL": "https://pw-api.ngrok.dev/api",
+      "VITE_APP_SOCKETS_HOST": "pw-ws.ngrok.dev",
       "VITE_APP_SOCKETS_PORT": "",
       "VITE_APP_SOCKETS_SCHEME": "https",
       "VITE_APP_SOCKETS_KEY": "dash",

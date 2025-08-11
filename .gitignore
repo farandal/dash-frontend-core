@@ -17,3 +17,4 @@ build-resources
 *.mp3
 *.wav
 android/app/src/main/res/*
+build_config.json
