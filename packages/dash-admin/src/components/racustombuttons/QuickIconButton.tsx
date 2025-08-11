@@ -14,7 +14,7 @@ import { IconButton } from '@mui/material';
 
 import { initAxios } from '../../hooks/axios';
 import useVirtualHash from '../../hooks/useVirtualHash';
-import DASHAdminSystemConstants from '../../config/DASHAdminSystemConstants';
+import {DASHAdminSystemConstants} from 'dash-constants';
 
 //import { IQuickEditButton } from '../dash-auto-admin/src';
 const URL_PREFIX = DASHAdminSystemConstants.system.URL_PREFIX;

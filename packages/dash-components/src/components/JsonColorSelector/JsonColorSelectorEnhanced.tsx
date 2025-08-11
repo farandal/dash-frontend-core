@@ -27,8 +27,8 @@ import { extractAvailableModes, getContrastColor, getModeIcon, parseColorKey } f
 import ColorPaletteItem from './components/ColorPaletteItem';
 import ImageColorExtractor from './components/ImageColorExtractor';
 import ColorEditDialog from './components/ColorEditDialog';
-import { updateDomCssVariables } from 'dash-default-theme';
-import { AuthPersistenceService } from 'dash-admin';
+import { updateDomCssVariables } from 'dash-utils';
+import { AuthPersistenceService } from 'dash-auth';
 
 
 // Default color mappings (can be modified later)

@@ -23,7 +23,7 @@
 
     },
     "typeRoots": ["node_modules/@types/", "src/@types/"],
-    "ignoredDiagnostics": [2769] // hack to igne error TS2769 because of MUI Grid ts specification.
+   
   },
   "include": ["src", "electron"],
  

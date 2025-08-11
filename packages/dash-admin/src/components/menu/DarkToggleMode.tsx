@@ -7,9 +7,9 @@ import {
   DASH_REDUX_ACTIONS,
   DASH_THEME_SETTINGS
 } from 'dash-admin-state';
-import { IconMenuItem } from 'mui-nested-menu';
+//import { IconMenuItem } from 'mui-nested-menu';
 import { Avatar, useColorScheme } from '@mui/material';
-import { DashThemeHelperProvider } from 'dash-default-theme';
+import { DashThemeHelperProvider } from '../../default-theme';
 
 const DarkToggleMode = () => {
 

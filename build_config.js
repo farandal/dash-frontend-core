@@ -98,7 +98,12 @@ function getPlatformConfig(platform) {
             buildType: 'web',
             outputDir: 'build',
             packageFormat: 'static'
-        }
+        },
+        electron: {
+            buildType: 'electron',
+            outputDir: 'build',
+            packageFormat: 'static'
+        },
     };
 
     return platformConfigs[platform] || null;
@@ -234,12 +239,13 @@ function validateConfig(config) {
         errors.push('TARGET_TYPE must be one of: mobile, desktop, web');
     }
 
-    if (config.targetType === 'mobile' && !config.platform) {
-        errors.push('PLATFORM is required when TARGET_TYPE is mobile');
+    // Allow electron as a valid platform
+    if (config.platform && !['android', 'ios', 'web', 'electron'].includes(config.platform)) {
+        errors.push('PLATFORM must be one of: android, ios, web, electron');
     }
 
-    if (config.platform && !['android', 'ios', 'web'].includes(config.platform)) {
-        errors.push('PLATFORM must be one of: android, ios, web');
+    if (config.targetType === 'mobile' && !config.platform) {
+        errors.push('PLATFORM is required when TARGET_TYPE is mobile');
     }
 
     return errors;

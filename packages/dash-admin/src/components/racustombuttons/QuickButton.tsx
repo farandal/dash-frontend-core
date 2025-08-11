@@ -13,7 +13,7 @@ import { Button } from '@mui/material';
 
 import { initAxios } from '../../hooks/axios';
 import useVirtualHash from '../../hooks/useVirtualHash';
-import DASHAppConstants from 'dash-constants';
+import {DASHAppConstants} from 'dash-constants';
 
 interface Props<RecordType extends RaRecord = any> {
 	label?: string;

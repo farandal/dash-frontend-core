@@ -2,7 +2,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 
 import CacheInvalidatorContext from './CacheInvalidatorContext';
-import LaravelEchoContext, { ILaravelEchoContext } from 'dash-admin/src/contexts/com/LaravelEchoContext';
+import LaravelEchoContext, { ILaravelEchoContext } from '../../contexts/com/LaravelEchoContext';
 
 const useCacheInvalidatorListener = () => {
 

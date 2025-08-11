@@ -32,8 +32,8 @@ import ClearIcon from '@mui/icons-material/Clear';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import { ChromePicker, RGBColor } from 'react-color';
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
-import { DashThemeHelperProvider, useDashThemeHelperContext, updateDomCssVariables } from 'dash-default-theme';
-import { AuthPersistenceService } from 'dash-admin';
+import { updateDomCssVariables } from 'dash-utils';
+import { AuthPersistenceService } from 'dash-auth';
 
 interface KeyValuePair {
     key: string;

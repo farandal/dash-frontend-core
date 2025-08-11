@@ -6,8 +6,8 @@ import groupByTabs from './utils/groupByTabs';
 import AttributeToInput from './mui/AttributeToInput';
 import IDashAutoAdminResourceConfig from './interfaces/IDashAutoAdminResourceConfig';
 import { useDispatch, useSelector } from 'react-redux';
-import { IDASHAppState } from 'dash-admin-state';
-import { CLEAR_FORM_DATA, SET_FORM_DATA } from 'dash-admin-state/src/redux/actions/ActionTypes';
+//import { IDASHAppState } from 'dash-admin-state';
+//import { CLEAR_FORM_DATA, SET_FORM_DATA } from 'dash-admin-state/src/redux/actions/ActionTypes';
 import { useEffect, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 
@@ -41,8 +41,8 @@ const CreateFormTabs = ({ schema, resourceConfig, options, isDrawer }) => {
                 payloadValue = value;
                 break;
         }
-
-        dispatch({ type: SET_FORM_DATA, payload: { [name]: payloadValue } });
+        console.log("DashAutoFormMuiTabs: dispatch method deprecated")
+        //dispatch({ type: SET_FORM_DATA, payload: { [name]: payloadValue } });
     };
 
     const handleTabChange = (event, newValue) => {
@@ -51,7 +51,8 @@ const CreateFormTabs = ({ schema, resourceConfig, options, isDrawer }) => {
 
     useEffect(() => {
         return () => {
-            dispatch({ type: CLEAR_FORM_DATA });
+            console.log("DashAutoFormMuiTabs: dispatch method deprecated")
+            //dispatch({ type: CLEAR_FORM_DATA });
         };
     }, [dispatch]);
 
@@ -148,7 +149,8 @@ const EditFormTabs = ({ schema, resourceConfig, options, isDrawer }) => {
                 break;
         }
 
-        dispatch({ type: SET_FORM_DATA, payload: { [name]: payloadValue } });
+        console.log("DashAutoFormMuiTabs: dispatch method deprecated")
+        //dispatch({ type: SET_FORM_DATA, payload: { [name]: payloadValue } });
     };
 
     const handleTabChange = (event, newValue) => {
@@ -157,7 +159,8 @@ const EditFormTabs = ({ schema, resourceConfig, options, isDrawer }) => {
 
     useEffect(() => {
         return () => {
-            dispatch({ type: CLEAR_FORM_DATA });
+            console.log("DashAutoFormMuiTabs: dispatch method deprecated")
+            //dispatch({ type: CLEAR_FORM_DATA });
         };
     }, [dispatch]);
 
@@ -253,7 +256,8 @@ const ViewFormTabs = ({ schema, resourceConfig, options, isDrawer }) => {
                 break;
         }
 
-        dispatch({ type: SET_FORM_DATA, payload: { [name]: payloadValue } });
+        console.log("DashAutoFormMuiTabs: dispatch method deprecated")
+        //dispatch({ type: SET_FORM_DATA, payload: { [name]: payloadValue } });
     };
 
     const handleTabChange = (event, newValue) => {
@@ -262,7 +266,8 @@ const ViewFormTabs = ({ schema, resourceConfig, options, isDrawer }) => {
 
     useEffect(() => {
         return () => {
-            dispatch({ type: CLEAR_FORM_DATA });
+            console.log("DashAutoFormMuiTabs: dispatch method deprecated")
+            //dispatch({ type: CLEAR_FORM_DATA });
         };
     }, [dispatch]);
 

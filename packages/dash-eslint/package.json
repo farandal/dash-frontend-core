@@ -16,6 +16,6 @@
 		"eslint-config-airbnb-typescript": "latest",
 		"eslint-config-turbo": "latest",
 		"turbo": "latest",
-		"dash-prettier": "*"
+		"dash-prettier": "workspace:*"
 	}
 }

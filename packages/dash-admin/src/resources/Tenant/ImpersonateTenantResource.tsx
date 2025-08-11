@@ -14,7 +14,7 @@ import { setCookie, getCookie } from '../../utils/cookies';
 import ApplicationLayout from '../../layout/ApplicationLayout';
 import { Alert, Card } from '@mui/material';
 import { Route } from 'react-router';
-import DASHAppConstants from 'dash-constants';
+import {DASHAppConstants} from 'dash-constants';
 
 export const ImpersonateTenantComponent: FC<any> = (props) => {
 

@@ -6,9 +6,14 @@
 import { createAxiosInstance } from 'dash-axios-hook';
 import { getCookie, setCookie } from '../../utils/cookies';
 import { getEnv } from '../../config/DASHAdminSystemConstants';
-import { setAuthEvent, AuthPersistenceService } from './AuthContext';
-import DASHAppConstants from 'dash-constants';
-import DASHAdminSystemConstants from '../../config/DASHAdminSystemConstants';
+import { AuthPersistenceService } from 'dash-auth';
+import { setAuthEvent } from './AuthContext';
+import {DASHAppConstants} from 'dash-constants';
+
+import {DASHAdminSystemConstants} from  'dash-constants'
+
+
+
 import { DASH_REDUX_ACTIONS, dispatchToRedux } from 'dash-admin-state';
 import { ACTION_UPDATE_AUTH } from 'dash-admin-state/src/redux/reducers/Auth';
 export interface DASHAuthenticationServiceLoginCredentials {

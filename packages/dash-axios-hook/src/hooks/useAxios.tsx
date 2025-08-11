@@ -1,5 +1,9 @@
 import axios, { Axios, AxiosError, AxiosRequestConfig } from 'axios';
-import DASHAdminSystemConstants from 'dash-admin/src/config/DASHAdminSystemConstants';
+
+import {DASHAdminSystemConstants} from  'dash-constants'
+
+
+
 import processAxiosError from './processAxiosErrorFunction';
 import { IDashAutoAdminDefaultBackendStructure } from '../interfaces/IDashAutoAdminBackendError';
 

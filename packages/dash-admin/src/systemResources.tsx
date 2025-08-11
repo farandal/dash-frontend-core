@@ -8,7 +8,7 @@ import roleSchema from './schemas/roles';
 import { TenantImpersonateResource } from './resources/Tenant/ImpersonateTenantResource';
 import tenantSystemAdminSchema from './schemas/tenant_superadmin';
 import { RutValidator } from './utils/validators';
-import DASHAppConstants from 'dash-constants';
+import {DASHAppConstants} from 'dash-constants';
 import Avatar from './components/avatar/Avatar';
 
 // Replace the current imports with these optimized direct imports

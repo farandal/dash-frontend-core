@@ -15,7 +15,7 @@ import {
 
 
 import DashAutoShow from 'dash-auto-admin/src/DashAutoShow';
-//import DASHAdminSystemConstants from 'dash-admin/src/config/DASHAdminSystemConstants';
+//import {DASHAdminSystemConstants} from 'dash-constants';
 //import { AnimatePresence, motion } from 'framer-motion';
 
 

@@ -1,8 +1,8 @@
 import { useContext, useEffect, useState } from 'react';
 //import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
-import { IAuthContext, NotificationComponent, IDashNotificationPayloadBase } from 'dash-admin';
-import { AuthContext, NotificationWrapper, useLaravelEcho } from 'dash-admin';
+import { IAuthContext, NotificationComponent, IDashNotificationPayloadBase } from '../../';
+import { AuthContext, NotificationWrapper, useLaravelEcho } from '../../';
 
 export type ILaravelEchoManager = {
   events: IDashNotificationPayloadBase[];

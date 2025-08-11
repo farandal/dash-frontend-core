@@ -15,7 +15,8 @@ import { ResourceTemplateCreate } from './ResourceTemplateCreate';
 import { ResourceTemplateEdit } from './ResourceTemplateEdit';
 import { ResourceTemplateList } from './ResourceTemplateList';
 import { ResourceTemplateShow } from './ResourceTemplateShow';
-import DASHAdminSystemConstants from '../config/DASHAdminSystemConstants';
+import {DASHAdminSystemConstants} from  'dash-constants'
+
 import TrashTemplate from './TrashTemplate';
 import { DashResourceProvider } from '../contexts/DashResourceContext';
 import {Resource} from '../react-admin-dash/Resource';

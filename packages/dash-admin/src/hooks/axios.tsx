@@ -1,5 +1,6 @@
 import axios from 'axios';
-import constants from '../config/DASHAdminSystemConstants';
+import constants from 'dash-constants/src/DASHAdminSystemConstants';
+
 
 export const initAxios = () => {
 	let CSRFAuth = false;

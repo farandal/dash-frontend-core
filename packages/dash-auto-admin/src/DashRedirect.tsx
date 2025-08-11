@@ -1,5 +1,5 @@
-import DASHAdminSystemConstants from "dash-admin/src/config/DASHAdminSystemConstants";
-import { IDashAutoAdminResourceConfig } from "dash-auto-admin";
+import {DASHAdminSystemConstants} from "dash-constants";
+import { IDashAutoAdminResourceConfig } from "../";
 import { useEffect } from "react";
 import { useRedirect, Loading } from "react-admin";
 import { useParams } from "react-router";

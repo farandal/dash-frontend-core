@@ -4,7 +4,10 @@ import {createAxiosInstance} from 'dash-axios-hook'
 import { useSelector } from 'react-redux';
 import { IDASHAppState } from 'dash-admin-state';
 import { IDashAutoAdminResourceConfig } from 'dash-auto-admin';
-import  { getEnv } from 'dash-admin/src/config/DASHAdminSystemConstants';
+import  { getEnv } from 'dash-constants/src/DASHAdminSystemConstants';
+
+
+
 
 export type IFCMContext = {
   notifications: any[];

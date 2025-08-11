@@ -1,7 +1,0 @@
-{
-	"root": true,
-	"extends": ["dash-eslint"],
-	"parserOptions": {
-		"project": ["./tsconfig.eslint.json"]
-	}
-}

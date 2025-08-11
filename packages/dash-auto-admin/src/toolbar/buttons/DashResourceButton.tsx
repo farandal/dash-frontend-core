@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { memo } from 'react';
 import PropTypes from 'prop-types';
-import DASHAppConstants from 'dash-constants';
+import {DASHAppConstants} from 'dash-constants';
 
 import {
     useResourceContext,

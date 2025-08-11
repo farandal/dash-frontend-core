@@ -1,5 +1,5 @@
 import ISettingsState from "../redux/interfaces/ISettings";
-import DASHAdminSystemConstants from 'dash-admin/src/config/DASHAdminSystemConstants';
+import {DASHAdminSystemConstants} from 'dash-constants';
 
 const defaultSettings: ISettingsState = {
   loading: false,
