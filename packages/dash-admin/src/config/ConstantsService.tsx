@@ -1,7 +1,8 @@
 import * as React from 'react';
+
 import constants, {
 	IDASHAdminSystemConstants,
-} from './DASHAdminSystemConstants';
+} from 'dash-constants/src/DASHAdminSystemConstants';
 
 export interface IConstantContext<T> {
 	systemConstants: IDASHAdminSystemConstants;

@@ -2,7 +2,7 @@ import { Alert, Box, Button, Input, InputLabel, TextField } from '@mui/material'
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import useAxios from '../hooks/axios';
-import { FullLayoutMarkup } from 'dash-default-theme';
+import { FullLayoutMarkup } from '../../src/default-theme';
 
 const getUrlParamsObject = (searchParams: any) => {
 	let params: Record<string, any> = {};

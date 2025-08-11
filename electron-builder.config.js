@@ -8,7 +8,7 @@ const platform = process.platform;
  * @see https://www.electron.build/configuration/configuration
  */
 module.exports = {
-  appId: 'cl.pinoywok.app',
+  appId: 'com.kitchntab.app',
   productName: dashPackage.name,
   asar: false,
   directories: {
@@ -16,12 +16,12 @@ module.exports = {
     buildResources: 'icons' 
   },
   files: [
-    "electron/**/*",
-    "electron-config.yaml",
-    "resources/sounds",
-    "apps/dash/dist/**",
-    "apps/dash/dist-electron/**",
-    "apps/dash/electron-config.prod.yaml"
+   
+  "electron-config.yaml",
+  "resources/sounds/**/*",
+  "apps/dash/dist/**",
+  "apps/dash/dist-electron/**",
+  "apps/dash/electron-config.prod.yaml"
   ],
   
   win: {
@@ -87,7 +87,7 @@ module.exports = {
     // Disable notarization for now (enable later with proper credentials)
     notarize: false,
     // Allow executing binaries from Resources folder
-    binaries: ['Contents/Resources/dash-python-service/ws_service']
+    binaries: ['Contents/Resources/dash-python-service/kt_service']
   },
   linux: {
    // icon: path.resolve(__dirname, './icons/png/'),
@@ -102,9 +102,9 @@ module.exports = {
   extraResources: [
     // Python service executables - platform specific
     {
-      from: path.resolve(__dirname, '../dash-python-service/service'),
+      from: path.resolve(__dirname, '../dash-python-service/kt_service'),
       to: 'python-service',
-      filter: process.platform === 'win32' ? ['**/*.exe'] : ['**/ws_service']
+      filter: process.platform === 'win32' ? ['**/*.exe'] : ['**/kt_service']
     },
     // YAML configuration files
     {

@@ -3,10 +3,7 @@ export { default as PackageCopyMethod } from './components/custom/PackageCopyMet
 export { default as NotResults } from './components/theme/NotResults';
 export { default as NotFound } from './components/theme/NotFound';
 export { default as QuickSearch } from './components/dialog/QuickSearch';
-export { default as AvatarComponent } from './components/user/AvatarComponent';
-export { default as TenantAvatarComponent } from './components/user/TenantAvatarComponent';
-export { default as LanguageSwitcher } from './components/misc/LanguageSwitcher';
-export { default as DarkModeSwitcher } from './components/misc/DarkModeSwitcher';
+
 export { default as PaginationComponent } from './components/tables/PaginationComponent';
 
 export { default as AutocompleteCheckBoxArrayInput } from './components/AutoCompleteArrayInput/AutocompleteCheckBoxArrayInput';

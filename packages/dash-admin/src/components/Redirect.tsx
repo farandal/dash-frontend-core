@@ -2,7 +2,7 @@ import { IDashAutoAdminResourceConfig } from "dash-auto-admin";
 import { useEffect } from "react";
 import { useRedirect, Loading } from "react-admin";
 import { useParams } from "react-router";
-import DASHAdminSystemConstants from "../config/DASHAdminSystemConstants";
+import {DASHAdminSystemConstants} from 'dash-constants';
 
 interface IRedirect {
   method: 'edit' | 'list' | 'create' | 'show';

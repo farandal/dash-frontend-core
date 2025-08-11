@@ -15,7 +15,7 @@ import roleSchema from './schemas/roles';
 import notificationSchema from './schemas/notification';
 import tenantSystemAdminSchema from './schemas/tenant_superadmin';
 import { TableContainer } from '@mui/material';
-import constants from './config/DASHAdminSystemConstants';
+import constants from 'dash-constants/src/DASHAdminSystemConstants';
 import ResourceTemplate from './templates/ResourceTemplate';
 import TenantSettingsFormatsProvider from './components/tenant/TenantSettingsContext';
 // @deprecated, dont use!

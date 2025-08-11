@@ -4,38 +4,36 @@
   "author": "Francisco Aranda <farandal@gmail.com>",
   "license": "MIT",
   "private": true,
-  "version": "1.0.6",
+  "version": "1.0.17",
   "main": "apps/dash/dist-electron/main/index.js",
-  "workspaces": [
-    "apps/*",
-    "packages/**/*"
-  ],
   "scripts": {
     "new": "chmod +x ./new.sh && sh ./new.sh",
-    "dev": "cd apps/dash && yarn dev",
-    "dev:prod": "cd apps/dash && yarn dev:prod",
-    
-    "dev:pinoywok:ngrok": "cross-env MODE=development CUSTOM_MODE=pinoywok.ngrok TARGET_TYPE=web PLATFORM=web NODE_OPTIONS=--max-old-space-size=4048 node build_config.js && cd apps/dash && yarn dev:pinoywok:ngrok",
-    "dev:kitchntabs:ngrok": "cross-env MODE=development CUSTOM_MODE=kitchntabs.ngrok TARGET_TYPE=web PLATFORM=web NODE_OPTIONS=--max-old-space-size=4048 node build_config.js && cd apps/dash && yarn dev:kitchntabs:ngrok",
-    "dev:kitchntabs:production": "cross-env MODE=development CUSTOM_MODE=kitchntabs.production TARGET_TYPE=web PLATFORM=web NODE_OPTIONS=--max-old-space-size=4048 node build_config.js && cd apps/dash && yarn dev:kitchntabs:production",
-   
+    "dev": "cd apps/dash && pnpm dev",
+    "dev:prod": "cd apps/dash && pnpm dev:prod",
+    "dev:pinoywok:ngrok": "cross-env MODE=development CUSTOM_MODE=pinoywok.ngrok TARGET_TYPE=web PLATFORM=web NODE_OPTIONS=--max-old-space-size=4048 node build_config.js && cd apps/dash && pnpm dev:pinoywok:ngrok",
+    "dev:kitchntabs:ngrok": "cross-env MODE=development CUSTOM_MODE=kitchntabs.ngrok TARGET_TYPE=web PLATFORM=web NODE_OPTIONS=--max-old-space-size=4048 node build_config.js && cd apps/dash && pnpm dev:kitchntabs:ngrok",
+    "dev:kitchntabs:production": "cross-env MODE=development CUSTOM_MODE=kitchntabs.production TARGET_TYPE=web PLATFORM=web NODE_OPTIONS=--max-old-space-size=4048 node build_config.js && cd apps/dash && pnpm dev:kitchntabs:production",
     "dev:android:kitchntabs:ngrok": "cross-env MODE=development CUSTOM_MODE=kitchntabs.ngrok TARGET_TYPE=mobile PLATFORM=android NODE_OPTIONS=--max-old-space-size=4048 node build_config.js && turbo build && cap run android",
     "dev:android:kitchntabs:production": "cross-env MODE=development CUSTOM_MODE=kitchntabs.production TARGET_TYPE=mobile PLATFORM=android NODE_OPTIONS=--max-old-space-size=4048 node build_config.js && turbo build && cap run android",
-    "release:android:kitchntabs:production": "NODE_ENV=production turbo build && cap sync android && cd ./android && ./gradlew bundleRelease",
-
-
-    "dev-win": "cd apps/dash && yarn dev-win",
-    "build": "rimraf node_modules/.turbo node_modules/.vite && turbo build --filter=!./packages/react-18-beautiful-dnd-grid --force",
-    "build-win": "rimraf node_modules/.turbo node_modules/.vite && turbo build --filter=!./packages/react-18-beautiful-dnd-grid --force",
+    "release:android:kitchntabs:production": "turbo build && cap sync android && cd ./android && ./gradlew bundleRelease",
+    "config:electron:kitchntabs:production": "cross-env MODE=development CUSTOM_MODE=kitchntabs.production TARGET_TYPE=desktop PLATFORM=electron NODE_OPTIONS=--max-old-space-size=4048 node build_config.js",
+    "dev:app:kitchntabs:production": "cross-env MODE=development CUSTOM_MODE=kitchntabs.production TARGET_TYPE=desktop PLATFORM=electron  node build_config.js && cd apps/dash && pnpm dev:kitchntabs:production",
+    "dev:electron:kitchntabs:production": "vite build -c electron.vite.config.ts && cross-env NODE_ENV=development BUILD_ENV=dev concurrently \" pnpm dev:app:kitchntabs:production &\" \"wait-on http://127.0.0.1:3006 && electron .\"",
+    "release:electron:kitchntabs:production": "pnpm config:electron:kitchntabs:production && electron-icon-builder --input=./apps/dash/src/assets/logo-squared.png --output=./ && turbo build --no-cache && cross-env NODE_OPTIONS=--max-old-space-size=8096 electron-builder --config electron-builder.config.js",
+    "release:electron:kitchntabs:production:web": "pnpm config:electron:kitchntabs:production && turbo build",
+    "release:electron:kitchntabs:production:app": "cross-env NODE_OPTIONS=--max-old-space-size=8096 electron-builder --config electron-builder.config.js",
+    "dev-win": "cd apps/dash && pnpm dev-win",
+    "_build": "rimraf node_modules/.turbo node_modules/.vite && turbo build --filter=!./packages/react-18-beautiful-dnd-grid --force",
+    "_build-win": "rimraf node_modules/.turbo node_modules/.vite && turbo build --filter=!./packages/react-18-beautiful-dnd-grid --force",
     "android:dev": "cross-env MODE=development CUSTOM_MODE=pinoywok.ngrok TARGET_TYPE=mobile PLATFORM=android NODE_OPTIONS=--max-old-space-size=4048 node build_config.js && turbo build && cap run android",
     "android:prod": "NODE_ENV=production turbo build && cap run android",
     "android:bundle": "NODE_ENV=production turbo build && cap sync android && cd ./android && ./gradlew bundleRelease",
     "electron-icons": "electron-icon-builder --input=./apps/dash/src/assets/logo-squared.png --output=./",
-    "electron-dev:local": "vite build -c electron.vite.config.ts && cross-env NODE_ENV=development BUILD_ENV=dev concurrently \"cd apps/dash && yarn dev:desktop:local &\" \"wait-on http://127.0.0.1:3006 && electron .\"",
-    "electron-dev:prod": "vite build -c electron.vite.config.ts && cross-env NODE_ENV=development BUILD_ENV=prod concurrently \"cd apps/dash && yarn dev:desktop:prod &\" \"wait-on http://127.0.0.1:3006 && electron .\"",
-    "electron-prod": "electron-icon-builder --input=./apps/dash/src/assets/logo-squared.png --output=./  && cross-env BUILD_ENV=prod IS_ELECTRON=true vite build -c electron.vite.config.ts && cross-env NODE_ENV=production BUILD_ENV=prod IS_ELECTRON=true yarn build &&  electron-builder --config electron-builder.config.js",
-    "electron-dev-win": "vite build -c electron.vite.config.ts && cross-env NODE_ENV=development BUILD_ENV=dev concurrently --kill-others --raw \"cd apps/dash && yarn dev-win\" \"wait-on -v http://127.0.0.1:3006 && electron .\"",
-    "electron-prod-win": "electron-icon-builder --input=./apps/dash/src/assets/logo-squared.png --output=./ && yarn build-win &&  cross-env NODE_ENV=production BUILD_ENV=prod IS_ELECTRON=true vite build -c electron.vite.config.ts && electron-builder --config electron-builder.config.js",
+    "electron-dev:local": "vite build -c electron.vite.config.ts && cross-env NODE_ENV=development BUILD_ENV=dev concurrently \"cd apps/dash && pnpm dev:desktop:local &\" \"wait-on http://127.0.0.1:3006 && electron .\"",
+    "electron-dev:prod": "vite build -c electron.vite.config.ts && cross-env NODE_ENV=development BUILD_ENV=prod concurrently \"cd apps/dash && pnpm dev:desktop:prod &\" \"wait-on http://127.0.0.1:3006 && electron .\"",
+    "electron-prod": "electron-icon-builder --input=./apps/dash/src/assets/logo-squared.png --output=./  && cross-env BUILD_ENV=prod IS_ELECTRON=true vite build -c electron.vite.config.ts && cross-env NODE_ENV=production BUILD_ENV=prod IS_ELECTRON=true pnpm build &&  electron-builder --config electron-builder.config.js",
+    "electron-dev-win": "vite build -c electron.vite.config.ts && cross-env NODE_ENV=development BUILD_ENV=dev concurrently --kill-others --raw \"cd apps/dash && pnpm dev-win\" \"wait-on -v http://127.0.0.1:3006 && electron .\"",
+    "electron-prod-win": "electron-icon-builder --input=./apps/dash/src/assets/logo-squared.png --output=./ && pnpm build-win &&  cross-env NODE_ENV=production BUILD_ENV=prod IS_ELECTRON=true vite build -c electron.vite.config.ts && electron-builder --config electron-builder.config.js",
     "electron-preview": "vite preview",
     "electron-pree2e": "vite build --mode=test",
     "resources": "chmod +x ./resources.sh && ./resources.sh",
@@ -49,8 +47,7 @@
     "clean": "turbo run clean && rm -rf node_modules",
     "add-changeset": "changeset add",
     "version-packages": "changeset version",
-    "prepare": "husky install",
-    "prerelease": "yarn run build",
+    "prerelease": "pnpm run build",
     "release": "changeset publish",
     "test": "turbo run test",
     "types:check": "turbo run types:check",
@@ -60,14 +57,43 @@
     "build:config:android:ngrok": "cross-env MODE=production CUSTOM_MODE=pinoywok.ngrok TARGET_TYPE=mobile PLATFORM=android NODE_OPTIONS=--max-old-space-size=4048 node build_config.js",
     "build:config:android:prod": "cross-env MODE=production CUSTOM_MODE=pinoywok.ngrok TARGET_TYPE=mobile PLATFORM=android NODE_OPTIONS=--max-old-space-size=4048 node build_config.js"
   },
+  "packageManager": "pnpm@9.15.0",
   "dependencies": {
     "@capacitor/keyboard": "^7.0.1",
     "@capacitor/push-notifications": "^7.0.1",
+    "@hello-pangea/dnd": "^18.0.1",
+    "@hookform/error-message": "^2.0.1",
+    "@mui/icons-material": "^7.3.1",
+    "@mui/utils": "^7.3.1",
+    "@mui/x-date-pickers": "^8.10.0",
+    "@reduxjs/toolkit": "^2.8.2",
+    "@rooks/use-previous": "^4.11.2",
+    "@storybook/react": "^9.1.1",
+    "@tanstack/react-query": "^5.84.2",
     "@types/sound-play": "^1.1.3",
-    "dash-eslint": "*",
-    "dash-prettier": "*",
+    "axios": "^1.11.0",
+    "clsx": "^2.1.1",
+    "colorthief": "^2.6.0",
+    "dash-eslint": "workspace:*",
+    "dash-prettier": "workspace:*",
     "electron-updater": "^6.6.2",
-    "vite-plugin-electron": "^0.29.0"
+    "file-saver": "^2.0.5",
+    "js-cookie": "^3.0.5",
+    "laravel-echo": "^2.2.0",
+    "lodash": "^4.17.21",
+    "mui-nested-menu": "^4.0.1",
+    "pusher-js": "^8.4.0",
+    "ra-core": "^5.10.1",
+    "ra-i18n-polyglot": "^5.10.1",
+    "ra-language-english": "^5.10.1",
+    "ra-language-spanish": "^1.0.0",
+    "react-admin": "^5.10.1",
+    "react-error-boundary": "^6.0.0",
+    "react-is": "^19.1.1",
+    "redux": "^5.0.1",
+    "tslib": "^2.8.1",
+    "vite-plugin-electron": "^0.29.0",
+    "yaml": "^2.8.1"
   },
   "devDependencies": {
     "@capacitor/android": "^7.2.0",
@@ -85,13 +111,14 @@
     "autoprefixer": "latest",
     "capacitor-resources": "^2.0.5",
     "capacitor-voice-recorder": "^7.0.6",
+    "chalk": "^5.3.0",
     "concurrently": "^9.1.2",
+    "cross-env": "^7.0.3",
     "depcheck": "latest",
-    "electron": "^35.1.5",
+    "electron": "^36.7.4",
     "electron-builder": "^26.0.12",
     "electron-icon-builder": "^2.0.1",
     "electron-log": "^5.3.3",
-    "husky": "latest",
     "mkdirp": "^3.0.1",
     "npm-run-all": "latest",
     "postcss": "latest",
@@ -99,10 +126,12 @@
     "sound-play": "^1.1.0",
     "syncpack": "latest",
     "turbo": "latest",
+    "typescript": "^5.9.2",
+    "use-sync-external-store": "^1.5.0",
+    "vite": "^7.1.1",
     "vite-plugin-electron-renderer": "^0.14.6",
     "wait-on": "^8.0.3"
   },
-  "packageManager": "yarn@1.22.19",
   "engines": {
     "node": ">=20.18.3",
     "npm": ">=9.6.7"
@@ -111,19 +140,19 @@
     "audio",
     "notifications"
   ],
-  "build": {
+  "_build": {
     "asar": false,
     "directories": {
       "output": "release/"
     },
     "files": [
-      "electron/**/*",
+      "electron/**/!(*.map)",
       "electron-config.yaml",
       "resources/sounds",
       "apps/dash/dist/**",
       "apps/dash/dist-electron/**",
       "apps/dash/electron-config.prod.yaml",
-      "../dash-python-service/service/ws_service.exe"
+      "../dash-python-service/kt-service/kt_service.exe"
     ]
   },
   "debug": {
@@ -138,4 +167,5 @@
     "react-dom": "19.1.0",
     "query-string": "7.1.3"
   }
+
 }

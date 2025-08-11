@@ -33,7 +33,7 @@ import {
 } from 'dash-auto-admin';
 
 
-import { DashResourceProvider } from 'dash-admin/src/contexts/DashResourceContext';
+import { DashResourceProvider } from '../contexts/DashResourceContext';
 import DashAutoAdminSaveButton from 'dash-auto-admin/src/DashAutoAdminSaveButton';
 // TODO: The following dependencies shpuld not depend on @dashboard
 

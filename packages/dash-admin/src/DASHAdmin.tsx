@@ -9,7 +9,6 @@ import { Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 //import { appTheme } from 'dash-styles';
 
 //import RoutingWrapper from './RoutingWrapper';
-//import DomainAppLayout from 'dash-default-theme/src/DomainAppLayout';
 
 import MyLoginPage from './pages/Login';
 import Profile from './pages/Profile';
@@ -86,8 +85,8 @@ import ResourceTemplate from './templates/ResourceTemplate';
 import { JSX, useEffect, useMemo, useCallback } from 'react';
 import RADashComponent from './react-admin-dash/RADashComponent';
 import DASHAuthenticationService from './contexts/auth/DASHAuthenticationService';
-import { useDashThemeContext } from 'dash-default-theme/src/DashThemeContext';
-import DASHAdminSystemConstants from './config/DASHAdminSystemConstants';
+import { useDashThemeContext } from '../src/default-theme/DashThemeContext';
+import {DASHAdminSystemConstants} from 'dash-constants';
 
 interface IAsyncResources extends AdminUIProps {
   resources: any;

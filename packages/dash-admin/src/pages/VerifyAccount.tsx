@@ -3,8 +3,10 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 
 import useAxios from '../hooks/axios';
 import { Box, Typography, CircularProgress } from '@mui/material';
-import { getEnv } from '../config/DASHAdminSystemConstants';
-import { FullLayoutMarkup } from 'dash-default-theme';
+import { getEnv } from 'dash-constants/src/DASHAdminSystemConstants';
+
+
+import { FullLayoutMarkup } from '../../src/default-theme';
 
 interface VerifyAccountProps {
 	

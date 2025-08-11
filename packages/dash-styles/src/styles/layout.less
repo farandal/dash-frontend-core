@@ -7,10 +7,15 @@ html {
 
 }
 
-bod,#root {
+body,#root {
 height: 100vh;
 }
 
+/*
+body.windows, body.windows + html {
+  background: none !important;
+}
+*/
 @media (min-width: @mq-sm) {
 
   body.framed-layout {
@@ -59,6 +64,11 @@ padding:8px;
 .dash-app-layout {
   //min-height: 100vh;
   height: 100%;
+
+    .dash-app-layout-content::-webkit-scrollbar-track {
+      margin:50px 0;
+  }
+
 }
 
 /*.framed-layout .dash-app-layout {

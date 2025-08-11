@@ -3,7 +3,7 @@ import React, { useState, useEffect, useContext, createContext, useRef } from "r
 import { useGetList, Loading, useRecordContext } from "react-admin";
 import { useAxios } from 'dash-axios-hook';
 import { useFormContext, useWatch } from "react-hook-form";
-import { Tenant } from "dash-admin/src/interfaces/Tenant";
+import { Tenant } from "../../interfaces/Tenant";
 import MUISimpleJsonTable from "../misc/MuiSimpleJsonTable";
 import {useTenantSettingsFormats} from "./TenantSettingsContext";
 import { useSystemRequestsCache } from "../../contexts/SystemRequestsCache";

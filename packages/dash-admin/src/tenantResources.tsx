@@ -1,23 +1,24 @@
 import { TableContainer } from '@mui/material';
 // eslint-disable-next-line import/no-extraneous-dependencies
-import Person from '@mui/icons-material/Dashboard';
+//import Dashboard from '@mui/icons-material/Dashboard';
+import Person from '@mui/icons-material/Person';
 import { SelectInput } from 'react-admin';
 import { ImageInput } from 'react-admin';
 import { SelectArrayInput } from 'react-admin';
 import ResourceTemplate from './templates/ResourceTemplate';
 import IAppResourceConfig from './interfaces/IAppResourceConfig';
 import permissionSchema from './schemas/permissions';
-import constants from './config/DASHAdminSystemConstants';
+
 import roleSchema from './schemas/roles';
 import TrashTemplate from './resources/Trash/TrashTemplate';
-import ImpersonateTenantResource, { TenantImpersonateResource } from './resources/Tenant/ImpersonateTenantResource';
+//import ImpersonateTenantResource, { TenantImpersonateResource } from './resources/Tenant/ImpersonateTenantResource';
 import tenantSystemAdminSchema from './schemas/tenant_superadmin';
 import notificationSchema from './schemas/notification';
 import LogResource from './resources/Log/LogResource';
 import logSchema from './schemas/log';
 
-import DASHAppConstants from 'dash-constants';
-import DASHAdminSystemConstants from './config/DASHAdminSystemConstants';
+import {DASHAppConstants} from 'dash-constants';
+
 /**
  * Configures the system resources for the DASH Admin application.
  * This includes resources such as permissions, roles, users, and tenant impersonation.

@@ -1,7 +1,7 @@
 import { useSelector } from 'react-redux';
 import { useMemo } from 'react';
 import { isEqual } from 'lodash';
-import { IDASHAppState } from 'dash-admin-state';
+import { IDASHAppState } from '../';
 import { IDashAutoAdminResourceConfig } from 'dash-auto-admin';
 
 // Custom hook for layout-related state

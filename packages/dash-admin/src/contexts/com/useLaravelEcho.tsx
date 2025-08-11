@@ -6,7 +6,9 @@ import Echo, { EchoOptions } from 'laravel-echo';
 import Pusher from 'pusher-js';
 
 import { ConstantsContext } from '../../config/ConstantsService';
-import { getEnv } from '../../config/DASHAdminSystemConstants';
+import { getEnv } from  'dash-constants/src/DASHAdminSystemConstants';
+
+
 
 import { IDASHAppState } from 'dash-admin-state';
 import { IDashAutoAdminResourceConfig } from 'dash-auto-admin';

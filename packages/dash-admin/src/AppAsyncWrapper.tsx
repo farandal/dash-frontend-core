@@ -1,10 +1,11 @@
 /* eslint react/jsx-key: off */
 import React, { Suspense } from 'react';
-import { GlobalLoader } from 'dash-admin';
+import { GlobalLoader } from '../';
 import { Loading } from 'react-admin';
-import { ErrorBoundary } from 'react-error-boundary';
+
 import LoaderAnimation from 'react-spinners/PuffLoader';
 
+import { ErrorBoundary } from 'react-error-boundary';
 
 const ErrorFallback = ({ error, resetErrorBoundary }) => {
 	return <Loading loadingPrimary='Error' loadingSecondary={error.message} />;
@@ -22,15 +23,16 @@ const AppAsyncWrapper: React.FC<any> = () => {
 	return (
 		<>
 			<ErrorBoundary
-				FallbackComponent={ErrorFallback}
-				onReset={() => {
-					// reset the state of your app so the error doesn't happen again
-				}}
-			>
-				<Suspense fallback={<Loading loadingPrimary='' loadingSecondary='' />}>
-					<AppComponent />
-				</Suspense>
-			</ErrorBoundary>
+                FallbackComponent={ErrorFallback}
+                //</>onReset={() => {
+                    // reset the state of your app so the error doesn't happen again
+               //}}
+            >
+                <Suspense fallback={<Loading loadingPrimary='' loadingSecondary='' />}>
+                    <AppComponent />
+                </Suspense>
+            </ErrorBoundary>
+        
             <GlobalLoader>
                 {/*<SlideInSpinner transitionDuration={0.5}  isSlideIn={true} />*/}
                 ...

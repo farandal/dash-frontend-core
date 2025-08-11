@@ -9,7 +9,7 @@
 		"format": "yarn prettier --write . && yarn format-check && yarn lint",
 		"lint:check": "yarn prettier --check .",
 		"lint:fix": "yarn prettier --write .",
-		"prepare": "husky install",
+		
 		"check-updates": "yarn npm-check-updates",
 		"updates-packages": "yarn npm-check-updates -u"
 	},
@@ -35,11 +35,15 @@
 		"@rollup/plugin-node-resolve": "latest",
 		"@rollup/plugin-replace": "latest",
 		"@rollup/plugin-typescript": "latest",
-		"dash-auto-admin": "*",
-		"dash-dialog": "*",
-		"dash-icons": "*",
-		"dash-interfaces": "*",
-		"dash-styles": "*",
+		"dash-auto-admin": "workspace:*",
+		"dash-dialog": "workspace:*",
+		"dash-modal": "workspace:*",
+		"dash-utils": "workspace:*",
+		"dash-auth": "workspace:*",
+		"dash-admin-state": "workspace:*",
+		"dash-axios-hook": "workspace:*",
+		"dash-interfaces": "workspace:*",
+		"dash-styles": "workspace:*",
 		"query-string": "latest",
 		"react-admin": "latest",
 		"react-color": "^2.19.3",
@@ -68,8 +72,8 @@
 		"@types/react-dom": "latest",
 		"@zerollup/ts-transform-paths": "latest",
 		"babel-loader": "latest",
-		"dash-eslint": "*",
-		"dash-tsconfig": "*",
+		"dash-eslint": "workspace:*",
+		"dash-tsconfig": "workspace:*",
 		"eslint": "latest",
 		"eslint-config-airbnb": "latest",
 		"eslint-config-airbnb-typescript": "latest",
@@ -84,8 +88,8 @@
 		"eslint-plugin-react": "latest",
 		"eslint-plugin-react-hooks": "latest",
 		"eslint-plugin-storybook": "latest",
-		"husky": "latest",
-		"prettier-config": "*",
+	
+		"dash-prettier": "workspace:*",
 		"query-string": "latest",
 		"react-dom": "latest",
 		"rollup": "latest",
@@ -109,9 +113,6 @@
 	},
 	"eslintConfig": {
 		"extends": "react-app"
-	},
-	"resolutions": {
-		"react-router-dom": "latest",
-		"react-router": "latest"
 	}
 }
+	

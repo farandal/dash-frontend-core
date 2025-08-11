@@ -9,7 +9,8 @@
 		"format": "yarn prettier --write . && yarn format-check && yarn lint",
 		"lint:check": "yarn prettier --check .",
 		"lint:fix": "yarn prettier --write .",
-		"prepare": "husky install",
+		
+
 		"check-updates": "yarn npm-check-updates",
 		"updates-packages": "yarn npm-check-updates -u"
 	},
@@ -36,11 +37,11 @@
 		"@rollup/plugin-node-resolve": "latest",
 		"@rollup/plugin-replace": "latest",
 		"@rollup/plugin-typescript": "latest",
-		"dash-admin-state": "*",
-		"dash-auto-admin": "*",
-		"dash-constants": "*",
-		"dash-dialog": "*",
-		"dash-styles": "*",
+		"dash-admin-state": "workspace:*",
+		"dash-auto-admin": "workspace:*",
+		"dash-constants": "workspace:*",
+		"dash-dialog": "workspace:*",
+		"dash-styles": "workspace:*",
 		"framer-motion": "latest",
 		"prop-types": "latest",
 		"query-string": "latest",
@@ -59,7 +60,12 @@
 		"rollup-plugin-cleaner": "latest",
 		"rollup-plugin-dts": "latest",
 		"rollup-plugin-peer-deps-external": "latest",
-		"rollup-plugin-svg": "latest"
+		"rollup-plugin-svg": "latest",
+		"dash-modal": "workspace:*",
+		"dash-components": "workspace:*",
+		"dash-axios-hook": "workspace:*",
+		"dash-utils": "workspace:*",
+		"dash-auth": "workspace:*"
 	},
 	"devDependencies": {
 		"@babel/core": "latest",
@@ -72,8 +78,8 @@
 		"@types/react-dom": "latest",
 		"@zerollup/ts-transform-paths": "latest",
 		"babel-loader": "latest",
-		"dash-eslint": "*",
-		"dash-tsconfig": "*",
+		"dash-eslint": "workspace:*",
+		"dash-tsconfig": "workspace:*",
 		"eslint": "latest",
 		"eslint-config-airbnb": "latest",
 		"eslint-config-airbnb-typescript": "latest",
@@ -88,8 +94,8 @@
 		"eslint-plugin-react": "latest",
 		"eslint-plugin-react-hooks": "latest",
 		"eslint-plugin-storybook": "latest",
-		"husky": "latest",
-		"prettier-config": "*",
+		
+		"dash-prettier": "workspace:*",
 		"query-string": "latest",
 		"react-dom": "latest",
 		"rollup": "latest",

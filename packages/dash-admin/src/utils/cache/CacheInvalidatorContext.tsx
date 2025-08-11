@@ -5,7 +5,7 @@ import React, {
 	useContext,
 	useEffect
 } from 'react';
-import useLocalStorage from 'dash-admin/src/hooks/useLocalStorage';
+import useLocalStorage from '../../hooks/useLocalStorage';
 
 const currentTimestamp = ():string => {
 	const currentdate = new Date(); 

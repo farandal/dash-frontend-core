@@ -1,12 +1,12 @@
 import React, { PropsWithChildren, Suspense, useState, useTransition } from 'react';
-import { GlobalLoader } from 'dash-admin';
+import { GlobalLoader } from '../';
 import { Loading } from 'react-admin';
-import { ErrorBoundary } from 'react-error-boundary';
-import LoaderAnimation from 'react-spinners/PuffLoader';
+import { ErrorBoundary, FallbackProps } from 'react-error-boundary';
+//import LoaderAnimation from 'react-spinners/PuffLoader';
 //import { SlideInSpinner } from './layout/MotionWrapper';
 
-const ErrorFallback = ({ error, resetErrorBoundary }) => {
-    return <Loading loadingPrimary='Error' loadingSecondary={error.message} />;
+const ErrorFallback: React.FC<FallbackProps> = ({ error, resetErrorBoundary }) => {
+    return <Loading loadingPrimary='Error' loadingSecondary={error?.message || 'Unknown error'} />;
 };
 
 const AppWrapper: React.FC<PropsWithChildren> = (props) => {

@@ -9,7 +9,7 @@
 		"format": "yarn prettier --write . && yarn format-check && yarn lint",
 		"lint:check": "yarn prettier --check .",
 		"lint:fix": "yarn prettier --write .",
-		"prepare": "husky install",
+		
 		"check-updates": "yarn npm-check-updates",
 		"updates-packages": "yarn npm-check-updates -u"
 	},
@@ -41,7 +41,7 @@
 		"eslint-config-airbnb": "latest",
 		"eslint-config-airbnb-typescript": "latest",
 		"eslint-config-prettier": "latest",
-		"dash-eslint": "*",
+		"dash-eslint": "workspace:*",
 		"eslint-import-resolver-typescript": "latest",
 		"eslint-plugin-html": "latest",
 		"eslint-plugin-import": "latest",
@@ -52,8 +52,8 @@
 		"eslint-plugin-react": "latest",
 		"eslint-plugin-react-hooks": "latest",
 		"eslint-plugin-storybook": "latest",
-		"husky": "latest",
-		"prettier-config": "*",
+		
+		"dash-prettier": "workspace:*",
 		"query-string": "latest",
 		"react-dom": "latest",
 		"rollup": "latest",
@@ -65,7 +65,7 @@
 		"rollup-plugin-postcss": "latest",
 		"rollup-plugin-sourcemaps": "latest",
 		"rollup-plugin-typescript2": "latest",
-		"dash-tsconfig": "*",
+		"dash-tsconfig": "workspace:*",
 		"tsc": "latest",
 		"tsc-alias": "latest",
 		"typescript": "latest"
@@ -75,9 +75,5 @@
 	},
 	"eslintConfig": {
 		"extends": "react-app"
-	},
-	"resolutions": {
-		"react-router-dom": "latest",
-		"react-router": "latest"
 	}
 }

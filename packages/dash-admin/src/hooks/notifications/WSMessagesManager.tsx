@@ -1,8 +1,8 @@
 import { useContext, useEffect, useState } from 'react';
 //import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
-import { IAuthContext, ILaravelEchoManager, NotificationComponent, IDashNotificationPayloadBase } from 'dash-admin';
-import { AuthContext, NotificationWrapper, useLaravelEcho } from 'dash-admin';
+import { IAuthContext, ILaravelEchoManager, NotificationComponent, IDashNotificationPayloadBase } from '../../../';
+import { AuthContext, NotificationWrapper, useLaravelEcho } from '../../../';
 
 const popPrivateMessage = (notification: IDashNotificationPayloadBase) => {
 

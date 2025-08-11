@@ -14,10 +14,10 @@ export { default as DASHAdmin } from './DASHAdmin';
 export { default as systemResources } from './systemResources';
 export { default as tenantResources } from './tenantResources';
 export { default as CustomImageInput } from './components/misc/CustomImageInput';
-export { default as DASHAdminSystemConstants } from './config/DASHAdminSystemConstants';
+
 export { default as ResourceTemplate } from './templates/ResourceTemplate';
 export { default as ResourceTemplateFull } from './templates/ResourceTemplateFull';
-export { default as ResourceTemplateOld } from './templates/ResourceTemplateOld';
+//export { default as ResourceTemplateOld } from './templates/ResourceTemplateOld';
 export { useDashResource } from './contexts/DashResourceContext';
 export { default as TrashTemplate } from './templates/TrashTemplate';
 export { default as MotionWrapper } from './layout/MotionWrapper';
@@ -39,7 +39,7 @@ export { default as WSMessagesManager } from './hooks/notifications/WSMessagesMa
 export { default as FCMContext, FCMProvider } from './contexts/com/FCMContext';
 
 export { default as Redirect } from './components/custom/Redirect';
-export { default as getEnv } from "./config/DASHAdminSystemConstants";
+//export { default as getEnv } from "./config/DASHAdminSystemConstants";
 
 export { default as RoutingWrapper, AnimatedRoutesWrapper } from './RoutingWrapper';
 export type { IDASHRoutingWrapper } from './RoutingWrapper';
@@ -72,8 +72,15 @@ export * from "./contexts/auth"
 
 export * from "./utils"
 
+export * from "./default-theme";
+
 export * from "./providers/i18n/languages"
 
 export { default as DarkToggleMode } from "./components/menu/DarkToggleMode"
 
 export { default as useFormPersistence } from "./hooks/useFormPersistance";
+
+export { default as AvatarComponent } from './components/user/AvatarComponent';
+export { default as TenantAvatarComponent } from './components/user/TenantAvatarComponent';
+export { default as LanguageSwitcher } from './components/misc/LanguageSwitcher';
+export { default as DarkModeSwitcher } from './components/misc/DarkModeSwitcher';
