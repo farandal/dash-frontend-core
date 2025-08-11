@@ -1,5 +1,5 @@
 {
-	"extends": "dash-tsconfig/react-library.json",
+	"extends": "../../packages/dash-tsconfig/react-library.json",
 	"compilerOptions": {
 		//"jsx": "react",
 		//"types": ["@types/jest", "@types/node"]
