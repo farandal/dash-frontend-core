@@ -187,12 +187,12 @@ export default {
 				auth.user?.tenant_id
 			) {
 				
-                const existingTenantCookie = getCookie('tenant_id');
-                if (!existingTenantCookie) {
+              
                     dashStorage.setItem('tenant_id', auth.user?.tenant_id);
                     setCookie('tenant_id', auth.user?.tenant_id);
-                }
-
+                    dashStorage.setItem('user_id', auth.user?.id);
+                    setCookie('user_id', auth.user?.id);
+                
 			}
 			// TODO: this should return the entire oauth object; nevertheless, only user data is being used.
 			return Promise.resolve(auth.user);

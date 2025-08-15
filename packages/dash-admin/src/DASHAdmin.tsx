@@ -289,11 +289,11 @@ const DASHAdminApp: React.FC<IDASHAdmin<unknown, unknown, unknown, unknown>> = R
       if (!children) {
         try {
           if (user?.tenant_id) {
-            const existingTenantCookie = getCookie('tenant_id');
-            if (!existingTenantCookie) {
+            
               dashStorage.setItem('tenant_id', user.tenant_id.toString());
               setCookie('tenant_id', user.tenant_id.toString());
-            }
+              dashStorage.setItem('user_id', user.id.toString());
+              setCookie('user_id', user.id.toString());
           }
         } catch (e) {
           console.error(e);

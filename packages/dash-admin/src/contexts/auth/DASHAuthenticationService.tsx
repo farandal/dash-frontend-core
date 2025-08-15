@@ -211,13 +211,12 @@ class DASHAuthenticationService {
                         ) &&
                         auth.user?.tenant_id
                     ) {
-                        const existingTenantCookie = getCookie('tenant_id');
-                        if (!existingTenantCookie) {
+                       
                             dashStorage.setItem('tenant_id', auth.user?.tenant_id);
                             setCookie('tenant_id', auth.user?.tenant_id);
                             dashStorage.setItem('user_id', auth.user?.id);
                             setCookie('user_id', auth.user?.id);
-                        }
+                     
                     }
 
                     const resultObject = {
@@ -318,13 +317,12 @@ class DASHAuthenticationService {
                 ) &&
                 auth.user?.tenant_id
             ) {
-                const existingTenantCookie = getCookie('tenant_id');
-                if (!existingTenantCookie) {
+               
                     dashStorage.setItem('tenant_id', auth.user?.tenant_id);
                     setCookie('tenant_id', auth.user?.tenant_id);
                     dashStorage.setItem('user_id', auth.user?.id);
                     setCookie('user_id', auth.user?.id);
-                }
+                
             }
 
             const resultObject = {
@@ -465,13 +463,12 @@ class DASHAuthenticationService {
                 ) &&
                 auth.user?.tenant_id
             ) {
-                const existingTenantCookie = getCookie('tenant_id');
-                if (!existingTenantCookie) {
+               
                     dashStorage.setItem('tenant_id', auth.user?.tenant_id);
                     setCookie('tenant_id', auth.user?.tenant_id);
                     dashStorage.setItem('user_id', auth.user?.id);
                     setCookie('user_id', auth.user?.id);
-                }
+               
             }
 
             return auth;
