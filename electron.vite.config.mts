@@ -52,9 +52,9 @@ export default defineConfig(({ command }) => {
               minify: false, // Keep it false for better debugging
               outDir: 'apps/dash/dist-electron/main',
               rollupOptions: {
-                external: Object.keys('dependencies' in pkg ? pkg.dependencies : {}),
+                external: Object.keys('dependencies' in pkg ? pkg.dependencies : []),
                 output: {
-                  format: 'cjs', // Use CommonJS format instead of ESM
+                  format: 'esm', // Use ESM format instead of CommonJS
                   entryFileNames: '[name].js'
                 }
               }
@@ -71,9 +71,9 @@ export default defineConfig(({ command }) => {
               minify: false, // Keep it false for easier debugging
               outDir: 'apps/dash/dist-electron/preload',
               rollupOptions: {
-                external: Object.keys('dependencies' in pkg ? pkg.dependencies : {}),
+                external: Object.keys('dependencies' in pkg ? pkg.dependencies : []),
                 output: {
-                  format: 'cjs', // Use CommonJS format instead of ESM
+                  format: 'esm', // Use ESM format instead of CommonJS
                   entryFileNames: '[name].js'
                 }
               },
