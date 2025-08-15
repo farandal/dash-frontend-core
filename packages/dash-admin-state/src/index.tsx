@@ -31,3 +31,4 @@ export {
 
 export * as DASH_REDUX_ACTIONS from './redux/actions';
 export * from './redux/ReduxStoreAccesor';
+export * from './DashStorage';
