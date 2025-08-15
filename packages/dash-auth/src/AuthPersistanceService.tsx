@@ -330,10 +330,10 @@ static setSystemValues(values: any): void {
 }
 
 
-export async function syncElectronStoreToLocalStorage() {
+export async function syncDeviceStoreToLocalStorage() {
+    // Try Electron first
     const electronStore = (window as any).electronStore;
     if (electronStore && electronStore.getAll) {
-
         try {
             const allData = await electronStore.getAll();
             if (allData && typeof allData === 'object') {
@@ -342,17 +342,35 @@ export async function syncElectronStoreToLocalStorage() {
                 }
                 console.log('[ElectronStorageSync] Synced electron-store to localStorage');
             }
+            return;
         } catch (err) {
             console.error('[ElectronStorageSync] Failed to sync:', err);
         }
     }
+
+    // Try Capacitor Preferences if available
+    const Preferences = (window as any)?.Capacitor?.Plugins?.Preferences || (window as any)?.Capacitor?.Preferences;
+    if (Preferences && Preferences.keys && Preferences.get) {
+        try {
+            const { keys } = await Preferences.keys();
+            for (const key of keys) {
+                const { value } = await Preferences.get({ key });
+                if (value !== null) {
+                    window.localStorage.setItem(key, value);
+                }
+            }
+            console.log('[CapacitorStorageSync] Synced Preferences to localStorage');
+        } catch (err) {
+            console.error('[CapacitorStorageSync] Failed to sync:', err);
+        }
+    }
 }
 
-// Sync all keys from localStorage to electronStore
-export async function syncLocalStorageToElectronStore() {
+// Sync all keys from localStorage to device Store
+export async function syncLocalStorageToDeviceStore() {
+    // Try Electron first
     const electronStore = (window as any).electronStore;
     if (electronStore && electronStore.set) {
-
         try {
             for (let i = 0; i < window.localStorage.length; i++) {
                 const key = window.localStorage.key(i);
@@ -365,8 +383,27 @@ export async function syncLocalStorageToElectronStore() {
                 }
             }
             console.log('[ElectronStorageSync] Synced localStorage to electron-store');
+            return;
         } catch (err) {
             console.error('[ElectronStorageSync] Failed to sync:', err);
+        }
+    }
+
+    // Try Capacitor Preferences if available
+    const Preferences = (window as any)?.Capacitor?.Plugins?.Preferences || (window as any)?.Capacitor?.Preferences;
+    if (Preferences && Preferences.set) {
+        try {
+            for (let i = 0; i < window.localStorage.length; i++) {
+                const key = window.localStorage.key(i);
+                if (!key) continue;
+                const value = window.localStorage.getItem(key);
+                if (value !== null) {
+                    await Preferences.set({ key, value });
+                }
+            }
+            console.log('[CapacitorStorageSync] Synced localStorage to Preferences');
+        } catch (err) {
+            console.error('[CapacitorStorageSync] Failed to sync:', err);
         }
     }
 }

@@ -66,6 +66,7 @@
   "dependencies": {
     "@capacitor/app": "^7.0.2",
     "@capacitor/keyboard": "^7.0.1",
+    "@capacitor/preferences": "^7.0.2",
     "@capacitor/push-notifications": "^7.0.1",
     "@hello-pangea/dnd": "^18.0.1",
     "@hookform/error-message": "^2.0.1",

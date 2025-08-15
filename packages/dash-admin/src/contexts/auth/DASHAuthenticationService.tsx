@@ -6,7 +6,7 @@
 import { createAxiosInstance } from 'dash-axios-hook';
 import { getCookie, setCookie } from '../../utils/cookies';
 import { getEnv } from '../../config/DASHAdminSystemConstants';
-import { AuthPersistenceService, syncElectronStoreToLocalStorage, syncLocalStorageToElectronStore } from 'dash-auth';
+import { AuthPersistenceService } from 'dash-auth';
 import { setAuthEvent } from './AuthContext';
 import {DASHAppConstants} from 'dash-constants';
 
