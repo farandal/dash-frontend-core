@@ -1,5 +1,5 @@
-import ElectronStore from 'electron-store';
-import { getEnv } from 'dash-constants';
+import { getEnv } from "./envUtils";
+
 type StorageType = 'localStorage' | 'electronStore';
 
 interface PersistanceLayer {
@@ -10,9 +10,19 @@ interface PersistanceLayer {
 }
 
 class LocalStorageLayer implements PersistanceLayer {
-    getItem<T = any>(key: string): T | null {
+    /*getItem<T = any>(key: string): T | null {
         const item = window.localStorage.getItem(key);
         return item ? JSON.parse(item) : null;
+    }*/
+    getItem<T = any>(key: string): T | null {
+        const item = window.localStorage.getItem(key);
+        if (!item) return null;
+        try {
+            return JSON.parse(item);
+        } catch {
+            // Return as string if not valid JSON
+            return item as any;
+        }
     }
     setItem<T = any>(key: string, value: T): void {
         window.localStorage.setItem(key, JSON.stringify(value));
@@ -26,46 +36,43 @@ class LocalStorageLayer implements PersistanceLayer {
 }
 
 class ElectronStoreLayer implements PersistanceLayer {
-    private store: ElectronStore;
-    constructor() {
-        this.store = new ElectronStore();
-    }
     getItem<T = any>(key: string): T | null {
-        return this.store.get(key, null) as T | null;
+        return (window as any).electronStore?.get(key) ?? null;
     }
     setItem<T = any>(key: string, value: T): void {
-        this.store.set(key, value);
+        (window as any).electronStore?.set(key, value);
     }
     removeItem(key: string): void {
-        this.store.delete(key);
+        (window as any).electronStore?.delete(key);
     }
     clear(): void {
-        this.store.clear();
+        (window as any).electronStore?.clear();
     }
 }
 
-export class DashStorage implements PersistanceLayer {
-    private layer: PersistanceLayer;
-
-    constructor() {
+export class dashStorage {
+    private static get layer(): PersistanceLayer {
         const storageType = (getEnv('APP_STORAGE_TYPE') as StorageType) || 'localStorage';
-        if (storageType === 'electronStore') {
-            this.layer = new ElectronStoreLayer();
+        if (storageType === 'electronStore' && (window as any).electronStore) {
+            return dashStorage.electronLayer;
         } else {
-            this.layer = new LocalStorageLayer();
+            return dashStorage.localLayer;
         }
     }
 
-    getItem<T = any>(key: string): T | null {
+    private static localLayer = new LocalStorageLayer();
+    private static electronLayer = new ElectronStoreLayer();
+
+    static getItem<T = any>(key: string): T | null {
         return this.layer.getItem<T>(key);
     }
-    setItem<T = any>(key: string, value: T): void {
+    static setItem<T = any>(key: string, value: T): void {
         this.layer.setItem<T>(key, value);
     }
-    removeItem(key: string): void {
+    static removeItem(key: string): void {
         this.layer.removeItem(key);
     }
-    clear(): void {
+    static clear(): void {
         this.layer.clear();
     }
 }

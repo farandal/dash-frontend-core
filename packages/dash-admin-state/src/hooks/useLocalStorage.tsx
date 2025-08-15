@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState, useMemo } from 'react';
-
+import { dashStorage } from 'dash-utils';
 const isBrowser = typeof window !== 'undefined';
 
 const isLocalstorageAvailable = () => {
@@ -8,8 +8,8 @@ const isLocalstorageAvailable = () => {
 	}
 	const test = `test-${Date.now()}`;
 	try {
-		localStorage.setItem(test, test);
-		localStorage.removeItem(test);
+		dashStorage.setItem(test, test);
+		dashStorage.removeItem(test);
 		return true;
 	} catch (e) {
 		return false;
@@ -24,7 +24,7 @@ const useLocalStorage = (key, initialValue = '') => {
 			if (!available) {
 				return initialValue;
 			}
-			const item = localStorage.getItem(key);
+			const item = dashStorage.getItem(key);
 			return item ? JSON.parse(item) : initialValue;
 		} catch (error) {
 			return initialValue;
@@ -69,7 +69,7 @@ const useLocalStorage = (key, initialValue = '') => {
 				value instanceof Function ? value(storedValue) : value;
 			if (valueToStore !== storedValue) {
 				setStoredValue(valueToStore);
-				window.localStorage.setItem(key, JSON.stringify(valueToStore));
+				window.dashStorage.setItem(key, JSON.stringify(valueToStore));
 			}
 		};
 		return [storedValue, setValue];

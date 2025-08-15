@@ -1,7 +1,7 @@
 import { useEffect, useCallback, useRef } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { useParams } from 'react-router-dom';
-
+import { dashStorage } from 'dash-utils';
 interface FormPersistenceOptions {
     persistState?: boolean;
     storageKey?: string;
@@ -41,7 +41,7 @@ export const useFormPersistence = (options: FormPersistenceOptions = {}) => {
                 tabId
             };
 
-            localStorage.setItem(finalStorageKey, JSON.stringify(persistData));
+            dashStorage.setItem(finalStorageKey, JSON.stringify(persistData));
             console.log('📦 Form data persisted:', finalStorageKey);
         } catch (error) {
             console.error('Failed to persist form data:', error);
@@ -53,7 +53,7 @@ export const useFormPersistence = (options: FormPersistenceOptions = {}) => {
         if (!persistState) return null;
 
         try {
-            const stored = localStorage.getItem(finalStorageKey);
+            const stored = dashStorage.getItem(finalStorageKey);
             if (!stored) return null;
 
             const persistData = JSON.parse(stored);
@@ -61,7 +61,7 @@ export const useFormPersistence = (options: FormPersistenceOptions = {}) => {
             // Check if data is not too old (optional: 24 hours)
             const maxAge = 24 * 60 * 60 * 1000; // 24 hours
             if (Date.now() - persistData.timestamp > maxAge) {
-                localStorage.removeItem(finalStorageKey);
+                dashStorage.removeItem(finalStorageKey);
                 return null;
             }
 
@@ -99,7 +99,7 @@ export const useFormPersistence = (options: FormPersistenceOptions = {}) => {
     // Clear persisted data
     const clearPersistedData = useCallback(() => {
         try {
-            localStorage.removeItem(finalStorageKey);
+            dashStorage.removeItem(finalStorageKey);
             console.log('🗑️ Persisted form data cleared:', finalStorageKey);
         } catch (error) {
             console.error('Failed to clear persisted data:', error);

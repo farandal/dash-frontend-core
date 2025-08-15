@@ -1,8 +1,9 @@
 // Auth persistence service
+import { dashStorage } from 'dash-utils';
 export class AuthPersistenceService {
   private static readonly AUTH_KEY = 'dashAuth';
   private static readonly TIMESTAMP_KEY = 'dashAuthTimestamp';
-  private static readonly TENANT_IMAGES_KEY = 'dashTenantImages'; 
+  private static readonly TENANT_IMAGES_KEY = 'dashTenantImages';
   private static readonly TENANT_SETTINGS_KEY = 'dashTenantSettings';
   private static readonly SYSTEM_VALUES_KEY = 'dashSystemValues';
 
@@ -17,26 +18,26 @@ export class AuthPersistenceService {
 
       // Separately save tenant images for persistence across logout
       if (authData.auth?.tenantImages) {
-        localStorage.setItem(this.TENANT_IMAGES_KEY, JSON.stringify(authData.auth.tenantImages));
+        dashStorage.setItem(this.TENANT_IMAGES_KEY, JSON.stringify(authData.auth.tenantImages));
       }
-      
+
       // Separately save tenant settings for persistence across logout
       if (authData.auth?.tenantSettings) {
-        localStorage.setItem(this.TENANT_SETTINGS_KEY, JSON.stringify(authData.auth.tenantSettings));
+        dashStorage.setItem(this.TENANT_SETTINGS_KEY, JSON.stringify(authData.auth.tenantSettings));
       }
 
       // Separately save system values for persistence across logout
       if (authData.systemValues) {
-        localStorage.setItem(this.SYSTEM_VALUES_KEY, JSON.stringify(authData.systemValues));
+        dashStorage.setItem(this.SYSTEM_VALUES_KEY, JSON.stringify(authData.systemValues));
       }
-      
+
       // Remove logout markers when saving new auth data
       const cleanAuthData = { ...authToPersist };
       delete cleanAuthData._loggedOut;
       delete cleanAuthData._loggedOutAt;
-      
-      localStorage.setItem(this.AUTH_KEY, JSON.stringify(cleanAuthData));
-      localStorage.setItem(this.TIMESTAMP_KEY, Date.now().toString());
+
+      dashStorage.setItem(this.AUTH_KEY, JSON.stringify(cleanAuthData));
+      dashStorage.setItem(this.TIMESTAMP_KEY, Date.now().toString());
     } catch (error) {
       console.error('Failed to save auth data:', error);
     }
@@ -46,23 +47,23 @@ export class AuthPersistenceService {
     try {
       // Store token separately for easy access
       if (authData.token) {
-       
-        localStorage.setItem('token', authData.token);
+
+        dashStorage.setItem('token', authData.token);
       }
-      
+
       // Store user data separately for easy access
       if (authData.user) {
-        localStorage.setItem('user', JSON.stringify(authData.user));
+        dashStorage.setItem('user', JSON.stringify(authData.user));
       }
 
       // Store system values separately for easy access
       if (authData.systemValues) {
-        localStorage.setItem(this.SYSTEM_VALUES_KEY, JSON.stringify(authData.systemValues));
+        dashStorage.setItem(this.SYSTEM_VALUES_KEY, JSON.stringify(authData.systemValues));
       }
-      
+
       // Mark as authenticated
-      localStorage.setItem('authenticated', 'true');
-      
+      dashStorage.setItem('authenticated', 'true');
+
       // Use existing saveAuth method for the main auth data
       this.saveAuth({
         auth: {
@@ -73,7 +74,7 @@ export class AuthPersistenceService {
         },
         systemValues: authData.systemValues
       });
-      
+
       console.log('Auth data set successfully');
     } catch (error) {
       console.error('Failed to set auth data:', error);
@@ -82,7 +83,7 @@ export class AuthPersistenceService {
 
   static getToken(): string | null {
     try {
-      return localStorage.getItem('token');
+      return dashStorage.getItem('token');
     } catch (error) {
       console.error('Failed to get token:', error);
       return null;
@@ -91,7 +92,7 @@ export class AuthPersistenceService {
 
   static getUser(): any | null {
     try {
-      const userData = localStorage.getItem('user');
+      const userData = dashStorage.getItem('user');
       return userData ? JSON.parse(userData) : null;
     } catch (error) {
       console.error('Failed to get user data:', error);
@@ -101,8 +102,8 @@ export class AuthPersistenceService {
 
   static getAuth(): any | null {
     try {
-      const authData = localStorage.getItem(this.AUTH_KEY);
-      const timestamp = localStorage.getItem(this.TIMESTAMP_KEY);
+      const authData = dashStorage.getItem(this.AUTH_KEY);
+      const timestamp = dashStorage.getItem(this.TIMESTAMP_KEY);
 
       if (!authData || !timestamp) {
         return null;
@@ -118,7 +119,7 @@ export class AuthPersistenceService {
       }
 
       const parsedData = JSON.parse(authData);
-      
+
       // Don't return auth data if marked as logged out
       if (parsedData._loggedOut) {
         console.log('Auth data exists but user is marked as logged out');
@@ -135,7 +136,7 @@ export class AuthPersistenceService {
 
   static markAsLoggedOut(): void {
     try {
-      const authData = localStorage.getItem(this.AUTH_KEY);
+      const authData = dashStorage.getItem(this.AUTH_KEY);
       if (authData) {
         const parsedData = JSON.parse(authData);
         // Keep the auth data but mark as logged out
@@ -144,12 +145,12 @@ export class AuthPersistenceService {
           _loggedOut: true,
           _loggedOutAt: Date.now()
         };
-        localStorage.setItem(this.AUTH_KEY, JSON.stringify(loggedOutAuth));
+        dashStorage.setItem(this.AUTH_KEY, JSON.stringify(loggedOutAuth));
         console.log('Auth data marked as logged out but preserved in localStorage');
       }
-      localStorage.removeItem('token');
-      localStorage.setItem('authenticated', 'false');
-      localStorage.removeItem('user');
+      dashStorage.removeItem('token');
+      dashStorage.setItem('authenticated', 'false');
+      dashStorage.removeItem('user');
     } catch (error) {
       console.error('Failed to mark auth as logged out:', error);
     }
@@ -157,7 +158,7 @@ export class AuthPersistenceService {
 
 static getTenantImages(): any | null {
     try {
-        const tenantImages = localStorage.getItem(this.TENANT_IMAGES_KEY);
+        const tenantImages = dashStorage.getItem(this.TENANT_IMAGES_KEY);
         return tenantImages ? JSON.parse(tenantImages) : null;
     } catch (error) {
         console.error('Failed to get tenant images:', error);
@@ -167,7 +168,7 @@ static getTenantImages(): any | null {
 
 static setTenantImages(images: any): void {
     try {
-        localStorage.setItem(this.TENANT_IMAGES_KEY, JSON.stringify(images));
+        dashStorage.setItem(this.TENANT_IMAGES_KEY, JSON.stringify(images));
     } catch (error) {
         console.error('Failed to set tenant images:', error);
     }
@@ -175,7 +176,7 @@ static setTenantImages(images: any): void {
 
 static getTenantSettings(): any | null {
     try {
-        const tenantSettings = localStorage.getItem(this.TENANT_SETTINGS_KEY);
+        const tenantSettings = dashStorage.getItem(this.TENANT_SETTINGS_KEY);
         return tenantSettings ? JSON.parse(tenantSettings) : null;
     } catch (error) {
         console.error('Failed to get tenant settings:', error);
@@ -185,7 +186,7 @@ static getTenantSettings(): any | null {
 
 static setTenantSettings(settings: any): void {
     try {
-        localStorage.setItem(this.TENANT_SETTINGS_KEY, JSON.stringify(settings));
+        dashStorage.setItem(this.TENANT_SETTINGS_KEY, JSON.stringify(settings));
     } catch (error) {
         console.error('Failed to set tenant settings:', error);
     }
@@ -193,7 +194,7 @@ static setTenantSettings(settings: any): void {
 
 static getSystemValues(): any | null {
     try {
-        const systemValues = localStorage.getItem(this.SYSTEM_VALUES_KEY);
+        const systemValues = dashStorage.getItem(this.SYSTEM_VALUES_KEY);
         return systemValues ? JSON.parse(systemValues) : null;
     } catch (error) {
         console.error('Failed to get system values:', error);
@@ -203,7 +204,7 @@ static getSystemValues(): any | null {
 
 static setSystemValues(values: any): void {
     try {
-        localStorage.setItem(this.SYSTEM_VALUES_KEY, JSON.stringify(values));
+        dashStorage.setItem(this.SYSTEM_VALUES_KEY, JSON.stringify(values));
     } catch (error) {
         console.error('Failed to set system values:', error);
     }
@@ -224,23 +225,23 @@ static setSystemValues(values: any): void {
   }
 
   static clearAuth(): void {
-    localStorage.removeItem(this.AUTH_KEY);
-    localStorage.removeItem(this.TIMESTAMP_KEY);
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    localStorage.setItem('authenticated', 'false');
+    dashStorage.removeItem(this.AUTH_KEY);
+    dashStorage.removeItem(this.TIMESTAMP_KEY);
+    dashStorage.removeItem('token');
+    dashStorage.removeItem('user');
+    dashStorage.setItem('authenticated', 'false');
   }
 
     static clearAllAuthData(): void {
         // Complete cleanup including tenant data
-        localStorage.removeItem(this.AUTH_KEY);
-        localStorage.removeItem(this.TIMESTAMP_KEY);
-        localStorage.removeItem(this.TENANT_IMAGES_KEY);
-        localStorage.removeItem(this.TENANT_SETTINGS_KEY);
-        localStorage.removeItem(this.SYSTEM_VALUES_KEY);
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
-        localStorage.setItem('authenticated', 'false');
+        dashStorage.removeItem(this.AUTH_KEY);
+        dashStorage.removeItem(this.TIMESTAMP_KEY);
+        dashStorage.removeItem(this.TENANT_IMAGES_KEY);
+        dashStorage.removeItem(this.TENANT_SETTINGS_KEY);
+        dashStorage.removeItem(this.SYSTEM_VALUES_KEY);
+        dashStorage.removeItem('token');
+        dashStorage.removeItem('user');
+        dashStorage.setItem('authenticated', 'false');
     }
 
     static getStoredAuthData(): {
@@ -252,12 +253,12 @@ static setSystemValues(values: any): void {
         tenantSettings: any | null;
     } | null {
         try {
-            const token = localStorage.getItem('token');
-            const userData = localStorage.getItem('user');
-            const systemValuesData = localStorage.getItem(this.SYSTEM_VALUES_KEY);
-            const authData = localStorage.getItem(this.AUTH_KEY);
-            const tenantImagesData = localStorage.getItem(this.TENANT_IMAGES_KEY);
-            const tenantSettingsData = localStorage.getItem(this.TENANT_SETTINGS_KEY);
+            const token = dashStorage.getItem('token');
+            const userData = dashStorage.getItem('user');
+            const systemValuesData = dashStorage.getItem(this.SYSTEM_VALUES_KEY);
+            const authData = dashStorage.getItem(this.AUTH_KEY);
+            const tenantImagesData = dashStorage.getItem(this.TENANT_IMAGES_KEY);
+            const tenantSettingsData = dashStorage.getItem(this.TENANT_SETTINGS_KEY);
 
             const user = userData ? JSON.parse(userData) : null;
             const systemValues = systemValuesData ? JSON.parse(systemValuesData) : null;
@@ -288,7 +289,7 @@ static setSystemValues(values: any): void {
   static getPermissions(): Promise<any> {
     try {
       // First check if user is guest
-      const storedRoles = localStorage.getItem('roles');
+      const storedRoles = dashStorage.getItem('roles');
       if (storedRoles === 'guest') {
         return Promise.resolve('guest');
       }
@@ -297,7 +298,7 @@ static setSystemValues(values: any): void {
       const authData = this.getAuth();
       if (authData?.auth?.user?.roles) {
         const processedPermissions = {
-          roles: authData.auth.user.roles.map((item: any) => 
+          roles: authData.auth.user.roles.map((item: any) =>
             typeof item === 'string' ? item : item.name
           )
         };
@@ -309,7 +310,7 @@ static setSystemValues(values: any): void {
         try {
           const parsedRoles = JSON.parse(storedRoles);
           const processedPermissions = {
-            roles: Array.isArray(parsedRoles) 
+            roles: Array.isArray(parsedRoles)
               ? parsedRoles.map((item: any) => typeof item === 'string' ? item : item.name)
               : [parsedRoles]
           };
@@ -326,4 +327,46 @@ static setSystemValues(values: any): void {
       return Promise.resolve('null');
     }
   }
+}
+
+
+export async function syncElectronStoreToLocalStorage() {
+    const electronStore = (window as any).electronStore;
+    if (electronStore && electronStore.getAll) {
+
+        try {
+            const allData = await electronStore.getAll();
+            if (allData && typeof allData === 'object') {
+                for (const [key, value] of Object.entries(allData)) {
+                    window.localStorage.setItem(key, JSON.stringify(value));
+                }
+                console.log('[ElectronStorageSync] Synced electron-store to localStorage');
+            }
+        } catch (err) {
+            console.error('[ElectronStorageSync] Failed to sync:', err);
+        }
+    }
+}
+
+// Sync all keys from localStorage to electronStore
+export async function syncLocalStorageToElectronStore() {
+    const electronStore = (window as any).electronStore;
+    if (electronStore && electronStore.set) {
+
+        try {
+            for (let i = 0; i < window.localStorage.length; i++) {
+                const key = window.localStorage.key(i);
+                if (!key) continue;
+                const value = window.localStorage.getItem(key);
+                try {
+                    await electronStore.set(key, JSON.parse(value!));
+                } catch {
+                    await electronStore.set(key, value);
+                }
+            }
+            console.log('[ElectronStorageSync] Synced localStorage to electron-store');
+        } catch (err) {
+            console.error('[ElectronStorageSync] Failed to sync:', err);
+        }
+    }
 }

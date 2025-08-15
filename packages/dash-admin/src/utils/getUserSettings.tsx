@@ -1,7 +1,7 @@
 import { IUserSettings } from "../interfaces/user/IUserSettings"
-
+import { dashStorage } from 'dash-utils';
 const getUserSettings = ():IUserSettings => {
-  const auth = JSON.parse(localStorage.getItem('userSettings')) as IUserSettings;
+  const auth = JSON.parse(dashStorage.getItem('userSettings')) as IUserSettings;
   return auth;
 }
 

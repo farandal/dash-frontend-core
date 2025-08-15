@@ -2,10 +2,11 @@
 //import { IApplicationLayoutMenuItem } from '@dash-auto-admin/interfaces';
 
 import { IApplicationLayoutMenuItem } from "../layout/ApplicationLayout";
+import { dashStorage } from 'dash-utils';
 
 const getProfileMenu = (resourceConfig): IApplicationLayoutMenuItem[] => {
-	const user = JSON.parse(localStorage.getItem('user'));
-	const roles: any[] = JSON.parse(localStorage.getItem('roles'));
+	const user = JSON.parse(dashStorage.getItem('user'));
+	const roles: any[] = JSON.parse(dashStorage.getItem('roles'));
 
 	const profileMenu = [
 		{

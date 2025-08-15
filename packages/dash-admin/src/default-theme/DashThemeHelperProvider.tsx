@@ -3,13 +3,13 @@ import React, { createContext, useContext, useEffect } from 'react';
 import { AuthPersistenceService } from 'dash-auth';
 import { useColorScheme } from '@mui/material/styles';
 import { updateDomCssVariables } from 'dash-utils';
-
+import { dashStorage } from 'dash-utils';
 interface DashThemeHelperContextType {
     mode: string;
 }
 
 const DashThemeHelperContext = createContext<DashThemeHelperContextType>({
-    mode: localStorage.getItem('theme') || 'light'
+    mode: dashStorage.getItem('theme') || 'light'
 });
 
 
@@ -62,7 +62,7 @@ export const DashThemeHelperProvider: React.FC<DashThemeHelperProviderProps> = (
         if (tenantSettings?.colors || tenantSettings?.values) {
             //document.documentElement.setAttribute('data-theme', mode);
            
-            localStorage.setItem('theme', mode);
+            dashStorage.setItem('theme', mode);
             updateDomCssVariables(mode, tenantSettings?.colors || {},tenantSettings?.values || {});
         }
     }, [mode]);

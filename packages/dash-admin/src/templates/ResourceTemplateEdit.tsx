@@ -17,7 +17,7 @@ import ResourceLayout from '../layout/ResoureLayout';
 import { IResourceTemplate } from './ResourceTemplate';
 import { parseAxiosError } from '../helpers/parseAxiosError';
 import { useDashResource } from '../contexts/DashResourceContext';
-
+import { dashStorage } from 'dash-utils';
 
 export const ResourceTemplateEdit: FC<IResourceTemplate> = (props) => {
 	const {resourceConfig} = props;
@@ -30,7 +30,7 @@ export const ResourceTemplateEdit: FC<IResourceTemplate> = (props) => {
 	const refresh = useRefresh();
 
 	const getRedirectPath = (path: string) => {
-		const currentAppPath = localStorage.getItem('currentAppPath');
+		const currentAppPath = dashStorage.getItem('currentAppPath');
 		return currentAppPath 
 			? `/${currentAppPath}/${path}`.replace(/\/+/g, '/')
 			: `/${path}`.replace(/\/+/g, '/');

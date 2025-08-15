@@ -4,6 +4,7 @@
   "private": true,
   "license": "MIT",
   "main": "src/index.ts",
+
   "devDependencies": {
     "@commitlint/cli": "latest",
     "@commitlint/config-conventional": "latest",
@@ -20,13 +21,14 @@
     "eslint-plugin-jsdoc": "latest",
     "eslint-plugin-json": "latest",
     "eslint-plugin-prettier": "latest",
-   
+
     "ts-jest": "latest",
     "ts-loader": "latest",
     "tsconfig-paths": "latest",
     "typescript": "latest"
   },
   "dependencies": {
-    "@mui/material": "latest"
+    "@mui/material": "latest",
+    "dash-constants": "workspace:*"
   }
 }

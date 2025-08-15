@@ -8,6 +8,7 @@ import getType from '../utils/getType';
 import MUISimpleJsonTable from '../components/misc/MuiSimpleJsonTable';
 import HomeIcon from '@mui/icons-material/Home';
 import { getCookie, removeCookie, setCookie,clearAllCookies  } from '../../src/utils/cookies';
+import { dashStorage } from 'dash-utils';
 
 const RecoverPassword = ({  }: {  }) => {
 	const [email, setEmail] = useState('');
@@ -49,7 +50,7 @@ const RecoverPassword = ({  }: {  }) => {
 	};
 
     useEffect(() => {
-        localStorage.clear();
+        dashStorage.clear();
         clearAllCookies();
     }, [])
 

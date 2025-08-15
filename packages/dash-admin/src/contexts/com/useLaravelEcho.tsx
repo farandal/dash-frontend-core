@@ -14,6 +14,7 @@ import { IDASHAppState } from 'dash-admin-state';
 import { IDashAutoAdminResourceConfig } from 'dash-auto-admin';
 import { useSelector } from 'react-redux';
 
+import { dashStorage } from 'dash-utils';
 // Make Pusher available globally
 (window as any).Pusher = Pusher;
 
@@ -189,7 +190,7 @@ const useLaravelEcho = ({
                 return;
             }
 
-            const token = userId ? localStorage.getItem('token') : null;
+            const token = userId ? dashStorage.getItem('token') : null;
 
             const authConfig = token ? {
                 headers: {
@@ -256,7 +257,7 @@ const useLaravelEcho = ({
                     echo.connector.pusher.connection.bind('connected', () => {
                         log('Connected to Pusher!');
                         setIsConnected(true);
-                        localStorage.setItem('socketConnectionState', 'true');
+                        dashStorage.setItem('socketConnectionState', 'true');
 
                         if (pingTimerRef.current) {
                             window.clearInterval(pingTimerRef.current);

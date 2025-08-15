@@ -20,7 +20,6 @@
     "eslint-plugin-jsdoc": "latest",
     "eslint-plugin-json": "latest",
     "eslint-plugin-prettier": "latest",
-    
     "ts-jest": "latest",
     "ts-loader": "latest",
     "tsconfig-paths": "latest",
@@ -28,12 +27,13 @@
   },
   "dependencies": {
     "connected-react-router": "latest",
-    "history": "latest",
-    "redux-thunk": "^3.1.0",
-     "redux-saga": "latest",
-    "react-redux": "latest",
     "dash-auto-admin": "workspace:*",
-    "dash-constants": "workspace:*"
-   
+    "dash-constants": "workspace:*",
+     "dash-utils": "workspace:*",
+
+    "history": "latest",
+    "react-redux": "latest",
+    "redux-saga": "latest",
+    "redux-thunk": "^3.1.0"
   }
 }

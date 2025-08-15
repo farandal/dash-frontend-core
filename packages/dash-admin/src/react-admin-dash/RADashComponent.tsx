@@ -4,7 +4,7 @@ import { useAuthContext } from '../contexts/auth';
 import { useDialog } from 'dash-dialog';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-
+import { dashStorage } from 'dash-utils';
 declare global {
     interface Window {
         DashIPCService: any;
@@ -51,11 +51,11 @@ function useRADashDebug({
                 } : null
             },
             localStorage: {
-                currentAppPath: localStorage.getItem('currentAppPath'),
-                currentMallSlug: localStorage.getItem('currentMallSlug'),
-                currentMallPath: localStorage.getItem('currentMallPath'),
-                tenant_id: localStorage.getItem('tenant_id'),
-                userData: localStorage.getItem('userData')
+                currentAppPath: dashStorage.getItem('currentAppPath'),
+                currentMallSlug: dashStorage.getItem('currentMallSlug'),
+                currentMallPath: dashStorage.getItem('currentMallPath'),
+                tenant_id: dashStorage.getItem('tenant_id'),
+                userData: dashStorage.getItem('userData')
             },
             windowLocation: {
                 href: window.location.href,

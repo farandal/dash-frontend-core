@@ -2,7 +2,7 @@ import axios, { Axios, AxiosError, AxiosRequestConfig } from 'axios';
 
 import {DASHAdminSystemConstants} from  'dash-constants'
 
-
+import { dashStorage } from 'dash-utils';
 
 import processAxiosError from './processAxiosErrorFunction';
 import { IDashAutoAdminDefaultBackendStructure } from '../interfaces/IDashAutoAdminBackendError';
@@ -34,7 +34,7 @@ export const initAxios = (
 	}
 
 	instance.interceptors.request.use(function (config) {
-		const token = localStorage.getItem('token');
+		const token = dashStorage.getItem('token');
 		//console.log("axios Hook", axios, token);
 		if (token !== undefined && token !== 'undefined') {
 			config.headers.Authorization = 'Bearer ' + token;

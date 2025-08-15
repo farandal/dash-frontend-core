@@ -7,10 +7,12 @@ import {
 	WINDOW_WIDTH,
 } from './ActionTypes';
 
+import { dashStorage } from 'dash-utils';
+
 export function toggleThemeType(themeType) {
   console.log("dash theme type", themeType)
   //document.documentElement.setAttribute('data-theme', themeType)
-  localStorage.setItem('theme', themeType)
+  dashStorage.setItem('theme', themeType)
   //return { type: DefaultThemeSettings.THEME_TYPE, themeType };
   return { type: DefaultThemeSettings.THEME_TYPE, themeType }
 }

@@ -73,7 +73,7 @@ export default defineConfig(({ command }) => {
               rollupOptions: {
                 external: Object.keys('dependencies' in pkg ? pkg.dependencies : []),
                 output: {
-                  format: 'esm', // Use ESM format instead of CommonJS
+                  format: 'cjs', // Use ESM format instead of CommonJS
                   entryFileNames: '[name].js'
                 }
               },

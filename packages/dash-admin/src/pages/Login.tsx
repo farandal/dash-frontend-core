@@ -10,6 +10,7 @@ import { useSelector } from 'react-redux';
 import { IDASHAppState } from 'dash-admin-state';
 import authProvider from '../providers/authProvider';
 import { ConstantsContext } from '../config/ConstantsService';
+import { dashStorage } from 'dash-utils';
 
 const MyLoginPage = () => {
 	const [email, setEmail] = useState('');
@@ -38,7 +39,7 @@ const MyLoginPage = () => {
 	};
 
 	useEffect(() => {
-		localStorage.setItem(
+		dashStorage.setItem(
 			'roles',
 			JSON.stringify([]),
 		);

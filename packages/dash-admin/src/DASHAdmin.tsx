@@ -20,6 +20,7 @@ import { IDASHAppState } from 'dash-admin-state';
 import { Error } from './components/error/Error';
 //import { lightTheme } from './themes';
 import coreResources from './resources';
+import { dashStorage } from 'dash-utils';
 
 import { CustomRoutes, useTheme, AdminUI, AdminContext, AdminUIProps, Resource, Admin } from 'react-admin';
 
@@ -290,7 +291,7 @@ const DASHAdminApp: React.FC<IDASHAdmin<unknown, unknown, unknown, unknown>> = R
           if (user?.tenant_id) {
             const existingTenantCookie = getCookie('tenant_id');
             if (!existingTenantCookie) {
-              localStorage.setItem('tenant_id', user.tenant_id.toString());
+              dashStorage.setItem('tenant_id', user.tenant_id.toString());
               setCookie('tenant_id', user.tenant_id.toString());
             }
           }

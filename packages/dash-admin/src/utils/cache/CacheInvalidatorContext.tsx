@@ -6,6 +6,7 @@ import React, {
 	useEffect
 } from 'react';
 import useLocalStorage from '../../hooks/useLocalStorage';
+import { dashStorage } from 'dash-utils';
 
 const currentTimestamp = ():string => {
 	const currentdate = new Date(); 
@@ -84,7 +85,7 @@ export const useCacheInvalidatorContext = () => {
 
 export const getCacheInvalidatorContext = () => {
 	const response = JSON.parse(
-		localStorage.getItem('SerializedCacheInvalidatorContext')
+		dashStorage.getItem('SerializedCacheInvalidatorContext')
 	) as ICacheInvalidatorContextProps;
 
 	return response;
@@ -111,14 +112,14 @@ export const cacheInvalidatorHash = (resource:string): string | null => {
 export const updateCacheInvalidatorContext = (values: Partial<ICacheInvalidatorContextProps>) => {
 	const prevState = getCacheInvalidatorContext();
 
-	localStorage.setItem(
+	dashStorage.setItem(
 		'SerializedCacheInvalidatorContext',
 		JSON.stringify({ ...prevState, ...values }),
 	);
 };
 
 export const setCacheInvalidatorContext = (values: Partial<ICacheInvalidatorContextProps>) => {
-	localStorage.setItem('SerializedCacheInvalidatorContext', JSON.stringify(values));
+	dashStorage.setItem('SerializedCacheInvalidatorContext', JSON.stringify(values));
 };
 
 export default CacheInvalidatorContext;

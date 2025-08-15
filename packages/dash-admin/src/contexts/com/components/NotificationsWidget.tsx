@@ -14,6 +14,7 @@ import Scrollbar from '../../../components/scrollbar/Scrollbar';
 import { IDashFormattedNotification, formatNotification } from './notificationFormats';
 import { IDashNotificationBase, IDashNotificationPayloadBase } from '../../../interfaces/communication/INotification';
 
+import { dashStorage } from 'dash-utils';
 export interface INotificationItem {
 	key: React.Key;
 	title: string;
@@ -57,7 +58,7 @@ export const NotificationsWidget: FC<{}> = () => {
 	useEffect(() => {
 		if (
 			laravelEchoContext.lastEvent &&
-			localStorage.getItem('lastEvent') !==
+			dashStorage.getItem('lastEvent') !==
 				JSON.stringify(laravelEchoContext.lastEvent)
 		) {
 			if (

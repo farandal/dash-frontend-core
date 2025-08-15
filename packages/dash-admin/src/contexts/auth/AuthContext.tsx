@@ -67,6 +67,7 @@ import AppLayoutSettings from '../../theme/AppLayoutSetting';
 import DASHAuthenticationService from './DASHAuthenticationService';
 
 import { AuthPersistenceService } from 'dash-auth';
+import { dashStorage } from 'dash-utils';
 export class AuthContextClass {
   static values: Partial<IAuthContextProps>;
 }
@@ -126,7 +127,7 @@ export const AuthContextProvider: FC<IAuthContextProvider> = (props) => {
     const storedUser = AuthPersistenceService.getUser();
     const storedToken = AuthPersistenceService.getToken();
     const storedSystemValues = AuthPersistenceService.getSystemValues();
-    const isAuthenticated = JSON.parse(localStorage.getItem('authenticated') || 'false');
+    const isAuthenticated = JSON.parse(dashStorage.getItem('authenticated') || 'false');
     
     return {
       authenticated: auth.authenticated || isAuthenticated,
@@ -178,7 +179,7 @@ export const AuthContextProvider: FC<IAuthContextProvider> = (props) => {
   const initializeAuthFromToken = useCallback(async () => {
     const token = AuthPersistenceService.getToken();
     const storedUser = AuthPersistenceService.getUser();
-    const isAuthenticated = JSON.parse(localStorage.getItem('authenticated') || 'false');
+    const isAuthenticated = JSON.parse(dashStorage.getItem('authenticated') || 'false');
 
     console.log('Initializing auth from token:', {
       hasToken: !!token,
@@ -470,11 +471,11 @@ export const AuthContextProvider: FC<IAuthContextProvider> = (props) => {
       }
 
       // Handle IPC service for background service
-      const storageAuthenticated = JSON.parse(localStorage.getItem('authenticated') || 'false');
+      const storageAuthenticated = JSON.parse(dashStorage.getItem('authenticated') || 'false');
       if (storageAuthenticated && auth.user?.tenant_id) {
         const { DashIPCService } = window;
         DashIPCService && DashIPCService.action('start-bg-service', {
-          token: localStorage.getItem('token'),
+          token: dashStorage.getItem('token'),
           channel: `private-tenant.${auth.user.tenant_id}.system`
         });
       }

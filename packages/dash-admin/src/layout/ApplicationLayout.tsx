@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Button, useRedirect, useStore } from 'react-admin';
 import { Drawer } from '@mui/material';
-
+import { dashStorage } from 'dash-utils';
 import useVirtualHash from '../hooks/useVirtualHash';
 import { IDashAutoAdminResourceConfig } from 'dash-auto-admin';
 import Scrollbar from '../components/scrollbar/Scrollbar';
@@ -47,7 +47,7 @@ const ApplicationLayout: React.FC<IApplicationLayout> = ({
 
            const _redirect = menuItem.redirect?.startsWith('/')
                     ? menuItem.redirect
-                    : `/${localStorage.getItem('currentAppPath') || ''}/${menuItem.redirect}`.replace(/\/+/g, '/')
+                    : `/${dashStorage.getItem('currentAppPath') || ''}/${menuItem.redirect}`.replace(/\/+/g, '/')
         
             redirect(_redirect);
 
@@ -74,7 +74,7 @@ const ApplicationLayout: React.FC<IApplicationLayout> = ({
 
             _redirect = resourceConfig.mainAction.redirect?.startsWith('/')
                     ? resourceConfig.mainAction.redirect
-                    : `/${localStorage.getItem('currentAppPath') || ''}/${resourceConfig.mainAction.redirect}`.replace(/\/+/g, '/');
+                    : `/${dashStorage.getItem('currentAppPath') || ''}/${resourceConfig.mainAction.redirect}`.replace(/\/+/g, '/');
         }
         
             fn(_redirect);

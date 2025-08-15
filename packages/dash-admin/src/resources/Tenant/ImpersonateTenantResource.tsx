@@ -15,6 +15,7 @@ import ApplicationLayout from '../../layout/ApplicationLayout';
 import { Alert, Card } from '@mui/material';
 import { Route } from 'react-router';
 import {DASHAppConstants} from 'dash-constants';
+import { dashStorage } from 'dash-utils';
 
 export const ImpersonateTenantComponent: FC<any> = (props) => {
 
@@ -40,7 +41,7 @@ export const ImpersonateTenantComponent: FC<any> = (props) => {
   };
 
   const onSubmit = (data) => {
-    localStorage.setItem('tenant_id', selectedTenantId);
+    dashStorage.setItem('tenant_id', selectedTenantId);
     setCookie('tenant_id', selectedTenantId, null);
     window.location.reload();
   };

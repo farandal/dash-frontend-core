@@ -80,6 +80,7 @@
 		"babel-loader": "latest",
 		"dash-eslint": "workspace:*",
 		"dash-tsconfig": "workspace:*",
+        
 		"eslint": "latest",
 		"eslint-config-airbnb": "latest",
 		"eslint-config-airbnb-typescript": "latest",

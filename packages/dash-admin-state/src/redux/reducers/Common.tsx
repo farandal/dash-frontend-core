@@ -13,12 +13,12 @@ import {
 import { TOGGLE_COLLAPSED_NAV, WINDOW_WIDTH } from '../actions/ActionTypes';
 import ICommonState from '../interfaces/ICommonState';
 import defaultCommon from '../../defaults/defaultCommon'; // Import the default
-
+import { dashStorage } from 'dash-utils';
 // Helper function to save nav state to localStorage
 const saveNavState = (navExpanded: boolean, navSize: "large" | "small"): void => {
 	try {
-		localStorage.setItem('dashNavExpanded', String(navExpanded));
-		localStorage.setItem('dashNavSize', navSize);
+		dashStorage.setItem('dashNavExpanded', String(navExpanded));
+		dashStorage.setItem('dashNavSize', navSize);
 
 	} catch (e) {
 		console.error('Failed to save navigation state to localStorage:', e);

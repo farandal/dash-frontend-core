@@ -20,7 +20,7 @@
     "eslint-plugin-jsdoc": "latest",
     "eslint-plugin-json": "latest",
     "eslint-plugin-prettier": "latest",
-  
+
     "ts-jest": "latest",
     "ts-loader": "latest",
     "tsconfig-paths": "latest",
@@ -28,6 +28,7 @@
   },
   "dependencies": {
     "@mui/material": "latest",
-  "dash-constants": "workspace:*"
+  "dash-constants": "workspace:*",
+  "dash-utils": "workspace:*"
   }
 }

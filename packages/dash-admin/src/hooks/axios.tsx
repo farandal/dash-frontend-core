@@ -1,6 +1,6 @@
 import axios from 'axios';
 import constants from 'dash-constants/src/DASHAdminSystemConstants';
-
+import { dashStorage } from 'dash-utils';
 
 export const initAxios = () => {
 	let CSRFAuth = false;
@@ -23,7 +23,7 @@ export const initAxios = () => {
 	}
 
 	instance.interceptors.request.use(function (config) {
-		const token = localStorage.getItem('token');
+		const token = dashStorage.getItem('token');
 		//console.log("axios Hook", axios, token);
 		if (token !== undefined && token !== 'undefined') {
 			config.headers.Authorization = 'Bearer ' + token;

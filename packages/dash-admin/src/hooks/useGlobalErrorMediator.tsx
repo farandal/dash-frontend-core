@@ -1,27 +1,27 @@
 import { random } from 'lodash';
 import React, { useState } from 'react';
-
+import { dashStorage } from 'dash-utils';
 const useGlobalErrorMediator = () => {
 	const [error, setError] = React.useState<any>(null);
 	const errorChangeHandler = React.useCallback((e) => {
-		if (localStorage.getItem('lastGlobalError') === JSON.stringify(e.data)) {
+		if (dashStorage.getItem('lastGlobalError') === JSON.stringify(e.data)) {
 			return;
 		}
 
 		setError(e.data);
-		localStorage.setItem('lastGlobalError', JSON.stringify(e.data));
+		dashStorage.setItem('lastGlobalError', JSON.stringify(e.data));
 
 		setTimeout(() => {
-			localStorage.setItem('lastGlobalError', JSON.stringify({}));
+			dashStorage.setItem('lastGlobalError', JSON.stringify({}));
 		}, 1000);
 	}, []);
 
 	React.useEffect(() => {
-		localStorage.setItem('lastGlobalError', JSON.stringify({}));
+		dashStorage.setItem('lastGlobalError', JSON.stringify({}));
         
 		window.addEventListener('GlobalError', errorChangeHandler);
 		return () => {
-			localStorage.setItem('lastGlobalError', JSON.stringify({}));
+			dashStorage.setItem('lastGlobalError', JSON.stringify({}));
 			window.removeEventListener('GlobalError', errorChangeHandler);
 		};
 	}, []);

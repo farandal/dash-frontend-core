@@ -8,6 +8,7 @@ import useVirtualHash from '../hooks/useVirtualHash';
 import { Button, ButtonGroup } from '@mui/material';
 import DashResourceButton from 'dash-auto-admin/src/toolbar/buttons/DashResourceButton';
 import RefreshIcon from '@mui/icons-material/Refresh';
+import { dashStorage } from 'dash-utils';
 export interface IResourceMenu {
     resourceConfig: IAppResourceConfig;
 }
@@ -46,7 +47,7 @@ const ResourceMenu: React.FC<IResourceMenu> = (props) => {
        
         let _redirect =  menuItem.redirect?.startsWith('/')
                     ? menuItem.redirect
-                    : `/${localStorage.getItem('currentAppPath') || ''}/${menuItem.redirect}`.replace(/\/+/g, '/');
+                    : `/${dashStorage.getItem('currentAppPath') || ''}/${menuItem.redirect}`.replace(/\/+/g, '/');
         
         
 

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState, useMemo } from 'react';
-
+import { dashStorage } from 'dash-utils';
 const isBrowser = typeof window !== 'undefined';
 
 const isLocalStorageAvailable = () => {
@@ -8,8 +8,8 @@ const isLocalStorageAvailable = () => {
   }
   const test = `test-${Date.now()}`;
   try {
-    localStorage.setItem(test, test);
-    localStorage.removeItem(test);
+    dashStorage.setItem(test, test);
+    dashStorage.removeItem(test);
     return true;
   } catch (e) {
     return false;
@@ -23,7 +23,7 @@ const useLocalStorage = (key, initialValue = '') => {
       if (!available) {
         return initialValue;
       }
-      const item = localStorage.getItem(key);
+      const item = dashStorage.getItem(key);
       return item ? JSON.parse(item) : initialValue;
     } catch (error) {
       return initialValue;
@@ -74,7 +74,7 @@ const useLocalStorage = (key, initialValue = '') => {
       value instanceof Function ? value(storedValue) : value;
     //if (valueToStore !== storedValue) {
 
-    localStorage.setItem(key, JSON.stringify(valueToStore));
+    dashStorage.setItem(key, JSON.stringify(valueToStore));
 
     setStoredValue(valueToStore);
     //}
@@ -108,7 +108,7 @@ function useLocalStorage<T = any>(
     }
 
     try {
-      const item = localStorage.getItem(key);
+      const item = dashStorage.getItem(key);
 
       // Return parsed JSON or initialValue if no item exists
       if (!item) {
@@ -145,7 +145,7 @@ function useLocalStorage<T = any>(
       setStoredValue(valueToStore);
 
       // Save to localStorage
-      localStorage.setItem(key, JSON.stringify(valueToStore));
+      dashStorage.setItem(key, JSON.stringify(valueToStore));
     } catch (error) {
       console.error(`Error setting localStorage key "${key}":`, error);
     }
@@ -158,7 +158,7 @@ function useLocalStorage<T = any>(
     }
 
     try {
-      localStorage.removeItem(key);
+      dashStorage.removeItem(key);
       setStoredValue(initialValue as T);
     } catch (error) {
       console.error(`Error removing localStorage key "${key}":`, error);

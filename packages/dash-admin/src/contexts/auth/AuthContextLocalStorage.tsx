@@ -9,6 +9,8 @@ import React, {
   useEffect
 } from 'react';
 
+import { dashStorage } from 'dash-utils';
+
 export class AuthContextClass {
   static values: Partial<IAuthContextProps>;
 }
@@ -79,13 +81,13 @@ export const AuthContextProvider: FC<IAuthContextProvider> = (props) => {
   };
 
   return (
-    <AuthContextLocalStorage.Provider value={{ ...contextValues, updateValues }}>
+    <AuthContextdashStorage.Provider value={{ ...contextValues, updateValues }}>
       {children}
-    </AuthContextLocalStorage.Provider>
+    </AuthContextdashStorage.Provider>
   );
 };
 
-export const AuthContextConsumer = AuthContextLocalStorage.Consumer;
+export const AuthContextConsumer = AuthContextdashStorage.Consumer;
 
 export const useAuthContext = () => {
   const authContext: IAuthContext = useContext(AuthContextLocalStorage);
@@ -94,7 +96,7 @@ export const useAuthContext = () => {
 
 export const getAuthContext = () => {
   try {
-    const serialized = localStorage.getItem('SerializedAuthContext');
+    const serialized = dashStorage.getItem('SerializedAuthContext');
     return serialized ? JSON.parse(serialized) as Partial<IAuthContextProps> : defaultValues;
   } catch (error) {
     console.error('Error getting auth context:', error);
@@ -107,7 +109,7 @@ export const updateAuthContext = (values: Partial<IAuthContextProps>) => {
     const prevState = getAuthContext();
     const updatedState = { ...prevState, ...values };
 
-    localStorage.setItem(
+    dashStorage.setItem(
       'SerializedAuthContext',
       JSON.stringify(updatedState),
     );
@@ -122,11 +124,11 @@ export const updateAuthContext = (values: Partial<IAuthContextProps>) => {
 export const setAuthContext = (values: Partial<IAuthContextProps>) => {
   try {
     // deprectate serialized ...
-    localStorage.setItem('SerializedAuthContext', JSON.stringify(values));
+    dashStorage.setItem('SerializedAuthContext', JSON.stringify(values));
 
-    localStorage.setItem('roles', JSON.stringify(values.user.roles));
-    localStorage.setItem('authenticated', 'true');
-    localStorage.setItem('user', JSON.stringify(values.user));
+    dashStorage.setItem('roles', JSON.stringify(values.user.roles));
+    dashStorage.setItem('authenticated', 'true');
+    dashStorage.setItem('user', JSON.stringify(values.user));
 
     return values;
   } catch (error) {

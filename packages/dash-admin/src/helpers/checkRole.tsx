@@ -39,8 +39,8 @@ export default checkRole;
 	
 	if ((Array.isArray(roles) && roles.includes('*'))) return true;
 
-	const userRoles = localStorage.getItem('roles');
-	const userPermissions = localStorage.getItem('permissions');
+	const userRoles = dashStorage.getItem('roles');
+	const userPermissions = dashStorage.getItem('permissions');
 
 	
 	const processedPermissions = {

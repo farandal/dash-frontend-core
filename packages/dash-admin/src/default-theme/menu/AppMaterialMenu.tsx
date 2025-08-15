@@ -25,6 +25,7 @@ import { AuthPersistenceService } from 'dash-auth';
 import {  useAuthContext } from '../../contexts/auth/AuthContext';
 import { DarkToggleMode } from '../../';
 
+import { dashStorage } from 'dash-utils';
 // Update the interface to include new props
 interface IAppMenuExtended extends IAppMenu {
     logos?: {
@@ -178,8 +179,8 @@ const AppMaterialMenu: React.FC<IAppMenuExtended> = (props) => {
                         to: resource?.redirect?.startsWith('/')
                             ? resource.redirect
                             : resource?.redirect
-                                ? `/${localStorage.getItem('currentAppPath') || ''}/${resource.model}/${resource.redirect}`.replace(/\/+/g, '/')
-                                : `/${localStorage.getItem('currentAppPath') || ''}/${resource.model}`.replace(/\/+/g, '/'),
+                                ? `/${dashStorage.getItem('currentAppPath') || ''}/${resource.model}/${resource.redirect}`.replace(/\/+/g, '/')
+                                : `/${dashStorage.getItem('currentAppPath') || ''}/${resource.model}`.replace(/\/+/g, '/'),
                         icon: resource.icon,
                         group: slugify(group[0].group),
                         model: resource.model,
@@ -193,12 +194,12 @@ const AppMaterialMenu: React.FC<IAppMenuExtended> = (props) => {
                 icon: group[0].icon || groupIcons[group[0].group],
                 group: slugify(group[0].group),
                 model: group[0].model,
-                //to: group[0].redirect ? `/${group[0].redirect}` : `/${localStorage.getItem('currentAppPath') || ''}/${group[0].model}`.replace(/\/+/g, '/'),
+                //to: group[0].redirect ? `/${group[0].redirect}` : `/${dashStorage.getItem('currentAppPath') || ''}/${group[0].model}`.replace(/\/+/g, '/'),
                 to: group[0].redirect?.startsWith('/')
                     ? group[0].redirect
                     : group[0].redirect
-                        ? `/${localStorage.getItem('currentAppPath') || ''}/${group[0].model}/${group[0].redirect}`.replace(/\/+/g, '/')
-                        : `/${localStorage.getItem('currentAppPath') || ''}/${group[0].model}`.replace(/\/+/g, '/'),
+                        ? `/${dashStorage.getItem('currentAppPath') || ''}/${group[0].model}/${group[0].redirect}`.replace(/\/+/g, '/')
+                        : `/${dashStorage.getItem('currentAppPath') || ''}/${group[0].model}`.replace(/\/+/g, '/'),
                 txtLabel: group[0].group,
                 ...(_childrens && _childrens.length > 1 && { children: _children }) as any
             };

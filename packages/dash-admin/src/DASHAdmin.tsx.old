@@ -244,7 +244,7 @@ const DASHAdminApp: React.FC<IDASHAdmin<unknown, unknown, unknown, unknown>> = (
 
             const existingTenantCookie = getCookie('tenant_id');
             if (!existingTenantCookie) {
-              localStorage.setItem('tenant_id', user.tenant_id.toString());
+              dashStorage.setItem('tenant_id', user.tenant_id.toString());
               setCookie('tenant_id', user.tenant_id.toString());
             }
 

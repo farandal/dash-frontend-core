@@ -6,13 +6,13 @@
 import { createAxiosInstance } from 'dash-axios-hook';
 import { getCookie, setCookie } from '../../utils/cookies';
 import { getEnv } from '../../config/DASHAdminSystemConstants';
-import { AuthPersistenceService } from 'dash-auth';
+import { AuthPersistenceService, syncElectronStoreToLocalStorage, syncLocalStorageToElectronStore } from 'dash-auth';
 import { setAuthEvent } from './AuthContext';
 import {DASHAppConstants} from 'dash-constants';
 
 import {DASHAdminSystemConstants} from  'dash-constants'
 
-
+import { dashStorage } from 'dash-utils';
 
 import { DASH_REDUX_ACTIONS, dispatchToRedux } from 'dash-admin-state';
 import { ACTION_UPDATE_AUTH } from 'dash-admin-state/src/redux/reducers/Auth';
@@ -54,19 +54,19 @@ class DASHAuthenticationService {
     setPendingRedirect(url: string): void {
 
         console.log('Setting pending redirect:', url);
-        localStorage.setItem(this.REDIRECT_STORAGE_KEY, url);
+        dashStorage.setItem(this.REDIRECT_STORAGE_KEY, url);
     }
 
     // Method to get pending redirect URL
     getPendingRedirect(): string | null {
-        return localStorage.getItem(this.REDIRECT_STORAGE_KEY);
+        return dashStorage.getItem(this.REDIRECT_STORAGE_KEY);
     }
 
     // Method to clear pending redirect URL
 
     clearPendingRedirect(): void {
         console.log('Clearing pending redirect');
-        localStorage.removeItem(this.REDIRECT_STORAGE_KEY);
+        dashStorage.removeItem(this.REDIRECT_STORAGE_KEY);
     }
 
     // Method to determine final redirect URL (backend takes precedence over localStorage)
@@ -147,15 +147,15 @@ class DASHAuthenticationService {
 
                     console.log("Setting token in storage");
                     setCookie('token', loginResponse.data.token, { expires });
-                    localStorage.setItem('token', loginResponse.data.token);
+                    dashStorage.setItem('token', loginResponse.data.token);
                     if (loginResponse.data?.refreshToken) {
                         console.log("Setting refresh token in storage");
                         setCookie('refreshToken', loginResponse.data.refreshToken, { expires });
-                        localStorage.setItem('refreshToken', loginResponse.data.refreshToken);
+                        dashStorage.setItem('refreshToken', loginResponse.data.refreshToken);
                     }
                     if (loginResponse.data?.meta) {
                         console.log("Setting app");
-                        localStorage.setItem('app', loginResponse.data.meta.app);
+                        dashStorage.setItem('app', loginResponse.data.meta.app);
                     }
                 } else {
                     console.warn("⚠️ No token in login response");
@@ -195,9 +195,9 @@ class DASHAuthenticationService {
                     AuthPersistenceService.saveAuth(auth);
 
                     // Set basic localStorage for react-admin compatibility
-                    localStorage.setItem('authenticated', 'true');
-                    localStorage.setItem('user', JSON.stringify(auth.user));
-                    localStorage.setItem(
+                    dashStorage.setItem('authenticated', 'true');
+                    dashStorage.setItem('user', JSON.stringify(auth.user));
+                    dashStorage.setItem(
                         'roles',
                         auth.user?.roles
                             ? JSON.stringify(auth.user.roles)
@@ -213,9 +213,9 @@ class DASHAuthenticationService {
                     ) {
                         const existingTenantCookie = getCookie('tenant_id');
                         if (!existingTenantCookie) {
-                            localStorage.setItem('tenant_id', auth.user?.tenant_id);
+                            dashStorage.setItem('tenant_id', auth.user?.tenant_id);
                             setCookie('tenant_id', auth.user?.tenant_id);
-                            localStorage.setItem('user_id', auth.user?.id);
+                            dashStorage.setItem('user_id', auth.user?.id);
                             setCookie('user_id', auth.user?.id);
                         }
                     }
@@ -224,7 +224,7 @@ class DASHAuthenticationService {
                         authenticated: true,
                         user: auth.user,
                         auth: auth.auth,
-                        token: loginResponse.data.token || localStorage.getItem('token'),
+                        token: loginResponse.data.token || dashStorage.getItem('token'),
                         roles: auth.user?.roles
                     }
 
@@ -279,7 +279,7 @@ class DASHAuthenticationService {
 
     // Update the initializeFromToken method to dispatch to Redux directly
     async initializeFromToken(): Promise<DASHAuthenticationServiceAuthResponse> {
-        const token = localStorage.getItem('token');
+        const token = dashStorage.getItem('token');
 
         if (!token) {
             return {
@@ -302,9 +302,9 @@ class DASHAuthenticationService {
             AuthPersistenceService.saveAuth(auth);
 
             // Set basic localStorage for react-admin compatibility
-            localStorage.setItem('authenticated', 'true');
-            localStorage.setItem('user', JSON.stringify(auth.user));
-            localStorage.setItem(
+            dashStorage.setItem('authenticated', 'true');
+            dashStorage.setItem('user', JSON.stringify(auth.user));
+            dashStorage.setItem(
                 'roles',
                 auth.user?.roles
                     ? JSON.stringify(auth.user.roles)
@@ -320,9 +320,9 @@ class DASHAuthenticationService {
             ) {
                 const existingTenantCookie = getCookie('tenant_id');
                 if (!existingTenantCookie) {
-                    localStorage.setItem('tenant_id', auth.user?.tenant_id);
+                    dashStorage.setItem('tenant_id', auth.user?.tenant_id);
                     setCookie('tenant_id', auth.user?.tenant_id);
-                    localStorage.setItem('user_id', auth.user?.id);
+                    dashStorage.setItem('user_id', auth.user?.id);
                     setCookie('user_id', auth.user?.id);
                 }
             }
@@ -384,7 +384,7 @@ class DASHAuthenticationService {
                     expires.setDate(today.getDate() + 2);
                     setCookie('token', data.token, { expires });*/
                     setCookie('token', data.token);
-                    localStorage.setItem('token', data.token);
+                    dashStorage.setItem('token', data.token);
                 }
 
                 return {
@@ -426,8 +426,8 @@ class DASHAuthenticationService {
 
     async checkAuth(): Promise<boolean> {
         // First check localStorage for basic auth state
-        const isAuthenticated = JSON.parse(localStorage.getItem('authenticated') || 'false');
-        const user = JSON.parse(localStorage.getItem('user') || 'null');
+        const isAuthenticated = JSON.parse(dashStorage.getItem('authenticated') || 'false');
+        const user = JSON.parse(dashStorage.getItem('user') || 'null');
 
         if (isAuthenticated && user?.id) {
             // Also check if we have valid persisted auth data
@@ -441,7 +441,7 @@ class DASHAuthenticationService {
     }
 
     async getIdentity(): Promise<any> {
-        const token = localStorage.getItem('token');
+        const token = dashStorage.getItem('token');
         if (!token) {
             throw new Error('No token present');
         }
@@ -449,14 +449,14 @@ class DASHAuthenticationService {
         try {
             const { data: auth } = await this.axiosInstance.get(getEnv('APP_GETAUTH_ENDPOINT'));
 
-            localStorage.setItem(
+            dashStorage.setItem(
                 'roles',
                 auth.user?.roles
                     ? JSON.stringify(auth.user.roles)
                     : JSON.stringify(DASHAppConstants.system.GUEST_ROLE),
             );
-            localStorage.setItem('authenticated', 'true');
-            localStorage.setItem('user', JSON.stringify(auth.user));
+            dashStorage.setItem('authenticated', 'true');
+            dashStorage.setItem('user', JSON.stringify(auth.user));
 
             // Handle tenant impersonation if enabled
             if (
@@ -467,9 +467,9 @@ class DASHAuthenticationService {
             ) {
                 const existingTenantCookie = getCookie('tenant_id');
                 if (!existingTenantCookie) {
-                    localStorage.setItem('tenant_id', auth.user?.tenant_id);
+                    dashStorage.setItem('tenant_id', auth.user?.tenant_id);
                     setCookie('tenant_id', auth.user?.tenant_id);
-                    localStorage.setItem('user_id', auth.user?.id);
+                    dashStorage.setItem('user_id', auth.user?.id);
                     setCookie('user_id', auth.user?.id);
                 }
             }
@@ -483,15 +483,15 @@ class DASHAuthenticationService {
 
     // Rest of your methods remain the same...
     async shouldRefreshToken(): Promise<boolean> {
-        const token = localStorage.getItem('token');
+        const token = dashStorage.getItem('token');
         if (!token) return false;
 
-        const refreshToken = localStorage.getItem('refreshToken');
+        const refreshToken = dashStorage.getItem('refreshToken');
         return !!refreshToken;
     }
 
     async handleTokenRefresh(): Promise<boolean> {
-        const refreshToken = localStorage.getItem('refreshToken');
+        const refreshToken = dashStorage.getItem('refreshToken');
         if (!refreshToken) return false;
 
         try {
@@ -499,9 +499,9 @@ class DASHAuthenticationService {
             if (refreshResponse.success) {
 
                 // Update localStorage with new token
-                localStorage.setItem('token', refreshResponse.token!);
+                dashStorage.setItem('token', refreshResponse.token!);
                 if (refreshResponse.refreshToken) {
-                    localStorage.setItem('refreshToken', refreshResponse.refreshToken);
+                    dashStorage.setItem('refreshToken', refreshResponse.refreshToken);
                 }
                 return true;
             }
@@ -517,9 +517,9 @@ class DASHAuthenticationService {
 
         if (forceGetAuth) { return true };
 
-        const token = localStorage.getItem('token');
-        const isAuthenticated = JSON.parse(localStorage.getItem('authenticated') || 'false');
-        const user = localStorage.getItem('user');
+        const token = dashStorage.getItem('token');
+        const isAuthenticated = JSON.parse(dashStorage.getItem('authenticated') || 'false');
+        const user = dashStorage.getItem('user');
 
         // If we have a token but are not fully authenticated, we should initialize
         return !!(token && (!isAuthenticated || !user));
@@ -527,6 +527,8 @@ class DASHAuthenticationService {
 
     // Update the initializeApp method to dispatch to Redux directly
     async initializeApp(forceGetAuth?: boolean): Promise<DASHAuthenticationServiceAuthResponse> {
+        
+      
         console.log('Initializing DASH app authentication...');
         const USES_GET_AUTH = true; // TODO: add the get auth to the env and retrieve it through getEnv. nevertheless all apps uses getAuth. 
 
@@ -536,9 +538,9 @@ class DASHAuthenticationService {
             console.log('Token found but not fully authenticated, initializing...');
             return await this.initializeFromToken();
         } else {
-            const token = localStorage.getItem('token');
-            const isAuthenticated = JSON.parse(localStorage.getItem('authenticated') || 'false');
-            const user = localStorage.getItem('user');
+            const token = dashStorage.getItem('token');
+            const isAuthenticated = JSON.parse(dashStorage.getItem('authenticated') || 'false');
+            const user = dashStorage.getItem('user');
 
             if (token && isAuthenticated && user) {
                 console.log('Already authenticated, checking if auth refresh needed');
@@ -562,8 +564,8 @@ class DASHAuthenticationService {
                         AuthPersistenceService.saveAuth(auth);
 
                         // Update localStorage with fresh data
-                        localStorage.setItem('user', JSON.stringify(auth.user));
-                        localStorage.setItem(
+                        dashStorage.setItem('user', JSON.stringify(auth.user));
+                        dashStorage.setItem(
                             'roles',
                             auth.user?.roles
                                 ? JSON.stringify(auth.user.roles)
@@ -578,9 +580,9 @@ class DASHAuthenticationService {
                             auth.user?.tenant_id
                         ) {
                             // Update tenant information even if it exists (in case it changed)
-                            localStorage.setItem('tenant_id', auth.user?.tenant_id);
+                            dashStorage.setItem('tenant_id', auth.user?.tenant_id);
                             setCookie('tenant_id', auth.user?.tenant_id);
-                            localStorage.setItem('user_id', auth.user?.id);
+                            dashStorage.setItem('user_id', auth.user?.id);
                             setCookie('user_id', auth.user?.id);
                         }
 
@@ -606,6 +608,9 @@ class DASHAuthenticationService {
                         const redirectAfterLogin = this.determineRedirectUrl(backendRedirect);
 
                         console.log('Auth data refreshed successfully');
+
+                    
+
                         return {
                             success: true,
                             token: token,
@@ -616,6 +621,7 @@ class DASHAuthenticationService {
 
                     } catch (error) {
                         console.error('Error refreshing auth data:', error);
+
                         // If refresh fails, fall back to existing data but don't fail the initialization
                         console.log('Falling back to existing auth data');
 
@@ -634,6 +640,8 @@ class DASHAuthenticationService {
 
                         // Still check for localStorage redirect as fallback
                         const redirectAfterLogin = this.determineRedirectUrl();
+                        
+                
 
                         return {
                             success: true,
@@ -662,6 +670,7 @@ class DASHAuthenticationService {
                     // Still check for pending redirect even if not refreshing auth
                     const redirectAfterLogin = this.determineRedirectUrl();
 
+                  
                     return {
                         success: true,
                         token: token,
@@ -672,12 +681,15 @@ class DASHAuthenticationService {
                 }
             } else {
                 console.log('No valid authentication found');
+
                 return {
                     success: false,
                     error: 'No valid authentication found'
                 };
             }
         }
+
+
     }
 
     // Method to integrate with React Admin
@@ -709,7 +721,7 @@ class DASHAuthenticationService {
             const persistedAuth = AuthPersistenceService.getAuth();
             const storedUser = AuthPersistenceService.getUser();
             const storedToken = AuthPersistenceService.getToken();
-            const isAuthenticated = JSON.parse(localStorage.getItem('authenticated') || 'false');
+            const isAuthenticated = JSON.parse(dashStorage.getItem('authenticated') || 'false');
 
             console.log('🔍 DASHLightApp: Initializing auth state with persisted data:', {
                 hasPersistedAuth: !!persistedAuth,

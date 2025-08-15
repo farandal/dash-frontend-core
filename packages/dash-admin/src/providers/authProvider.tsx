@@ -1,14 +1,14 @@
 import DASHStorageClass from '../classes/DASHStorageClass';
 import { initAxios } from '../hooks/axios';
 import { getCookie, removeCookie, setCookie } from '../utils/cookies';
-
+import { dashStorage } from 'dash-utils';
 export const logoutFromStorage = () => {
 	removeCookie('tenant_id');
 	removeCookie('token');
-	localStorage.removeItem('user');
-	localStorage.removeItem('auth');
-	localStorage.setItem('authenticated', 'false');
-	localStorage.setItem('roles', null); // before it was guest role.
+	dashStorage.removeItem('user');
+	dashStorage.removeItem('auth');
+	dashStorage.setItem('authenticated', 'false');
+	dashStorage.setItem('roles', null); // before it was guest role.
 };
 
 export default {
@@ -33,15 +33,15 @@ export default {
 
                 setCookie('token', loginResponse.data.token);
 
-				localStorage.setItem('token', loginResponse.data.token);
+				dashStorage.setItem('token', loginResponse.data.token);
 
 				try {
 					let { data: auth } = await axios.get('/auth/getauth');
 
-					localStorage.setItem('roles', JSON.stringify(auth.user.roles));
-					localStorage.setItem('authenticated', 'true');
-					localStorage.setItem('user', JSON.stringify(auth.user));
-					localStorage.setItem('auth', JSON.stringify(auth));
+					dashStorage.setItem('roles', JSON.stringify(auth.user.roles));
+					dashStorage.setItem('authenticated', 'true');
+					dashStorage.setItem('user', JSON.stringify(auth.user));
+					dashStorage.setItem('auth', JSON.stringify(auth));
 
 					return Promise.resolve();
 				} catch (error) {
@@ -146,16 +146,16 @@ export default {
 	},
 	checkAuth: () => {
 		// TODO: Revisar esto, invalidar el token del usuario antes de ingresar al panel para testear
-		return JSON.parse(localStorage.getItem('authenticated')) === true
+		return JSON.parse(dashStorage.getItem('authenticated')) === true
 			? Promise.resolve()
 			: Promise.reject();
 	},
 	getPermissions: () => {
-		if (localStorage.getItem('roles') === 'guest')
+		if (dashStorage.getItem('roles') === 'guest')
 			return Promise.resolve('guest');
 		let processedPermissions = {
-			roles: localStorage.getItem('roles')
-				? JSON.parse(localStorage.getItem('roles')).map((item) => item.name)
+			roles: dashStorage.getItem('roles')
+				? JSON.parse(dashStorage.getItem('roles')).map((item) => item.name)
 				: {},
 		};
 		return processedPermissions
@@ -166,19 +166,19 @@ export default {
 	getIdentity: async () => {
 		const axios = initAxios();
 
-		//const currentUser = JSON.parse(localStorage.getItem('user'));
+		//const currentUser = JSON.parse(dashStorage.getItem('user'));
 
 		try {
 			let { data: auth } = await axios.get('/auth/getauth');
 
-			localStorage.setItem(
+			dashStorage.setItem(
 				'roles',
 				auth.user?.roles
 					? JSON.stringify(auth.user.roles)
 					: JSON.stringify(DASHStorageClass.constants.system.GUEST_ROLE),
 			);
-			localStorage.setItem('authenticated', 'true');
-			localStorage.setItem('user', JSON.stringify(auth.user));
+			dashStorage.setItem('authenticated', 'true');
+			dashStorage.setItem('user', JSON.stringify(auth.user));
 
 			if (
 				JSON.parse(
@@ -189,7 +189,7 @@ export default {
 				
                 const existingTenantCookie = getCookie('tenant_id');
                 if (!existingTenantCookie) {
-                    localStorage.setItem('tenant_id', auth.user?.tenant_id);
+                    dashStorage.setItem('tenant_id', auth.user?.tenant_id);
                     setCookie('tenant_id', auth.user?.tenant_id);
                 }
 
