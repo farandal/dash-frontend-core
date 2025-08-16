@@ -6,7 +6,7 @@
 import { createAxiosInstance } from 'dash-axios-hook';
 import { getCookie, setCookie } from '../../utils/cookies';
 import { getEnv } from '../../config/DASHAdminSystemConstants';
-import { AuthPersistenceService } from 'dash-auth';
+import { AuthPersistenceService, syncLocalStorageToDeviceStore } from 'dash-auth';
 import { setAuthEvent } from './AuthContext';
 import {DASHAppConstants} from 'dash-constants';
 
@@ -146,17 +146,20 @@ class DASHAuthenticationService {
                 if (loginResponse.data && loginResponse.data.token) {
 
                     console.log("Setting token in storage");
-                    setCookie('token', loginResponse.data.token, { expires });
+                    //setCookie('token', loginResponse.data.token, { expires });
                     dashStorage.setItem('token', loginResponse.data.token);
                     if (loginResponse.data?.refreshToken) {
                         console.log("Setting refresh token in storage");
-                        setCookie('refreshToken', loginResponse.data.refreshToken, { expires });
+                        //setCookie('refreshToken', loginResponse.data.refreshToken, { expires });
                         dashStorage.setItem('refreshToken', loginResponse.data.refreshToken);
                     }
                     if (loginResponse.data?.meta) {
                         console.log("Setting app");
                         dashStorage.setItem('app', loginResponse.data.meta.app);
                     }
+
+                    await syncLocalStorageToDeviceStore();
+
                 } else {
                     console.warn("⚠️ No token in login response");
                 }
@@ -213,9 +216,9 @@ class DASHAuthenticationService {
                     ) {
                        
                             dashStorage.setItem('tenant_id', auth.user?.tenant_id);
-                            setCookie('tenant_id', auth.user?.tenant_id);
+                            //setCookie('tenant_id', auth.user?.tenant_id);
                             dashStorage.setItem('user_id', auth.user?.id);
-                            setCookie('user_id', auth.user?.id);
+                            //setCookie('user_id', auth.user?.id);
                      
                     }
 
@@ -237,6 +240,7 @@ class DASHAuthenticationService {
                         })
                     );
 
+                     await syncLocalStorageToDeviceStore();
                     console.log("✅ Login completed successfully");
                     return Promise.resolve({
                         success: true,
@@ -246,6 +250,7 @@ class DASHAuthenticationService {
                         redirectAfterLogin: finalRedirect, // ✅ Use the backend redirectTo
                     });
                 } catch (error) {
+                     await syncLocalStorageToDeviceStore();
                     console.error('❌ Error getting auth data:', error);
                     this.logoutFromStorage("login get auth error");
                     return Promise.resolve({
@@ -254,6 +259,7 @@ class DASHAuthenticationService {
                     });
                 }
             } else {
+                 await syncLocalStorageToDeviceStore();
                 console.log("❌ Login response status not successful:", loginResponse.status);
                 this.logoutFromStorage("login status error logout");
                 return Promise.reject({
@@ -262,6 +268,7 @@ class DASHAuthenticationService {
                 });
             }
         } catch (error: any) {
+             await syncLocalStorageToDeviceStore();
             console.error('❌ Login error:', error);
             console.error('Error details:', {
                 message: error?.message,
@@ -269,11 +276,14 @@ class DASHAuthenticationService {
                 status: error?.response?.status
             });
             this.logoutFromStorage("login error logout");
+             await syncLocalStorageToDeviceStore();
             return Promise.reject({
                 success: false,
                 error: error?.response?.data?.message || error?.message || 'Login failed'
             });
         }
+
+        
     }
 
     // Update the initializeFromToken method to dispatch to Redux directly
@@ -344,7 +354,7 @@ class DASHAuthenticationService {
             );
 
             console.log('Auth initialized successfully from existing token');
-
+             await syncLocalStorageToDeviceStore();
             // Determine final redirect URL (backend takes precedence)
             const redirectAfterLogin = this.determineRedirectUrl(backendRedirect);
 
@@ -358,6 +368,7 @@ class DASHAuthenticationService {
         } catch (error) {
             console.error('Error initializing auth from token:', error);
             this.logoutFromStorage("initialize from token error");
+             await syncLocalStorageToDeviceStore();
             return {
                 success: false,
                 error: 'Failed to initialize authentication from token'
@@ -381,10 +392,10 @@ class DASHAuthenticationService {
                     const expires = new Date();
                     expires.setDate(today.getDate() + 2);
                     setCookie('token', data.token, { expires });*/
-                    setCookie('token', data.token);
+                    //setCookie('token', data.token);
                     dashStorage.setItem('token', data.token);
                 }
-
+                 await syncLocalStorageToDeviceStore();
                 return {
                     success: true,
                     token: data.token,
@@ -465,11 +476,13 @@ class DASHAuthenticationService {
             ) {
                
                     dashStorage.setItem('tenant_id', auth.user?.tenant_id);
-                    setCookie('tenant_id', auth.user?.tenant_id);
+                    //setCookie('tenant_id', auth.user?.tenant_id);
                     dashStorage.setItem('user_id', auth.user?.id);
-                    setCookie('user_id', auth.user?.id);
+                    //setCookie('user_id', auth.user?.id);
                
             }
+
+             await syncLocalStorageToDeviceStore();
 
             return auth;
         } catch (error) {
@@ -500,6 +513,7 @@ class DASHAuthenticationService {
                 if (refreshResponse.refreshToken) {
                     dashStorage.setItem('refreshToken', refreshResponse.refreshToken);
                 }
+                 await syncLocalStorageToDeviceStore();
                 return true;
             }
         } catch (error) {
@@ -578,9 +592,9 @@ class DASHAuthenticationService {
                         ) {
                             // Update tenant information even if it exists (in case it changed)
                             dashStorage.setItem('tenant_id', auth.user?.tenant_id);
-                            setCookie('tenant_id', auth.user?.tenant_id);
+                            //setCookie('tenant_id', auth.user?.tenant_id);
                             dashStorage.setItem('user_id', auth.user?.id);
-                            setCookie('user_id', auth.user?.id);
+                            //setCookie('user_id', auth.user?.id);
                         }
 
                         const resultObject = {
@@ -606,7 +620,7 @@ class DASHAuthenticationService {
 
                         console.log('Auth data refreshed successfully');
 
-                    
+                         await syncLocalStorageToDeviceStore();
 
                         return {
                             success: true,
@@ -637,8 +651,8 @@ class DASHAuthenticationService {
 
                         // Still check for localStorage redirect as fallback
                         const redirectAfterLogin = this.determineRedirectUrl();
-                        
-                
+
+                        await syncLocalStorageToDeviceStore();
 
                         return {
                             success: true,
@@ -667,7 +681,8 @@ class DASHAuthenticationService {
                     // Still check for pending redirect even if not refreshing auth
                     const redirectAfterLogin = this.determineRedirectUrl();
 
-                  
+                    await syncLocalStorageToDeviceStore();
+
                     return {
                         success: true,
                         token: token,
@@ -678,7 +693,7 @@ class DASHAuthenticationService {
                 }
             } else {
                 console.log('No valid authentication found');
-
+                 await syncLocalStorageToDeviceStore();
                 return {
                     success: false,
                     error: 'No valid authentication found'
