@@ -92,7 +92,7 @@ export const AvailablePermissionsContext: React.FC<{children: React.ReactNode}> 
     GLOBAL_FETCH_PROMISE = (async () => {
       try {
         console.log("FETCHING AVAILABLE PERMISSIONS");
-        const { data } = await axios.get('system/permissions/availablePermissions');
+        const { data } = await axios.get('system/permission/availablePermissions');
 
         
         // Update global state

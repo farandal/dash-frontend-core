@@ -201,6 +201,8 @@ export const defaultOptions = (options) => {
            },
          },
        },*/
+
+
       MuiButton: {
         styleOverrides: {
           root: {
@@ -297,11 +299,23 @@ export const defaultOptions = (options) => {
         },
       },
       MuiTabs: {
+          styleOverrides: {
+            indicator: {
+              backgroundColor: 'var(--highlight-color)',
+            },
+          },
+      },
+
+      MuiListItemIcon: {
         styleOverrides: {
-          indicator: {
-            backgroundColor: 'var(--highlight-color)',
+          root: {
+            color: 'var(--sidebar-icon)',
+            '& svg': {
+              color: 'var(--sidebar-icon)',
+            },
           },
         },
+
       },
 
       RaReferenceField: {

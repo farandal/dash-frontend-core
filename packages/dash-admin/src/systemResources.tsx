@@ -1,26 +1,29 @@
 
-import { ArrayInput, ReferenceArrayField, SelectInput } from 'react-admin';
-import { SelectArrayInput } from 'react-admin';
+import { SelectInput } from 'react-admin';
+//import { SelectArrayInput } from 'react-admin';
 import ResourceTemplate from './templates/ResourceTemplate';
 import IAppResourceConfig from './interfaces/IAppResourceConfig';
-import permissionSchema from './schemas/permissions';
-import roleSchema from './schemas/roles';
+//import permissionSchema from './schemas/permissions';
+//import roleSchema from './schemas/roles';
 import { TenantImpersonateResource } from './resources/Tenant/ImpersonateTenantResource';
 import tenantSystemAdminSchema from './schemas/tenant_superadmin';
 import { RutValidator } from './utils/validators';
-import {DASHAppConstants} from 'dash-constants';
+import { DASHAppConstants } from 'dash-constants';
 import Avatar from './components/avatar/Avatar';
 
 // Replace the current imports with these optimized direct imports
-import Https from '@mui/icons-material/Https';
+//import Https from '@mui/icons-material/Https';
 import SystemUpdateAlt from '@mui/icons-material/SystemUpdateAlt';
 import Person from '@mui/icons-material/Person';
 import { lazy } from 'react';
-import subscriptionPlanSchema from './schemas/subscription/subscriptionPlanSchema';
-import subscriptionSchema from './schemas/subscription/subscriptionSchema';
-import TenantSettingsFormatsProvider from './components/tenant/TenantSettingsContext';
-import { AvailablePermissionsContext } from './components/permission/AvailablePermissionsContext';
+//import subscriptionPlanSchema from './schemas/subscription/subscriptionPlanSchema';
+//import subscriptionSchema from './schemas/subscription/subscriptionSchema';
+//import TenantSettingsFormatsProvider from './components/tenant/TenantSettingsContext';
+//import { AvailablePermissionsContext } from './components/permission/AvailablePermissionsContext';
 import SystemRequestsCache from './contexts/SystemRequestsCache';
+//import RolePermissionBulkManager from './components/permission/RolePermissionBulkManager';
+//import rolePermissionBulkSchema from './schemas/rolePermissionBulk';
+import roleSchemaDataGrid from './schemas/rolesDataGrid';
 
 const TableContainer = lazy(() => import('@mui/material/TableContainer'));
 
@@ -52,12 +55,16 @@ const systemResources: IAppResourceConfig[] = [
         component: ResourceTemplate,
         customRoutes: (resourceConfig) => TenantImpersonateResource(resourceConfig),
         contextComponent: ({ resourceConfig, mode, children }) => {
-            console.log("TenantSettingsFormatsProvider", resourceConfig, mode);  
-            return mode === "list" ? children : <SystemRequestsCache
-                cacheKey="tenant_settings_cache"
-                apiUrl="system/tenant/systemSettingFormats"
-                cacheSeconds={300}
-            >{children}</SystemRequestsCache>
+            console.log("TenantFormatsProvider", resourceConfig, mode);
+            return mode === "list" ? children : (
+                <SystemRequestsCache
+                    cacheKey="tenant_formats_cache"
+                    apiUrl="system/tenant/systemSettingFormats"
+                    cacheSeconds={300}
+                >
+                    {children}
+                </SystemRequestsCache>
+            )
         },
         model: 'system/tenant',
         label: 'Clientes',
@@ -86,7 +93,7 @@ const systemResources: IAppResourceConfig[] = [
         refreshAfter: true,
         toolbarCreateButton: { enabled: true },
 
-         referenceFilters: [
+        referenceFilters: [
             {
                 id: "Nombre",
                 label: "Nombre", // filter label'
@@ -108,17 +115,20 @@ const systemResources: IAppResourceConfig[] = [
         search: false,
         exporter: false,
         postFormatter: (params) => {
+
+
             if (params.systemMarketplaces) {
                 params.system_marketplace_ids = params.systemMarketplaces.map((item) => item.id);
             }
+
             return params;
         },
         redirectAfterUpdate: false,
 
         mutationMode: 'pessimistic',
         editProps: {
-            queryOptions:{ meta: { forceFetch: true } },
-            undoable:false,
+            queryOptions: { meta: { forceFetch: true } },
+            undoable: false,
             emptyWhileLoading: true
         },
         dataGridProps: { stickyHeader: true },
@@ -151,7 +161,7 @@ const systemResources: IAppResourceConfig[] = [
         //mainAction: {
         //    title: 'Crear permiso',
         //    // type: "ghost",
-        //    redirect: '/system/permissions/create',
+        //    redirect: '/system/permission/create',
         //},
         search: true,
         mutationMode: 'pessimistic',
@@ -168,7 +178,9 @@ const systemResources: IAppResourceConfig[] = [
         delete: false,
         listDeleteButton: { enabled: false },
     },*/
-    {
+
+    /* Old permission selector experiment */
+    /* {
         roles: [DASHAppConstants.system.SYSTEM_ROLE],
         component: ResourceTemplate,
         model: 'system/role',
@@ -182,12 +194,12 @@ const systemResources: IAppResourceConfig[] = [
             },
         ],
 
-         contextComponent: ({ resourceConfig, mode, children }) => {
+        contextComponent: ({ resourceConfig, mode, children }) => {
             console.log("TenantSettingsFormatsProvider", resourceConfig, mode);
 
             return mode === "list" ? children : <SystemRequestsCache
                 cacheKey="system_available_permissions_cache"
-                apiUrl="system/permissions/availablePermissions"
+                apiUrl="system/permission/availablePermissions"
                 cacheSeconds={300}
             >{children}</SystemRequestsCache>
         },
@@ -212,10 +224,10 @@ const systemResources: IAppResourceConfig[] = [
             redirect: "create",
         },
 
-        view:false,
+        view: false,
         schema: roleSchema,
-      
-       
+
+
 
         dataGridProps: { stickyHeader: true },
         listEditButton: { enabled: true },
@@ -232,8 +244,102 @@ const systemResources: IAppResourceConfig[] = [
 
         mutationMode: 'pessimistic',
         editProps: {
-            queryOptions:{ meta: { forceFetch: true } },
-            undoable:false,
+            queryOptions: { meta: { forceFetch: true } },
+            undoable: false,
+            emptyWhileLoading: true
+        },
+
+        saveButtonAlwaysEnabled: true,
+        refreshAfter: true,
+        //redirect: "list",
+        //redirectAfterCreate: true,
+        //redirectAfterUpdate: true,
+
+        dataGridWrapper: (props: any) => (
+            <TableContainer sx={{ maxHeight: 800 }}>{props.children}</TableContainer>
+        ),
+        // references: [
+        //      { reference: 'permission', tab: 'Permisos', target: 'role_id', schema: permissionSchema, type: "ReferenceManyField" },
+        // ],
+        // postFormatter: (params, _) => {
+        //     //if(method === "update") {
+        //     //    params._method = "PUT";
+        //     //}
+        //     delete params.permissions
+        //     return params
+        // },
+        ...drawerSettings,
+    },
+    */
+
+
+
+    {
+        roles: [DASHAppConstants.system.SYSTEM_ROLE],
+        component: ResourceTemplate,
+        model: 'system/role-permissions-bulk',
+        label: 'roles',
+        icon: <SystemUpdateAlt />,
+        group: 'Recursos de sistema',
+        menu: [
+            {
+                title: 'Roles',
+                redirect: '/system/role-permissions-bulk',
+            },
+        ],
+
+        contextComponent: ({ resourceConfig, mode, children }) => {
+            console.log("TenantSettingsFormatsProvider", resourceConfig, mode);
+
+            return mode === "list" ? children : <SystemRequestsCache
+                cacheKey="system_available_permissions_cache"
+                apiUrl="system/permission/availablePermissions"
+                cacheSeconds={300}
+            >{children}</SystemRequestsCache>
+        },
+
+        referenceFilters: [
+            {
+                id: "Nombre",
+                label: "Nombre", // filter label'
+                source: "name", // id field
+                reference: null,
+                optionText: null,
+                alwaysOn: true,
+            },
+        ],
+        toolbarCreateButton: { enabled: true },
+
+        mainAction: {
+            title: 'Agregar Rol',
+            fn: "redirect",
+            // type: "ghost",
+            mode: "create",
+            redirect: "create",
+        },
+
+        view: false,
+        schema: roleSchemaDataGrid,
+
+
+
+        dataGridProps: { stickyHeader: true },
+        listEditButton: { enabled: true },
+        listViewButton: { enabled: false },
+
+        toolbarDeleteButton: { enabled: false },
+        toolbarListButton: { enabled: false },
+        toolbarSaveButton: { enabled: true },
+        toolbarExportButton: { enabled: false },
+        toolbarEditButton: { enabled: false },
+
+
+        formGroupMode: 'groups',
+
+        mutationMode: 'pessimistic',
+        editProps: {
+            queryOptions: { meta: { forceFetch: true } },
+            undoable: false,
             emptyWhileLoading: true
         },
 
@@ -259,97 +365,100 @@ const systemResources: IAppResourceConfig[] = [
         ...drawerSettings,
     },
 
-/*
-    {
-        roles: [DASHAppConstants.system.SYSTEM_ROLE],
-        component: ResourceTemplate,
-        model: 'system/subscription-plan',
-        label: 'planes',
-        icon: <SystemUpdateAlt />,
-        group: 'Recursos de sistema',
-        menu: [
-            {
-                title: 'Planes',
-                redirect: '/system/subscription-plan',
+
+
+
+    /*
+        {
+            roles: [DASHAppConstants.system.SYSTEM_ROLE],
+            component: ResourceTemplate,
+            model: 'system/subscription-plan',
+            label: 'planes',
+            icon: <SystemUpdateAlt />,
+            group: 'Recursos de sistema',
+            menu: [
+                {
+                    title: 'Planes',
+                    redirect: '/system/subscription-plan',
+                },
+            ],
+            mainAction: {
+                title: 'Agregar',
+                // type: "ghost",
+                redirect: '/system/subscription-plan/create',
             },
-        ],
-        mainAction: {
-            title: 'Agregar',
-            // type: "ghost",
-            redirect: '/system/subscription-plan/create',
-        },
-        schema: subscriptionPlanSchema,
-        mutationMode: 'pessimistic',
-        redirectAfterUpdate: false,
-
-        dataGridProps: { stickyHeader: true },
-        listEditButton: { enabled: true },
-        toolbarCreateButton: { enabled: false },
-        toolbarDeleteButton: { enabled: false },
-        toolbarListButton: { enabled: false },
-        toolbarSaveButton: { enabled: true },
-        toolbarExportButton: { enabled: false },
-        toolbarEditButton: { enabled: false },
-
-        formGroupMode: 'groups',
-
-        dataGridWrapper: (props: any) => (
-            <TableContainer sx={{ maxHeight: 800 }}>{props.children}</TableContainer>
-        ),
-
-        postFormatter: (params, _) => {
-
-            return params
-        },
-        ...drawerSettings,
-    },
-
-
-    {
-        roles: [DASHAppConstants.system.SYSTEM_ROLE],
-        component: ResourceTemplate,
-        model: 'system/subscription',
-        label: 'suscripciones',
-        icon: <SystemUpdateAlt />,
-        group: 'Recursos de sistema',
-        menu: [
-            {
-                title: 'Subscripciones',
-                redirect: '/system/subscription',
+            schema: subscriptionPlanSchema,
+            mutationMode: 'pessimistic',
+            redirectAfterUpdate: false,
+    
+            dataGridProps: { stickyHeader: true },
+            listEditButton: { enabled: true },
+            toolbarCreateButton: { enabled: false },
+            toolbarDeleteButton: { enabled: false },
+            toolbarListButton: { enabled: false },
+            toolbarSaveButton: { enabled: true },
+            toolbarExportButton: { enabled: false },
+            toolbarEditButton: { enabled: false },
+    
+            formGroupMode: 'groups',
+    
+            dataGridWrapper: (props: any) => (
+                <TableContainer sx={{ maxHeight: 800 }}>{props.children}</TableContainer>
+            ),
+    
+            postFormatter: (params, _) => {
+    
+                return params
             },
-        ],
-        mainAction: {
-            title: 'Agregar',
-            // type: "ghost",
-            redirect: '/system/subscription-plan/create',
+            ...drawerSettings,
         },
-        schema: subscriptionSchema,
-        mutationMode: 'pessimistic',
-        redirectAfterUpdate: false,
-
-        dataGridProps: { stickyHeader: true },
-        listEditButton: { enabled: true },
-        listViewButton: { enabled: false },
-        toolbarCreateButton: { enabled: false },
-        toolbarDeleteButton: { enabled: false },
-        toolbarListButton: { enabled: false },
-        toolbarSaveButton: { enabled: true },
-        toolbarExportButton: { enabled: false },
-        toolbarEditButton: { enabled: false },
-
-        formGroupMode: 'groups',
-
-        dataGridWrapper: (props: any) => (
-            <TableContainer sx={{ maxHeight: 800 }}>{props.children}</TableContainer>
-        ),
-
-        postFormatter: (params, _) => {
-
-            return params
+    
+    
+        {
+            roles: [DASHAppConstants.system.SYSTEM_ROLE],
+            component: ResourceTemplate,
+            model: 'system/subscription',
+            label: 'suscripciones',
+            icon: <SystemUpdateAlt />,
+            group: 'Recursos de sistema',
+            menu: [
+                {
+                    title: 'Subscripciones',
+                    redirect: '/system/subscription',
+                },
+            ],
+            mainAction: {
+                title: 'Agregar',
+                // type: "ghost",
+                redirect: '/system/subscription-plan/create',
+            },
+            schema: subscriptionSchema,
+            mutationMode: 'pessimistic',
+            redirectAfterUpdate: false,
+    
+            dataGridProps: { stickyHeader: true },
+            listEditButton: { enabled: true },
+            listViewButton: { enabled: false },
+            toolbarCreateButton: { enabled: false },
+            toolbarDeleteButton: { enabled: false },
+            toolbarListButton: { enabled: false },
+            toolbarSaveButton: { enabled: true },
+            toolbarExportButton: { enabled: false },
+            toolbarEditButton: { enabled: false },
+    
+            formGroupMode: 'groups',
+    
+            dataGridWrapper: (props: any) => (
+                <TableContainer sx={{ maxHeight: 800 }}>{props.children}</TableContainer>
+            ),
+    
+            postFormatter: (params, _) => {
+    
+                return params
+            },
+            ...drawerSettings,
         },
-        ...drawerSettings,
-    },
-*/
+    */
     {
         roles: [DASHAppConstants.system.SYSTEM_ROLE],
         component: ResourceTemplate,

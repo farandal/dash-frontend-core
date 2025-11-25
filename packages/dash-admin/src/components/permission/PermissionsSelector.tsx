@@ -37,6 +37,7 @@ interface IPermissionItem {
     group: string;
     name: string;
     route_name: string;
+    checked?: boolean;
 }
 
 // Styles for HTML checkboxes
@@ -143,13 +144,13 @@ const PermissionsSelectorView: React.FC<IDashAutoAdminCustomFieldComponent> = ({
     );
 };
 
-// Utility for deep equality check (shallow for array of objects by 'name')
+// Utility for deep equality check (comparing by route_name instead of name)
 function arePermissionsEqual(a: IPermissionItem[], b: IPermissionItem[]) {
     if (!Array.isArray(a) || !Array.isArray(b)) return false;
     if (a.length !== b.length) return false;
-    const aNames = a.map(p => p.name).sort();
-    const bNames = b.map(p => p.name).sort();
-    return aNames.every((name, idx) => name === bNames[idx]);
+    const aRouteNames = a.map(p => p.route_name).sort();
+    const bRouteNames = b.map(p => p.route_name).sort();
+    return aRouteNames.every((routeName, idx) => routeName === bRouteNames[idx]);
 }
 
 const INITIAL_ITEMS_COUNT = 6;
@@ -255,15 +256,16 @@ const PermissionsSelectorBase: React.FC<IDashAutoAdminCustomFieldComponent & { r
         if (!loading && record && record.id && permissionsData.length > 0) {
             const initialPermissionObjects = record.permission_objects || [];
             // Only permissions present in permission_objects are checked
-            const checkedNames = new Set(initialPermissionObjects.map(obj => obj.name));
+            // Compare by route_name since that's the unique identifier
+            const checkedRouteNames = new Set(initialPermissionObjects.map(obj => obj.route_name));
             const initialChecked = permissionsData.flat().map(p => ({
                 ...p,
-                checked: checkedNames.has(p.name)
+                checked: checkedRouteNames.has(p.route_name)
             }));
             // Only update if different
             if (
                 statePermissions.length !== initialChecked.length ||
-                statePermissions.some((p, i) => p.name !== initialChecked[i].name || p.checked !== initialChecked[i].checked)
+                statePermissions.some((p, i) => p.route_name !== initialChecked[i].route_name || p.checked !== initialChecked[i].checked)
             ) {
                 setStatePermissions(initialChecked);
             }
@@ -284,16 +286,16 @@ const PermissionsSelectorBase: React.FC<IDashAutoAdminCustomFieldComponent & { r
     // Update the handleTogglePermission function to be more explicit about checked status
     const handleTogglePermission = useCallback((permission: IPermissionItem) => {
         setStatePermissions(prev => prev.map(p =>
-            p.name === permission.name ? { ...p, checked: !p.checked } : p
+            p.route_name === permission.route_name ? { ...p, checked: !p.checked } : p
         ));
     }, []);
 
     // Handle toggling all permissions in a group
     const handleToggleGroup = useCallback((groupPermissions: IPermissionItem[]) => {
         setStatePermissions(prev => {
-            const allSelected = groupPermissions.every(p => prev.find(sel => sel.name === p.name && sel.checked));
+            const allSelected = groupPermissions.every(p => prev.find(sel => sel.route_name === p.route_name && sel.checked));
             return prev.map(p =>
-                groupPermissions.some(gp => gp.name === p.name)
+                groupPermissions.some(gp => gp.route_name === p.route_name)
                     ? { ...p, checked: !allSelected }
                     : p
             );

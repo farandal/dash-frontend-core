@@ -1,6 +1,6 @@
 import { IDashAutoAdminAttribute } from 'dash-auto-admin';
 import TenantSettings from '../components/tenant/TenantSettings';
-import { SelectArrayInput, SelectInput } from 'react-admin';
+import TenantAttributes from '../components/tenant/TenantAttributes';
 
 const tenantSystemAdminSchema: IDashAutoAdminAttribute[] = [
 	/*{
@@ -63,7 +63,7 @@ const tenantSystemAdminSchema: IDashAutoAdminAttribute[] = [
 		tab: 'Configuración',
 		label: 'Configuración',
 		attribute: 'settings', // para un custom component, atributo no es necesario, pero es requerido por la interfaz
-		type: String,
+		type: Object,
 		custom: true,
 		inList: false, // No se puede mostrar en el listado, porque el backend no trae el listado de imagnes en la lista
 		component: TenantSettings,
@@ -73,65 +73,14 @@ const tenantSystemAdminSchema: IDashAutoAdminAttribute[] = [
 
 	{
 		tab: 'Datos contacto',
-		label: 'Razón Social',
-		attribute: 'public_name',
-		type: String,
+		label: 'Datos de contacto',
+		attribute: 'attributes',
+		type: Object,
+		custom: true,
 		inList: false,
-         inCreate: false,
-	},
-
-	{
-		tab: 'Datos contacto',
-		label: 'Dirección',
-		attribute: 'address',
-		type: String,
-		inList: false,
-         inCreate: false,
-	},
-
-	{
-		tab: 'Datos contacto',
-		label: 'Teléfono',
-		attribute: 'phone',
-		type: String,
-		inList: false,
-         inCreate: false,
-	},
-
-	{
-		tab: 'Datos contacto',
-		label: 'Teléfono Móvil',
-		attribute: 'mobile',
-		type: String,
-		inList: false,
-         inCreate: false,
-	},
-
-	{
-		tab: 'Datos contacto',
-		label: 'Nombre del contacto',
-		attribute: 'contact_name',
-		type: String,
-		inList: false,
-         inCreate: false,
-	},
-
-	{
-		tab: 'Datos contacto',
-		label: 'Email del contacto',
-		attribute: 'contact_email',
-		type: String,
-		inList: false,
-         inCreate: false,
-	},
-
-	{
-		tab: 'Datos contacto',
-		label: 'Teléfono del contacto',
-		attribute: 'contact_phone',
-		type: String,
-		inList: false,
-         inCreate: false,
+		component: TenantAttributes,
+        inCreate: false,
+        inShow:false
 	},
 ];
 

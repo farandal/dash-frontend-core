@@ -45,7 +45,7 @@ const resources: IAppResourceConfig[] = [
     mainAction: {
       title: 'Crear permiso',
       // type: "ghost",
-      redirect: '/system/permissions/create',
+      redirect: '/system/permission/create',
     },
     search: true,
     mutationMode: 'pessimistic',

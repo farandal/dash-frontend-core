@@ -15,7 +15,7 @@ import { useDataProvider } from 'react-admin';
 import { IDashAutoAdminForm } from './DashAutoAdminForm';
 
 import { useSelector } from 'react-redux';
-import { IDASHAppState } from 'dash-admin-state';
+//import { IDASHAppState } from 'dash-admin-state';
 import { Loading } from 'react-admin';
 import { useFormContext, useFormState } from 'react-hook-form';
 
@@ -59,7 +59,8 @@ const DashAutoTabbedForm: React.FC<IDashAutoTabbedForm> = ({
     }
     const formData = useSelector(
         (
-            state: IDASHAppState<any, any, IDashAutoAdminResourceConfig>,
+            //state: IDASHAppState<any, any, IDashAutoAdminResourceConfig>,
+            state: any
         ) => {
             
             return state.formData || {};
