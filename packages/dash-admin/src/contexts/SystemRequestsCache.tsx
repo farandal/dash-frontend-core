@@ -65,7 +65,7 @@ interface SystemRequestsCacheProviderProps {
  * Usage:
  * <SystemRequestsCacheProvider
  *   cacheKey="system_available_permissions_cache"
- *   apiUrl="system/permissions/availablePermissions"
+ *   apiUrl="system/permission/availablePermissions"
  *   cacheSeconds={10}
  * >
  *   ...children...

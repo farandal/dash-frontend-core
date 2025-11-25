@@ -2,14 +2,8 @@ export interface Tenant {
 	id: number;
 	name: string;
 	public_id: string;
-	public_name: string;
-	address: string | null;
-	phone: string;
-	mobile: string | null;
-	contact_name: string;
-	contact_email: string;
-	contact_phone: string;
-	settings: any[];
+	settings: any;
+	attributes: any;
 	banner_url: string;
 	horizontal_logo_url: string;
 	squared_logo_url: string | null;
