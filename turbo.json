@@ -11,9 +11,9 @@
     "tasks": {
         "build": {
           "dependsOn": ["^build"],
+          "inputs": ["src/**", "build_config.json", ".env*", "vite.config.*", "package.json"],
           "outputs": ["dist/**", ".next/**", "build/**"],
-          "env": ["NODE_ENV", "NEXT_PUBLIC_*"]
-      
+          "env": ["NODE_ENV", "NEXT_PUBLIC_*", "MODE", "CUSTOM_MODE", "TARGET_TYPE", "PLATFORM", "VITE_*"]
         },
         "dev": {
           "dependsOn": ["^build"],
