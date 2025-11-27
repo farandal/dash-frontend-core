@@ -58,6 +58,12 @@ const config: CapacitorConfig = {
     },
     Keyboard: {
       enabled: true
+    },
+    Camera: {
+      // Enable camera and photo library access
+      presentationStyle: 'fullscreen',
+      // iOS specific settings
+      saveToGallery: false
     }
   }
 };
