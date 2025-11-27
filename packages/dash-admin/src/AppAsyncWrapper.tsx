@@ -1,6 +1,6 @@
 /* eslint react/jsx-key: off */
 import React, { Suspense } from 'react';
-import { GlobalLoader } from '../';
+import GlobalLoader from './components/loader/GlobalLoader';
 import { Loading } from 'react-admin';
 
 import LoaderAnimation from 'react-spinners/PuffLoader';

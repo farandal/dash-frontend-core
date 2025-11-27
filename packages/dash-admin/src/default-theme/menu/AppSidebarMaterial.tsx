@@ -13,7 +13,7 @@ import { useWindowSize } from 'dash-utils';
 import AppMaterialMenu from './AppMaterialMenu';
 import { useLocation } from 'react-router';
 import { isEqual } from 'lodash';
-import { NavEventManager } from '../../';
+import { NavEventManager } from '../../utils/navEvents';
 
 // Only keep layout settings selector - remove nav state selectors
 const selectLayoutSettings = (state: IDASHAppState<any, any, IDashAutoAdminResourceConfig>) => ({

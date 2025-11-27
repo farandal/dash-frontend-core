@@ -8,7 +8,7 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import React from 'react';
 
 import { useWindowSize } from 'dash-utils';
-import { useAuthContext } from '../../';
+import { useAuthContext } from '../../contexts/auth/AuthContext';
 
 import { useRedirect } from 'react-admin';
 import { useNavigate } from 'react-router-dom';

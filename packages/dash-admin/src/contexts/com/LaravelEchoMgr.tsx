@@ -1,8 +1,13 @@
 import { useContext, useEffect, useState } from 'react';
 //import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
-import { IAuthContext, NotificationComponent, IDashNotificationPayloadBase } from '../../';
-import { AuthContext, NotificationWrapper, useLaravelEcho } from '../../';
+// Direct imports to avoid circular barrel imports
+import type { IAuthContext } from '../auth/AuthContext';
+import type { IDashNotificationPayloadBase } from '../../interfaces/communication/INotification';
+import { NotificationComponent } from './components/NotificationRenderer';
+import { AuthContext } from '../auth/AuthContext';
+import { NotificationWrapper } from './components/NotificationsWidget';
+import useLaravelEcho from './useLaravelEcho';
 
 export type ILaravelEchoManager = {
   events: IDashNotificationPayloadBase[];

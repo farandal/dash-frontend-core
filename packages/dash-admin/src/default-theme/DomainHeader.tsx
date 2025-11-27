@@ -8,7 +8,7 @@ import { IDASHAppState } from 'dash-admin-state';
 import MenuOpenIcon from '@mui/icons-material/MenuOpen'
 import { Box, IconButton } from '@mui/material';
 import { IDashAutoAdminResourceConfig } from 'dash-auto-admin';
-import { NavEventManager } from '../..';
+import { NavEventManager } from '../utils/navEvents';
 
 export interface IDomainHeader<U = any, A = any> extends PropsWithChildren {
 

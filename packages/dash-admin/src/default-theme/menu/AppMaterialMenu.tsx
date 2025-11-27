@@ -17,13 +17,17 @@ import { IDashAutoAdminResourceConfig } from 'dash-auto-admin';
 import { IDASHAppState } from 'dash-admin-state';
 import checkRole from '../../helpers/checkRole';
 import { slugify } from '../../utils/slugify';
-import { AvatarComponent, DarkModeSwitcher, LanguageSwitcher, TenantAvatarComponent } from '../..';
+// Direct imports to avoid circular barrel imports
+import AvatarComponent from '../../components/user/AvatarComponent';
+import DarkModeSwitcher from '../../components/misc/DarkModeSwitcher';
+import LanguageSwitcher from '../../components/misc/LanguageSwitcher';
+import TenantAvatarComponent from '../../components/user/TenantAvatarComponent';
 
 import Scrollbar from '../../components/scrollbar/Scrollbar';
 // Add this import
 import { AuthPersistenceService } from 'dash-auth';
 import {  useAuthContext } from '../../contexts/auth/AuthContext';
-import { DarkToggleMode } from '../../';
+import DarkToggleMode from '../../components/menu/DarkToggleMode';
 
 import { dashStorage } from 'dash-utils';
 // Update the interface to include new props

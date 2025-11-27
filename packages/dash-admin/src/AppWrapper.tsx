@@ -1,5 +1,5 @@
 import React, { PropsWithChildren, Suspense, useState, useTransition } from 'react';
-import { GlobalLoader } from '../';
+import GlobalLoader from './components/loader/GlobalLoader';
 import { Loading } from 'react-admin';
 import { ErrorBoundary, FallbackProps } from 'react-error-boundary';
 //import LoaderAnimation from 'react-spinners/PuffLoader';

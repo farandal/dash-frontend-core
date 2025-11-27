@@ -5,7 +5,13 @@ import DASHModal from 'dash-modal';
 import { LaravelEchoProvider } from '../contexts/com/LaravelEchoContext';
 import {DASHAppConstants} from 'dash-constants';
 import { CacheInvalidatorContextProvider } from '../utils/cache/CacheInvalidatorContext';
-import { CacheInvalidatorListenerComponent, DASHGlobalErrorHandler, DashQueryClientContext, FCMProvider, Redirect, WSMessagesManager } from '../';
+// Direct imports to avoid circular barrel imports
+import CacheInvalidatorListenerComponent from '../utils/cache/CacheInvalidatorListenerComponent';
+import DASHGlobalErrorHandler from '../components/misc/DASHGlobalErrorHandler';
+import DashQueryClientContext from '../contexts/DashQueryClientContext';
+import { FCMProvider } from '../contexts/com/FCMContext';
+import Redirect from '../components/custom/Redirect';
+import WSMessagesManager from '../hooks/notifications/WSMessagesManager';
 import { Theme } from '@mui/material';
 import { LocalizationProvider, LocalizationProviderProps } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
