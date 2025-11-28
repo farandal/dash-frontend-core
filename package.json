@@ -30,6 +30,7 @@
     "release:electron:kitchntabs:ngrok": "pnpm config:electron:kitchntabs:production && electron-icon-builder --input=./apps/dash/src/assets/logo-squared.png --output=./ && turbo build --no-cache && cross-env NODE_OPTIONS=--max-old-space-size=8096 electron-builder --config electron-builder.config.js",
     "release:electron:kitchntabs:ngrok:web": "pnpm config:electron:kitchntabs:production && turbo build",
     "release:electron:kitchntabs:ngrok:app": "cross-env NODE_OPTIONS=--max-old-space-size=8096 electron-builder --config electron-builder.config.js",
+    "release:electron:kitchntabs:debian": "pnpm config:electron:kitchntabs:production && electron-icon-builder --input=./apps/dash/src/assets/logo-squared.png --output=./ && turbo build --no-cache && cross-env NODE_OPTIONS=--max-old-space-size=8096 electron-builder --config electron-builder.config.js --linux deb --armv7l --arm64",
     "dev-win": "cd apps/dash && pnpm dev-win",
     "_build": "rimraf node_modules/.turbo node_modules/.vite && turbo build --filter=!./packages/react-18-beautiful-dnd-grid --force",
     "_build-win": "rimraf node_modules/.turbo node_modules/.vite && turbo build --filter=!./packages/react-18-beautiful-dnd-grid --force",
