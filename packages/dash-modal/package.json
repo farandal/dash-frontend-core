@@ -28,12 +28,12 @@
 	},
 	"scripts": {
 		"lint": "eslint --ext .ts,.tsx .",
-		"format": "yarn prettier --write . && yarn format-check && yarn lint",
-		"lint:check": "yarn prettier --check .",
-		"lint:fix": "yarn prettier --write .",
+		"format": "pnpm prettier --write . && pnpm format-check && pnpm lint",
+		"lint:check": "pnpm prettier --check .",
+		"lint:fix": "pnpm prettier --write .",
 		
-		"check-updates": "yarn npm-check-updates",
-		"updates-packages": "yarn npm-check-updates -u"
+		"check-updates": "pnpm npm-check-updates",
+		"updates-packages": "pnpm npm-check-updates -u"
 	},
 	"browserslist": {
 		"production": [
