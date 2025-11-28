@@ -11,6 +11,7 @@ module.exports = {
   appId: 'com.kitchntab.app',
   productName: dashPackage.name,
   asar: false,
+  npmRebuild: false, // Disable native dependency rebuild - not needed for this app
   directories: {
     output: 'release/',
     buildResources: 'icons' 
@@ -21,7 +22,11 @@ module.exports = {
   "resources/sounds/**/*",
   "apps/dash/dist/**",
   "apps/dash/dist-electron/**",
-  "apps/dash/electron-config.prod.yaml"
+  "apps/dash/electron-config.prod.yaml",
+  "!**/packages/**",
+  "!**/node_modules/.pnpm/**",
+  "!**/*.ts",
+  "!**/*.map"
   ],
   
   win: {
@@ -90,9 +95,25 @@ module.exports = {
     binaries: ['Contents/Resources/dash-python-service/kt_service']
   },
   linux: {
-   // icon: path.resolve(__dirname, './icons/png/'),
-   icon: 'icons/png/',
-    category: 'Office'
+    icon: 'icons/png/',
+    category: 'Office',
+    target: [
+      {
+        target: 'deb',
+        arch: ['x64', 'armv7l', 'arm64']  // Support x64, Raspberry Pi 32-bit and 64-bit
+      },
+      {
+        target: 'AppImage',
+        arch: ['x64', 'armv7l', 'arm64']
+      }
+    ],
+    // Debian package specific settings
+    artifactName: '${productName}-${version}-${arch}.${ext}'
+  },
+  deb: {
+    depends: ['libgtk-3-0', 'libnotify4', 'libnss3', 'libxss1', 'libxtst6', 'xdg-utils', 'libatspi2.0-0', 'libuuid1', 'libsecret-1-0'],
+    category: 'Office',
+    priority: 'optional'
   },
  // Use asarUnpack for files that need to be accessed directly
  asarUnpack: [
