@@ -80,7 +80,7 @@ const systemResources: IAppResourceConfig[] = [
         },
 
         {
-            title: "Papelera",
+            title: "🗑",
             redirect: "/system/tenant/trash",
         },
         {
@@ -687,12 +687,12 @@ const systemResources: IAppResourceConfig[] = [
                 redirect: '/system/user',
             },
             {
-                title: "Papelera",
+                title: "🗑",
                 redirect: "/system/user/trash",
             }
         ],
         //{
-        //    title: "Papelera",
+        //    title: "🗑",
         //    redirect: "/trash/admin/user",
         //}],
         mainAction: {
@@ -773,7 +773,7 @@ if (JSON.parse(constants.system.ENABLE_TENANT_IMPERSONATION)) {
                 redirect: '/system/tenant',
             },
             {
-                title: "Papelera",
+                title: "🗑",
                 redirect: "/trash/system/tenant",
             }
         ],
@@ -826,7 +826,7 @@ if (JSON.parse(constants.system.ENABLE_TENANT_IMPERSONATION)) {
                 redirect: '/system/tenant',
             },
             {
-                    title: "Papelera",
+                    title: "🗑",
                     redirect: "/trash/system/tenant",
                 }
         ],

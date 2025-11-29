@@ -178,7 +178,7 @@ const tenantResources: IAppResourceConfig[] = [
       },
     ],
     //{
-    //    title: "Papelera",
+    //    title: "🗑",
     //    redirect: "/trash/admin/user",
     //}],
     mainAction: {

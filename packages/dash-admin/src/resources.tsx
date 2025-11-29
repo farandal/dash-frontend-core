@@ -104,7 +104,7 @@ const resources: IAppResourceConfig[] = [
              redirect: "/user",
          },
          //{
-         //    title: "Papelera",
+         //    title: "🗑",
          //    redirect: "/trash/admin/user",
          //}],
          mainAction: {
@@ -182,7 +182,7 @@ JSON.parse(constants.system.ENABLE_TENANT_IMPERSONATION) &&
         redirect: '/system/tenant',
       },
       /*{
-                title: "Papelera",
+                title: "🗑",
                 redirect: "/trash/system/tenant",
             }*/
     ],
