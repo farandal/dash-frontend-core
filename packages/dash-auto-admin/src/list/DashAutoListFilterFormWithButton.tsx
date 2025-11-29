@@ -2,7 +2,7 @@
 import * as React from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 import { Box, Button } from '@mui/material';
-import { useListContext, FilterFormBase } from 'react-admin/src';
+import { useListContext, FilterFormBase } from 'react-admin';
 
 import { IToolbarFilters } from './DashAutoListTopToolbar';
 

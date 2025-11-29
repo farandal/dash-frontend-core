@@ -1,6 +1,6 @@
 import FabButton from '../common/components/FabButton';
-import { SavedQueriesList, useListContext, useRefresh, useUnselectAll } from 'react-admin/src';
-import { TopToolbar, FilterForm } from 'react-admin/src';
+import { SavedQueriesList, useListContext, useRefresh, useUnselectAll } from 'react-admin';
+import { TopToolbar, FilterForm } from 'react-admin';
 import IDashAutoAdminResourceConfig from '../interfaces/IDashAutoAdminResourceConfig';
 import { FC, ReactNode } from 'react';
 import { Box, Button, Collapse, Fab, Grid, Portal } from '@mui/material';

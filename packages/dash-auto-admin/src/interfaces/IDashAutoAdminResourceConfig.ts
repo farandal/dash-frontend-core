@@ -10,7 +10,7 @@ import IDashAutoAdminCustomFieldComponent from './IDashAutoAdminCustomFieldCompo
 import { IDashAutoDrawerPublicProps } from '../DashAutoDrawer';
 import React, { FC, JSX, ReactNode, ReactPortal } from 'react';
 
-import { PaginationProps, Datagrid, ListProps, DatagridProps } from 'react-admin/src';
+import { PaginationProps, Datagrid, ListProps, DatagridProps } from 'react-admin';
 
 import { IDashAutoLayoutRenderFunction } from '../DashAutoLayout';
 import { IDashAutoListActionsWrapper } from '../list/DashAutoListDefaultActionsWrapper';

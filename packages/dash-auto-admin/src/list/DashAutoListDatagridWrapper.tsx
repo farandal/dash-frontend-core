@@ -1,5 +1,5 @@
 import { useLocation } from 'react-router';
-import { useListContext, useUnselectAll } from 'react-admin/src';
+import { useListContext, useUnselectAll } from 'react-admin';
 
 import IDashAutoAdminResourceConfig from '../interfaces/IDashAutoAdminResourceConfig';
 import useAutoAdminLoadingStateMediator from '../hooks/useAutoAdminLoadingStateMediator';

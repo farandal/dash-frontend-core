@@ -4,7 +4,7 @@ import {
 	AutocompleteInputProps,
 	SelectArrayInputProps,
 	AutocompleteArrayInputProps,
-} from 'react-admin/src';
+} from 'react-admin';
 
 /**
  * IReferenceFilter.

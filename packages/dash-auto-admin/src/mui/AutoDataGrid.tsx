@@ -3,7 +3,7 @@ import React, { useMemo, memo } from 'react';
 import {
     TextField,
     Datagrid,
-} from 'react-admin/src';
+} from 'react-admin';
 
 import IDashAutoAdminAttribute from '../interfaces/IDashAutoAdminAttribute';
 import IDashAutoAdminResourceConfig from '../interfaces/IDashAutoAdminResourceConfig';

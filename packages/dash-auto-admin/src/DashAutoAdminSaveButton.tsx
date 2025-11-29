@@ -1,5 +1,5 @@
 import { SaveButton } from 'react-admin';
-import { SaveButtonProps } from 'react-admin/src';
+import { SaveButtonProps } from 'react-admin';
 import { useFormContext } from 'react-hook-form';
 import IDashAutoAdminResourceConfig from './interfaces/IDashAutoAdminResourceConfig';
 import { FC, useState } from 'react'; // Add useState

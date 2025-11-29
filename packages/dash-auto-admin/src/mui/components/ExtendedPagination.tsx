@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 
 import { useListContext, Pagination } from 'react-admin';
-import { PaginationProps } from 'react-admin/src';
+import { PaginationProps } from 'react-admin';
 
 const ExtendedPagination:FC<PaginationProps> = (props) => {
 	const list = useListContext();

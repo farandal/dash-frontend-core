@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import autoFiltersGenerator from './DashAutoFiltersGenerator';
-import { PaginationProps, useUnselectAll } from 'react-admin/src';
+import { PaginationProps, useUnselectAll } from 'react-admin';
 
 import { List } from 'react-admin';
 

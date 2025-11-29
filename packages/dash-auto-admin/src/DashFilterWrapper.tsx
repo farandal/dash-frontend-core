@@ -1,5 +1,5 @@
 import React from 'react';
-import { useInput, InputProps } from 'react-admin/src';
+import { useInput, InputProps } from 'react-admin';
 
 interface DashFilterWrapperProps extends InputProps {
     children: React.ReactElement;
