@@ -19,14 +19,14 @@
     "release:android:kitchntabs:production": "turbo build && cap sync android && cd ./android && ./gradlew bundleRelease",
     "config:electron:kitchntabs:production": "cross-env MODE=production CUSTOM_MODE=kitchntabs.production TARGET_TYPE=desktop PLATFORM=electron NODE_OPTIONS=--max-old-space-size=4048 node build_config.js",
     "config:electron:kitchntabs:ngrok": "cross-env MODE=development CUSTOM_MODE=kitchntabs.ngrok TARGET_TYPE=desktop PLATFORM=electron NODE_OPTIONS=--max-old-space-size=4048 node build_config.js",
-    "dev:app:kitchntabs:production": "cross-env MODE=development CUSTOM_MODE=kitchntabs.production TARGET_TYPE=desktop PLATFORM=electron node build_config.js && cd apps/dash && npm run dev:kitchntabs:production",
-    "dev:app:kitchntabs:ngrok": "cross-env MODE=development CUSTOM_MODE=kitchntabs.ngrok TARGET_TYPE=desktop PLATFORM=electron node build_config.js && cd apps/dash && npm run dev:kitchntabs:ngrok",
-    "dev:electron:kitchntabs:production": "vite build -c electron.vite.config.mts && cross-env NODE_ENV=development BUILD_ENV=dev concurrently \" pnpm dev:app:kitchntabs:production &\" \"wait-on http://127.0.0.1:3006 && electron .\"",
+    "dev:app:kitchntabs:production": "cross-env MODE=development CUSTOM_MODE=kitchntabs.production TARGET_TYPE=desktop PLATFORM=electron node build_config.js && cd apps/dash && pnpm dev:kitchntabs:production",
+    "dev:app:kitchntabs:ngrok": "cross-env MODE=development CUSTOM_MODE=kitchntabs.ngrok TARGET_TYPE=desktop PLATFORM=electron node build_config.js && cd apps/dash && pnpm dev:kitchntabs:ngrok",
+    "dev:electron:kitchntabs:production": "pnpm config:electron:kitchntabs:production && vite build -c electron.vite.config.mts && cross-env NODE_ENV=development BUILD_ENV=dev concurrently \"pnpm dev:app:kitchntabs:production\" \"wait-on http://127.0.0.1:3006 && electron .\"",
     "release:electron:kitchntabs:production": "pnpm config:electron:kitchntabs:production && node build-python-service.js && electron-icon-builder --input=./apps/dash/src/assets/logo-squared.png --output=./ && vite build -c electron.vite.config.mts && turbo build --no-cache && cross-env NODE_OPTIONS=--max-old-space-size=8096 node build-electron.js --config electron-builder.config.js",
     "release:electron:kitchntabs:development": "pnpm config:electron:kitchntabs:ngrok && node build-python-service.js && electron-icon-builder --input=./apps/dash/src/assets/logo-squared.png --output=./ && vite build -c electron.vite.config.mts && turbo build --no-cache && cross-env NODE_OPTIONS=--max-old-space-size=8096 node build-electron.js --config electron-builder.config.js",
     "release:electron:kitchntabs:production:web": "pnpm config:electron:kitchntabs:production && turbo build",
     "release:electron:kitchntabs:production:app": "cross-env NODE_OPTIONS=--max-old-space-size=8096 node build-electron.js --config electron-builder.config.js",
-    "dev:electron:kitchntabs:ngrok": "vite build -c electron.vite.config.mts && cross-env NODE_ENV=development BUILD_ENV=dev concurrently \" pnpm dev:app:kitchntabs:ngrok &\" \"wait-on http://127.0.0.1:3006 && electron .\"",
+    "dev:electron:kitchntabs:ngrok": "pnpm config:electron:kitchntabs:ngrok && vite build -c electron.vite.config.mts && cross-env NODE_ENV=development BUILD_ENV=dev concurrently \"pnpm dev:app:kitchntabs:ngrok\" \"wait-on http://127.0.0.1:3006 && electron .\"",
     "dev:electron:kitchntabs:ngrok:win": "vite build -c electron.vite.config.mts && cross-env NODE_ENV=development BUILD_ENV=dev concurrently \"npm run dev:app:kitchntabs:ngrok\" \"wait-on http://127.0.0.1:3006 && electron .\"",
     "release:electron:kitchntabs:ngrok": "pnpm config:electron:kitchntabs:ngrok && node build-python-service.js && electron-icon-builder --input=./apps/dash/src/assets/logo-squared.png --output=./ && vite build -c electron.vite.config.mts && turbo build --no-cache && cross-env NODE_OPTIONS=--max-old-space-size=8096 node build-electron.js --config electron-builder.config.js",
     "release:electron:kitchntabs:ngrok:web": "pnpm config:electron:kitchntabs:ngrok && turbo build",
@@ -186,5 +186,55 @@
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "query-string": "7.1.3"
+  },
+  "pnpm": {
+    "overrides": {
+      "eslint": "^9.39.1",
+      "@types/react": "^19.2.7",
+      "typescript": "^5.9.3",
+      "rollup": "^4.53.3",
+      "vite": "^7.2.4"
+    },
+    "peerDependencyRules": {
+      "ignoreMissingPeerDependencies": [
+        "eslint",
+        "@types/react",
+        "typescript",
+        "rollup",
+        "vite",
+        "react-router-dom",
+        "@mui/material",
+        "react-scripts",
+        "history",
+        "react-redux",
+        "redux",
+        "@typescript-eslint/*",
+        "eslint-plugin-*"
+      ],
+      "allowedVersions": {
+        "eslint": ">=8.0.0",
+        "typescript": ">=4.0.0",
+        "@types/react": ">=16.0.0",
+        "rollup": ">=2.0.0",
+        "vite": ">=4.0.0",
+        "@mui/material": ">=5.0.0",
+        "react-router-dom": ">=6.0.0",
+        "eslint-plugin-react-hooks": ">=4.0.0",
+        "@typescript-eslint/eslint-plugin": ">=7.0.0",
+        "@typescript-eslint/parser": ">=7.0.0"
+      },
+      "allowAny": [
+        "eslint",
+        "eslint-plugin-react-hooks",
+        "@typescript-eslint/eslint-plugin",
+        "@typescript-eslint/parser",
+        "@mui/material",
+        "react-router-dom",
+        "react-scripts",
+        "history",
+        "react-redux",
+        "redux"
+      ]
+    }
   }
 }
