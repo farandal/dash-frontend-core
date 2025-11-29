@@ -6,6 +6,9 @@ import electron from 'vite-plugin-electron/simple'
 import pkg from './package.json'
 // import basicSsl from '@vitejs/plugin-basic-ssl';
 
+// Modules that MUST remain external (native modules that can't be bundled)
+const nativeModules = ['electron'];
+
 // https://vitejs.dev/config/
 export default defineConfig(({ command }) => {
   rmSync('dist-electron', { recursive: true, force: true })
@@ -52,9 +55,10 @@ export default defineConfig(({ command }) => {
               minify: false, // Keep it false for better debugging
               outDir: 'apps/dash/dist-electron/main',
               rollupOptions: {
-                external: Object.keys('dependencies' in pkg ? pkg.dependencies : []),
+                // Only externalize native modules - bundle everything else
+                external: nativeModules,
                 output: {
-                  format: 'esm', // Use ESM format instead of CommonJS
+                  format: 'cjs', // Use CommonJS for better compatibility
                   entryFileNames: '[name].js'
                 }
               }
@@ -71,9 +75,10 @@ export default defineConfig(({ command }) => {
               minify: false, // Keep it false for easier debugging
               outDir: 'apps/dash/dist-electron/preload',
               rollupOptions: {
-                external: Object.keys('dependencies' in pkg ? pkg.dependencies : []),
+                // Only externalize native modules - bundle everything else
+                external: nativeModules,
                 output: {
-                  format: 'cjs', // Use ESM format instead of CommonJS
+                  format: 'cjs', // Use CommonJS for preload
                   entryFileNames: '[name].js'
                 }
               },
