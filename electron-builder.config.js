@@ -1,4 +1,5 @@
 const path = require('path');
+const fs = require('fs');
 const dashPackage = require('./apps/dash/package.json');
 
 const platform = process.platform;
@@ -6,27 +7,83 @@ const platform = process.platform;
 /**
  * @type {import('electron-builder').Configuration}
  * @see https://www.electron.build/configuration/configuration
+ * 
+ * IMPORTANT: This project uses pnpm workspaces with Vite bundling.
+ * All dependencies are bundled by Vite, so we don't need node_modules collection.
+ * We use beforeBuild hook to create a minimal package.json that bypasses dependency scanning.
  */
 module.exports = {
   appId: 'com.kitchntab.app',
   productName: dashPackage.name,
   asar: false,
   npmRebuild: false, // Disable native dependency rebuild - not needed for this app
+  nodeGypRebuild: false, // Disable node-gyp rebuild
+  buildDependenciesFromSource: false, // Don't build dependencies from source
+  detectUpdateChannel: false,
+  // Explicit electron version - required when node_modules is hidden during build
+  electronVersion: '36.7.4',
+  
+  // CRITICAL: Hook to bypass node_modules collection for pnpm workspaces
+  // Since Vite bundles everything, we create a minimal package.json before packing
+  beforeBuild: async (context) => {
+    // Create a minimal package.json that tells electron-builder there are no dependencies
+    const tempPackagePath = path.join(context.appDir, 'package.json.backup');
+    const packagePath = path.join(context.appDir, 'package.json');
+    
+    // Backup original package.json
+    if (fs.existsSync(packagePath)) {
+      fs.copyFileSync(packagePath, tempPackagePath);
+    }
+    
+    // Create minimal package.json with no dependencies (Vite bundles everything)
+    const minimalPackage = {
+      name: dashPackage.name,
+      version: dashPackage.version,
+      main: 'apps/dash/dist-electron/main/index.js',
+      dependencies: {}  // Empty - all bundled by Vite
+    };
+    
+    fs.writeFileSync(packagePath, JSON.stringify(minimalPackage, null, 2));
+    console.log('✅ Created minimal package.json for electron-builder (pnpm workspace workaround)');
+    
+    return true;
+  },
+  
+  // Restore original package.json after build
+  afterPack: async (context) => {
+    const tempPackagePath = path.join(context.appOutDir, '..', '..', 'package.json.backup');
+    const packagePath = path.join(context.appOutDir, '..', '..', 'package.json');
+    
+    if (fs.existsSync(tempPackagePath)) {
+      fs.copyFileSync(tempPackagePath, packagePath);
+      fs.unlinkSync(tempPackagePath);
+      console.log('✅ Restored original package.json');
+    }
+    
+    return true;
+  },
+  
   directories: {
     output: 'release/',
     buildResources: 'icons' 
   },
+  // Tell electron-builder to not collect node_modules (we bundle everything with Vite)
   files: [
-   
   "electron-config.yaml",
   "resources/sounds/**/*",
   "apps/dash/dist/**",
   "apps/dash/dist-electron/**",
   "apps/dash/electron-config.prod.yaml",
+  // Exclude all node_modules since Vite bundles everything
+  "!**/node_modules/**",
+  "!**/node_modules",
   "!**/packages/**",
   "!**/node_modules/.pnpm/**",
   "!**/*.ts",
-  "!**/*.map"
+  "!**/*.map",
+  "!package-lock.json",
+  "!pnpm-lock.yaml",
+  "!yarn.lock"
   ],
   
   win: {
