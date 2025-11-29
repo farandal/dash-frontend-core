@@ -1,5 +1,5 @@
 import { Avatar, CircularProgress, Menu, useMediaQuery, useTheme } from '@mui/material';
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import { IconMenuItem } from 'mui-nested-menu';
 import ReactDOM from 'react-dom';
 
@@ -11,7 +11,7 @@ import { useWindowSize } from 'dash-utils';
 import { useAuthContext } from '../../contexts/auth/AuthContext';
 
 import { useRedirect } from 'react-admin';
-import { useNavigate } from 'react-router-dom';
+//import { useNavigate } from 'react-router-dom';
 
 const AvatarComponent: React.FC = (_props) => {
     const { user, logout, authenticated } = useAuthContext();
@@ -25,8 +25,8 @@ const AvatarComponent: React.FC = (_props) => {
     const menuRef = useRef<HTMLDivElement>(null);
     const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 });
     const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-    const navigate = useNavigate();
-    const ra_redirect = useRedirect();
+    //const navigate = useNavigate();
+    //const ra_redirect = useRedirect();
 
     // Add state to track user data changes and force re-renders
     const [currentUser, setCurrentUser] = useState(user);
@@ -64,12 +64,12 @@ useEffect(() => {
         }*/
     
         logout();
-        navigate('/login');
+        //navigate('/login');
     };
 
     const handleProfileRedirect = () => {
         //window.location.href = '/profile';
-        ra_redirect('/profile');
+        //ra_redirect('/profile');
     };
 
     const calculateMenuPosition = () => {
