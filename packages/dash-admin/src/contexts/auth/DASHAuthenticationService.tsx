@@ -50,11 +50,33 @@ class DASHAuthenticationService {
         this.axiosInstance = createAxiosInstance(options);
     }
 
+    // Helper to sanitize redirect URLs for Electron file:// paths
+    private sanitizeRedirectUrl(url: string): string {
+        if (!url) return '/';
+        
+        // Check if this looks like a Windows file path (common in Electron)
+        // e.g., "/C:/Program Files/..." or "C:/..." or file:// URLs
+        const isWindowsFilePath = /^\/[A-Za-z]:\/|^[A-Za-z]:\/|^file:\/\//i.test(url);
+        
+        if (isWindowsFilePath) {
+            console.log('Detected Windows file path in redirect, resetting to /');
+            return '/';
+        }
+        
+        // Check for common Electron file patterns
+        if (url.includes('/resources/app/') || url.includes('/dist/index.html') || url.includes('Program Files')) {
+            console.log('Detected Electron app path in redirect, resetting to /');
+            return '/';
+        }
+        
+        return url;
+    }
+
     // Method to set pending redirect URL
     setPendingRedirect(url: string): void {
-
-        console.log('Setting pending redirect:', url);
-        dashStorage.setItem(this.REDIRECT_STORAGE_KEY, url);
+        const sanitizedUrl = this.sanitizeRedirectUrl(url);
+        console.log('Setting pending redirect:', url, '→', sanitizedUrl);
+        dashStorage.setItem(this.REDIRECT_STORAGE_KEY, sanitizedUrl);
     }
 
     // Method to get pending redirect URL
