@@ -6,7 +6,7 @@ import {
 } from 'react';
 
 import { Datagrid } from 'react-admin';
-import { DatagridProps } from 'react-admin/src';
+import { DatagridProps } from 'react-admin';
 import SortableDatagridBody from './SortableDataGridBody';
 import { SortableDatagridHeader } from './SortableDataGridHeader';
 import SortableDatagridRow from './SortableDataGridRow';

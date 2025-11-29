@@ -7,7 +7,7 @@ import {
     DatagridBodyProps,
     DatagridRow,
     PureDatagridRow,
-} from 'react-admin/src';
+} from 'react-admin';
 
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 

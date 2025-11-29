@@ -1,4 +1,4 @@
-import { AutocompleteInputProps, RaRecord } from 'react-admin/src';
+import { AutocompleteInputProps, RaRecord } from 'react-admin';
 import React from 'react';
 
 const AutocompleteCheckBoxArrayInput = <

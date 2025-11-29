@@ -41,7 +41,7 @@ import {
 	InputHelperText,
 	SupportCreateSuggestionOptions,
 	useSupportCreateSuggestion,
-} from 'react-admin/src';
+} from 'react-admin';
 
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';

@@ -28,7 +28,7 @@ import {
     DatagridRowProps,
     ExpandRowButton,
     useDatagridContext,
-} from 'react-admin/src';
+} from 'react-admin';
 import MenuIcon from '@mui/icons-material/Menu';
 
 const computeNbColumns = (expand, children, hasBulkActions) =>

@@ -21,7 +21,7 @@ import {
     DatagridHeaderProps,
     useDatagridContext,
     useTranslate,
-} from 'react-admin/src';
+} from 'react-admin';
 import MenuIcon from '@mui/icons-material/Menu';
 
 /**
