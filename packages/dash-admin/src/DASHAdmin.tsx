@@ -139,13 +139,13 @@ const AsyncResources: React.FC<IAsyncResources> = React.memo((props) => {
           path='/profile'
           element={customProfilePage || <Profile />}
         />
-      ) : <></>}
+      ) : null}
       
-      {(authenticated) && getCustomAuthRoutes()
+      {(authenticated) ? getCustomAuthRoutes()
       .filter(route => !route.props['data-layout']?.toString().includes('no-layout'))
       .map((route, index) => {
         return <Route key={`auth-route-${index}`} {...route.props} />
-      })}
+      }) : null}
 
       {getCustomRoutes()
       .filter(route => {
@@ -156,7 +156,7 @@ const AsyncResources: React.FC<IAsyncResources> = React.memo((props) => {
       })
       .map((route, index) => {
         return <Route key={`custom-auth-route-${index}`} {...route.props}>
-          {route.props.children || <></>}
+          {route.props.children || null}
         </Route>
       })}         
     </CustomRoutes>
@@ -168,7 +168,7 @@ const AsyncResources: React.FC<IAsyncResources> = React.memo((props) => {
       .filter(route => route.props['data-layout']?.toString().includes('no-layout'))
       .map((route, index) => {
         return <Route key={`auth-route-${index}`} {...route.props} />
-      }) : <></>}
+      }) : null}
 
       {getCustomRoutes()
       .filter(route => {
@@ -179,7 +179,7 @@ const AsyncResources: React.FC<IAsyncResources> = React.memo((props) => {
       })
       .map((route, index) => {
         return <Route key={`custom-auth-route-${index}`} {...route.props}>
-          {route.props.children || <></>}
+          {route.props.children || null}
         </Route>
       })}        
     </CustomRoutes>

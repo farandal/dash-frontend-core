@@ -1,6 +1,6 @@
 /* eslint-disable no-mixed-spaces-and-tabs */
 
-import { CustomRoutes, ResourceContextProvider, ResourceProps, RestoreScrollPosition } from 'react-admin/src';
+import { CustomRoutes, ResourceContextProvider, ResourceProps, RestoreScrollPosition } from 'react-admin';
 import { Route, Routes, useParams } from 'react-router-dom';
 import { isValidElementType } from 'react-is';
 //import { Outlet } from 'react-router';
@@ -70,11 +70,14 @@ export const ResourceTemplate = (resourceConfig:IDashAutoAdminResourceConfig) =>
     return (
         <>
             <CustomRoutes>
+                {/* Custom routes from resource config - rendered at top level */}
+                {typeof resourceConfig.customRoutes === 'function' 
+                    ? resourceConfig.customRoutes(resourceConfig) 
+                    : null}
+
                 <Route element={<MotionWrapper />}>
 
-                    {typeof resourceConfig.customRoutes === 'function' ? resourceConfig.customRoutes(resourceConfig) : <></>}
-
-                    {resourceConfig?.drawer === true && resourceConfig?.drawerOptions?.create !== false && (
+                    {resourceConfig?.drawer === true && resourceConfig?.drawerOptions?.create !== false ? (
                         <Route
                             path={URL_PREFIX + PATH + '/create'}
                             element={
@@ -88,8 +91,8 @@ export const ResourceTemplate = (resourceConfig:IDashAutoAdminResourceConfig) =>
                                 /></DashResourceProvider>
                             }
                         />
-                    )}
-                    {resourceConfig?.drawer === true && resourceConfig?.drawerOptions?.edit !== false && (
+                    ) : null}
+                    {resourceConfig?.drawer === true && resourceConfig?.drawerOptions?.edit !== false ? (
                         <Route
                             path={URL_PREFIX + PATH + '/inline'}
                             element={
@@ -101,8 +104,8 @@ export const ResourceTemplate = (resourceConfig:IDashAutoAdminResourceConfig) =>
                                 /></DashResourceProvider>
                             }
                         />
-                    )}
-                    {resourceConfig?.drawer === true && resourceConfig?.drawerOptions?.view !== false && (
+                    ) : null}
+                    {resourceConfig?.drawer === true && resourceConfig?.drawerOptions?.view !== false ? (
                         <Route
                             path={URL_PREFIX + PATH + '/inline/:' + idParamName}
                             element={
@@ -120,8 +123,8 @@ export const ResourceTemplate = (resourceConfig:IDashAutoAdminResourceConfig) =>
                                 /></DashResourceProvider>
                             }
                         />
-                    )}
-                    {resourceConfig?.drawer === true && resourceConfig?.drawerOptions?.edit !== false && (
+                    ) : null}
+                    {resourceConfig?.drawer === true && resourceConfig?.drawerOptions?.edit !== false ? (
                         <Route
                             path={URL_PREFIX + PATH + '/inline/:' + idParamName + '/edit'}
                             element={
@@ -139,8 +142,8 @@ export const ResourceTemplate = (resourceConfig:IDashAutoAdminResourceConfig) =>
                                 /></DashResourceProvider>
                             }
                         />
-                    )}
-                    {resourceConfig?.drawer === true && resourceConfig?.drawerOptions?.view !== false && (
+                    ) : null}
+                    {resourceConfig?.drawer === true && resourceConfig?.drawerOptions?.view !== false ? (
                         <Route
                             path={URL_PREFIX + PATH + '/inline/:' + idParamName + '/show'}
                             element={
@@ -158,8 +161,8 @@ export const ResourceTemplate = (resourceConfig:IDashAutoAdminResourceConfig) =>
                                 /></DashResourceProvider>
                             }
                         />
-                    )}
-                    {resourceConfig?.drawer === true && resourceConfig?.drawerOptions?.create !== false && (
+                    ) : null}
+                    {resourceConfig?.drawer === true && resourceConfig?.drawerOptions?.create !== false ? (
                         <Route
                             path={URL_PREFIX + PATH + '/inline/create'}
                             element={
@@ -171,7 +174,7 @@ export const ResourceTemplate = (resourceConfig:IDashAutoAdminResourceConfig) =>
                                 /></DashResourceProvider>
                             }
                         />
-                    )}
+                    ) : null}
 
                 </Route>
 
@@ -194,7 +197,7 @@ export const ResourceTemplate = (resourceConfig:IDashAutoAdminResourceConfig) =>
                 recordRepresentation={resourceConfig?.recordRepresentation || "name"}
                 resourceConfig={resourceConfig}
                 // @ts-ignore Expected mismatch types, nevertheless compatible 
-                icon={resourceConfig?.icon || <></>}
+                icon={resourceConfig?.icon || null}
 
                 {..._list && {list : () => {
                     return <ResourceTemplateList resourceConfig={resourceConfig} />;
@@ -213,20 +216,7 @@ export const ResourceTemplate = (resourceConfig:IDashAutoAdminResourceConfig) =>
                  
                     return <ResourceTemplateEdit resourceConfig={resourceConfig} />;
                 } }}
-
-
-            >
-               {/*
-                {_list && <Route path={`/*`} element={ <DashResourceProvider resourceConfig={resourceConfig}><ResourceTemplateList resourceConfig={resourceConfig} /></DashResourceProvider>} />}
-                {_create && <Route path={`create/*`} element={ <DashResourceProvider resourceConfig={resourceConfig}><ResourceTemplateCreate resourceConfig={resourceConfig} /></DashResourceProvider>} />}
-                {_view && <Route path={`:id/show/*`}  element={ <DashResourceProvider resourceConfig={resourceConfig}><ResourceTemplateShow resourceConfig={resourceConfig} /></DashResourceProvider>} />}
-                {_edit && <Route path={`:id/*`} element={<DashResourceProvider resourceConfig={resourceConfig}><ResourceTemplateEdit resourceConfig={resourceConfig} /></DashResourceProvider>} />}
-              */}
-              <Route path="trash/*" element={ <TrashTemplate resourceConfig={resourceConfig}  />} />
-             
-              
-
-            </Resource>
+            />
         </>
 
     );

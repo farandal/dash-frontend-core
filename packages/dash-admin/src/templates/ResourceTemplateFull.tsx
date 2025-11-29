@@ -82,8 +82,9 @@ export const ResourceTemplateFull = (
     return (
         <DashResourceProvider resourceConfig={resourceConfig}>
             <CustomRoutes>
-                {typeof resourceConfig.customRoutes === 'function' &&
-                    resourceConfig.customRoutes(resourceConfig)}
+                {typeof resourceConfig.customRoutes === 'function'
+                    ? resourceConfig.customRoutes(resourceConfig)
+                    : null}
                 <Route
                     path={resourceConfig.model + '/inline'}
                     element={

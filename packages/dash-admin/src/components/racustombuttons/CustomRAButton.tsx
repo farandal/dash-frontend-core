@@ -11,8 +11,7 @@ import {
 	useCreatePath,
 } from 'react-admin';
 
-import { Button } from 'react-admin';
-import { ButtonProps } from 'react-admin/src';
+import { Button, ButtonProps } from 'react-admin';
 
 export type ICustomRAButton<T extends RaRecord> = ShowButtonProps;
 

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { ComponentType, ReactElement, isValidElement, useEffect } from 'react';
+import { ComponentType, ReactElement, isValidElement, Children } from 'react';
 import { Route, Routes } from 'react-router-dom';
 import { isValidElementType } from 'react-is';
 import { ResourceContextProvider, ResourceProps, RestoreScrollPosition } from 'react-admin';
@@ -7,17 +7,19 @@ import { ResourceContextProvider, ResourceProps, RestoreScrollPosition } from 'r
 export const Resource = (props: ResourceProps) => {
     const { create, edit, list, name, show } = props;
 
+    // Note: In React Router v7, we cannot pass arbitrary children to Routes.
+    // The trash route and other custom routes should be handled via CustomRoutes
+    // at the parent level, not as children of Resource.
  
     return (
         <ResourceContextProvider value={name}>
             <Routes>
-                {create && (
-                   
+                {create ? (
                     <Route path="create/*" element={getElement(create)} />
-                )}
-                {show && <Route path=":id/show/*" element={getElement(show)} />}
-                {edit && <Route path=":id/*" element={getElement(edit)} />}
-                {list && (
+                ) : null}
+                {show ? <Route path=":id/show/*" element={getElement(show)} /> : null}
+                {edit ? <Route path=":id/*" element={getElement(edit)} /> : null}
+                {list ? (
                     <Route
                         path="/*"
                         element={
@@ -28,8 +30,7 @@ export const Resource = (props: ResourceProps) => {
                             </RestoreScrollPosition>
                         }
                     />
-                )}
-                {props.children}
+                ) : null}
             </Routes>
         </ResourceContextProvider>
     );
