@@ -35,9 +35,7 @@
     "release:electron:kitchntabs:ngrok:web": "pnpm config:electron:kitchntabs:ngrok && turbo build",
     "release:electron:kitchntabs:ngrok:app": "cross-env NODE_OPTIONS=--max-old-space-size=8096 node build-electron.js --config electron-builder.config.js",
     "release:electron:kitchntabs:debian": "pnpm config:electron:kitchntabs:production && node build-python-service.js && electron-icon-builder --input=./apps/dash/src/assets/logo-squared.png --output=./ && vite build -c electron.vite.config.mts && turbo build --no-cache && cross-env NODE_OPTIONS=--max-old-space-size=8096 node build-electron.js --config electron-builder.config.js --linux deb --armv7l --arm64",
-    
     "release:electron:kitchntabs:debian:dev": "pnpm config:electron:kitchntabs:ngrok && node build-python-service.js && electron-icon-builder --input=./apps/dash/src/assets/logo-squared.png --output=./ && vite build -c electron.vite.config.mts && turbo build --no-cache && cross-env NODE_OPTIONS=--max-old-space-size=8096 node build-electron.js --config electron-builder.config.js --linux deb --armv7l --arm64",
-    
     "dev-win": "cd apps/dash && pnpm dev-win",
     "_build": "rimraf node_modules/.turbo node_modules/.vite && turbo build --filter=!./packages/react-18-beautiful-dnd-grid --force",
     "_build-win": "rimraf node_modules/.turbo node_modules/.vite && turbo build --filter=!./packages/react-18-beautiful-dnd-grid --force",
@@ -148,6 +146,7 @@
     "prettier": "latest",
     "sound-play": "^1.1.0",
     "syncpack": "latest",
+    "terser": "5.19.2",
     "turbo": "latest",
     "typescript": "^5.9.2",
     "use-sync-external-store": "^1.5.0",
