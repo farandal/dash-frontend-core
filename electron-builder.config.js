@@ -4,6 +4,23 @@ const dashPackage = require('./apps/dash/package.json');
 
 const platform = process.platform;
 
+// Map electron-builder arch values to our build arch names
+// electron-builder uses both string names AND numeric Arch enum values:
+// Arch.ia32 = 0, Arch.x64 = 1, Arch.armv7l = 2, Arch.arm64 = 3, Arch.universal = 4
+const ARCH_MAP = {
+  // String names
+  'x64': 'x64',
+  'arm64': 'arm64',
+  'armv7l': 'armv7l',
+  'ia32': 'x86',
+  // Numeric Arch enum values from electron-builder
+  0: 'x86',      // Arch.ia32
+  1: 'x64',      // Arch.x64
+  2: 'armv7l',   // Arch.armv7l
+  3: 'arm64',    // Arch.arm64
+  4: 'universal' // Arch.universal (macOS only)
+};
+
 /**
  * @type {import('electron-builder').Configuration}
  * @see https://www.electron.build/configuration/configuration
@@ -14,7 +31,8 @@ const platform = process.platform;
  */
 module.exports = {
   appId: 'com.kitchntab.app',
-  productName: dashPackage.name,
+  productName: 'kitchntabs',
+  executableName: 'kitchntabs',  // This sets the binary name on Linux
   asar: false,
   npmRebuild: false, // Disable native dependency rebuild - not needed for this app
   nodeGypRebuild: false, // Disable node-gyp rebuild
@@ -49,15 +67,68 @@ module.exports = {
     return true;
   },
   
-  // Restore original package.json after build
+  // Copy architecture-specific Python binary and restore package.json after build
   afterPack: async (context) => {
     const tempPackagePath = path.join(context.appOutDir, '..', '..', 'package.json.backup');
     const packagePath = path.join(context.appOutDir, '..', '..', 'package.json');
     
+    // Restore original package.json
     if (fs.existsSync(tempPackagePath)) {
       fs.copyFileSync(tempPackagePath, packagePath);
       fs.unlinkSync(tempPackagePath);
       console.log('✅ Restored original package.json');
+    }
+    
+    // For Linux builds, copy the architecture-specific Python binaries
+    if (context.electronPlatformName === 'linux') {
+      const arch = context.arch;
+      const mappedArch = ARCH_MAP[arch];
+      
+      if (!mappedArch) {
+        console.error(`   ❌ Unknown architecture: ${arch} (type: ${typeof arch})`);
+        console.error(`   Known architectures: ${Object.keys(ARCH_MAP).join(', ')}`);
+        return true;
+      }
+      
+      console.log(`🐍 Setting up Python services for Linux ${mappedArch} (arch=${arch})...`);
+      
+      // Destination in packaged app
+      const destDir = path.join(context.appOutDir, 'resources', 'python-service');
+      
+      // Ensure destination directory exists
+      fs.mkdirSync(destDir, { recursive: true });
+      
+      // Services to copy
+      const services = ['kt_service', 'print_service', 'tts_service'];
+      
+      for (const service of services) {
+        // Source: Docker-built binary for this architecture
+        const dockerBuildPath = path.resolve(__dirname, `../dash-python-service/kt_service_builds/${mappedArch}/${service}`);
+        // Fallback: Native build (only works if built on same arch)
+        const nativeBuildPath = path.resolve(__dirname, `../dash-python-service/kt_service/${service}`);
+        
+        const destPath = path.join(destDir, service);
+        
+        // Try Docker build first, then fallback to native build
+        let sourcePath = null;
+        if (fs.existsSync(dockerBuildPath)) {
+          sourcePath = dockerBuildPath;
+          console.log(`   ✅ ${service}: Using Docker-built binary for ${mappedArch}`);
+        } else if (fs.existsSync(nativeBuildPath)) {
+          sourcePath = nativeBuildPath;
+          console.log(`   ⚠️  ${service}: Using native build (may not work on ${mappedArch})`);
+        } else {
+          console.error(`   ❌ ${service}: No binary found for ${mappedArch}!`);
+          console.error(`      💡 Run 'cd ../dash-python-service && npm run build:docker:${mappedArch}'`);
+          continue;
+        }
+        
+        if (sourcePath) {
+          fs.copyFileSync(sourcePath, destPath);
+          fs.chmodSync(destPath, '755');
+          console.log(`   📦 ${service}: Copied to: ${destPath}`);
+        }
+      }
     }
     
     return true;
@@ -149,11 +220,26 @@ module.exports = {
     // Disable notarization for now (enable later with proper credentials)
     notarize: false,
     // Allow executing binaries from Resources folder
-    binaries: ['Contents/Resources/dash-python-service/kt_service']
+    binaries: [
+      'Contents/Resources/python-service/kt_service',
+      'Contents/Resources/python-service/print_service',
+      'Contents/Resources/python-service/tts_service'
+    ]
   },
   linux: {
     icon: 'icons/png/',
     category: 'Office',
+    executableName: 'kitchntabs',
+    desktop: {
+      entry: {
+        Name: 'KitchenTabs',
+        Comment: 'KitchenTabs POS Terminal',
+        Categories: 'Office;Finance;',
+        Keywords: 'pos;kitchen;restaurant;orders;',
+        StartupWMClass: 'kitchntabs',
+        Terminal: 'false'
+      }
+    },
     target: [
       {
         target: 'deb',
@@ -170,7 +256,10 @@ module.exports = {
   deb: {
     depends: ['libgtk-3-0', 'libnotify4', 'libnss3', 'libxss1', 'libxtst6', 'xdg-utils', 'libatspi2.0-0', 'libuuid1', 'libsecret-1-0'],
     category: 'Office',
-    priority: 'optional'
+    priority: 'optional',
+    // Create symlink so 'kitchntabs' command works from terminal
+    afterInstall: 'scripts/after-install.sh',
+    afterRemove: 'scripts/after-remove.sh'
   },
  // Use asarUnpack for files that need to be accessed directly
  asarUnpack: [
@@ -178,27 +267,50 @@ module.exports = {
   ],
   
   extraResources: [
-    // Python service executables - platform specific
+    // Python service executables - for macOS and Windows
+    // Linux uses afterPack hook for architecture-specific binaries
+    // All services: kt_service, print_service, tts_service
+    ...(process.platform === 'win32' ? [
+      {
+        from: path.resolve(__dirname, '../dash-python-service/kt_service'),
+        to: 'python-service',
+        filter: ['**/*.exe']  // Copies kt_service.exe, print_service.exe, tts_service.exe
+      }
+    ] : process.platform === 'darwin' ? [
+      {
+        from: path.resolve(__dirname, '../dash-python-service/kt_service'),
+        to: 'python-service',
+        filter: ['**/kt_service', '**/print_service', '**/tts_service']  // All service binaries
+      }
+    ] : [
+      // Linux: Placeholder - actual binary copied in afterPack hook
+      // This ensures the directory structure is created
+    ]),
+    // YAML configuration file - ONLY the resolved config.prod.yaml
+    // The correct config is prepared by build-python-service.js based on CUSTOM_MODE
+    // This copies from apps/dash/config.prod.yaml which has been merged with the
+    // appropriate source config (e.g., config.kitchntabs.ngrok.yaml)
     {
-      from: path.resolve(__dirname, '../dash-python-service/kt_service'),
-      to: 'python-service',
-      filter: process.platform === 'win32' ? ['**/*.exe'] : ['**/kt_service']
+      from: path.resolve(__dirname, 'apps/dash/config.prod.yaml'),
+      to: 'config.prod.yaml'
     },
-    // YAML configuration files
-    {
-      from: path.resolve(__dirname, '../dash-python-service'),
-      to: 'python-service',
-      filter: ['*.yaml']
-    },
+    // macOS-specific config (uses different filename)
+    ...(process.platform === 'darwin' ? [
+      {
+        from: path.resolve(__dirname, 'apps/dash/config.prod.mac.yaml'),
+        to: 'config.prod.mac.yaml'
+      }
+    ] : []),
     // Icons for runtime use
     {
       from: path.resolve(__dirname, 'icons'),
       to: 'icons'
     },
+    // Sound files for notifications and welcome messages
     {
-        from: path.resolve(__dirname, 'apps/dash/'),
-        to: './',
-        filter: ['*.yaml']
+      from: path.resolve(__dirname, 'apps/dash/electron/assets'),
+      to: 'sounds',
+      filter: ['*.mp3', '*.wav', '*.ogg']
     },
   ],
   
