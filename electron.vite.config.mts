@@ -7,7 +7,19 @@ import pkg from './package.json'
 // import basicSsl from '@vitejs/plugin-basic-ssl';
 
 // Modules that MUST remain external (native modules that can't be bundled)
+// electron-updater and electron-log MUST be bundled (not external) for packaged apps
 const nativeModules = ['electron'];
+
+// Modules that should be bundled into the main process (not externalized)
+// These are needed at runtime but won't be available in node_modules in packaged app
+const bundledModules = [
+  'electron-updater',
+  'electron-log',
+  'electron-store',
+  'sound-play',
+  'dotenv',
+  'yaml'
+];
 
 // https://vitejs.dev/config/
 export default defineConfig(({ command }) => {
@@ -55,8 +67,15 @@ export default defineConfig(({ command }) => {
               minify: false, // Keep it false for better debugging
               outDir: 'apps/dash/dist-electron/main',
               rollupOptions: {
-                // Only externalize native modules - bundle everything else
-                external: nativeModules,
+                // Only externalize 'electron' - bundle everything else including electron-updater
+                external: (id) => {
+                  // Only externalize the 'electron' module itself
+                  if (id === 'electron') return true;
+                  // Explicitly bundle these modules (don't externalize)
+                  if (bundledModules.some(mod => id === mod || id.startsWith(mod + '/'))) return false;
+                  // Don't externalize other modules - let Vite bundle them
+                  return false;
+                },
                 output: {
                   format: 'cjs', // Use CommonJS for better compatibility
                   entryFileNames: '[name].js'
