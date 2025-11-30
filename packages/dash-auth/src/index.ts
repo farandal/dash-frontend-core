@@ -1,1 +1,1 @@
-export { AuthPersistenceService, syncDeviceStoreToLocalStorage, syncLocalStorageToDeviceStore } from "./AuthPersistanceService";
+export { AuthPersistenceService, syncDeviceStoreToLocalStorage, syncLocalStorageToDeviceStore, clearDeviceStoreAuth } from "./AuthPersistanceService";

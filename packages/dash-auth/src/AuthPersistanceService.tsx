@@ -407,3 +407,54 @@ export async function syncLocalStorageToDeviceStore() {
         }
     }
 }
+
+// Clear auth-related keys from device store (Electron/Capacitor)
+// This should be called during logout to ensure sensitive data is removed
+export async function clearDeviceStoreAuth() {
+    const authKeys = [
+        'token',
+        'user',
+        'authenticated',
+        'roles',
+        'dashAuth',
+        'dashAuthTimestamp',
+        'dashSystemValues',
+        'socketConnectionState',
+        'SerializedAuthContext',
+        'tenant_id',
+        'user_id'
+    ];
+
+    // Try Electron first
+    const electronStore = (window as any).electronStore;
+    if (electronStore && electronStore.delete && electronStore.getAll) {
+        try {
+            // Delete known auth keys
+            for (const key of authKeys) {
+                await electronStore.delete(key);
+            }
+            
+            // Set authenticated to false in device store
+            await electronStore.set('authenticated', false);
+            console.log('[ElectronStorageSync] Cleared auth data from electron-store');
+            return;
+        } catch (err) {
+            console.error('[ElectronStorageSync] Failed to clear auth:', err);
+        }
+    }
+
+    // Try Capacitor Preferences if available
+    const Preferences = (window as any)?.Capacitor?.Plugins?.Preferences || (window as any)?.Capacitor?.Preferences;
+    if (Preferences && Preferences.remove) {
+        try {
+            for (const key of authKeys) {
+                await Preferences.remove({ key });
+            }
+            // Set authenticated to false
+            await Preferences.set({ key: 'authenticated', value: 'false' });
+            console.log('[CapacitorStorageSync] Cleared auth data from Preferences');
+        } catch (err) {
+            console.error('[CapacitorStorageSync] Failed to clear auth:', err);
+        }
+    }
+}
