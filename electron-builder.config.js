@@ -293,21 +293,13 @@ module.exports = {
       // Linux: Placeholder - actual binary copied in afterPack hook
       // This ensures the directory structure is created
     ]),
-    // YAML configuration file - ONLY the resolved config.prod.yaml
+    // YAML configuration file - single config.yaml for all platforms
     // The correct config is prepared by build-python-service.js based on CUSTOM_MODE
-    // This copies from apps/dash/config.prod.yaml which has been merged with the
-    // appropriate source config (e.g., config.kitchntabs.ngrok.yaml)
+    // Source config (e.g., config.kitchntabs.ngrok.yaml) is copied to apps/dash/config.yaml
     {
-      from: path.resolve(__dirname, 'apps/dash/config.prod.yaml'),
-      to: 'config.prod.yaml'
+      from: path.resolve(__dirname, 'apps/dash/config.yaml'),
+      to: 'config.yaml'
     },
-    // macOS-specific config (uses different filename)
-    ...(process.platform === 'darwin' ? [
-      {
-        from: path.resolve(__dirname, 'apps/dash/config.prod.mac.yaml'),
-        to: 'config.prod.mac.yaml'
-      }
-    ] : []),
     // Icons for runtime use
     {
       from: path.resolve(__dirname, 'icons'),
