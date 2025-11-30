@@ -63,7 +63,7 @@ useEffect(() => {
             window.location.href = '/login';
         }*/
     
-        logout();
+        await logout();
         //navigate('/login');
     };
 

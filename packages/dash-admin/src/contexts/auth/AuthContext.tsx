@@ -66,7 +66,7 @@ import { useDashThemeContext } from '../../../src/default-theme/DashThemeContext
 import AppLayoutSettings from '../../theme/AppLayoutSetting';
 import DASHAuthenticationService from './DASHAuthenticationService';
 
-import { AuthPersistenceService } from 'dash-auth';
+import { AuthPersistenceService, clearDeviceStoreAuth } from 'dash-auth';
 import { dashStorage } from 'dash-utils';
 export class AuthContextClass {
   static values: Partial<IAuthContextProps>;
@@ -89,7 +89,7 @@ export interface IAuthContext {
   roles?: any;
   systemValues?: any;
   updateValues: (values: Partial<IAuthContextProps>) => void;
-  logout: (callback?: () => void)  => void;
+  logout: (callback?: () => void)  => Promise<void>;
   handleReactAdminIdentity: (identity: any) => void;
   getPermissions: () => Promise<any>; 
   fetchAuth: () => Promise<any>;
@@ -249,9 +249,14 @@ export const AuthContextProvider: FC<IAuthContextProvider> = (props) => {
     }
   }, [auth.authenticated, dispatch, fetchCompleteAuth]);
 
-  const logout = (callback?: () => void) => {
+  const logout = async (callback?: () => void) => {
     // Mark as logged out but keep the auth.auth data
     AuthPersistenceService.markAsLoggedOut();
+    
+    // Clear auth data from device store (Electron/Capacitor)
+    // This is crucial - it removes token/user from electron-store so they
+    // don't get restored on next app launch
+    await clearDeviceStoreAuth();
     
     DASHAuthenticationService.setPendingRedirect(window.location.pathname);
 

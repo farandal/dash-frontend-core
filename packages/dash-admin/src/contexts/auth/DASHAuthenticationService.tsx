@@ -6,7 +6,7 @@
 import { createAxiosInstance } from 'dash-axios-hook';
 import { getCookie, setCookie } from '../../utils/cookies';
 import { getEnv } from '../../config/DASHAdminSystemConstants';
-import { AuthPersistenceService, syncLocalStorageToDeviceStore } from 'dash-auth';
+import { AuthPersistenceService, syncLocalStorageToDeviceStore, clearDeviceStoreAuth } from 'dash-auth';
 import { setAuthEvent } from './AuthContext';
 import {DASHAppConstants} from 'dash-constants';
 
@@ -449,6 +449,11 @@ class DASHAuthenticationService {
 
         // Use the centralized persistence service instead of manual cleanup
         AuthPersistenceService.markAsLoggedOut();
+
+        // Clear auth data from device store (Electron/Capacitor)
+        // This is crucial - it removes token/user from electron-store so they
+        // don't get restored on next app launch
+        await clearDeviceStoreAuth();
 
         // Keep only the IPC service cleanup
         const { DashIPCService } = window as any;

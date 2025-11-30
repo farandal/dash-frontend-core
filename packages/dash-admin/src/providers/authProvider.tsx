@@ -2,13 +2,18 @@ import DASHStorageClass from '../classes/DASHStorageClass';
 import { initAxios } from '../hooks/axios';
 import { getCookie, removeCookie, setCookie } from '../utils/cookies';
 import { dashStorage } from 'dash-utils';
-export const logoutFromStorage = () => {
+import { clearDeviceStoreAuth } from 'dash-auth';
+
+export const logoutFromStorage = async () => {
 	removeCookie('tenant_id');
 	removeCookie('token');
 	dashStorage.removeItem('user');
 	dashStorage.removeItem('auth');
 	dashStorage.setItem('authenticated', 'false');
 	dashStorage.setItem('roles', null); // before it was guest role.
+	
+	// Clear auth data from device store (Electron/Capacitor)
+	await clearDeviceStoreAuth();
 };
 
 export default {
@@ -46,21 +51,21 @@ export default {
 					return Promise.resolve();
 				} catch (error) {
 					console.error('Error al auténicar al usuario');
-					logoutFromStorage();
+					await logoutFromStorage();
 					return Promise.reject();
 				}
 			}
 		} catch (error) {
 			console.error(error);
-			logoutFromStorage();
+			await logoutFromStorage();
 			return Promise.reject();
 		}
 
-		logoutFromStorage();
+		await logoutFromStorage();
 		return Promise.reject();
 	},
-	logout: () => {
-		logoutFromStorage();
+	logout: async () => {
+		await logoutFromStorage();
 
 		return Promise.resolve();
 	},
@@ -198,7 +203,7 @@ export default {
 			return Promise.resolve(auth.user);
 		} catch (error) {
 			console.error('Error al auténicar al usuario');
-			logoutFromStorage();
+			await logoutFromStorage();
 			return Promise.reject();
 		}
 	},
