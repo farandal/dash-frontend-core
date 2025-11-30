@@ -70,11 +70,10 @@ function getDockerConfigArg(customMode) {
   return 'prod';
 }
 
-// Prepare Electron config files based on CUSTOM_MODE
-// This copies the correct config to config.prod.mac.yaml (or config.prod.yaml)
-// so the packaged app uses the right configuration
+// Prepare Electron config file based on CUSTOM_MODE
+// Simply copies the source config to config.yaml - no merging, no platform-specific files
 function prepareElectronConfigFiles(customMode) {
-  console.log('\n📋 Preparing Electron config files...');
+  console.log('\n📋 Preparing Electron config file...');
   
   const appsDir = path.join(FRONTEND_DIR, 'apps', 'dash');
   const pythonConfigDir = PYTHON_SERVICE_DIR;
@@ -89,7 +88,7 @@ function prepareElectronConfigFiles(customMode) {
     }
   } else if (customMode && customMode.includes('pinoywok')) {
     if (customMode.includes('ngrok')) {
-      sourceConfigName = 'config.dev.yaml';  // pinoywok ngrok uses dev config
+      sourceConfigName = 'config.dev.yaml';
     } else {
       sourceConfigName = 'config.prod.yaml';
     }
@@ -97,14 +96,11 @@ function prepareElectronConfigFiles(customMode) {
     sourceConfigName = 'config.prod.yaml';
   }
   
-  // Source from dash-python-service (has correct network settings)
+  // Source from dash-python-service
   const sourceConfig = path.join(pythonConfigDir, sourceConfigName);
   
-  // Target filenames for the packaged app (what Electron main/index.ts looks for)
-  const targetConfigs = [
-    { name: 'config.prod.mac.yaml', platform: 'darwin' },
-    { name: 'config.prod.yaml', platform: 'all' }
-  ];
+  // Single target: config.yaml (platform-agnostic)
+  const targetPath = path.join(appsDir, 'config.yaml');
   
   if (!fs.existsSync(sourceConfig)) {
     console.warn(`   ⚠️  Source config not found: ${sourceConfigName}`);
@@ -113,64 +109,13 @@ function prepareElectronConfigFiles(customMode) {
   }
   
   console.log(`   Source: ${sourceConfigName}`);
+  console.log(`   Target: config.yaml`);
   
-  // Read source config
-  const sourceContent = fs.readFileSync(sourceConfig, 'utf8');
+  // Simply copy the source config to config.yaml - no merging needed
+  fs.copyFileSync(sourceConfig, targetPath);
   
-  // Read and merge with frontend config (to get frontend-specific paths)
-  for (const target of targetConfigs) {
-    const targetPath = path.join(appsDir, target.name);
-    
-    // Read existing target config to preserve frontend-specific settings
-    let targetContent = '';
-    if (fs.existsSync(targetPath)) {
-      targetContent = fs.readFileSync(targetPath, 'utf8');
-    }
-    
-    // Parse both configs
-    const yaml = require('js-yaml');
-    let sourceData, targetData;
-    
-    try {
-      sourceData = yaml.load(sourceContent) || {};
-      targetData = yaml.load(targetContent) || {};
-    } catch (e) {
-      console.warn(`   ⚠️  Error parsing YAML: ${e.message}`);
-      continue;
-    }
-    
-    // Merge: source network settings + target path settings
-    const mergedData = {
-      ...targetData,  // Start with existing target (has paths)
-      // Override network settings from source
-      APP_NAME: sourceData.APP_NAME || targetData.APP_NAME,
-      WS_HOST: sourceData.WS_HOST,
-      WS_PORT: sourceData.WS_PORT,
-      WS_SCHEME: sourceData.WS_SCHEME,
-      API_HOST: sourceData.API_HOST,
-      API_PORT: sourceData.API_PORT,
-      API_SCHEME: sourceData.API_SCHEME,
-      APP: sourceData.APP || targetData.APP,
-      AUTH_ENDPOINT: sourceData.AUTH_ENDPOINT || targetData.AUTH_ENDPOINT,
-      // Speech settings
-      SPEECH_WELCOME_MESSAGE: sourceData.SPEECH_WELCOME_MESSAGE || targetData.SPEECH_WELCOME_MESSAGE,
-      SPEECH_CONNECTED_MESSAGE: sourceData.SPEECH_CONNECTED_MESSAGE || targetData.SPEECH_CONNECTED_MESSAGE,
-      SPEECH_DISCONNECTED_MESSAGE: sourceData.SPEECH_DISCONNECTED_MESSAGE || targetData.SPEECH_DISCONNECTED_MESSAGE,
-      SPEECH_LANGUAGE: sourceData.SPEECH_LANGUAGE || targetData.SPEECH_LANGUAGE,
-    };
-    
-    // Write merged config
-    const outputContent = yaml.dump(mergedData, { 
-      lineWidth: -1,  // Don't wrap lines
-      quotingType: '"',
-      forceQuotes: false
-    });
-    
-    fs.writeFileSync(targetPath, outputContent);
-    console.log(`   ✅ Updated: ${target.name}`);
-  }
-  
-  console.log('   Config files prepared for Electron packaging.');
+  console.log(`   ✅ Copied ${sourceConfigName} → config.yaml`);
+  console.log('   Config file prepared for Electron packaging.');
 }
 
 // Check if Python service directory exists
@@ -300,19 +245,35 @@ function buildNativePythonService(config) {
   }
 }
 
-// Verify the built executable exists
+// Verify the built executable exists (all services)
 function verifyBuild() {
-  const executableName = process.platform === 'win32' ? 'kt_service.exe' : 'kt_service';
-  const executablePath = path.join(PYTHON_SERVICE_DIR, 'kt_service', executableName);
-
-  if (fs.existsSync(executablePath)) {
-    const stats = fs.statSync(executablePath);
-    const sizeMB = (stats.size / (1024 * 1024)).toFixed(2);
-    console.log(`✅ Native executable verified: ${executablePath}`);
-    console.log(`   Size: ${sizeMB} MB`);
+  const exeExt = process.platform === 'win32' ? '.exe' : '';
+  const requiredServices = ['kt_service', 'print_service', 'tts_service'];
+  const serviceDir = path.join(PYTHON_SERVICE_DIR, 'kt_service');
+  
+  let allVerified = true;
+  let totalSize = 0;
+  const missingServices = [];
+  
+  for (const service of requiredServices) {
+    const executablePath = path.join(serviceDir, service + exeExt);
+    if (fs.existsSync(executablePath)) {
+      const stats = fs.statSync(executablePath);
+      totalSize += stats.size;
+    } else {
+      missingServices.push(service);
+      allVerified = false;
+    }
+  }
+  
+  if (allVerified) {
+    const sizeMB = (totalSize / (1024 * 1024)).toFixed(2);
+    console.log(`✅ Native executables verified: ${serviceDir}`);
+    console.log(`   All ${requiredServices.length} services present (Total: ${sizeMB} MB)`);
     return true;
   } else {
-    console.warn('⚠️  Native executable not found:', executablePath);
+    console.warn('⚠️  Some native executables not found:');
+    missingServices.forEach(s => console.warn(`     - ${s}`));
     console.warn('   This is OK if only building for Linux ARM (Docker builds)');
     return false;
   }
@@ -392,8 +353,9 @@ function main() {
     arg.includes('AppImage')
   );
   
-  // Also check if electron-builder will be called with linux targets
-  const isLinuxBuild = config.platform === 'linux' || config.platform === 'electron';
+  // Only build Linux ARM if explicitly requested via args (not just because platform is 'electron')
+  // Platform 'electron' is generic - actual Linux ARM builds need explicit --linux, --armv7l, --arm64, or deb flags
+  const isLinuxBuild = config.platform === 'linux';
   
   console.log(`📋 Configuration:`);
   console.log(`   Custom Mode: ${config.customMode}`);
