@@ -71,42 +71,58 @@ function getDockerConfigArg(customMode) {
 }
 
 // Prepare Electron config file based on CUSTOM_MODE
-// Simply copies the source config to config.yaml - no merging, no platform-specific files
+// Uses the frontend config file (config.{CUSTOM_MODE}.yaml) as the source
+// This ensures the Python service uses the correct API endpoints for the build
 function prepareElectronConfigFiles(customMode) {
   console.log('\n📋 Preparing Electron config file...');
   
   const appsDir = path.join(FRONTEND_DIR, 'apps', 'dash');
-  const pythonConfigDir = PYTHON_SERVICE_DIR;
   
-  // Determine source config based on CUSTOM_MODE
-  let sourceConfigName;
-  if (customMode && customMode.includes('kitchntabs')) {
-    if (customMode.includes('ngrok')) {
-      sourceConfigName = 'config.kitchntabs.ngrok.yaml';
-    } else {
-      sourceConfigName = 'config.kitchntabs.prod.yaml';
-    }
-  } else if (customMode && customMode.includes('pinoywok')) {
-    if (customMode.includes('ngrok')) {
-      sourceConfigName = 'config.dev.yaml';
+  // Primary: Use frontend config file matching CUSTOM_MODE exactly
+  // e.g., CUSTOM_MODE=kitchntabs.development → config.kitchntabs.development.yaml
+  // e.g., CUSTOM_MODE=kitchntabs.production → config.kitchntabs.production.yaml
+  let sourceConfigName = customMode ? `config.${customMode}.yaml` : null;
+  let sourceConfig = sourceConfigName ? path.join(appsDir, sourceConfigName) : null;
+  
+  // Check if the exact CUSTOM_MODE config exists in frontend
+  if (sourceConfig && fs.existsSync(sourceConfig)) {
+    console.log(`   ✅ Found frontend config: ${sourceConfigName}`);
+  } else {
+    // Fallback: Try legacy naming from Python service for backwards compatibility
+    console.log(`   ⚠️  Frontend config not found: ${sourceConfigName || 'undefined'}`);
+    console.log(`   Trying legacy Python service configs...`);
+    
+    const pythonConfigDir = PYTHON_SERVICE_DIR;
+    
+    if (customMode && customMode.includes('kitchntabs')) {
+      if (customMode.includes('development') || customMode.includes('ngrok')) {
+        sourceConfigName = 'config.kitchntabs.ngrok.yaml';
+      } else {
+        sourceConfigName = 'config.kitchntabs.prod.yaml';
+      }
+    } else if (customMode && customMode.includes('pinoywok')) {
+      if (customMode.includes('ngrok') || customMode.includes('development')) {
+        sourceConfigName = 'config.dev.yaml';
+      } else {
+        sourceConfigName = 'config.prod.yaml';
+      }
     } else {
       sourceConfigName = 'config.prod.yaml';
     }
-  } else {
-    sourceConfigName = 'config.prod.yaml';
+    
+    sourceConfig = path.join(pythonConfigDir, sourceConfigName);
+    
+    if (!fs.existsSync(sourceConfig)) {
+      console.warn(`   ⚠️  Legacy config not found either: ${sourceConfigName}`);
+      console.warn(`   Skipping config preparation.`);
+      return;
+    }
+    
+    console.log(`   📂 Using legacy config from Python service: ${sourceConfigName}`);
   }
-  
-  // Source from dash-python-service
-  const sourceConfig = path.join(pythonConfigDir, sourceConfigName);
   
   // Single target: config.yaml (platform-agnostic)
   const targetPath = path.join(appsDir, 'config.yaml');
-  
-  if (!fs.existsSync(sourceConfig)) {
-    console.warn(`   ⚠️  Source config not found: ${sourceConfigName}`);
-    console.warn(`   Skipping config preparation.`);
-    return;
-  }
   
   console.log(`   Source: ${sourceConfigName}`);
   console.log(`   Target: config.yaml`);
