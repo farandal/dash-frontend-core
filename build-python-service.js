@@ -27,8 +27,14 @@ const PYTHON_SERVICE_DIR = path.join(FRONTEND_DIR, '..', 'dash-python-service');
 const BUILD_CONFIG_PATH = path.join(FRONTEND_DIR, 'build_config.json');
 const DOCKER_BUILDS_DIR = path.join(PYTHON_SERVICE_DIR, 'kt_service_builds');
 
+// Environment variable for Buster builds (Raspberry Pi with GLIBC 2.28)
+const useBusterBinaries = process.env.USE_BUSTER_BINARIES === 'true';
+
 // Linux architectures that require Docker cross-compilation
-const LINUX_CROSS_COMPILE_ARCHS = ['armv7l', 'arm64'];
+// When USE_BUSTER_BINARIES=true, use armv7l-buster instead of armv7l
+const LINUX_CROSS_COMPILE_ARCHS = useBusterBinaries 
+  ? ['armv7l-buster', 'arm64'] 
+  : ['armv7l', 'arm64'];
 
 // Read build configuration
 function readBuildConfig() {
@@ -375,8 +381,9 @@ function main() {
   const configArg = getDockerConfigArg(config.customMode);
 
   // Detect if we need Linux ARM builds
-  // Check command line args for --linux, --armv7l, --arm64
+  // Check command line args for --linux, --armv7l, --arm64, --force
   const args = process.argv.slice(2);
+  const forceRebuild = args.includes('--force') || process.env.FORCE_PYTHON_REBUILD === 'true';
   const needsLinuxArm = args.some(arg => 
     arg.includes('--linux') || 
     arg.includes('--armv7l') || 
@@ -393,6 +400,11 @@ function main() {
   console.log(`   Config Arg: ${configArg}`);
   console.log(`   Platform: ${config.platform}`);
   console.log(`   Needs Linux ARM: ${needsLinuxArm || isLinuxBuild}`);
+  console.log(`   Force Rebuild: ${forceRebuild}`);
+  console.log(`   Use Buster Binaries: ${useBusterBinaries}`);
+  if (useBusterBinaries) {
+    console.log(`   🍇 Building for Debian Buster (GLIBC 2.28)`);
+  }
   console.log('');
 
   // Prepare Electron config files based on CUSTOM_MODE
@@ -407,19 +419,23 @@ function main() {
     
     const dockerBuildsStatus = checkDockerBuilds(LINUX_CROSS_COMPILE_ARCHS, configArg);
     
-    // Find architectures that need rebuilding (missing or incomplete)
-    const archsNeedingBuild = LINUX_CROSS_COMPILE_ARCHS.filter(arch => 
-      !dockerBuildsStatus[arch].complete
-    );
+    // Find architectures that need rebuilding (missing, incomplete, or force rebuild)
+    const archsNeedingBuild = forceRebuild 
+      ? LINUX_CROSS_COMPILE_ARCHS 
+      : LINUX_CROSS_COMPILE_ARCHS.filter(arch => !dockerBuildsStatus[arch].complete);
     
     if (archsNeedingBuild.length > 0) {
-      console.log(`\n⚠️  Incomplete Docker builds for: ${archsNeedingBuild.join(', ')}`);
-      archsNeedingBuild.forEach(arch => {
-        const status = dockerBuildsStatus[arch];
-        if (status.missing.length > 0) {
-          console.log(`   ${arch} missing: ${status.missing.join(', ')}`);
-        }
-      });
+      if (forceRebuild) {
+        console.log(`\n🔄 Force rebuild requested for: ${archsNeedingBuild.join(', ')}`);
+      } else {
+        console.log(`\n⚠️  Incomplete Docker builds for: ${archsNeedingBuild.join(', ')}`);
+        archsNeedingBuild.forEach(arch => {
+          const status = dockerBuildsStatus[arch];
+          if (status.missing.length > 0) {
+            console.log(`   ${arch} missing: ${status.missing.join(', ')}`);
+          }
+        });
+      }
       console.log('   Building with Docker (this may take 10-15 minutes per architecture)...\n');
       
       const dockerSuccess = buildDockerBinaries(archsNeedingBuild, configArg);

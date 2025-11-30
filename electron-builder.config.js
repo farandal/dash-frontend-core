@@ -4,6 +4,10 @@ const dashPackage = require('./apps/dash/package.json');
 
 const platform = process.platform;
 
+// Environment variable to use Buster-compatible binaries for Raspberry Pi
+// Set USE_BUSTER_BINARIES=true when building for Debian Buster (GLIBC 2.28)
+const useBusterBinaries = process.env.USE_BUSTER_BINARIES === 'true';
+
 // Map electron-builder arch values to our build arch names
 // electron-builder uses both string names AND numeric Arch enum values:
 // Arch.ia32 = 0, Arch.x64 = 1, Arch.armv7l = 2, Arch.arm64 = 3, Arch.universal = 4
@@ -11,12 +15,12 @@ const ARCH_MAP = {
   // String names
   'x64': 'x64',
   'arm64': 'arm64',
-  'armv7l': 'armv7l',
+  'armv7l': useBusterBinaries ? 'armv7l-buster' : 'armv7l',
   'ia32': 'x86',
   // Numeric Arch enum values from electron-builder
   0: 'x86',      // Arch.ia32
   1: 'x64',      // Arch.x64
-  2: 'armv7l',   // Arch.armv7l
+  2: useBusterBinaries ? 'armv7l-buster' : 'armv7l',   // Arch.armv7l
   3: 'arm64',    // Arch.arm64
   4: 'universal' // Arch.universal (macOS only)
 };
@@ -91,6 +95,9 @@ module.exports = {
       }
       
       console.log(`🐍 Setting up Python services for Linux ${mappedArch} (arch=${arch})...`);
+      if (useBusterBinaries && mappedArch.includes('buster')) {
+        console.log(`   🍇 Using Buster-compatible binaries (GLIBC 2.28)`);
+      }
       
       // Destination in packaged app
       const destDir = path.join(context.appOutDir, 'resources', 'python-service');
