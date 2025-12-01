@@ -2,7 +2,14 @@
 import * as React from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 import { Box, Button } from '@mui/material';
-import { useListContext, FilterFormBase } from 'react-admin';
+import { FilterFormBase, ListContext } from 'react-admin';
+
+// Safe hook that doesn't throw when context is missing
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const useSafeListContext = (): any => {
+	const context = React.useContext(ListContext);
+	return context ?? null;
+};
 
 import { IToolbarFilters } from './DashAutoListTopToolbar';
 
@@ -21,11 +28,10 @@ const DashAutoListFilterFormWithButton = React.forwardRef<IToolbarFiltersHandler
 
 	const { filters, resourceConfig } = props;
 	
-	const {
-		displayedFilters,
-		filterValues,
-		setFilters,
-	} = useListContext();
+	const listContext = useSafeListContext();
+	const displayedFilters = listContext?.displayedFilters ?? [];
+	const filterValues = listContext?.filterValues ?? {};
+	const setFilters = listContext?.setFilters;
 
 	const form = useForm({
 		defaultValues: filterValues,
@@ -34,7 +40,7 @@ const DashAutoListFilterFormWithButton = React.forwardRef<IToolbarFiltersHandler
 	
 	const onSubmit = (values) => {
 
-		if (Object.keys(values).length > 0) {
+		if (Object.keys(values).length > 0 && setFilters) {
 			setFilters(values, displayedFilters);
 		}
 	};

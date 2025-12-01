@@ -1,8 +1,8 @@
 import FabButton from '../common/components/FabButton';
-import { SavedQueriesList, useListContext, useRefresh, useUnselectAll } from 'react-admin';
+import { SavedQueriesList, useRefresh, useUnselectAll, ListContext } from 'react-admin';
 import { TopToolbar, FilterForm } from 'react-admin';
 import IDashAutoAdminResourceConfig from '../interfaces/IDashAutoAdminResourceConfig';
-import { FC, ReactNode } from 'react';
+import { FC, ReactNode, useContext, JSX } from 'react';
 import { Box, Button, Collapse, Fab, Grid, Portal } from '@mui/material';
 import FilterAltOffIcon from '@mui/icons-material/FilterAltOff';
 import DashAutoListFilterFormWithButton, { IToolbarFiltersHandler } from './DashAutoListFilterFormWithButton';
@@ -12,6 +12,13 @@ import KeyboardArrowDown from '@mui/icons-material/KeyboardArrowDown';
 import Search from '@mui/icons-material/Search';
 import { ToolbarCreateButton, ToolbarExportButton } from '../toolbar/buttons/ToolbarButtons';
 import { Refresh } from '@mui/icons-material';
+
+// Safe hook that doesn't throw when context is missing
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const useSafeListContext = (): any => {
+    const context = useContext(ListContext);
+    return context ?? null;
+};
 
 export interface IToolbarFilters {
     resourceConfig: IDashAutoAdminResourceConfig;
@@ -67,7 +74,9 @@ const DashAutoListTopToolbar: FC<IDashAutoListTopToolbar> = (props) => {
         collapsedSize = '60px'
     } = props;
 
-    const { setFilters } = useListContext();
+    // Use safe context hook that doesn't throw when context is missing
+    const listContext = useSafeListContext();
+    const setFilters = listContext?.setFilters;
     const unselectAll = useUnselectAll(resourceConfig.listProps?.storeKey || resourceConfig.model);
 
     const FilterComponent = resourceConfig.FilterFormComponent
@@ -80,7 +89,9 @@ const DashAutoListTopToolbar: FC<IDashAutoListTopToolbar> = (props) => {
     const refresh = useRefresh();
     const clearFilters = () => {
         unselectAll();
-        setFilters({}, []);
+        if (setFilters) {
+            setFilters({}, []);
+        }
         ref.current?.reset();
     };
 

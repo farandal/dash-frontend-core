@@ -24,6 +24,43 @@ export interface IDashAutoList {
 	//stickyHeader?: boolean;
 }
 
+// Wrapper component for actions that will be rendered inside List context
+interface ListActionsComponentProps {
+	resourceConfig: IDashAutoAdminResourceConfig;
+	autoFilters: JSX.Element[];
+	listProps: any;
+	ListActionsWrapper: any;
+}
+
+const ListActionsComponent: FC<ListActionsComponentProps> = ({
+	resourceConfig,
+	autoFilters,
+	listProps,
+	ListActionsWrapper,
+}) => {
+	// DEBUG: Log actions rendering
+	console.log('🎬 DashAutoList DEBUG - Rendering actions (fieldProps standardized):', {
+		resourceModel: resourceConfig.model,
+		autoFiltersCount: autoFilters.length,
+		hasCustomToolbarElements: !!resourceConfig.customToolbarElements,
+		timestamp: new Date().toISOString()
+	});
+
+	return (
+		<ListActionsWrapper
+			autoFilters={autoFilters}
+			resourceConfig={resourceConfig}
+		>
+			<DashAutoListActions
+				filters={autoFilters}
+				resourceConfig={resourceConfig}
+				autoFilters={autoFilters}
+				listProps={listProps}
+			/>
+		</ListActionsWrapper>
+	);
+};
+
 const DashAutoList: React.FC<IDashAutoList> = ({
 	resourceConfig,
 	customToolbarElements,
@@ -124,44 +161,28 @@ const DashAutoList: React.FC<IDashAutoList> = ({
 		return hasToolbarItems;
 	};
 
-	const renderActions = () => {
-		if (!shouldShowActions()) {
-			return null; // Return null instead of false to avoid empty spans
-		}
-
-		// DEBUG: Log actions rendering
-		console.log('🎬 DashAutoList DEBUG - Rendering actions (fieldProps standardized):', {
-			resourceModel: resourceConfig.model,
-			autoFiltersCount: autoFilters.length,
-			hasCustomToolbarElements: !!resourceConfig.customToolbarElements,
-			timestamp: new Date().toISOString()
-		});
-
-		return (
-			<ListActionsWrapper
-				autoFilters={autoFilters}
-				resourceConfig={resourceConfig}
-			>
-				<DashAutoListActions
-					filters={autoFilters}
-					resourceConfig={resourceConfig}
-					autoFilters={autoFilters}
-					listProps={listProps}
-				/>
-			</ListActionsWrapper>
-		);
-	};
+	// Create actions element - this will be rendered inside List context
+	const actionsElement = shouldShowActions() ? (
+		<ListActionsComponent
+			resourceConfig={resourceConfig}
+			autoFilters={autoFilters}
+			listProps={listProps}
+			ListActionsWrapper={ListActionsWrapper}
+		/>
+	) : null;
 
 	const finalListProps = {
 		/* default storeKey */
 		sort: { field: 'id', order: 'ASC' },
 		storeKey: resourceConfig?.model,
+		// Explicitly set resource to ensure List component works correctly
+		resource: resourceConfig?.model,
 
 		...listProps,
 		...(resourceConfig.listProps || {}),
 		
-		// Set actions to null if no actions should be shown, otherwise render actions
-		actions: renderActions(),
+		// Set actions to the element (will be rendered inside List context)
+		actions: actionsElement,
 		
 		pagination: Pagination ? <Pagination {...resourceConfig.paginationProps} /> : <ExtendedPagination {...resourceConfig.paginationProps} />,
 		...(exporter && { exporter: exporter }),
@@ -173,7 +194,7 @@ const DashAutoList: React.FC<IDashAutoList> = ({
 		resourceModel: resourceConfig.model,
 		finalListProps: {
 			...finalListProps,
-			actions: !!finalListProps.actions ? 'rendered' : 'null',
+			actions: actionsElement ? 'rendered' : 'null',
 		},
 		timestamp: new Date().toISOString()
 	});

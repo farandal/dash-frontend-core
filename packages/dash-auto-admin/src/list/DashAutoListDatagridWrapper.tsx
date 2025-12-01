@@ -1,14 +1,21 @@
 import { useLocation } from 'react-router';
-import { useListContext, useUnselectAll } from 'react-admin';
+import { useUnselectAll, ListContext } from 'react-admin';
 
 import IDashAutoAdminResourceConfig from '../interfaces/IDashAutoAdminResourceConfig';
 import useAutoAdminLoadingStateMediator from '../hooks/useAutoAdminLoadingStateMediator';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import AutoDataGrid from '../mui/AutoDataGrid';
 import {
 	CircularProgress,
 } from '@mui/material';
 import { IDashAutoList } from '../DashAutoList';
+
+// Safe hook that doesn't throw when context is missing
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const useSafeListContext = (): any => {
+	const context = useContext(ListContext);
+	return context ?? null;
+};
 
 export interface IDashAutoAdminDataGrid {
 	resourceConfig: IDashAutoAdminResourceConfig;
@@ -19,7 +26,8 @@ const DashAutoListDataGridWrapper: React.FC<IDashAutoAdminDataGrid> = ({
 	resourceConfig,
 	dataGridProps,
 }) => {
-	const { setFilters } = useListContext();
+	const listContext = useSafeListContext();
+	const setFilters = listContext?.setFilters;
 	const location = useLocation();
 	const [currentLocation, setCurrentLocation] = useState(location.pathname);
 
@@ -29,7 +37,9 @@ const DashAutoListDataGridWrapper: React.FC<IDashAutoAdminDataGrid> = ({
 	const clearFilters = () => {
 
 		unselectAll();
-		setFilters({}, []);
+		if (setFilters) {
+			setFilters({}, []);
+		}
 	};
 
 	useEffect(() => {
