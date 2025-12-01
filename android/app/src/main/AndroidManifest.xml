@@ -12,7 +12,24 @@
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
 
-
+    <!-- Vibration permission -->
+    <uses-permission android:name="android.permission.VIBRATE" />
+    
+    <!-- Full-screen intent permission (for alarm-like notifications) -->
+    <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
+    
+    <!-- Schedule exact alarms permission (for time-critical notifications) -->
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    
+    <!-- Post notifications permission (Android 13+) -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    
+    <!-- Foreground service permission -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    
+    <!-- Keep the screen on -->
+    <uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
+    
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -37,6 +54,18 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- Alarm Activity for full-screen notifications -->
+        <activity
+            android:name=".AlarmActivity"
+            android:label="Alarm"
+            android:theme="@style/AppTheme.NoActionBarLaunch"
+            android:launchMode="singleInstance"
+            android:showOnLockScreen="true"
+            android:showWhenLocked="true"
+            android:turnScreenOn="true"
+            android:excludeFromRecents="true"
+            android:exported="false" />
 
         <provider
             android:name="androidx.core.content.FileProvider"
