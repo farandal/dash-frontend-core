@@ -42,3 +42,9 @@ make sure the package.json references it:
     "node": ">=20.18.3",
     "npm": ">=9.6.7"
 },
+
+
+
+rm -rf node_modules pnpm-lock.yaml
+pnpm store prune
+pnpm install

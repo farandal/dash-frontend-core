@@ -4,7 +4,7 @@
   "author": "Francisco Aranda <farandal@gmail.com>",
   "license": "MIT",
   "private": true,
-  "version": "1.0.34",
+  "version": "1.0.35",
   "main": "apps/dash/dist-electron/main/index.js",
   "scripts": {
     "new": "chmod +x ./new.sh && sh ./new.sh",
@@ -47,9 +47,13 @@
     "release:electron:kitchntabs:production": "pnpm config:electron:kitchntabs:production && node build-python-service.js && electron-icon-builder --input=./apps/dash/src/assets/logo-squared.png --output=./ && vite build -c electron.vite.config.mts && turbo build --no-cache && cross-env NODE_OPTIONS=--max-old-space-size=8096 node build-electron.js --config electron-builder.config.js",
     "release:electron:kitchntabs:production:force": "pnpm config:electron:kitchntabs:production && cross-env FORCE_PYTHON_REBUILD=true node build-python-service.js --force && electron-icon-builder --input=./apps/dash/src/assets/logo-squared.png --output=./ && vite build -c electron.vite.config.mts && turbo build --no-cache && cross-env NODE_OPTIONS=--max-old-space-size=8096 node build-electron.js --config electron-builder.config.js",
    
-    "release:electron:kitchntabs:development": "pnpm config:electron:kitchntabs:development && node build-python-service.js && electron-icon-builder --input=./apps/dash/src/assets/logo-squared.png --output=./ && vite build -c electron.vite.config.mts && turbo build --no-cache && cross-env NODE_OPTIONS=--max-old-space-size=8096 node build-electron.js --config electron-builder.config.js",
-    "release:electron:kitchntabs:development:force": "pnpm config:electron:kitchntabs:development && turbo build --no-cache && cross-env FORCE_PYTHON_REBUILD=true node build-python-service.js --force && electron-icon-builder --input=./apps/dash/src/assets/logo-squared.png --output=./ && vite build -c electron.vite.config.mts && turbo build --no-cache && cross-env NODE_OPTIONS=--max-old-space-size=8096 node build-electron.js --config electron-builder.config.js",
+    "release:electron:kitchntabs:development": "pnpm config:electron:kitchntabs:development && turbo build --no-cache &&  node build-python-service.js && electron-icon-builder --input=./apps/dash/src/assets/logo-squared.png --output=./ && vite build -c electron.vite.config.mts && cross-env NODE_OPTIONS=--max-old-space-size=8096 node build-electron.js --config electron-builder.config.js",
+    "release:electron:kitchntabs:development:force": "pnpm config:electron:kitchntabs:development && turbo build --no-cache && cross-env FORCE_PYTHON_REBUILD=true node build-python-service.js --force && electron-icon-builder --input=./apps/dash/src/assets/logo-squared.png --output=./ && vite build -c electron.vite.config.mts && cross-env NODE_OPTIONS=--max-old-space-size=8096 node build-electron.js --config electron-builder.config.js",
+
+    "release:electron:kitchntabs:debian:arm64:development": "pnpm config:electron:kitchntabs:development && turbo build --no-cache && node build-python-service.js && electron-icon-builder --input=./apps/dash/src/assets/logo-squared.png --output=./ && vite build -c electron.vite.config.mts && cross-env NODE_OPTIONS=--max-old-space-size=8096 node build-electron.js --config electron-builder.config.js --linux deb --arm64",
+    "release:electron:kitchntabs:debian:arm64":     "pnpm config:electron:kitchntabs:production  && turbo build --no-cache && node build-python-service.js && electron-icon-builder --input=./apps/dash/src/assets/logo-squared.png --output=./ && vite build -c electron.vite.config.mts && cross-env NODE_OPTIONS=--max-old-space-size=8096 node build-electron.js --config electron-builder.config.js --linux deb --arm64",
    
+
     "release:electron:kitchntabs:production:web": "pnpm config:electron:kitchntabs:production && turbo build",
     "release:electron:kitchntabs:production:app": "cross-env NODE_OPTIONS=--max-old-space-size=8096 node build-electron.js --config electron-builder.config.js",
     
@@ -63,10 +67,7 @@
     "release:electron:kitchntabs:debian:buster": "pnpm config:electron:kitchntabs:production && node build-python-service.js && electron-icon-builder --input=./apps/dash/src/assets/logo-squared.png --output=./ && vite build -c electron.vite.config.mts && turbo build --no-cache && cross-env USE_BUSTER_BINARIES=true NODE_OPTIONS=--max-old-space-size=8096 node build-electron.js --config electron-builder.config.js --linux deb --armv7l",
     "release:electron:kitchntabs:debian:buster:dev": "pnpm config:electron:kitchntabs:development && node build-python-service.js && electron-icon-builder --input=./apps/dash/src/assets/logo-squared.png --output=./ && vite build -c electron.vite.config.mts && turbo build --no-cache && cross-env USE_BUSTER_BINARIES=true NODE_OPTIONS=--max-old-space-size=8096 node build-electron.js --config electron-builder.config.js --linux deb --armv7l",
     "_release_note_buster" : "FORCE_PYTHON_REBUILD=true pnpm release:electron:kitchntabs:debian:buster:dev",
-   
-    "release:electron:kitchntabs:debian:arm64": "pnpm config:electron:kitchntabs:production  && turbo build --no-cache && node build-python-service.js && electron-icon-builder --input=./apps/dash/src/assets/logo-squared.png --output=./ && vite build -c electron.vite.config.mts && cross-env NODE_OPTIONS=--max-old-space-size=8096 node build-electron.js --config electron-builder.config.js --linux deb --arm64",
-    "release:electron:kitchntabs:debian:arm64:dev": "pnpm config:electron:kitchntabs:development && turbo build --no-cache && node build-python-service.js && electron-icon-builder --input=./apps/dash/src/assets/logo-squared.png --output=./ && vite build -c electron.vite.config.mts  && cross-env NODE_OPTIONS=--max-old-space-size=8096 node build-electron.js --config electron-builder.config.js --linux deb --arm64",
-   
+    
     "_release_note_arm64": "For Raspberry Pi 64-bit (Bookworm): FORCE_PYTHON_REBUILD=true pnpm release:electron:kitchntabs:debian:arm64:dev",
     "dev-win": "cd apps/dash && pnpm dev-win",
     "_build": "rimraf node_modules/.turbo node_modules/.vite && turbo build --filter=!./packages/react-18-beautiful-dnd-grid --force",

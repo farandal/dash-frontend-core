@@ -1,4 +1,4 @@
-import React, { useMemo, memo } from 'react';
+import React, { useMemo, memo, useEffect } from 'react';
 
 import {
     TextField,
@@ -46,6 +46,7 @@ const AutoDataGrid: React.FC<IAutoDataGrid> = ({
 
     // Memoize processed dataGridProps
     const processedDataGridProps = useMemo(() => ({
+        ...{selectedIds:[]},
         ...resourceConfig.dataGridProps,
         ...dataGridProps,
     }), [resourceConfig.dataGridProps, dataGridProps]);
@@ -84,6 +85,8 @@ const AutoDataGrid: React.FC<IAutoDataGrid> = ({
             />
         ));
     }, [resourceConfig?.customListButtons]);
+
+  
       
     return <DataGridWrapper className={resourceConfig?.dataGridProps?.stickyHeader ? 'dash-sticky-header' : ''}>
             <DataGridRootComponent {...processedDataGridProps}>
