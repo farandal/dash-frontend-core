@@ -34,8 +34,9 @@ import {
 	warning,
 	useGetRecordRepresentation,
 	useEvent,
-    sanitizeInputRestProps,
+    sanitizeInputRestProps
 } from 'react-admin';
+
 import {
 	CommonInputProps,
 	InputHelperText,
