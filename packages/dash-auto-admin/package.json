@@ -38,7 +38,7 @@
 		"node-match-path": "latest",
 		"prop-types": "latest",
         "react": "latest",
-		"react-admin": "latest",
+		"react-admin": "5.10.1",
 		"react-hook-form": "latest",
 		"react-redux": "latest",
 		"react-router": "latest",

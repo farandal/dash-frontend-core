@@ -47,7 +47,7 @@
 		"query-string": "latest",
 		"ra-input-rich-text": "latest",
 		"react": "latest",
-		"react-admin": "latest",
+		"react-admin": "5.10.1",
 		"react-custom-scrollbars-2": "latest",
 		"react-hook-form": "latest",
 		"react-loading-overlay-ts": "latest",

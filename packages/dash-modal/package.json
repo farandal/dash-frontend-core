@@ -59,7 +59,7 @@
 		"@rollup/plugin-replace": "latest",
 		"@rollup/plugin-typescript": "latest",
 		"query-string": "latest",
-		"react-admin": "latest",
+		"react-admin": "5.10.1",
 		"dash-auto-admin": "workspace:*",
 		"react-custom-scrollbars-2": "latest",
 		"react-loading-overlay-ts": "latest",

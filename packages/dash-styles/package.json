@@ -21,6 +21,6 @@
   "devDependencies": {},
   "dependencies": {
     "@mui/utils": "latest",
-    "react-admin": "latest"
+    "react-admin": "5.10.1"
   }
 }
