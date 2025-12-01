@@ -46,7 +46,7 @@ const AutoDataGrid: React.FC<IAutoDataGrid> = ({
 
     // Memoize processed dataGridProps
     const processedDataGridProps = useMemo(() => ({
-        ...{selectedIds:[]},
+       //...{selectedIds:[]},
         ...resourceConfig.dataGridProps,
         ...dataGridProps,
     }), [resourceConfig.dataGridProps, dataGridProps]);
