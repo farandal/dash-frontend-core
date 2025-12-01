@@ -336,10 +336,15 @@ const FCMProvider: FC<IFCMProvider> = ({
    const Capacitor = getCapacitor();
   useEffect(() => {
     if (auth.authenticated && !prevAuthRef.current) {
+      const capacitorPlatform = Capacitor?.getPlatform?.() || 'web';
+      const isNativePlatform = Capacitor?.isNativePlatform?.() || false;
+      
       console.log('🔐 User authenticated, checking if should initialize FCM...', {
         debug,
         isSupported,
         platform,
+        capacitorPlatform,
+        isNativePlatform,
         envVars: {
           IS_ANDROID: envVars.IS_ANDROID,
           IS_IOS: envVars.IS_IOS,
@@ -355,16 +360,14 @@ const FCMProvider: FC<IFCMProvider> = ({
           initializePushNotifications().catch(error => {
             console.error('❌ FCM initialization failed in debug mode:', error);
           });
-        } else if (
-          (envVars.IS_ANDROID || envVars.IS_IOS) && 
-          Capacitor.getPlatform() !== 'web'
-        ) {
-          console.log('📱 Native platform detected: initializing FCM');
+        } else if (isNativePlatform || capacitorPlatform === 'android' || capacitorPlatform === 'ios') {
+          // Use runtime Capacitor detection instead of build-time env vars
+          console.log('📱 Native platform detected: initializing FCM', { capacitorPlatform, isNativePlatform });
           initializePushNotifications().catch(error => {
             console.error('❌ FCM initialization failed:', error);
           });
         } else {
-          console.log('🌐 Web platform or unsupported: skipping FCM initialization');
+          console.log('🌐 Web platform or unsupported: skipping FCM initialization', { capacitorPlatform, isNativePlatform });
         }
       } else {
         console.log('❌ FCM not supported on this platform');
