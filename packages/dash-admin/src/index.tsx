@@ -84,3 +84,23 @@ export { default as AvatarComponent } from './components/user/AvatarComponent';
 export { default as TenantAvatarComponent } from './components/user/TenantAvatarComponent';
 export { default as LanguageSwitcher } from './components/misc/LanguageSwitcher';
 export { default as DarkModeSwitcher } from './components/misc/DarkModeSwitcher';
+
+// Navigation Components
+export { Breadcrumbs, BreadcrumbsComponent, BreadcrumbsManager, BreadcrumbsManagerComponent } from './components/navigation';
+export type { BreadcrumbsProps, BreadcrumbsManagerProps } from './components/navigation';
+
+// Navigation Hooks
+export { useBreadcrumbs } from './hooks/useBreadcrumbs';
+export type { UseBreadcrumbsOptions, UseBreadcrumbsResult } from './hooks/useBreadcrumbs';
+
+// Resource Loader
+export {
+    createDASHResourceLoader,
+    getDASHResources,
+    loadResourcesFromManifest,
+    loadManifest,
+    clearResourceCache,
+    getCachedResources,
+    type IResourceManifestEntry,
+    type IDASHResourceLoaderConfig
+} from './resources/DASHResourceLoader';
