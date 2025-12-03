@@ -27,6 +27,11 @@
         //height: 100vh;
         display: flex;
         flex-wrap: wrap;
+
+        // Override MUI Container centering - align form to left
+        > .MuiContainer-root {
+            margin-left: 0;
+        }
     }
     &-content, &-back{
         display: flex;
@@ -37,8 +42,11 @@
     &-content{
       z-index:3;
         width: 100%;
-        //max-width: 45vw;
-        align-items: center;
+        max-width: 50%;
+        flex: 0 0 50%;
+        align-items: flex-start;
+        justify-content: center;
+        padding-top: 60px;
 
         flex-direction: column;
 
@@ -50,7 +58,7 @@
             }
 
             &-logo{
-
+                // Logo styles handled at parent level
             }
 
            /* .MuiTypography-root {
@@ -130,9 +138,9 @@
         align-items: flex-end;
         justify-content: flex-start;
         width: 100%;
-        max-width: 70%;
+        max-width: 50%;
         flex: 0 0 50%;
-        height: 100%;
+        height: 100vh;
         position: fixed;
         top: 0;
         right: 0;
@@ -140,7 +148,7 @@
         &::before{
             content: "";
             display: block;
-            width: 50.694vw;
+            width: 100%;
             height: 100vh;
             right: 0;
             top: 0;
@@ -159,24 +167,29 @@
         top:10px;
         right:0px;
         width:100%;
-        max-width: 50vw;
+        max-width: 100%;
         z-index:2;
 
+        img {
+            max-width: 100%;
+            max-height: 120px;
+            object-fit: contain;
+        }
     }
     &-img{
         position: absolute;
-        width: 76vw;
-        height: 90vh;
+        width: 100%;
+        height: 70vh;
         max-height: 60vh;
         object-fit: contain;
 
-        left: -5vw;
+        left: 0;
         bottom: 0;
         img, svg{
-            width: 80%;
+            width: 100%;
             height: 100%;
             object-fit: contain;
-            object-position: bottom right;
+            object-position: bottom center;
             * {
                 pointer-events: none;
             }
@@ -189,78 +202,99 @@
 
 @media (max-width: @mq-sm){
 
-
  .framed-layout .dash-app-login, .dash-app-login{
         &-wrapper{
-            flex-direction: row;
+            flex-direction: column;
+            min-height: 100vh;
+
+            // Override MUI Container for small screens - full width centered
+            > .MuiContainer-root {
+                margin-left: auto;
+                margin-right: auto;
+                max-width: 100%;
+                width: 100%;
+                padding-left: 16px;
+                padding-right: 16px;
+            }
         }
         &-content, &-back{
             display: flex;
             position: relative;
             max-width: 100%;
-            flex: 0 0 100%;
+            flex: 0 0 auto;
             padding: 0;
         }
         &-back{
-            order: 1;
-            align-items: flex-end;
-            justify-content: center;
-            width: 100%;
-            max-height: 60vh;
+            display: none; // Hide back element on small screens - logo moved to wrapper
+        }
+
+        &-logo {
+            //order: 1;
             position: relative;
-            top: 0;
-            right: 0;
-            z-index: 10;
-            &::before{
-                display: block;
+            top: auto;
+            right: auto;
+            width: 100%;
+            max-width: 100%;
+            z-index: 2;
+            padding: 20px;
+            background: none;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            img {
                 width: 100%;
-                height: 100%;
-                background: var(--primary-color, @primary-color);
-                background: linear-gradient(95.21deg, var(--primary-color, @primary-color) 1%, var(--primary-contrast, @primary-contrast) 99.46%);
-                border-radius: 0 0 8px 8px;
-                position: absolute;
-                z-index: -1;
+                max-width: 280px;
+                max-height: 80px;
+                object-fit: contain;
             }
         }
+
         &-img{
+           // order: 3;
             position: relative;
             object-position: center;
-            width: 80vw;
-            height: 60vw;
-            min-height: 30vw;
+            width: 100%;
+            height: auto;
+            min-height: 120px;
+            max-height: 25vh;
             right: auto;
             left: auto;
             bottom: 0;
             z-index: 1;
+            margin-top: auto;
             img, svg{
                 width: 100%;
                 height: 100%;
+                max-height: 25vh;
                 object-fit: contain;
                 object-position: bottom center;
             }
             &-logo{
-                position: absolute;
-                top: 10px;
-                display: block;
-                position: absolute;
-                width: 250px;
-                filter: brightness(0) invert(1);
+                display: none;
             }
         }
 
         &-content{
-            order: 2;
+            //order: 2;
+            max-width: 100%;
+            width: 100%;
+            flex: 1 0 auto;
+            padding-top: 20px;
+            align-items: center;
+            justify-content: flex-start;
+
             .dash-app-login{
                 &-logo{
                     display: none;
                 }
                 &-form{
                     margin: 0;
-                    padding: 49px 40px 79px;
+                    padding: 20px;
                     width: 100%;
                     &-title{
                         display: block;
-                        margin-bottom: 28px;
+                        margin-bottom: 20px;
                         font-style: normal;
                         font-weight: 900;
                         font-size: 20px;
