@@ -6,7 +6,7 @@ export { default as DASH_THEME_SETTINGS } from './DefaultThemeSettings';
 export type { default as IAuthState } from './redux/interfaces/IAuthState';
 export type { default as ICommonState } from './redux/interfaces/ICommonState';
 export type { default as ISettingsState } from './redux/interfaces/ISettings';
-export type { default as IPageState } from './redux/interfaces/IPage';
+export type { default as IPageState, IBreadcrumbItem } from './redux/interfaces/IPage';
 export type { default as IDASHAppState } from './redux/interfaces/IDASHAppState';
 export type { default as IComponentDataState } from './redux/interfaces/IComponentData'; // Add this line
 
