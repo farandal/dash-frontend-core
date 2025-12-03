@@ -18,3 +18,5 @@ build-resources
 *.wav
 android/app/src/main/res/*
 build_config.json
+apps/minimal
+apps/v2

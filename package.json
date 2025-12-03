@@ -13,6 +13,8 @@
 
     "config:web:kitchntabs:production": "MODE=production CUSTOM_MODE=kitchntabs.production TARGET_TYPE=web PLATFORM=web  node build_config.js",
     "config:web:kitchntabs:development": "MODE=development CUSTOM_MODE=kitchntabs.development TARGET_TYPE=web PLATFORM=web  node build_config.js",
+    "config:web:kitchntabs:local": "MODE=development CUSTOM_MODE=kitchntabs.local TARGET_TYPE=web PLATFORM=web  node build_config.js",
+
 
     "config:electron:kitchntabs:production": "MODE=production CUSTOM_MODE=kitchntabs.production TARGET_TYPE=desktop PLATFORM=electron  node build_config.js",
     "config:electron:kitchntabs:development": "MODE=development CUSTOM_MODE=kitchntabs.development TARGET_TYPE=desktop PLATFORM=electron  node build_config.js",
@@ -29,7 +31,8 @@
     "build": "cd apps/dash && pnpm build",
 
     "_WEB": "BUILD",
-
+    
+    "dev:web:kitchntabs:local": "pnpm config:web:kitchntabs:local && pnpm dev",
     "dev:web:kitchntabs:development": "pnpm config:web:kitchntabs:development && pnpm dev",
     "dev:web:kitchntabs:production": "pnpm config:web:kitchntabs:production && pnpm dev",
     
