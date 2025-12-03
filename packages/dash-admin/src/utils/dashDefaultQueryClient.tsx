@@ -1,5 +1,5 @@
 import { QueryClient } from "react-query";
-
+/*
 const dashDefaultQueryClient = new QueryClient({
         defaultOptions: {
             queries: {
@@ -19,5 +19,16 @@ const dashDefaultQueryClient = new QueryClient({
             },
         },
     });
+*/
+
+const dashDefaultQueryClient = new QueryClient({
+  defaultOptions: {
+        queries: {
+            refetchOnWindowFocus: false,
+            staleTime: 5 * 60 * 1000, // 5 minutes
+            retry: 1,
+        },
+    },
+});
 
 export default dashDefaultQueryClient;

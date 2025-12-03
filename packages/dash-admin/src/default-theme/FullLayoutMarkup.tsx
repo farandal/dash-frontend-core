@@ -215,10 +215,9 @@ const FullLayoutMarkup = <U, A>({
     return (
         <div className={`dash-app-layout ${className || ''}`}>
             <div className='dash-app-login-wrapper'>
-                <div className='dash-app-login-content'>
-               
+                
                     {children}
-                </div>
+              
                 <div className='dash-app-login-back'>
                    
                     <div className='dash-app-login-img'>

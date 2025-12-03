@@ -11,7 +11,7 @@ import { useWindowSize } from 'dash-utils';
 import { useAuthContext } from '../../contexts/auth/AuthContext';
 
 import { useRedirect } from 'react-admin';
-//import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const AvatarComponent: React.FC = (_props) => {
     const { user, logout, authenticated } = useAuthContext();
@@ -25,7 +25,7 @@ const AvatarComponent: React.FC = (_props) => {
     const menuRef = useRef<HTMLDivElement>(null);
     const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 });
     const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-    //const navigate = useNavigate();
+    const navigate = useNavigate();
     //const ra_redirect = useRedirect();
 
     // Add state to track user data changes and force re-renders
@@ -64,12 +64,13 @@ useEffect(() => {
         }*/
     
         await logout();
-        //navigate('/login');
+        navigate('/login');
     };
 
     const handleProfileRedirect = () => {
         //window.location.href = '/profile';
         //ra_redirect('/profile');
+        navigate('/profile');
     };
 
     const calculateMenuPosition = () => {
