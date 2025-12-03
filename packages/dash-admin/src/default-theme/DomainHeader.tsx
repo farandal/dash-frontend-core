@@ -9,12 +9,15 @@ import MenuOpenIcon from '@mui/icons-material/MenuOpen'
 import { Box, IconButton } from '@mui/material';
 import { IDashAutoAdminResourceConfig } from 'dash-auto-admin';
 import { NavEventManager } from '../utils/navEvents';
+import { Breadcrumbs } from '../components/navigation';
 
 export interface IDomainHeader<U = any, A = any> extends PropsWithChildren {
-
+    /** Whether to show breadcrumb navigation */
+    showBreadcrumbs?: boolean;
 }
 
 const DomainHeader = <U, A>({
+    showBreadcrumbs = true,
     ...props
 }: IDomainHeader<U, A>): JSX.Element => {
 
@@ -69,13 +72,19 @@ const DomainHeader = <U, A>({
             sx={{ /*display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%'*/ }}
         >
             {pageSettings.title ? (
-                <Box className='dash-header-inline' sx={{ display: 'flex', flexDirection: 'row' }}>
+                <Box className='dash-header-inline' sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
                     <span className='dash-header-inline-title'>
                         {pageSettings.title || ''}
                     </span>
                     <span className='dash-header-inline-subtitle'>
                         {pageSettings.subTitle}
                     </span>
+                    {/* Breadcrumb Navigation - inline with title */}
+                    {showBreadcrumbs && pageSettings.breadcrumbs && pageSettings.breadcrumbs.length > 0 && (
+                        <Box className='dash-header-breadcrumbs'>
+                            <Breadcrumbs />
+                        </Box>
+                    )}
                 </Box>
             ) : null}
 
