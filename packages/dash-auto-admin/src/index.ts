@@ -56,3 +56,13 @@ export const AutoAdminSettings: IDashAutoAdminSettings = {
 	library: 'mui',
 	defaultTabName: 'Data',
 };
+
+/** Providers */
+export {
+    createDashAuthProvider,
+    createDashDataProvider,
+    type DashAuthProviderConfig,
+    type DashAuthProviderOverrides,
+    type DashDataProviderConfig,
+    type DashDataProviderOverrides
+} from './providers';
