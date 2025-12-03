@@ -14,7 +14,7 @@ const ErrorFallback = ({ error, resetErrorBoundary }) => {
 const AppComponent = React.lazy(() => {
 	return new Promise((resolve) => setTimeout(resolve, 1 * 1000)).then(
 		// @ts-ignore
-		() => import('@app/DASHApp'), 
+		() => import('@app/dash/orphans/DASHApp'), 
 	);
 });
 

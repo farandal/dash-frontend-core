@@ -10,8 +10,10 @@ import { Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 
 //import RoutingWrapper from './RoutingWrapper';
 
-import MyLoginPage from './pages/Login';
-import Profile from './pages/Profile';
+// Lazy load pages that use Router hooks (useNavigate, useRedirect, etc.)
+// This prevents them from executing before Router context is established
+const MyLoginPage = React.lazy(() => import('./pages/Login'));
+const Profile = React.lazy(() => import('./pages/Profile'));
 
 import { useDispatch, useSelector } from 'react-redux';
 import { getCookie, setCookie } from './utils/cookies';
@@ -73,9 +75,11 @@ import { Provider } from 'react-redux';
 import ConstantsProvider, { ConstantsContext } from './config/ConstantsService';
 
 import AppLayout, { IAppLayout } from './layout/AppLayout';
-import VerifyAccount from './pages/VerifyAccount';
-import RecoverPassword from './pages/RecoverPassword';
-import ChangePassword from './pages/ChangePassword';
+
+// Lazy load auth pages that use Router hooks
+const VerifyAccount = React.lazy(() => import('./pages/VerifyAccount'));
+const RecoverPassword = React.lazy(() => import('./pages/RecoverPassword'));
+const ChangePassword = React.lazy(() => import('./pages/ChangePassword'));
 
 import { setResources } from 'dash-admin-state/src/redux/actions/Resources';
 import {
@@ -130,6 +134,22 @@ const AsyncResources: React.FC<IAsyncResources> = React.memo((props) => {
   const getCustomAuthRoutes = useCallback(() => customAuthRoutes, [customAuthRoutes]);
   const getCustomRoutes = useCallback(() => customRoutes, [customRoutes]);
 
+  // Helper to create a fresh Route from route props
+  // This ensures the Route component reference matches react-router's expectations
+  const createRouteFromProps = (routeElement: React.ReactElement, key: string) => {
+    const { path, element, children, ...restProps } = routeElement.props;
+    return (
+      <Route
+        key={key}
+        path={path}
+        element={element}
+        {...restProps}
+      >
+        {children}
+      </Route>
+    );
+  };
+
   // Memoize custom routes
   const memoizedCustomRoutes = useMemo(() => (
     <CustomRoutes>
@@ -143,9 +163,7 @@ const AsyncResources: React.FC<IAsyncResources> = React.memo((props) => {
       
       {(authenticated) ? getCustomAuthRoutes()
       .filter(route => !route.props['data-layout']?.toString().includes('no-layout'))
-      .map((route, index) => {
-        return <Route key={`auth-route-${index}`} {...route.props} />
-      }) : null}
+      .map((route, index) => createRouteFromProps(route, route.key || `auth-route-${index}`)) : null}
 
       {getCustomRoutes()
       .filter(route => {
@@ -154,11 +172,7 @@ const AsyncResources: React.FC<IAsyncResources> = React.memo((props) => {
         }
         return !route.props['data-layout']?.toString().includes('no-layout')
       })
-      .map((route, index) => {
-        return <Route key={`custom-auth-route-${index}`} {...route.props}>
-          {route.props.children || null}
-        </Route>
-      })}         
+      .map((route, index) => createRouteFromProps(route, route.key || `custom-route-${index}`))}         
     </CustomRoutes>
   ), [authenticated, customProfilePage, getCustomAuthRoutes, getCustomRoutes]);
 
@@ -166,9 +180,7 @@ const AsyncResources: React.FC<IAsyncResources> = React.memo((props) => {
     <CustomRoutes noLayout>
       {authenticated ? getCustomAuthRoutes()
       .filter(route => route.props['data-layout']?.toString().includes('no-layout'))
-      .map((route, index) => {
-        return <Route key={`auth-route-${index}`} {...route.props} />
-      }) : null}
+      .map((route, index) => createRouteFromProps(route, route.key || `auth-no-layout-${index}`)) : null}
 
       {getCustomRoutes()
       .filter(route => {
@@ -177,11 +189,7 @@ const AsyncResources: React.FC<IAsyncResources> = React.memo((props) => {
         }
         return route.props['data-layout']?.toString().includes('no-layout')
       })
-      .map((route, index) => {
-        return <Route key={`custom-auth-route-${index}`} {...route.props}>
-          {route.props.children || null}
-        </Route>
-      })}        
+      .map((route, index) => createRouteFromProps(route, route.key || `custom-no-layout-${index}`))}        
     </CustomRoutes>
   ), [authenticated, getCustomAuthRoutes, getCustomRoutes]);
 
