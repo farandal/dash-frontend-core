@@ -17,6 +17,12 @@ export interface DashInitializeAppConfig {
      */
     defaultTheme?: string;
 
+    /**
+     * Tenant settings containing colors for theme injection
+     * Typically obtained from AuthPersistenceService.getTenantSettings()
+     */
+    tenantSettings?: { colors?: any } | null;
+
     /** Whether to request notification permission (default: true) */
     requestNotifications?: boolean;
 
@@ -51,6 +57,7 @@ export interface DashInitializeAppConfig {
 export const dashInitializeApp = async (config: DashInitializeAppConfig = {}): Promise<void> => {
     const {
         defaultTheme,
+        tenantSettings,
         requestNotifications = true,
         syncElectron = true,
         applyPlatformClasses = true,
@@ -69,7 +76,7 @@ export const dashInitializeApp = async (config: DashInitializeAppConfig = {}): P
 
     // Inject tenant styles
     if (injectStyles) {
-        injectTenantStyles(defaultTheme);
+        injectTenantStyles(defaultTheme, tenantSettings);
     }
 
     // Request notification permission
@@ -83,17 +90,19 @@ export const dashInitializeApp = async (config: DashInitializeAppConfig = {}): P
  * Use this when you don't need to await the electron store sync
  *
  * @param defaultTheme - Optional default theme for tenant styles
+ * @param tenantSettings - Optional tenant settings with colors
  *
  * @example
  * ```tsx
  * // In main.tsx before React renders
- * dashBootstrapApp('dark');
+ * import { AuthPersistenceService } from 'dash-auth';
+ * dashBootstrapApp('dark', AuthPersistenceService.getTenantSettings());
  *
  * // Then render React
  * root.render(<App />);
  * ```
  */
-export const dashBootstrapApp = (defaultTheme?: string): void => {
+export const dashBootstrapApp = (defaultTheme?: string, tenantSettings?: { colors?: any } | null): void => {
     // Sync Electron store (async but non-blocking)
     syncElectronStore();
 
@@ -101,7 +110,7 @@ export const dashBootstrapApp = (defaultTheme?: string): void => {
     applyPlatformBodyClasses();
 
     // Inject tenant styles
-    injectTenantStyles(defaultTheme);
+    injectTenantStyles(defaultTheme, tenantSettings);
 
     // Request notification permission (non-blocking)
     requestNotificationPermission();

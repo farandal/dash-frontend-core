@@ -250,6 +250,54 @@ const dashSpanish = {
 			save_and_show: 'Guardar y Mostrar',
 		},
 	},
+	kiosk: {
+		// Header
+		total: 'Total',
+		clear_cart: 'Vaciar Carrito',
+		view_order: 'Ver Pedido',
+		add_items_to_start: 'Agrega productos para comenzar',
+		
+		// Navigation
+		prev: 'Ant',
+		next: 'Sig',
+		page_of: 'Página %{current} de %{total} • %{items} productos',
+		products: 'Productos',
+		
+		// Product Card
+		customizable: 'Personalizable',
+		
+		// Product Grid
+		no_products_found: 'No se encontraron productos en esta categoría',
+		
+		// Cart View
+		your_order: 'Tu Pedido',
+		cart_empty: 'Tu carrito está vacío',
+		browse_menu: 'Ver Menú',
+		note: 'Nota',
+		order_options: 'Opciones del Pedido',
+		delivery_method: 'Método de Entrega',
+		table_number: 'Número de Mesa',
+		your_name: 'Tu Nombre (Opcional)',
+		special_instructions: 'Instrucciones Especiales (Opcional)',
+		cancel_order: 'Cancelar Pedido',
+		confirm_order: 'Confirmar Pedido',
+		submitting: 'Enviando...',
+		
+		// Modifier Modal
+		select_multiple: 'Selecciona varios',
+		required: '*Requerido',
+		cancel: 'Cancelar',
+		add_to_order: 'Agregar al Pedido',
+		
+		// Confirmation View
+		order_confirmed: '¡Pedido Confirmado!',
+		thank_you: 'Gracias por tu pedido. Por favor espera a que llamen tu número.',
+		your_order_number: 'Tu Número de Pedido',
+		status: 'Estado',
+		start_new_order: 'Iniciar Nuevo Pedido',
+		auto_reset_notice: 'Esta pantalla se reiniciará automáticamente en 30 segundos',
+		loading: 'Cargando...',
+	},
 };
 
 export default {

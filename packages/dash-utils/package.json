@@ -29,7 +29,6 @@
   },
   "dependencies": {
     "@mui/material": "latest",
-    "dash-constants": "workspace:*",
-    "dash-auth": "workspace:*"
+    "dash-constants": "workspace:*"
   }
 }

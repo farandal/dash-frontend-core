@@ -3,20 +3,18 @@
  *
  * Injects CSS variables from tenant settings into the DOM.
  */
-import { AuthPersistenceService } from 'dash-auth';
 import { updateDomCssVariables } from './updateDomCssVariables';
 
 /**
- * Inject tenant styles from persisted settings
+ * Inject tenant styles from provided settings
  * @param defaultTheme - The default theme type to use
+ * @param tenantSettings - The tenant settings object containing colors (optional)
  */
-export const injectTenantStyles = (defaultTheme: string): void => {
-    const tenantSettings = AuthPersistenceService.getTenantSettings();
-
+export const injectTenantStyles = (defaultTheme: string, tenantSettings?: { colors?: any } | null): void => {
     if (tenantSettings) {
         try {
             const colors = tenantSettings.colors;
-            console.log('Updating colors from local storage');
+            console.log('Updating colors from tenant settings');
             updateDomCssVariables(defaultTheme, colors);
         } catch (error) {
             console.error('Error parsing tenant settings:', error);

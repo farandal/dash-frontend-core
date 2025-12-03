@@ -44,19 +44,21 @@ export const dashDefaultInitializeApp = async (config: DashDefaultInitializeAppC
  * Wraps dashBootstrapApp from dash-utils and adds app-specific bootstrap logic.
  * 
  * @param defaultTheme - Optional default theme for tenant styles
+ * @param tenantSettings - Optional tenant settings with colors
  * 
  * @example
  * ```tsx
  * // In main.tsx before React renders
- * dashDefaultBootstrapApp('dark');
+ * import { AuthPersistenceService } from 'dash-auth';
+ * dashDefaultBootstrapApp('dark', AuthPersistenceService.getTenantSettings());
  * 
  * // Then render React
  * root.render(<App />);
  * ```
  */
-export const dashDefaultBootstrapApp = (defaultTheme?: string): void => {
+export const dashDefaultBootstrapApp = (defaultTheme?: string, tenantSettings?: { colors?: any } | null): void => {
     // Run the core dash bootstrap
-    dashBootstrapApp(defaultTheme);
+    dashBootstrapApp(defaultTheme, tenantSettings);
     
     // Add any default app-specific bootstrap here
     // Example: Initialize default services, set up listeners, etc.

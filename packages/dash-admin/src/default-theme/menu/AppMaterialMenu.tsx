@@ -13,7 +13,7 @@ import SidebarItem from './AppMenuComponents/expanded/SidebarItem';
 import SidebarItemCollapse from './AppMenuComponents/expanded/CollapsableSidebarMenu';
 import CollapsedSidebarItems from './AppMenuComponents/collapsed/CollapsedSidebarItems';
 import { IDashAutoAdminResourceConfig } from 'dash-auto-admin';
-//import { IDomainAuth, IDomainUser } from '@app/DASHApp';
+
 import { IDASHAppState } from 'dash-admin-state';
 import checkRole from '../../helpers/checkRole';
 import { slugify } from '../../utils/slugify';

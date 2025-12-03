@@ -250,6 +250,54 @@ const dashEnglish = {
 			save_and_show: 'Save and Show',
 		},
 	},
+	kiosk: {
+		// Header
+		total: 'Total',
+		clear_cart: 'Clear Cart',
+		view_order: 'View Order',
+		add_items_to_start: 'Add items to start',
+		
+		// Navigation
+		prev: 'Prev',
+		next: 'Next',
+		page_of: 'Page %{current} of %{total} • %{items} items',
+		products: 'Products',
+		
+		// Product Card
+		customizable: 'Customizable',
+		
+		// Product Grid
+		no_products_found: 'No products found in this category',
+		
+		// Cart View
+		your_order: 'Your Order',
+		cart_empty: 'Your cart is empty',
+		browse_menu: 'Browse Menu',
+		note: 'Note',
+		order_options: 'Order Options',
+		delivery_method: 'Delivery Method',
+		table_number: 'Table Number',
+		your_name: 'Your Name (Optional)',
+		special_instructions: 'Special Instructions (Optional)',
+		cancel_order: 'Cancel Order',
+		confirm_order: 'Confirm Order',
+		submitting: 'Submitting...',
+		
+		// Modifier Modal
+		select_multiple: 'Select multiple',
+		required: '*Required',
+		cancel: 'Cancel',
+		add_to_order: 'Add to Order',
+		
+		// Confirmation View
+		order_confirmed: 'Order Confirmed!',
+		thank_you: 'Thank you for your order. Please wait for your number to be called.',
+		your_order_number: 'Your Order Number',
+		status: 'Status',
+		start_new_order: 'Start New Order',
+		auto_reset_notice: 'This screen will reset automatically in 30 seconds',
+		loading: 'Loading...',
+	},
 };
 
 export default {
