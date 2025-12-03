@@ -24,3 +24,49 @@ export { default as JsonColorSelectorEnhanced } from './components/JsonColorSele
 //export { default as useAsyncColorThief } from ''
 export { default as Json } from './components/Json/Json'
 export { default as JsonCssVarValues } from './components/JsonColorSelector/JsonCssVarValues'
+
+// Notifications Components
+export {
+    NotificationsCenter,
+    NotificationButton,
+    NotificationsMenu,
+    NotificationMenuItem,
+    ToastNotificationsStack,
+    DraggableNotificationDialog,
+    useNotificationsCenter,
+    formatTimeAgo,
+    generateNotificationId,
+} from './components/notifications';
+
+export type {
+    NotificationData,
+    ToastNotification as NotificationToast,
+    DialogNotification as NotificationDialog,
+    NotificationsCenterConfig,
+    NotificationsCenterLabels,
+    NotificationsCenterIcons,
+    NotificationButtonProps,
+    NotificationsMenuProps,
+    NotificationMenuItemProps,
+    ToastNotificationsStackProps,
+    DraggableNotificationDialogProps,
+    NotificationsCenterProps,
+    UseNotificationsCenterReturn,
+} from './components/notifications';
+
+// Hooks - Re-exported from dash-utils for backward compatibility
+// @deprecated Import directly from 'dash-utils' instead
+export { useDraggable } from './hooks/useDraggable';
+export type { DraggablePosition, UseDraggableOptions, UseDraggableReturn } from './hooks/useDraggable';
+
+export { useNotifications } from './hooks/useNotifications';
+export type {
+    ProcessedNotification,
+    ToastNotification,
+    DialogNotification,
+    UseNotificationsOptions,
+    UseNotificationsReturn
+} from './hooks/useNotifications';
+
+export { useQuickSearch } from './hooks/useQuickSearch';
+export type { UseQuickSearchReturn } from './hooks/useQuickSearch';
