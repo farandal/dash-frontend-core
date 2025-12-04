@@ -250,6 +250,26 @@ const dashSpanish = {
 			save_and_show: 'Guardar y Mostrar',
 		},
 	},
+	tab: {
+		tabs: 'Cuentas',
+		kitchen_tabs: 'Órdenes de Cocina',
+		action: {
+			cancel: 'Cancelar',
+			confirm: 'Confirmar',
+			print: 'Imprimir',
+			pay: 'Pagar',
+			close: 'Cerrar',
+		},
+		status: {
+			created: 'Creada',
+			confirmed: 'Confirmada',
+			preparing: 'Preparando',
+			ready: 'Lista',
+			delivered: 'Entregada',
+			completed: 'Completada',
+			cancelled: 'Cancelada',
+		},
+	},
 	kiosk: {
 		// Header
 		total: 'Total',

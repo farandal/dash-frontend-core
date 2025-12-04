@@ -250,6 +250,26 @@ const dashEnglish = {
 			save_and_show: 'Save and Show',
 		},
 	},
+	tab: {
+		tabs: 'Tabs',
+		kitchen_tabs: 'Kitchen Orders',
+		action: {
+			cancel: 'Cancel',
+			confirm: 'Confirm',
+			print: 'Print',
+			pay: 'Pay',
+			close: 'Close',
+		},
+		status: {
+			created: 'Created',
+			confirmed: 'Confirmed',
+			preparing: 'Preparing',
+			ready: 'Ready',
+			delivered: 'Delivered',
+			completed: 'Completed',
+			cancelled: 'Cancelled',
+		},
+	},
 	kiosk: {
 		// Header
 		total: 'Total',

@@ -4,7 +4,7 @@
   "author": "Francisco Aranda <farandal@gmail.com>",
   "license": "MIT",
   "private": true,
-  "version": "1.0.35",
+  "version": "1.0.36",
   "main": "apps/dash/dist-electron/main/index.js",
   "scripts": {
     "new": "chmod +x ./new.sh && sh ./new.sh",
