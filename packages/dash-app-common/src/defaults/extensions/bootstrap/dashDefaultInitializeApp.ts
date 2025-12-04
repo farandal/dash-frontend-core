@@ -9,9 +9,13 @@ import {
     dashBootstrapApp,
     type DashInitializeAppConfig 
 } from 'dash-utils';
+import { injectTenantStyles } from 'dash-admin/src/utils/injectTenantStyles';
 
 // Re-export the config type for convenience
-export type DashDefaultInitializeAppConfig = DashInitializeAppConfig;
+export type DashDefaultInitializeAppConfig = DashInitializeAppConfig & {
+    /** Default theme for tenant styles injection */
+    defaultTheme?: string;
+};
 
 /**
  * Dash Default Initialize the application
@@ -32,8 +36,15 @@ export type DashDefaultInitializeAppConfig = DashInitializeAppConfig;
  * ```
  */
 export const dashDefaultInitializeApp = async (config: DashDefaultInitializeAppConfig = {}): Promise<void> => {
+    const { defaultTheme, ...restConfig } = config;
+    
     // Run the core dash bootstrap
-    await dashInitializeApp(config);
+    await dashInitializeApp(restConfig);
+    
+    // Inject tenant styles if theme provided
+    if (defaultTheme) {
+        injectTenantStyles(defaultTheme);
+    }
     
     // Add any default app-specific initialization here
     // Example: Initialize analytics, default logging, etc.
@@ -44,21 +55,24 @@ export const dashDefaultInitializeApp = async (config: DashDefaultInitializeAppC
  * Wraps dashBootstrapApp from dash-utils and adds app-specific bootstrap logic.
  * 
  * @param defaultTheme - Optional default theme for tenant styles
- * @param tenantSettings - Optional tenant settings with colors
  * 
  * @example
  * ```tsx
  * // In main.tsx before React renders
- * import { AuthPersistenceService } from 'dash-auth';
- * dashDefaultBootstrapApp('dark', AuthPersistenceService.getTenantSettings());
+ * dashDefaultBootstrapApp('dark');
  * 
  * // Then render React
  * root.render(<App />);
  * ```
  */
-export const dashDefaultBootstrapApp = (defaultTheme?: string, tenantSettings?: { colors?: any } | null): void => {
+export const dashDefaultBootstrapApp = (defaultTheme?: string): void => {
     // Run the core dash bootstrap
-    dashBootstrapApp(defaultTheme, tenantSettings);
+    dashBootstrapApp();
+    
+    // Inject tenant styles if theme provided
+    if (defaultTheme) {
+        injectTenantStyles(defaultTheme);
+    }
     
     // Add any default app-specific bootstrap here
     // Example: Initialize default services, set up listeners, etc.
