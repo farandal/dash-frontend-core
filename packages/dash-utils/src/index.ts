@@ -116,9 +116,6 @@ export {
     hasElectronStore
 } from './utils/electronStoreSync';
 
-// Tenant Styles
-export { injectTenantStyles } from './utils/injectTenantStyles';
-
 // Notification Permission
 export {
     requestNotificationPermission,
