@@ -23,7 +23,6 @@ const DashAutoShow: React.FC<IAutoShow> = ({
 	...props
 }) => {
 
-
 	const topToolbarActions = () => {
 		
 		const componentsList = (): any[] => {
