@@ -118,13 +118,9 @@ export const defaultOptions = (options) => {
     cssVariables: {
       cssVarPrefix: 'dash', // Your custom prefix
       colorSchemeSelector: 'data-theme', // Tell MUI to use data attributes
+      colorSchemeStorageKey: 'theme', // Use same key as dashStorage for consistency
     },
-    // Enable both light and dark color schemes
-    /*colorSchemes: {
-      light: true,
-      dark: true,
-    },*/
-
+    // Enable both light and dark color schemes - NO 'system' to force light/dark only
     colorSchemes: {
       light: {
         palette: createPalette('light')
@@ -132,12 +128,9 @@ export const defaultOptions = (options) => {
       dark: {
         palette: createPalette('dark')
       },
-      /*system: {
-        palette: createPalette('dark')
-      },*/
     },
 
-    defaultColorScheme: currentTheme,
+    defaultColorScheme: currentTheme || 'dark',
 
 
     palette: createPalette(currentTheme),
