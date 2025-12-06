@@ -21,16 +21,13 @@ const config: CapacitorConfig = {
       enabled: true
     },
     SplashScreen: {
-      androidStatusBarColor: "#4caf50",
-      androidStatusBarStyle: "dark",
-      androidScaleType: "CENTER",
-      androidIcons: {
-        mdpi: "resources/android/icon/drawable-mdpi-icon.png",
-        hdpi: "resources/android/icon/drawable-hdpi-icon.png",
-        xhdpi: "resources/android/icon/drawable-xhdpi-icon.png",
-        xxhdpi: "resources/android/icon/drawable-xxhdpi-icon.png",
-        xxxhdpi: "resources/android/icon/drawable-xxxhdpi-icon.png"
-      }
+      launchShowDuration: 2000,
+      launchAutoHide: true,
+      backgroundColor: "#212121",
+      androidScaleType: "CENTER_INSIDE",
+      showSpinner: false,
+      splashFullScreen: true,
+      splashImmersive: true
     },
     WebView: {
       allowFileAccess: true,
