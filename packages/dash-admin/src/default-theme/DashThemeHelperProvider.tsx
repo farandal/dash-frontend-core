@@ -1,15 +1,21 @@
 import React, { createContext, useContext, useEffect } from 'react';
-//import { useAuthContext } from '../..';
 import { AuthPersistenceService } from 'dash-auth';
 import { useColorScheme } from '@mui/material/styles';
 import { updateDomCssVariables } from 'dash-utils';
 import { dashStorage } from 'dash-utils';
+
 interface DashThemeHelperContextType {
     mode: string;
 }
 
+// Get initial mode from storage, defaulting to 'dark'
+const getInitialMode = (): string => {
+    const stored = dashStorage.getItem('theme');
+    return (stored === 'light' || stored === 'dark') ? stored : 'dark';
+};
+
 const DashThemeHelperContext = createContext<DashThemeHelperContextType>({
-    mode: dashStorage.getItem('theme') || 'light'
+    mode: getInitialMode()
 });
 
 
@@ -38,8 +44,10 @@ interface DashThemeHelperProviderProps {
  * @returns {React.ReactElement} Provider component with theme context
  */
 export const DashThemeHelperProvider: React.FC<DashThemeHelperProviderProps> = ({ children }) => {
-    //const { auth, authenticated } = useAuthContext();
     const { mode, setMode } = useColorScheme();
+
+    // Effective mode: use MUI mode if valid, otherwise fallback to stored theme
+    const effectiveMode = (mode === 'light' || mode === 'dark') ? mode : getInitialMode();
 
     // Helper function to get tenant settings (prioritize persisted over auth)
     const getTenantSettings = () => {
@@ -50,27 +58,38 @@ export const DashThemeHelperProvider: React.FC<DashThemeHelperProviderProps> = (
         return null;
     };
 
+    // Sync MUI mode with stored theme on mount
+    useEffect(() => {
+        const storedTheme = dashStorage.getItem('theme');
+        if (storedTheme && (storedTheme === 'light' || storedTheme === 'dark') && mode !== storedTheme) {
+            setMode(storedTheme as 'light' | 'dark');
+        } else if (!storedTheme) {
+            // No stored theme - set default and persist
+            const defaultMode = 'dark';
+            dashStorage.setItem('theme', defaultMode);
+            document.documentElement.setAttribute('data-theme', defaultMode);
+            setMode(defaultMode);
+        }
+    }, []);
+
     // Listen for theme mode changes and update DOM CSS variables
     useEffect(() => {
+        if (mode !== 'light' && mode !== 'dark') return; // Skip if MUI returns undefined/system
+        
         // Emit custom event for theme mode switch
-      
         const themeEvent = new CustomEvent('dash-theme-mode-switched', { detail: { mode } });
         window.dispatchEvent(themeEvent);
      
-        //console.log("mode change from dash helper   ", mode);
         const tenantSettings = getTenantSettings();
         if (tenantSettings?.colors || tenantSettings?.values) {
-            //document.documentElement.setAttribute('data-theme', mode);
-           
             dashStorage.setItem('theme', mode);
-            updateDomCssVariables(mode, tenantSettings?.colors || {},tenantSettings?.values || {});
+            document.documentElement.setAttribute('data-theme', mode);
+            updateDomCssVariables(mode, tenantSettings?.colors || {}, tenantSettings?.values || {});
         }
     }, [mode]);
 
-   
-
     return (
-        <DashThemeHelperContext.Provider value={{ mode: mode }}>
+        <DashThemeHelperContext.Provider value={{ mode: effectiveMode }}>
             {children}
         </DashThemeHelperContext.Provider>
     );

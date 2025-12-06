@@ -1,37 +1,40 @@
 import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { LightMode, DarkMode } from '@mui/icons-material';
+import { dashStorage } from 'dash-utils';
 
 import {
-  IDASHAppState,
   DASH_REDUX_ACTIONS,
-  DASH_THEME_SETTINGS
 } from 'dash-admin-state';
-//import { IconMenuItem } from 'mui-nested-menu';
 import { Avatar, useColorScheme } from '@mui/material';
 import { DashThemeHelperProvider } from '../../default-theme';
 
 const DarkToggleMode = () => {
-
   const { mode, setMode } = useColorScheme();
-
-  /*const dashMode: "light" | "dark" = useSelector((state: IDASHAppState<any, any, any>) =>
-    state.settings.themeType
-  );*/
-  const darkMode = mode === "dark";
   const dispatch = useDispatch();
+
+  // Determine display mode - fallback to stored theme or 'dark' if MUI returns undefined/system
+  const effectiveMode = (mode === 'light' || mode === 'dark') ? mode : (dashStorage.getItem('theme') || 'dark');
+  const darkMode = effectiveMode === 'dark';
   
   const onClick = () => {
-  const newMode = mode === "dark" 
-          ? "light" 
-          : "dark";
+    const newMode = effectiveMode === 'dark' ? 'light' : 'dark';
 
-    dispatch(
-      DASH_REDUX_ACTIONS.toggleThemeType(newMode),
-    );
-
+    // Update all systems: MUI, Redux, and dashStorage
     setMode(newMode);
+    dashStorage.setItem('theme', newMode);
+    document.documentElement.setAttribute('data-theme', newMode);
+    
+    dispatch(DASH_REDUX_ACTIONS.toggleThemeType(newMode));
   };
+
+  // Sync on initial mount if MUI mode doesn't match stored theme
+  useEffect(() => {
+    const storedTheme = dashStorage.getItem('theme');
+    if (storedTheme && (storedTheme === 'light' || storedTheme === 'dark') && mode !== storedTheme) {
+      setMode(storedTheme as 'light' | 'dark');
+    }
+  }, []);
   
   return (
     <>
@@ -50,6 +53,7 @@ const DarkToggleMode = () => {
       >
         {darkMode ? <LightMode /> : <DarkMode />}
       </Avatar>
+      
       </DashThemeHelperProvider>
     </div>
 
