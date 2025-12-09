@@ -1,0 +1,38 @@
+{
+    "name": "kt-cashcount",
+    "version": "1.0.0",
+    "private": true,
+    "main": "src/index.ts",
+    "type": "module",
+    "scripts": {
+        "lint": "eslint --ext .ts,.tsx .",
+        "format": "pnpm prettier --write .",
+        "typecheck": "tsc --noEmit"
+    },
+    "dependencies": {
+        "@emotion/react": "latest",
+        "@emotion/styled": "latest",
+        "@mui/icons-material": "latest",
+        "@mui/material": "latest",
+        "dash-admin": "workspace:*",
+        "dash-auto-admin": "workspace:*",
+        "dash-axios-hook":  "workspace:*",
+        "dash-constants": "workspace:*",
+        "dash-dialog": "workspace:*",
+        "dash-utils": "workspace:*",
+        "kt-utils": "workspace:*",
+        "kt-ecommerce": "workspace:*",
+        "react": "latest",
+        "react-admin": "5.10.1",
+        "react-dom": "latest",
+        "react-hook-form": "^7.54.0"
+    },
+    "devDependencies": {
+        "@types/react": "latest",
+        "@types/react-dom": "latest",
+        "dash-eslint": "workspace:*",
+        "dash-prettier": "workspace:*",
+        "dash-tsconfig": "workspace:*",
+        "typescript": "latest"
+    }
+}

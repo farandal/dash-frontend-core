@@ -199,12 +199,18 @@ const DashAutoList: React.FC<IDashAutoList> = ({
 		timestamp: new Date().toISOString()
 	});
 
+    const ContextComponent = resourceConfig.contextComponent ? resourceConfig.contextComponent:  ({children}) => {
+        return children;
+    };
+  
+
 	if (!finalListProps) return <></>;
 	
 	return resourceConfig.listComponent ? (
 		resourceConfig.listComponent(resourceConfig, onSubmit, onError)
 	) : (
 		<List {...finalListProps} >
+               <ContextComponent mode={"list"} resourceConfig={resourceConfig}>
 			{resourceConfig.dataGridComponent ? (
 				<resourceConfig.dataGridComponent
 					resourceConfig={resourceConfig}
@@ -216,6 +222,7 @@ const DashAutoList: React.FC<IDashAutoList> = ({
 					dataGridProps={_dataGridProps}
 				/>
 			)}
+            </ContextComponent>
 		</List>
 	);
 };

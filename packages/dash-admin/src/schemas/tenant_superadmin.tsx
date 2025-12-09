@@ -1,5 +1,6 @@
 import { IDashAutoAdminAttribute } from 'dash-auto-admin';
 import TenantSettings from '../components/tenant/TenantSettings';
+import TenantTheme from '../components/tenant/TenantTheme';
 import TenantAttributes from '../components/tenant/TenantAttributes';
 
 const tenantSystemAdminSchema: IDashAutoAdminAttribute[] = [
@@ -70,6 +71,20 @@ const tenantSystemAdminSchema: IDashAutoAdminAttribute[] = [
         inCreate: false,
         inShow:false
 	},
+
+	{
+		tab: 'Theme',
+		label: 'Tema',
+		attribute: 'attributes',
+		type: Object,
+		custom: true,
+		inList: false,
+		component: TenantTheme,
+        inCreate: false,
+        inShow:false
+	},
+
+    // I want here a block only to configure the thenan theme and colors HERE.
 
 	{
 		tab: 'Datos contacto',

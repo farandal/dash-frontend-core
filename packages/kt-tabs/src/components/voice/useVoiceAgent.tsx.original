@@ -1,0 +1,333 @@
+import { voiceAgentService } from '@app/services/openai/openaiService';
+import { useAxios } from 'dash-axios-hook';
+import { useState, useCallback, useRef, useEffect } from 'react';
+
+
+interface ConversationEntry {
+  timestamp: string;
+  user: string;
+  assistant: any;
+}
+
+
+export interface ResolvedProduct {
+    id: number;
+    name: string;
+    sku: string;
+    price: string;
+    product_data: any;
+}
+
+export interface VoiceActionResult {
+    success: boolean;
+    transcription?: string;
+    actions?: VoiceAction[];
+    aiResponse?: any;
+    error?: string;
+}
+
+export interface VoiceAction {
+  action: 'add' | 'remove' | 'modify_quantity' | 'add_note';
+  product_names: string[];
+  quantity: number;
+  note: string;
+  confidence: number;
+  resolved_products?: ResolvedProduct[];
+  resolution_status?: 'found' | 'not_found' | 'multiple';
+}
+
+export interface ResolvedProduct {
+  id: number;
+  name: string;
+  sku: string;
+  price: string;
+  product_data: any;
+}
+
+export interface VoiceActionResult {
+  success: boolean;
+  transcription?: string;
+  actions?: VoiceAction[];
+  aiResponse?: any;
+  error?: string;
+}
+
+export interface VoiceTabAgentConfig {
+  language: 'es' | 'en';
+  autoProcess: boolean;
+  showConfidence: boolean;
+  enableExamples: boolean;
+}
+
+export const useVoiceAgent = () => {
+  const [sessionId, setSessionId] = useState<string>('');
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [conversationHistory, setConversationHistory] = useState<ConversationEntry[]>([]);
+  const [error, setError] = useState<string | null>(null);
+  const [lastResponse, setLastResponse] = useState<any>(null);
+
+  const axios = useAxios();
+  
+  // Use refs to prevent infinite loops
+  const historyFetchedRef = useRef(false);
+  const sessionInitializedRef = useRef(false);
+
+  // Initialize session ID only once
+  useEffect(() => {
+    if (!sessionInitializedRef.current) {
+      const currentSessionId = voiceAgentService.getSessionId();
+      setSessionId(currentSessionId);
+      sessionInitializedRef.current = true;
+    }
+  }, []);
+
+  const clearError = useCallback(() => {
+    setError(null);
+  }, []);
+
+  const processVoiceInput = useCallback(async (audioBlob: Blob, context?: Record<string, any>) => {
+    if (isProcessing) {
+      console.warn('Already processing, skipping request');
+      return { success: false, error: 'Already processing' };
+    }
+
+    setIsProcessing(true);
+    setError(null);
+    
+    try {
+      const result = await voiceAgentService.processVoiceInput(audioBlob, context);
+      
+      if (result.success) {
+        setLastResponse(result.response);
+        // Refresh history after successful processing
+        await fetchConversationHistoryInternal();
+      } else {
+        setError(result.error || 'Processing failed');
+      }
+      
+      return result;
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+      setError(errorMessage);
+      return { success: false, error: errorMessage };
+    } finally {
+      setIsProcessing(false);
+    }
+  }, [isProcessing]);
+
+  const transcribeAudio = useCallback(async (audioBlob: Blob) => {
+    if (isProcessing) {
+      console.warn('Already processing, skipping request');
+      return { success: false, error: 'Already processing' };
+    }
+
+    setIsProcessing(true);
+    setError(null);
+    
+    try {
+      const result = await voiceAgentService.transcribeAudio(audioBlob);
+      
+      if (!result.success) {
+        setError(result.error || 'Transcription failed');
+      }
+      
+      return result;
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+      setError(errorMessage);
+      return { success: false, error: errorMessage };
+    } finally {
+      setIsProcessing(false);
+    }
+  }, [isProcessing]);
+
+  // Add new method to existing hook
+
+  const generateResponse = useCallback(async (text: string, context?: Record<string, any>) => {
+    if (isProcessing) {
+      console.warn('Already processing, skipping request');
+      return { success: false, error: 'Already processing' };
+    }
+
+    setIsProcessing(true);
+    setError(null);
+    
+    try {
+      const result = await voiceAgentService.generateResponse(text, context);
+      
+      if (result.success) {
+        setLastResponse(result.data);
+        // Refresh history after successful generation
+        await fetchConversationHistoryInternal();
+      } else {
+        setError(result.error || 'Response generation failed');
+      }
+      
+      return result;
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+      setError(errorMessage);
+      return { success: false, error: errorMessage };
+    } finally {
+      setIsProcessing(false);
+    }
+  }, [isProcessing]);
+
+  // Internal history fetch function to prevent external calls during processing
+  const fetchConversationHistoryInternal = useCallback(async (limit = 10) => {
+    try {
+      const result = await voiceAgentService.getConversationHistory(limit);
+      
+      if (result.success && result.history) {
+        setConversationHistory(result.history);
+      }
+      
+      return result;
+    } catch (error) {
+      console.error('Error fetching conversation history:', error);
+      return { success: false, error: 'Failed to fetch history' };
+    }
+  }, []);
+
+  // Public history fetch function with processing check
+  const fetchConversationHistory = useCallback(async (limit = 10) => {
+    if (isProcessing) {
+      console.warn('Currently processing, skipping history fetch');
+      return { success: false, error: 'Currently processing' };
+    }
+
+    // Prevent multiple simultaneous history fetches
+    if (historyFetchedRef.current) {
+      return { success: true, history: conversationHistory };
+    }
+
+    historyFetchedRef.current = true;
+    
+    try {
+      const result = await fetchConversationHistoryInternal(limit);
+      return result;
+    } finally {
+      // Reset the flag after a delay to allow future fetches
+      setTimeout(() => {
+        historyFetchedRef.current = false;
+      }, 1000);
+    }
+  }, [isProcessing, conversationHistory, fetchConversationHistoryInternal]);
+
+  const clearConversationHistory = useCallback(async () => {
+    if (isProcessing) {
+      console.warn('Currently processing, skipping history clear');
+      return { success: false, error: 'Currently processing' };
+    }
+
+    setIsProcessing(true);
+    setError(null);
+    
+    try {
+      const result = await voiceAgentService.clearHistory();
+      
+      if (result.success) {
+        setConversationHistory([]);
+        setLastResponse(null);
+      } else {
+        setError(result.error || 'Failed to clear history');
+      }
+      
+      return result;
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+      setError(errorMessage);
+      return { success: false, error: errorMessage };
+    } finally {
+      setIsProcessing(false);
+    }
+  }, [isProcessing]);
+
+  const processVoiceToActions = useCallback(async (
+    audioBlob: Blob, 
+    tabId?: string,
+    context: Record<string, any> = {}
+): Promise<VoiceActionResult> => {
+    if (!audioBlob) {
+        return { success: false, error: 'No audio data provided' };
+    }
+
+    setIsProcessing(true);
+    clearError();
+
+    try {
+        const formData = new FormData();
+        formData.append('audio', audioBlob, 'audio.webm');
+        formData.append('session_id', sessionId);
+        formData.append('context', JSON.stringify({
+            ...context,
+            action_mode: true,
+            tab_id: tabId
+        }));
+
+        if (tabId) {
+            formData.append('tab_id', tabId);
+        }
+
+        const response = await axios.post('/system/voice-agent/process-actions', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+            timeout: 60000,
+        });
+
+        const result = response.data;
+        
+        if (result.success) {
+            setLastResponse(result.data.ai_response);
+            await fetchConversationHistory();
+            return {
+                success: true,
+                transcription: result.data.original_transcription,
+                actions: result.data.actions,
+                aiResponse: result.data.ai_response
+            };
+        } else {
+            const errorMsg = result.error || 'Voice action processing failed';
+            setError(errorMsg);
+            return { success: false, error: errorMsg };
+        }
+    } catch (error: any) {
+        const errorMessage = error.response?.data?.error || 
+                           error.response?.data?.message || 
+                           error.message || 
+                           'Voice action processing failed';
+        setError(errorMessage);
+        return { success: false, error: errorMessage };
+    } finally {
+        setIsProcessing(false);
+    }
+}, [sessionId, axios, clearError, fetchConversationHistory]);
+
+
+  // Reset session - useful for starting fresh
+  const resetSession = useCallback(() => {
+    const newSessionId = voiceAgentService.generateSessionId();
+    voiceAgentService.setSessionId(newSessionId);
+    setSessionId(newSessionId);
+    setConversationHistory([]);
+    setLastResponse(null);
+    setError(null);
+    historyFetchedRef.current = false;
+  }, []);
+
+  return {
+    sessionId,
+    isProcessing,
+    conversationHistory,
+    error,
+    lastResponse,
+    processVoiceInput,
+    transcribeAudio,
+    generateResponse,
+    fetchConversationHistory,
+    clearConversationHistory,
+    clearError,
+    resetSession
+  };
+};

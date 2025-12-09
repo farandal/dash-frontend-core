@@ -1,0 +1,14 @@
+.draggable-tree.ant-tree {
+    width: 100%;
+}
+
+.draggable-tree .ant-tree-node-content-wrapper{
+    border-bottom: 1px solid grey;
+    border-radius: 0 !important;
+    width: 100%;
+    margin-bottom: -5px;
+}
+
+.draggable-tree.ant-tree .ant-tree-treenode{
+    padding: 0 !important;
+}

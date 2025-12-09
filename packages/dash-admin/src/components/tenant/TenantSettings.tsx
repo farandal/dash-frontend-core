@@ -21,7 +21,9 @@ const TenantSettingsEdit: React.FC<IDashAutoAdminCustomFieldComponent> = ({ meth
       
         if (formatsData && formatsData.data && formatsData.data.setting_formats) {
 
-            const parsedSchema = formatsData.data.setting_formats.map((entry) => {
+            const parsedSchema = formatsData.data.setting_formats
+                .filter((entry) => entry.tab !== 'colors')
+                .map((entry) => {
                 // Extract the actual setting name from 'settings.setting_name'
                 const settingName = entry.attribute ? entry.attribute.replace('settings.', '') : entry.id;
 
@@ -95,7 +97,9 @@ const TenantSettingsCreate: React.FC<IDashAutoAdminCustomFieldComponent> = ({ me
     useEffect(() => {
 
         if (!loading && formatsData && formatsData.data && formatsData.data.setting_formats) {
-            const parsedSchema = formatsData.data.setting_formats.map((entry) => ({
+            const parsedSchema = formatsData.data.setting_formats
+                .filter((entry) => entry.tab !== 'colors')
+                .map((entry) => ({
                 ...entry,
                 ...(method === 'view' && {
                     readOnly: true,
@@ -146,7 +150,9 @@ const TenantSettingsView: React.FC<IDashAutoAdminCustomFieldComponent> = ({ meth
         let object = {};
         if (settingFormats && tenant) {
 
-            settingFormats.forEach((entry) => {
+            settingFormats
+                .filter((entry) => entry.tab !== 'colors')
+                .forEach((entry) => {
                 const defaultValue = tenant.settings && tenant.settings.hasOwnProperty(entry.id) ? tenant.settings[entry.id] : entry?.default_value;
 
                 object[entry.label] = <>{parseValue(defaultValue)}</>;

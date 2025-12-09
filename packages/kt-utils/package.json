@@ -1,0 +1,30 @@
+{
+    "name": "kt-utils",
+    "version": "1.0.0",
+    "private": true,
+    "main": "src/index.ts",
+    "type": "module",
+    "scripts": {
+        "lint": "eslint --ext .ts,.tsx .",
+        "format": "pnpm prettier --write .",
+        "typecheck": "tsc --noEmit"
+    },
+    "dependencies": {
+        "@mui/material": "latest",
+        "dash-admin": "workspace:*",
+        "dash-auth": "workspace:*",
+        "dash-auto-admin": "workspace:*",
+        "dash-axios-hook": "workspace:*",
+        "dash-constants": "workspace:*",
+        "dash-utils": "workspace:*",
+        "react": "latest",
+        "react-admin": "5.10.1"
+    },
+    "devDependencies": {
+        "@types/react": "latest",
+        "dash-eslint": "workspace:*",
+        "dash-prettier": "workspace:*",
+        "dash-tsconfig": "workspace:*",
+        "typescript": "latest"
+    }
+}

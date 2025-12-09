@@ -3,8 +3,6 @@ import React, { Suspense } from 'react';
 import GlobalLoader from './components/loader/GlobalLoader';
 import { Loading } from 'react-admin';
 
-import LoaderAnimation from 'react-spinners/PuffLoader';
-
 import { ErrorBoundary } from 'react-error-boundary';
 
 const ErrorFallback = ({ error, resetErrorBoundary }) => {
@@ -14,7 +12,7 @@ const ErrorFallback = ({ error, resetErrorBoundary }) => {
 const AppComponent = React.lazy(() => {
 	return new Promise((resolve) => setTimeout(resolve, 1 * 1000)).then(
 		// @ts-ignore
-		() => import('@app/DASHPrivateApp'), 
+		() => import('@app/DASHApp'), 
 	);
 });
 

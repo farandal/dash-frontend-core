@@ -134,20 +134,11 @@ const AsyncResources: React.FC<IAsyncResources> = React.memo((props) => {
   const getCustomAuthRoutes = useCallback(() => customAuthRoutes, [customAuthRoutes]);
   const getCustomRoutes = useCallback(() => customRoutes, [customRoutes]);
 
-  // Helper to create a fresh Route from route props
-  // This ensures the Route component reference matches react-router's expectations
+  // Helper to clone a Route element with a new key
+  // Using cloneElement preserves the original Route component reference
+  // which is important when routes come from different packages
   const createRouteFromProps = (routeElement: React.ReactElement, key: string) => {
-    const { path, element, children, ...restProps } = routeElement.props;
-    return (
-      <Route
-        key={key}
-        path={path}
-        element={element}
-        {...restProps}
-      >
-        {children}
-      </Route>
-    );
+    return React.cloneElement(routeElement, { key });
   };
 
   // Memoize custom routes

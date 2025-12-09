@@ -22,6 +22,9 @@ import {
     Tabs,
     Tab,
     useColorScheme,
+    Grid,
+    Pagination,
+    Link,
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
@@ -161,65 +164,108 @@ const ColorPaletteItem: React.FC<{
     const modeIcon = getModeIcon(mode);
     
     return (
-        <Box 
-            sx={{ 
-        aspectRatio: 'unset', // Remove aspect ratio
-        height: '30px', // Set fixed height
-        cursor: 'pointer',
-        transition: 'all 0.2s ease-in-out',
-        '&:hover': {
-            transform: 'translateY(-2px)',
-            boxShadow: 3,
-        },
-        position: 'relative',
-        overflow: 'hidden',
-        backgroundColor: pair.value,
-        display: 'flex',
-        flexDirection: 'row', // Change to row for horizontal layout
-        alignItems: 'center',
-        justifyContent: 'flex-start', // Align to start
-        padding: '0 8px', // Horizontal padding only
-        gap: 0.5,
-    }}
+        <Card
             onClick={() => onEdit(pair)}
+            elevation={1}
+            sx={{
+                width: '100%',
+                display: 'flex',
+                alignItems: 'stretch', // Ensure stretch for full height
+                cursor: 'pointer',
+                transition: 'all 0.2s ease-in-out',
+                '&:hover': {
+                    transform: 'translateY(-2px)',
+                    boxShadow: 3,
+                },
+                borderRadius: 2,
+                overflow: 'hidden',
+                position: 'relative',
+                height: 80, // Fixed height for consistency
+                backgroundColor: 'background.paper',
+            }}
         >
-            {/* Base name chips */}
-            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.25, justifyContent: 'center' }}>
-                {baseChips.map((chip, index) => (
-                    <Chip
-                        key={index}
-                        label={chip}
-                        size="small"
-                        sx={{
-                            height: 16,
-                            fontSize: '0.6rem',
-                            backgroundColor: 'rgba(255,255,255,0.9)',
-                            color: '#333',
-                            '& .MuiChip-label': {
-                                padding: '0 4px',
-                            },
-                        }}
-                    />
-                ))}
-            </Box>
-            
-            {/* Mode chip/icon */}
-            {mode && (
-                <Chip
-                    label={modeIcon}
-                    size="small"
+            {/* Left Color Box */}
+            <Box
+                sx={{
+                    width: 80, // Fixed square width
+                    backgroundColor: pair.value,
+                    flexShrink: 0,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    position: 'relative',
+                }}
+            >
+                {/* Hover Edit Icon Overlay */}
+                <Box
                     sx={{
-                        height: 16,
-                        fontSize: '0.6rem',
-                        backgroundColor: 'rgba(0,0,0,0.7)',
-                        color: '#fff',
-                        '& .MuiChip-label': {
-                            padding: '0 4px',
-                        },
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        backgroundColor: 'rgba(0,0,0,0.3)',
+                        opacity: 0,
+                        transition: 'opacity 0.2s',
+                        '&:hover': { opacity: 1 },
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
                     }}
-                />
-            )}
-        </Box>
+                >
+                    <EditIcon sx={{ color: '#fff' }} />
+                </Box>
+            </Box>
+
+            {/* Right Details Section */}
+            <Box sx={{ 
+                flexGrow: 1, 
+                p: 1.5, 
+                display: 'flex', 
+                flexDirection: 'column', 
+                justifyContent: 'space-between', // Space key and chips
+                overflow: 'hidden'
+            }}>
+                 <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', mb: 0.5 }}>
+                     <Typography variant="caption" sx={{ fontFamily: 'monospace', fontWeight: 'bold', color: 'text.secondary' }}>
+                        {pair.value}
+                    </Typography>
+                     {mode && (
+                        <Chip
+                            label={mode}
+                            size="small"
+                            icon={<span style={{ marginLeft: 6, fontSize: '0.8rem' }}>{modeIcon}</span>}
+                            sx={{
+                                height: 18,
+                                fontSize: '0.65rem',
+                                '& .MuiChip-label': { padding: '0 6px' },
+                            }}
+                        />
+                    )}
+                 </Box>
+
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                    {baseChips.map((chip, index) => (
+                        <Chip
+                            key={index}
+                            label={chip}
+                            size="small"
+                            variant="outlined"
+                            sx={{
+                                height: 20,
+                                fontSize: '0.7rem',
+                                maxWidth: '100%',
+                                '& .MuiChip-label': {
+                                    padding: '0 6px',
+                                    overflow: 'hidden',
+                                    textOverflow: 'ellipsis',
+                                },
+                            }}
+                        />
+                    ))}
+                </Box>
+            </Box>
+        </Card>
     );
 };
 
@@ -460,6 +506,10 @@ export const JsonEdit: React.FC<IDashAutoAdminCustomFieldComponent> = (props) =>
     const [isRendering, setIsRendering] = useState<boolean>(true);
     const [editDialogOpen, setEditDialogOpen] = useState<boolean>(false);
     const [editingPair, setEditingPair] = useState<KeyValuePair | null>(null);
+    
+    // Pagination state
+    const [page, setPage] = useState<number>(1);
+    const [pageSize] = useState<number>(24);
 
     // Throttling refs
     const throttleTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -831,11 +881,12 @@ const getTenantSettingsValues = () => {
                     />
                     {selectedMode && (
                         <Chip 
-                            label={`Mode: ${getModeIcon(selectedMode)} ${selectedMode}`}
+                            label={`Mode: ${selectedMode}`}
                             size="small"
                             variant="filled"
                             color="primary"
                             onDelete={handleClearMode}
+                            avatar={<span style={{ paddingLeft: 6 }}>{getModeIcon(selectedMode)}</span>}
                         />
                     )}
                     {searchTerm && (
@@ -849,42 +900,75 @@ const getTenantSettingsValues = () => {
                     )}
                 </Box>
             )}
-            
-            {/* Color Palette Grid */}
-            <Box sx={{ 
-                display: 'grid', 
-                gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', // Double the width from 120px to 240px
-                gap: 0,
-                mb: 2,
-                border: '1px solid #e0e0e0',
-            }}>
-                {filteredPairs.map((pair) => (
-                    <ColorPaletteItem
-                        key={pair.id}
-                        pair={pair}
-                        onEdit={handleEditPair}
-                        onDelete={handleDeletePair}
-                    />
-                ))}
-            </Box>
-            
-            {/* Show message when no results found */}
-            {(searchTerm || selectedMode) && filteredPairs.length === 0 && (
-                <Box sx={{ textAlign: 'center', py: 4 }}>
-                    <Typography variant="body2" color="textSecondary">
-                        No colors found matching your filters
+
+            {/* Color Grid with Pagination */}
+            {isRendering ? (
+                 <Box sx={{ display: 'flex', justifyContent: 'center', p: 4, alignItems: 'center', flexDirection: 'column', gap: 2 }}>
+                    <Typography>Rendering Grid...</Typography>
+                 </Box>
+            ) : filteredPairs.length > 0 ? (
+                <>
+                    <Box sx={{
+                        display: 'grid',
+                        gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
+                        gap: 2,
+                        width: '100%'
+                    }}>
+                        {filteredPairs
+                            .slice((page - 1) * pageSize, page * pageSize)
+                            .map((pair) => (
+                            <Box key={pair.id} sx={{ minWidth: 0 }}>
+                                <ColorPaletteItem
+                                    pair={pair}
+                                    onEdit={handleEditPair}
+                                    onDelete={handleDeletePair}
+                                />
+                            </Box>
+                        ))}
+                    </Box>
+                    
+                    {/* Pagination Controls */}
+                    {filteredPairs.length > pageSize && (
+                        <Box sx={{ mt: 4, display: 'flex', justifyContent: 'center' }}>
+                            <Pagination 
+                                count={Math.ceil(filteredPairs.length / pageSize)} 
+                                page={page} 
+                                onChange={(_, value) => setPage(value)}
+                                color="primary"
+                                size="large"
+                                showFirstButton 
+                                showLastButton
+                            />
+                        </Box>
+                    )}
+                    
+                    <Typography variant="caption" sx={{ display: 'block', textAlign: 'center', mt: 2, color: 'text.secondary' }}>
+                        Showing {Math.min((page - 1) * pageSize + 1, filteredPairs.length)} - {Math.min(page * pageSize, filteredPairs.length)} of {filteredPairs.length} colors
                     </Typography>
-                    <Box sx={{ mt: 1, display: 'flex', justifyContent: 'center', gap: 1 }}>
-                        {searchTerm && (
-                            <Button size="small" onClick={handleClearSearch}>
-                                Clear search
-                            </Button>
-                        )}
-                        {selectedMode && (
-                            <Button size="small" onClick={handleClearMode}>
-                                Clear mode filter
-                            </Button>
-                        )}
+                </>
+            ) : (
+                <Box sx={{ 
+                    p: 4, 
+                    textAlign: 'center', 
+                    bgcolor: 'background.paper', 
+                    borderRadius: 1,
+                    border: '1px dashed #ccc' 
+                }}>
+                    <Typography color="textSecondary">
+                        No colors found using current filters.
+                    </Typography>
+                    <Box sx={{ mt: 1 }}>
+                        <Link
+                            component="button"
+                            variant="body2"
+                            onClick={() => {
+                                setSearchTerm('');
+                                setSelectedMode('');
+                                setPage(1);
+                            }}
+                        >
+                            Clear filters
+                        </Link>
                     </Box>
                 </Box>
             )}

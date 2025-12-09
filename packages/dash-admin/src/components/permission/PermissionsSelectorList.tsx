@@ -22,6 +22,7 @@ import {
     TableHead,
     TableRow,
     TablePagination,
+    Divider,
 } from '@mui/material';
 import { 
     SelectAll as SelectAllIcon, 
@@ -212,6 +213,34 @@ const PermissionsSelectorListBase: React.FC<IDashAutoAdminCustomFieldComponent &
         });
     }, []);
 
+    // Select all from current filtered results only
+    const handleSelectAllFiltered = useCallback(() => {
+        const filteredRouteNames = new Set(filteredData.map(p => p.route_name));
+        setPermissionsMap(prev => {
+            const newMap = new Map(prev);
+            newMap.forEach((permission, key) => {
+                if (filteredRouteNames.has(key)) {
+                    newMap.set(key, { ...permission, checked: true });
+                }
+            });
+            return newMap;
+        });
+    }, [filteredData]);
+
+    // Deselect all from current filtered results only
+    const handleDeselectAllFiltered = useCallback(() => {
+        const filteredRouteNames = new Set(filteredData.map(p => p.route_name));
+        setPermissionsMap(prev => {
+            const newMap = new Map(prev);
+            newMap.forEach((permission, key) => {
+                if (filteredRouteNames.has(key)) {
+                    newMap.set(key, { ...permission, checked: false });
+                }
+            });
+            return newMap;
+        });
+    }, [filteredData]);
+
     // Get unique groups for filter (memoized)
     const uniqueGroups = useMemo(() => {
         const groups = new Set<string>();
@@ -235,6 +264,25 @@ const PermissionsSelectorListBase: React.FC<IDashAutoAdminCustomFieldComponent &
         };
     }, [permissionsMap]);
 
+    // Filtered statistics (memoized)
+    const filteredStatistics = useMemo(() => {
+        const filteredRouteNames = new Set(filteredData.map(p => p.route_name));
+        let filteredSelected = 0;
+        permissionsMap.forEach((p, key) => {
+            if (filteredRouteNames.has(key) && p.checked) filteredSelected++;
+        });
+        const filteredTotal = filteredData.length;
+        return {
+            total: filteredTotal,
+            selected: filteredSelected,
+            isAllSelected: filteredSelected === filteredTotal && filteredTotal > 0,
+            isNoneSelected: filteredSelected === 0
+        };
+    }, [filteredData, permissionsMap]);
+
+    // Check if there's an active filter
+    const hasActiveFilter = searchTerm !== '' || groupFilter !== '';
+
     // Paginated data
     const paginatedData = useMemo(() => {
         const start = page * rowsPerPage;
@@ -253,6 +301,7 @@ const PermissionsSelectorListBase: React.FC<IDashAutoAdminCustomFieldComponent &
 
     return (
         <Box sx={{ p: 2 }}>
+         
             {/* Global Toolbar */}
             <Paper elevation={1} sx={{ mb: 3, p: 2 }}>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
@@ -266,7 +315,32 @@ const PermissionsSelectorListBase: React.FC<IDashAutoAdminCustomFieldComponent &
                             variant="outlined"
                         />
                     </Box>
-                    <Box sx={{ display: 'flex', gap: 1 }}>
+                    <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+                        {hasActiveFilter && (
+                            <>
+                                <Button
+                                    variant="contained"
+                                    startIcon={<SelectAllIcon />}
+                                    onClick={handleSelectAllFiltered}
+                                    disabled={filteredStatistics.isAllSelected}
+                                    size="small"
+                                    color="primary"
+                                >
+                                    Select Filtered ({filteredStatistics.total})
+                                </Button>
+                                <Button
+                                    variant="contained"
+                                    startIcon={<DeselectAllIcon />}
+                                    onClick={handleDeselectAllFiltered}
+                                    disabled={filteredStatistics.isNoneSelected}
+                                    size="small"
+                                    color="secondary"
+                                >
+                                    Deselect Filtered
+                                </Button>
+                                <Divider orientation="vertical" flexItem sx={{ mx: 1 }} />
+                            </>
+                        )}
                         <Button
                             variant="outlined"
                             startIcon={<SelectAllIcon />}

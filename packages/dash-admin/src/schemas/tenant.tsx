@@ -57,8 +57,8 @@ const tenantSchema: IDashAutoAdminAttribute[] = [
 
 
 	{
-		tab: 'Configuración',
-		label: 'Configuración',
+		tab: 'Configuraciónes',
+		label: 'Configuraciónes',
 		attribute: 'settings', // para un custom component, atributo no es necesario, pero es requerido por la interfaz
 		type: String,
 		custom: true,

@@ -163,7 +163,7 @@ const PermissionsSelectorBase: React.FC<IDashAutoAdminCustomFieldComponent & { r
 }) => {
     const [permissionsData, setPermissionsData] = useState<IPermissionItem[][]>([]);
     const [parsedValues, setParsedValues] = useState<IPermissionItem[]>([]);
-    const [expandedCards, setExpandedCards] = useState<{ [key: number]: boolean }>({});
+    const [expandedCards, setExpandedCards] = useState<{ [key: string]: boolean }>({});
     const [isInitialized, setIsInitialized] = useState(false);
     const [groupSearchTerm, setGroupSearchTerm] = useState<string>('');
     const [itemSearchTerm, setItemSearchTerm] = useState<string>('');
@@ -227,11 +227,12 @@ const PermissionsSelectorBase: React.FC<IDashAutoAdminCustomFieldComponent & { r
             if (perms.length > 0) {
                 const groupedPerms = groupPermissions(perms);
                 setPermissionsData(groupedPerms);
-                // Initialize all cards as collapsed by default
-                const initialExpandedState = groupedPerms.reduce((acc, _, index) => {
-                    acc[index] = false;
+                // Initialize all cards as collapsed by default using group name as key
+                const initialExpandedState = groupedPerms.reduce((acc, group) => {
+                    const groupKey = group[0]?.group || 'Other';
+                    acc[groupKey] = false;
                     return acc;
-                }, {} as { [key: number]: boolean });
+                }, {} as { [key: string]: boolean });
                 setExpandedCards(initialExpandedState);
             }
             setIsInitialized(true);
@@ -358,6 +359,23 @@ const PermissionsSelectorBase: React.FC<IDashAutoAdminCustomFieldComponent & { r
         return filtered;
     }, [permissionsData, debouncedGroupSearch, debouncedItemSearch]);
 
+    // Select all from current filtered page: set checked: true only for filtered permissions
+    const handleSelectAllFiltered = useCallback(() => {
+        const filteredRouteNames = new Set(filteredPermissions.flat().map(p => p.route_name));
+        console.log('Selecting all filtered permissions', filteredRouteNames.size);
+        setStatePermissions(prev => 
+            prev.map(p => filteredRouteNames.has(p.route_name) ? { ...p, checked: true } : p)
+        );
+    }, [filteredPermissions]);
+
+    // Deselect all from current filtered page: set checked: false only for filtered permissions
+    const handleDeselectAllFiltered = useCallback(() => {
+        const filteredRouteNames = new Set(filteredPermissions.flat().map(p => p.route_name));
+        setStatePermissions(prev => 
+            prev.map(p => filteredRouteNames.has(p.route_name) ? { ...p, checked: false } : p)
+        );
+    }, [filteredPermissions]);
+
     // --- UI statistics ---
     const totalPermissions = permissionsData.flat().length;
     const selectedPermissions = statePermissions.filter(p => p.checked).length;
@@ -366,6 +384,14 @@ const PermissionsSelectorBase: React.FC<IDashAutoAdminCustomFieldComponent & { r
     const hasActiveSearch = !!debouncedGroupSearch.trim() || !!debouncedItemSearch.trim();
     const filteredGroupsCount = filteredPermissions.length;
     const totalFilteredItems = filteredPermissions.reduce((sum, group) => sum + group.length, 0);
+    
+    // Statistics for filtered permissions
+    const filteredSelectedCount = useMemo(() => {
+        const filteredRouteNames = new Set(filteredPermissions.flat().map(p => p.route_name));
+        return statePermissions.filter(p => p.checked && filteredRouteNames.has(p.route_name)).length;
+    }, [filteredPermissions, statePermissions]);
+    const isAllFilteredSelected = filteredSelectedCount === totalFilteredItems;
+    const isNoneFilteredSelected = filteredSelectedCount === 0;
 
     // --- Clear search handlers ---
     const handleClearGroupSearch = useCallback(() => setGroupSearchTerm(''), []);
@@ -424,6 +450,33 @@ const PermissionsSelectorBase: React.FC<IDashAutoAdminCustomFieldComponent & { r
                         />
                     </Box>
                     <Box sx={{ display: 'flex', gap: 1 }}>
+                        {hasActiveSearch && (
+                            <>
+                                <Button
+                                    variant="contained"
+                                    startIcon={<SelectAllIcon />}
+                                    onClick={handleSelectAllFiltered}
+                                    disabled={isAllFilteredSelected}
+                                    size="small"
+                                    color="primary"
+                                    sx={{ textTransform: 'none' }}
+                                >
+                                    Select Filtered ({totalFilteredItems})
+                                </Button>
+                                <Button
+                                    variant="contained"
+                                    startIcon={<DeselectAllIcon />}
+                                    onClick={handleDeselectAllFiltered}
+                                    disabled={isNoneFilteredSelected}
+                                    size="small"
+                                    color="secondary"
+                                    sx={{ textTransform: 'none' }}
+                                >
+                                    Deselect Filtered
+                                </Button>
+                                <Divider orientation="vertical" flexItem sx={{ mx: 1 }} />
+                            </>
+                        )}
                         <Button
                             variant="outlined"
                             startIcon={<SelectAllIcon />}
@@ -574,7 +627,8 @@ const PermissionsSelectorBase: React.FC<IDashAutoAdminCustomFieldComponent & { r
                 <Grid container spacing={3}>
                     {filteredPermissions.map((group, groupIndex) => {
                         const groupLabel = group[0]?.group || 'Other';
-                        const isExpanded = expandedCards[groupIndex] || false;
+                        const groupKey = groupLabel; // Use group name as stable key
+                        const isExpanded = expandedCards[groupKey] || false;
                         const groupSelectedCount = getSelectedCount(group);
                         const isAllSelectedInGroup = isGroupSelected(group);
                         const hasMoreItems = group.length > INITIAL_ITEMS_COUNT;
@@ -703,7 +757,7 @@ const PermissionsSelectorBase: React.FC<IDashAutoAdminCustomFieldComponent & { r
                                                     variant="text"
                                                     onClick={() => setExpandedCards(prev => ({
                                                         ...prev,
-                                                        [groupIndex]: !isExpanded
+                                                        [groupKey]: !isExpanded
                                                     }))}
                                                     sx={{
                                                         fontSize: '0.75rem',

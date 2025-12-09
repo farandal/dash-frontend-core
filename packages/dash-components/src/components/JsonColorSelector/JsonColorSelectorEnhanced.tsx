@@ -13,8 +13,13 @@ import {
     InputLabel,
     Select,
     MenuItem,
+    Grid,
+    Pagination,
+    Card,
+    Link,
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
+import EditIcon from '@mui/icons-material/Edit';
 import PreviewIcon from '@mui/icons-material/Preview';
 import SearchIcon from '@mui/icons-material/Search';
 import ClearIcon from '@mui/icons-material/Clear';
@@ -24,7 +29,6 @@ import UploadIcon from '@mui/icons-material/Upload';
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { ColorMapping, KeyValuePair } from './interfaces/interfaces';
 import { extractAvailableModes, getContrastColor, getModeIcon, parseColorKey } from './helpers/functions';
-import ColorPaletteItem from './components/ColorPaletteItem';
 import ImageColorExtractor from './components/ImageColorExtractor';
 import ColorEditDialog from './components/ColorEditDialog';
 import { updateDomCssVariables } from 'dash-utils';
@@ -39,6 +43,122 @@ const DEFAULT_COLOR_MAPPINGS: ColorMapping = {
     "contrast-color": "Contrast Color",
 };
 
+
+// Local Color Palette Item Component with new design
+const LocalColorPaletteItem: React.FC<{
+    pair: KeyValuePair;
+    onEdit: (pair: KeyValuePair) => void;
+    onDelete: (id: string) => void;
+}> = ({ pair, onEdit, onDelete }) => {
+    const textColor = getContrastColor(pair.value);
+    const { baseChips, mode } = parseColorKey(pair.key);
+    const modeIcon = getModeIcon(mode);
+    
+    return (
+        <Card
+            onClick={() => onEdit(pair)}
+            elevation={1}
+             sx={{
+                width: '100%',
+                display: 'flex',
+                alignItems: 'stretch', // Ensure stretch for full height
+                cursor: 'pointer',
+                transition: 'all 0.2s ease-in-out',
+                '&:hover': {
+                    transform: 'translateY(-2px)',
+                    boxShadow: 3,
+                },
+                borderRadius: 2,
+                overflow: 'hidden',
+                position: 'relative',
+                height: 80, // Fixed height for consistency
+                backgroundColor: 'background.paper',
+            }}
+        >
+            {/* Left Color Box */}
+            <Box
+                sx={{
+                    width: 80, // Fixed square width
+                    backgroundColor: pair.value,
+                    flexShrink: 0,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    position: 'relative',
+                }}
+            >
+                {/* Hover Edit Icon Overlay */}
+                <Box
+                    sx={{
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        backgroundColor: 'rgba(0,0,0,0.3)',
+                        opacity: 0,
+                        transition: 'opacity 0.2s',
+                        '&:hover': { opacity: 1 },
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                    }}
+                >
+                    <EditIcon sx={{ color: '#fff' }} />
+                </Box>
+            </Box>
+
+            {/* Right Details Section */}
+            <Box sx={{ 
+                flexGrow: 1, 
+                p: 1.5, 
+                display: 'flex', 
+                flexDirection: 'column', 
+                justifyContent: 'space-between',
+                overflow: 'hidden'
+            }}>
+                 <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', mb: 0.5 }}>
+                     <Typography variant="caption" sx={{ fontFamily: 'monospace', fontWeight: 'bold', color: 'text.secondary' }}>
+                        {pair.value}
+                    </Typography>
+                     {mode && (
+                        <Chip
+                            label={mode}
+                            size="small"
+                            icon={<span style={{ marginLeft: 6, fontSize: '0.8rem' }}>{modeIcon}</span>}
+                            sx={{
+                                height: 18,
+                                fontSize: '0.65rem',
+                                '& .MuiChip-label': { padding: '0 6px' },
+                            }}
+                        />
+                    )}
+                 </Box>
+
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                    {baseChips.map((chip, index) => (
+                        <Chip
+                            key={index}
+                            label={chip}
+                            size="small"
+                            variant="outlined"
+                            sx={{
+                                height: 20,
+                                fontSize: '0.7rem',
+                                maxWidth: '100%',
+                                '& .MuiChip-label': {
+                                    padding: '0 6px',
+                                    overflow: 'hidden',
+                                    textOverflow: 'ellipsis',
+                                },
+                            }}
+                        />
+                    ))}
+                </Box>
+            </Box>
+        </Card>
+    );
+};
 
 export const JsonEdit: React.FC<IDashAutoAdminCustomFieldComponent> = (props) => {
     const { method, attribute, resourceConfig } = props;
@@ -58,6 +178,10 @@ export const JsonEdit: React.FC<IDashAutoAdminCustomFieldComponent> = (props) =>
     const [editDialogOpen, setEditDialogOpen] = useState<boolean>(false);
     const [editingPair, setEditingPair] = useState<KeyValuePair | null>(null);
     const [extractedColors, setExtractedColors] = useState<number[][]>([]); // Add this state
+    
+    // Pagination state
+    const [page, setPage] = useState<number>(1);
+    const [pageSize] = useState<number>(50);
 
     // File input ref for CSS import
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -267,18 +391,22 @@ export const JsonEdit: React.FC<IDashAutoAdminCustomFieldComponent> = (props) =>
 
     const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setSearchTerm(event.target.value);
+        setPage(1);
     };
 
     const handleClearSearch = () => {
         setSearchTerm('');
+        setPage(1);
     };
 
     const handleModeChange = (event: any) => {
         setSelectedMode(event.target.value);
+        setPage(1);
     };
 
     const handleClearMode = () => {
         setSelectedMode('');
+        setPage(1);
     };
 
     // Initial data loading effect
@@ -539,6 +667,7 @@ export const JsonEdit: React.FC<IDashAutoAdminCustomFieldComponent> = (props) =>
 
         return (
             <Box sx={{ mt: 1, mb: 2 }}>
+               
                 <Typography variant="subtitle1" gutterBottom>
                     {attribute.label || 'Color Palette'}
                 </Typography>
@@ -680,11 +809,12 @@ export const JsonEdit: React.FC<IDashAutoAdminCustomFieldComponent> = (props) =>
                         />
                         {selectedMode && (
                             <Chip
-                                label={`Mode: ${getModeIcon(selectedMode)} ${selectedMode}`}
+                                label={`Mode: ${selectedMode}`}
                                 size="small"
                                 variant="filled"
                                 color="primary"
                                 onDelete={handleClearMode}
+                                avatar={<span style={{ paddingLeft: 6 }}>{getModeIcon(selectedMode)}</span>}
                             />
                         )}
                         {searchTerm && (
@@ -699,44 +829,80 @@ export const JsonEdit: React.FC<IDashAutoAdminCustomFieldComponent> = (props) =>
                     </Box>
                 )}
 
-                {/* Color Palette Grid */}
-                <Box sx={{
-                    display: 'grid',
-                    gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))',
-                    gap: 0,
-                    mb: 2,
-                    border: '1px solid #e0e0e0',
-                }}>
-                    {filteredPairs.map((pair) => (
-                        <ColorPaletteItem
-                            key={pair.id}
-                            pair={pair}
-                            onEdit={handleEditPair}
-                            onDelete={handleDeletePair}
-                        />
-                    ))}
+                {/* Color Payload Grid with Pagination */}
+                <Box sx={{ flexGrow: 1, my: 2 }}>
+                     {isRendering ? (
+                        <Box sx={{ display: 'flex', justifyContent: 'center', p: 4, alignItems: 'center', flexDirection: 'column', gap: 2 }}>
+                            <Typography>Rendering Grid...</Typography>
+                        </Box>
+                    ) : filteredPairs.length > 0 ? (
+                        <>
+                            <Box sx={{
+                                display: 'grid',
+                                gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
+                                gap: 2,
+                                width: '100%'
+                            }}>
+                                {filteredPairs
+                                    .slice((page - 1) * pageSize, page * pageSize)
+                                    .map((pair) => (
+                                    <Box key={pair.id} sx={{ minWidth: 0 }}>
+                                        <LocalColorPaletteItem
+                                            pair={pair}
+                                            onEdit={handleEditPair}
+                                            onDelete={handleDeletePair}
+                                        />
+                                    </Box>
+                                ))}
+                            </Box>
+                            
+                            {/* Pagination Controls */}
+                            {filteredPairs.length > pageSize && (
+                                <Box sx={{ mt: 4, display: 'flex', justifyContent: 'center' }}>
+                                    <Pagination 
+                                        count={Math.ceil(filteredPairs.length / pageSize)} 
+                                        page={page} 
+                                        onChange={(_, value) => setPage(value)}
+                                        color="primary"
+                                        size="large"
+                                        showFirstButton 
+                                        showLastButton
+                                    />
+                                </Box>
+                            )}
+                            
+                            <Typography variant="caption" sx={{ display: 'block', textAlign: 'center', mt: 2, color: 'text.secondary' }}>
+                                Showing {Math.min((page - 1) * pageSize + 1, filteredPairs.length)} - {Math.min(page * pageSize, filteredPairs.length)} of {filteredPairs.length} colors
+                            </Typography>
+                        </>
+                    ) : (
+                        <Box sx={{ 
+                            p: 4, 
+                            textAlign: 'center', 
+                            bgcolor: 'background.paper', 
+                            borderRadius: 1,
+                            border: '1px dashed #ccc' 
+                        }}>
+                            <Typography color="textSecondary">
+                                No colors found using current filters.
+                            </Typography>
+                            <Box sx={{ mt: 1 }}>
+                                <Link
+                                    component="button"
+                                    variant="body2"
+                                    onClick={() => {
+                                        setSearchTerm('');
+                                        setSelectedMode('');
+                                        setPage(1);
+                                    }}
+                                >
+                                    Clear filters
+                                </Link>
+                            </Box>
+                        </Box>
+                    )}
                 </Box>
 
-                {/* Show message when no results found */}
-                {(searchTerm || selectedMode) && filteredPairs.length === 0 && (
-                    <Box sx={{ textAlign: 'center', py: 4 }}>
-                        <Typography variant="body2" color="textSecondary">
-                            No colors found matching your filters
-                        </Typography>
-                        <Box sx={{ mt: 1, display: 'flex', justifyContent: 'center', gap: 1 }}>
-                            {searchTerm && (
-                                <Button size="small" onClick={handleClearSearch}>
-                                    Clear search
-                                </Button>
-                            )}
-                            {selectedMode && (
-                                <Button size="small" onClick={handleClearMode}>
-                                    Clear mode filter
-                                </Button>
-                            )}
-                        </Box>
-                    </Box>
-                )}
 
                 {/* Show message when no colors exist */}
                 {pairs.length === 0 && (

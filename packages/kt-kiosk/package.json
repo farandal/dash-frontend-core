@@ -1,0 +1,36 @@
+{
+    "name": "kt-kiosk",
+    "version": "1.0.0",
+    "private": true,
+    "main": "src/index.ts",
+    "type": "module",
+    "scripts": {
+        "lint": "eslint --ext .ts,.tsx .",
+        "format": "pnpm prettier --write .",
+        "typecheck": "tsc --noEmit"
+    },
+    "dependencies": {
+        "@emotion/react": "latest",
+        "@emotion/styled": "latest",
+        "@mui/icons-material": "latest",
+        "@mui/material": "latest",
+        "dash-admin": "workspace:*",
+        "dash-auto-admin": "workspace:*",
+        "dash-constants": "workspace:*",
+        "dash-utils": "workspace:*",
+        "kt-utils": "workspace:*",
+        "kt-ecommerce": "workspace:*",
+        "kt-tabs": "workspace:*",
+        "react": "latest",
+        "react-admin": "5.10.1",
+        "react-dom": "latest"
+    },
+    "devDependencies": {
+        "@types/react": "latest",
+        "@types/react-dom": "latest",
+        "dash-eslint": "workspace:*",
+        "dash-prettier": "workspace:*",
+        "dash-tsconfig": "workspace:*",
+        "typescript": "latest"
+    }
+}

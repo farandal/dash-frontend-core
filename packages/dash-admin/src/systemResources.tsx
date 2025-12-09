@@ -131,7 +131,7 @@ const systemResources: IAppResourceConfig[] = [
             undoable: false,
             emptyWhileLoading: true
         },
-        dataGridProps: { stickyHeader: true },
+        dataGridProps: { stickyHeader: true, rowClick:false },
         dataGridWrapper: (props: any) => <TableContainer sx={{ maxHeight: 800 }} >{props.children}</TableContainer>,
         //listEditButton: { enabled: true },
 
