@@ -39,6 +39,8 @@
 		"dash-dialog": "workspace:*",
 		"dash-modal": "workspace:*",
 		"dash-utils": "workspace:*",
+		"numeral": "^2.0.6",
+		"react-number-format": "^5.4.4",
 		"dash-auth": "workspace:*",
 		"dash-admin-state": "workspace:*",
 		"dash-axios-hook": "workspace:*",

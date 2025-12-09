@@ -17,10 +17,12 @@
         "dash-axios-hook": "workspace:*",
         "dash-constants": "workspace:*",
         "dash-utils": "workspace:*",
+        "numeral": "^2.0.6",
         "react": "latest",
         "react-admin": "5.10.1"
     },
     "devDependencies": {
+        "@types/numeral": "^2.0.5",
         "@types/react": "latest",
         "dash-eslint": "workspace:*",
         "dash-prettier": "workspace:*",

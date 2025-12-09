@@ -17,6 +17,9 @@ export * from './getProfileMenu';
 // Interfaces
 export * from './interfaces';
 
+// Formatters
+export * from './formatCurrency';
+
 // Filters
 export * from './filters';
 
