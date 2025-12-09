@@ -1,0 +1,47 @@
+
+.RaList-actions {
+    padding: 15px 5px;
+    background: var(--module-bg, @module-bg);
+    border-radius: 8px;
+    margin-bottom:3px;  
+}
+
+.RaDatagrid-root {
+  [class*="RaBulkActionsToolbar-root"] {
+    position: inherit;
+    background-color: var(--primary-contrast, @primary-contrast);
+
+  }
+}
+
+ .RaToolbar-mobileToolbar {
+    display: flex !important;
+    justify-content: flex-end !important;
+}
+
+.RaToolbar-desktopToolbar {
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+   
+    display: flex !important;
+    justify-content: flex-end !important;
+}
+
+.RaEdit-main {
+    padding: 5px 0px 0px 5px;
+}
+
+
+.RaSingleFieldList-root {
+  .RaSingleFieldList-link > * {
+    color: var(--text-color, @text-color);
+  }
+}
+
+.RaReferenceField-root {
+  .RaReferenceField-link > * {
+    color: var(--text-color, @text-color);
+  }
+}

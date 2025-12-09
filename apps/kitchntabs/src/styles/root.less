@@ -1,0 +1,189 @@
+html {
+   background-color: var(--primary-contrast, @primary-contrast);
+   background: linear-gradient(
+    var(--angle),
+    var(--primary-color, @primary-color),
+    var(--primary-contrast, @primary-contrast)
+   );
+   
+   //animation: rotateGradient 8s linear infinite;
+}
+body {
+//  min-height: 100vh;
+  margin: 0;
+  font-family: "Montserrat";
+}
+
+input:-webkit-autofill {
+    -webkit-box-shadow: unset !important;
+    box-shadow: unset !important;
+}
+/* Optimize route transitions */
+.route-transition-enter {
+  opacity: 0;
+  transform: translateX(10px);
+}
+
+.route-transition-enter-active {
+  opacity: 1;
+  transform: translateX(0);
+  transition: opacity 0.15s ease-in, transform 0.15s ease-in;
+}
+
+.route-transition-exit {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.route-transition-exit-active {
+  opacity: 0;
+  transform: translateX(-10px);
+  transition: opacity 0.1s ease-out, transform 0.1s ease-out;
+}
+
+/* Prevent content jumping */
+.dash-layout-content > * {
+  contain: layout style;
+}
+
+/* Optimize theme container */
+.dash-theme-content {
+  contain: layout;
+  isolation: isolate;
+}
+
+.dash-app-layout-footer {
+  contain: layout;
+}
+
+/* Optimize sidebar rendering */
+.dash-sidebar {
+  contain: layout style;
+  will-change: transform, width;
+}
+
+/* Prevent reflow during navigation state changes */
+.dash-app-layout {
+  contain: layout;
+  //height: 100%
+}
+
+/* Optimize header rendering */
+.dash-header {
+  contain: layout style;
+  isolation: isolate;
+}
+
+/* Platform-specific optimizations */
+.desktop {
+  /* Desktop-specific optimizations */
+}
+
+.electron {
+  /* Electron-specific optimizations */
+  -webkit-app-region: no-drag;
+}
+
+.electron .dash-header {
+  -webkit-app-region: drag;
+}
+
+.electron .dash-header button,
+.electron .dash-header input,
+.electron .dash-header select {
+  -webkit-app-region: no-drag;
+}
+
+.mac {
+  /* macOS-specific optimizations */
+}
+
+/* Location-based styles to prevent class switching overhead */
+.location-dashboard {
+  /* Dashboard-specific optimizations */
+}
+
+.location-profile {
+  /* Profile page optimizations */
+}
+
+/* Reduce paint operations */
+.dash-app-layout,
+.dash-layout-content,
+.dash-theme-content {
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+/* GPU acceleration for smooth transitions */
+.dash-app-layout-sidebar-expanded,
+.dash-app-layout-sidebar-collapsed {
+  transform: translateZ(0);
+}
+
+/* Optimize scrolling */
+.dash-layout-content {
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Prevent layout thrashing */
+.dash-app-layout * {
+  box-sizing: border-box;
+}
+
+/* Optimize animations */
+@media (prefers-reduced-motion: reduce) {
+
+    html {
+    animation: none !important;
+    }
+
+    .dash-app-layout,
+    .dash-app-layout *,
+    .route-transition-enter-active,
+    .route-transition-exit-active {
+        transition: none !important;
+        animation: none !important;
+    }
+}
+
+/* Dark theme optimizations */
+.dash-theme-dark {
+  color-scheme: dark;
+}
+
+.dash-theme-light {
+  color-scheme: light;
+}
+
+/* Prevent flash of unstyled content */
+.dash-app-layout {
+  visibility: visible;
+  opacity: 1;
+  //height: 100vh;
+}
+
+/* Loading state optimizations */
+.dash-app-loading {
+  contain: strict;
+  content-visibility: hidden;
+}
+
+.dash-app-loaded {
+  contain: layout;
+  content-visibility: visible;
+}
+
+@property --angle {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
+
+@keyframes rotateGradient {
+  to {
+    --angle: 360deg;
+  }
+}
