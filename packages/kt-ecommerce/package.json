@@ -22,7 +22,6 @@
         "dash-dialog": "workspace:*",
         "dash-modal": "workspace:*",
         "dash-utils": "workspace:*",
-        "kt-cashcount": "workspace:*",
         "kt-utils": "workspace:*",
         "kt-pages": "workspace:*",
         "react": "latest",

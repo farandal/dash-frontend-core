@@ -32,7 +32,7 @@ export default defineConfig(({ command }) => {
   return {
     resolve: {
       alias: {
-        '@app': path.resolve(__dirname, 'apps/dash/src'),
+        '@app': path.resolve(__dirname, 'apps/kitchntabs/src'),
         '@': path.join(__dirname, 'src')
       },
     },
@@ -53,7 +53,7 @@ export default defineConfig(({ command }) => {
       electron({
         main: {
           // Shortcut of `build.lib.entry`
-          entry: 'apps/dash/electron/main/index.ts',
+          entry: 'apps/kitchntabs/electron/main/index.ts',
           onstart(args) {
             if (process.env.VSCODE_DEBUG) {
               console.log(/* For `.vscode/.debug.script.mjs` */'[startup] Electron App')
@@ -65,7 +65,7 @@ export default defineConfig(({ command }) => {
             build: {
               //sourcemap,
               minify: false, // Keep it false for better debugging
-              outDir: 'apps/dash/dist-electron/main',
+              outDir: 'apps/kitchntabs/dist-electron/main',
               rollupOptions: {
                 // Only externalize 'electron' - bundle everything else including electron-updater
                 external: (id) => {
@@ -87,12 +87,12 @@ export default defineConfig(({ command }) => {
         preload: {
           // Shortcut of `build.rollupOptions.input`.
           // Preload scripts may contain Web assets, so use the `build.rollupOptions.input` instead `build.lib.entry`.
-          input: 'apps/dash/electron/preload/index.ts',
+          input: 'apps/kitchntabs/electron/preload/index.ts',
           vite: {
             build: {
               //sourcemap: sourcemap ? 'inline' : undefined, // #332
               minify: false, // Keep it false for easier debugging
-              outDir: 'apps/dash/dist-electron/preload',
+              outDir: 'apps/kitchntabs/dist-electron/preload',
               rollupOptions: {
                 // Only externalize native modules - bundle everything else
                 external: nativeModules,

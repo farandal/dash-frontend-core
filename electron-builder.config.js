@@ -1,6 +1,6 @@
 const path = require('path');
 const fs = require('fs');
-const dashPackage = require('./apps/dash/package.json');
+const dashPackage = require('./apps/kitchntabs/package.json');
 
 const platform = process.platform;
 
@@ -61,7 +61,7 @@ module.exports = {
     const minimalPackage = {
       name: dashPackage.name,
       version: dashPackage.version,
-      main: 'apps/dash/dist-electron/main/index.js',
+      main: 'apps/kitchntabs/dist-electron/main/index.js',
       dependencies: {}  // Empty - all bundled by Vite
     };
     
@@ -149,9 +149,9 @@ module.exports = {
   files: [
   "electron-config.yaml",
   "resources/sounds/**/*",
-  "apps/dash/dist/**",
-  "apps/dash/dist-electron/**",
-  "apps/dash/electron-config.prod.yaml",
+  "apps/kitchntabs/dist/**",
+  "apps/kitchntabs/dist-electron/**",
+  "apps/kitchntabs/electron-config.prod.yaml",
   // Exclude all node_modules since Vite bundles everything
   "!**/node_modules/**",
   "!**/node_modules",
@@ -297,7 +297,7 @@ module.exports = {
     // The correct config is prepared by build-python-service.js based on CUSTOM_MODE
     // Source config (e.g., config.kitchntabs.ngrok.yaml) is copied to apps/dash/config.yaml
     {
-      from: path.resolve(__dirname, 'apps/dash/config.yaml'),
+      from: path.resolve(__dirname, 'apps/kitchntabs/config.yaml'),
       to: 'config.yaml'
     },
     // Icons for runtime use
@@ -307,7 +307,7 @@ module.exports = {
     },
     // Sound files for notifications and welcome messages
     {
-      from: path.resolve(__dirname, 'apps/dash/electron/assets'),
+      from: path.resolve(__dirname, 'apps/kitchntabs/electron/assets'),
       to: 'sounds',
       filter: ['*.mp3', '*.wav', '*.ogg']
     },

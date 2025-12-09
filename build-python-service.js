@@ -76,7 +76,7 @@ function getDockerConfigArg(customMode) {
 function prepareElectronConfigFiles(customMode) {
   console.log('\n📋 Preparing Electron config file...');
   
-  const appsDir = path.join(FRONTEND_DIR, 'apps', 'dash');
+  const appsDir = path.join(FRONTEND_DIR, 'apps', 'kitchntabs');
   
   // Primary: Use frontend config file matching CUSTOM_MODE exactly
   // e.g., CUSTOM_MODE=kitchntabs.development → config.kitchntabs.development.yaml
@@ -88,37 +88,44 @@ function prepareElectronConfigFiles(customMode) {
   if (sourceConfig && fs.existsSync(sourceConfig)) {
     console.log(`   ✅ Found frontend config: ${sourceConfigName}`);
   } else {
-    // Fallback: Try legacy naming from Python service for backwards compatibility
-    console.log(`   ⚠️  Frontend config not found: ${sourceConfigName || 'undefined'}`);
-    console.log(`   Trying legacy Python service configs...`);
-    
+    // Check if the exact CUSTOM_MODE config exists in python service (before legacy fallback)
     const pythonConfigDir = PYTHON_SERVICE_DIR;
-    
-    if (customMode && customMode.includes('kitchntabs')) {
-      if (customMode.includes('development') || customMode.includes('ngrok')) {
-        sourceConfigName = 'config.kitchntabs.ngrok.yaml';
-      } else {
-        sourceConfigName = 'config.kitchntabs.prod.yaml';
-      }
-    } else if (customMode && customMode.includes('pinoywok')) {
-      if (customMode.includes('ngrok') || customMode.includes('development')) {
-        sourceConfigName = 'config.dev.yaml';
+    const exactPythonConfig = sourceConfigName ? path.join(pythonConfigDir, sourceConfigName) : null;
+
+    if (exactPythonConfig && fs.existsSync(exactPythonConfig)) {
+      console.log(`   ✅ Found config in Python service: ${sourceConfigName}`);
+      sourceConfig = exactPythonConfig;
+    } else {
+      // Fallback: Try legacy naming from Python service for backwards compatibility
+      console.log(`   ⚠️  Frontend config not found: ${sourceConfigName || 'undefined'}`);
+      console.log(`   Trying legacy Python service configs...`);
+      
+      if (customMode && customMode.includes('kitchntabs')) {
+        if (customMode.includes('development') || customMode.includes('ngrok')) {
+          sourceConfigName = 'config.kitchntabs.ngrok.yaml';
+        } else {
+          sourceConfigName = 'config.kitchntabs.prod.yaml';
+        }
+      } else if (customMode && customMode.includes('pinoywok')) {
+        if (customMode.includes('ngrok') || customMode.includes('development')) {
+          sourceConfigName = 'config.dev.yaml';
+        } else {
+          sourceConfigName = 'config.prod.yaml';
+        }
       } else {
         sourceConfigName = 'config.prod.yaml';
       }
-    } else {
-      sourceConfigName = 'config.prod.yaml';
+      
+      sourceConfig = path.join(pythonConfigDir, sourceConfigName);
+      
+      if (!fs.existsSync(sourceConfig)) {
+        console.warn(`   ⚠️  Legacy config not found either: ${sourceConfigName}`);
+        console.warn(`   Skipping config preparation.`);
+        return;
+      }
+      
+      console.log(`   📂 Using legacy config from Python service: ${sourceConfigName}`);
     }
-    
-    sourceConfig = path.join(pythonConfigDir, sourceConfigName);
-    
-    if (!fs.existsSync(sourceConfig)) {
-      console.warn(`   ⚠️  Legacy config not found either: ${sourceConfigName}`);
-      console.warn(`   Skipping config preparation.`);
-      return;
-    }
-    
-    console.log(`   📂 Using legacy config from Python service: ${sourceConfigName}`);
   }
   
   // Single target: config.yaml (platform-agnostic)

@@ -1,7 +1,7 @@
 {
   "private": false,
   "version": "1.0.0",
-  "name": "kitchntabs-",
+  "name": "kitchntabs-mall",
   "license": "UNLICENSED",
   "description": "KitchnTabs application using refactored kt-* packages",
   "imports": {
