@@ -160,11 +160,12 @@ useEffect(() => {
 
     // Show loading state if not authenticated or no user data
     if (!authenticated || !currentUser) {
-        return (
+        /*return (
             <Avatar>
                 <CircularProgress size={24} />
             </Avatar>
-        );
+        );*/
+        return null;
     }
 
     // Get the most current image URL - check both possible properties
