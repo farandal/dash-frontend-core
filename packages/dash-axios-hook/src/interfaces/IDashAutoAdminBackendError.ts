@@ -5,6 +5,7 @@ export interface IDashAutoAdminBackendError {
   body:          Body;
   resource:      string;
   originalError: AxiosError<IDashAutoAdminDefaultBackendStructure>;
+  message?:       string;
 }
 
 export interface IDashAutoAdminDefaultBackendStructure {
