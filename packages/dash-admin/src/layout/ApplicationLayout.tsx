@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { Button, useRedirect, useStore } from 'react-admin';
-import { dashStorage } from 'dash-utils';
 import useVirtualHash from '../hooks/useVirtualHash';
 import { IDashAutoAdminResourceConfig } from 'dash-auto-admin';
 
@@ -42,10 +41,10 @@ const ApplicationLayout: React.FC<IApplicationLayout> = ({
 
     const handleMenuClick = (menuItem: IApplicationLayoutMenuItem) => {
         if (menuItem.redirect) {
-
-           const _redirect = menuItem.redirect?.startsWith('/')
+            // @deprecated - removed currentAppPath logic that caused path duplication
+            const _redirect = menuItem.redirect?.startsWith('/')
                     ? menuItem.redirect
-                    : `/${dashStorage.getItem('currentAppPath') || ''}/${menuItem.redirect}`.replace(/\/+/g, '/')
+                    : `/${menuItem.redirect}`.replace(/\/+/g, '/')
         
             redirect(_redirect);
 
@@ -68,11 +67,12 @@ const ApplicationLayout: React.FC<IApplicationLayout> = ({
         
         let _redirect = resourceConfig.mainAction.redirect;
 
+        // @deprecated - removed currentAppPath logic that caused path duplication
         if (resourceConfig.mainAction.fn !== 'virtualhash') {
 
             _redirect = resourceConfig.mainAction.redirect?.startsWith('/')
                     ? resourceConfig.mainAction.redirect
-                    : `/${dashStorage.getItem('currentAppPath') || ''}/${resourceConfig.mainAction.redirect}`.replace(/\/+/g, '/');
+                    : `/${resourceConfig.mainAction.redirect}`.replace(/\/+/g, '/');
         }
         
             fn(_redirect);

@@ -17,7 +17,6 @@ import ResourceLayout from '../layout/ResoureLayout';
 import { IResourceTemplate } from './ResourceTemplate';
 import { parseAxiosError } from '../helpers/parseAxiosError';
 import { useDashResource } from '../contexts/DashResourceContext';
-import { dashStorage } from 'dash-utils';
 
 export const ResourceTemplateEdit: FC<IResourceTemplate> = (props) => {
 	const {resourceConfig} = props;
@@ -29,11 +28,9 @@ export const ResourceTemplateEdit: FC<IResourceTemplate> = (props) => {
 
 	const refresh = useRefresh();
 
+	// @deprecated - removed currentAppPath logic that caused path duplication
 	const getRedirectPath = (path: string) => {
-		const currentAppPath = dashStorage.getItem('currentAppPath');
-		return currentAppPath 
-			? `/${currentAppPath}/${path}`.replace(/\/+/g, '/')
-			: `/${path}`.replace(/\/+/g, '/');
+		return `/${path}`.replace(/\/+/g, '/');
 	};
 
 	//const location = useLocation();

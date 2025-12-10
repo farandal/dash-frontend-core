@@ -2,9 +2,11 @@
  * useDashDefaultRoutePath Hook
  * 
  * Hook to calculate and track route path
+ * 
+ * @deprecated The currentAppPath storage logic has been removed to fix path duplication issues.
+ * This hook now only returns the route path without storing it.
  */
 import { useState, useEffect } from 'react';
-import { dashStorage } from 'dash-utils';
 import { DASHAdminSystemConstants } from 'dash-constants';
 
 export const useDashDefaultRoutePath = (appPath: string | null, commonAppPath?: string) => {
@@ -13,7 +15,8 @@ export const useDashDefaultRoutePath = (appPath: string | null, commonAppPath?: 
     useEffect(() => {
         const path = appPath || (commonAppPath || DASHAdminSystemConstants.system.URL_PREFIX);
         const cleanPath = path.replace(/\/\*$/, '');
-        dashStorage.setItem('currentAppPath', cleanPath);
+        // @deprecated - removed currentAppPath storage that caused path duplication
+        // dashStorage.setItem('currentAppPath', cleanPath);
         console.log('ROUTE-BASE-PATH:', cleanPath);
         setRoutePath(path);
     }, [appPath, commonAppPath]);

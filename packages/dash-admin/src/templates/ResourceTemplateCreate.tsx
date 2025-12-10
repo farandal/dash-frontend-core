@@ -16,7 +16,6 @@ import ResourceLayout from '../layout/ResoureLayout';
 import { IResourceTemplate } from './ResourceTemplate';
 import { parseAxiosError } from '../helpers/parseAxiosError';
 import { useDashResource } from '../contexts/DashResourceContext';
-import { dashStorage } from 'dash-utils';
 
 export const ResourceTemplateCreate: FC<IResourceTemplate> = (props) => {
 	//const {resourceConfig} = useDashResource()};
@@ -32,11 +31,9 @@ export const ResourceTemplateCreate: FC<IResourceTemplate> = (props) => {
 	const _showDialogAfterSubmit =
 		resourceConfig?.showDialogAfterSubmit === false ? false : true;
 
+	// @deprecated - removed currentAppPath logic that caused path duplication
 	const getRedirectPath = (path: string) => {
-		const currentAppPath = dashStorage.getItem('currentAppPath');
-		return currentAppPath 
-			? `/${currentAppPath}/${path}`.replace(/\/+/g, '/')
-			: `/${path}`.replace(/\/+/g, '/');
+		return `/${path}`.replace(/\/+/g, '/');
 	};
 
 	const onCreate = (data: any) => {

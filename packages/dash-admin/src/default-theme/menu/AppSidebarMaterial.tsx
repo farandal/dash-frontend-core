@@ -8,8 +8,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { IDashAutoAdminResourceConfig } from 'dash-auto-admin';
 import { useState } from 'react';
 
-
-import { useWindowSize } from 'dash-utils';
+import { useWindowSize, dashStorage } from 'dash-utils';
 import AppMaterialMenu from './AppMaterialMenu';
 import { useLocation } from 'react-router';
 import { isEqual } from 'lodash';
@@ -41,9 +40,15 @@ const AppSidebarMaterial = (props) => {
         layoutSettings
     } = layoutState;
 
-    // Local state for nav - this is the source of truth for UI
-    const [localNavExpanded, setLocalNavExpanded] = useState(true);
-    const [localNavSize, setLocalNavSize] = useState<"small" | "large">("large");
+    // Local state for nav - initialize from localStorage for persistence
+    const [localNavExpanded, setLocalNavExpanded] = useState(() => {
+        const stored = dashStorage.getItem('dashNavExpanded');
+        return stored !== null ? stored === 'true' : true;
+    });
+    const [localNavSize, setLocalNavSize] = useState<"small" | "large">(() => {
+        const stored = dashStorage.getItem('dashNavSize');
+        return (stored === 'small' || stored === 'large') ? stored : 'large';
+    });
 
     // Create refs to track current values for Redux sync
     const localNavExpandedRef = React.useRef(localNavExpanded);
@@ -54,6 +59,15 @@ const AppSidebarMaterial = (props) => {
         localNavExpandedRef.current = localNavExpanded;
         localNavSizeRef.current = localNavSize;
     }, [localNavExpanded, localNavSize]);
+
+    // Persist nav state to localStorage when it changes
+    React.useEffect(() => {
+        dashStorage.setItem('dashNavExpanded', String(localNavExpanded));
+    }, [localNavExpanded]);
+
+    React.useEffect(() => {
+        dashStorage.setItem('dashNavSize', localNavSize);
+    }, [localNavSize]);
 
     // Listen for nav events from other components
     React.useEffect(() => {

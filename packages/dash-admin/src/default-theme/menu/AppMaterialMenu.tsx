@@ -172,6 +172,8 @@ const AppMaterialMenu: React.FC<IAppMenuExtended> = (props) => {
             const _childrens = group
                 .filter((resource) => resource.hidden !== true);
 
+            // Generate paths relative to BrowserRouter basename (don't prepend currentAppPath)
+            // React Router's Link components will automatically prepend the basename
             const _children = _childrens
                 .map((resource) => {
                     return {
@@ -180,8 +182,8 @@ const AppMaterialMenu: React.FC<IAppMenuExtended> = (props) => {
                         to: resource?.redirect?.startsWith('/')
                             ? resource.redirect
                             : resource?.redirect
-                                ? `/${dashStorage.getItem('currentAppPath') || ''}/${resource.model}/${resource.redirect}`.replace(/\/+/g, '/')
-                                : `/${dashStorage.getItem('currentAppPath') || ''}/${resource.model}`.replace(/\/+/g, '/'),
+                                ? `/${resource.model}/${resource.redirect}`.replace(/\/+/g, '/')
+                                : `/${resource.model}`.replace(/\/+/g, '/'),
                         icon: resource.icon,
                         group: slugify(group[0].group),
                         model: resource.model,
@@ -189,18 +191,19 @@ const AppMaterialMenu: React.FC<IAppMenuExtended> = (props) => {
                     };
                 });
 
+            // Generate path relative to BrowserRouter basename (don't prepend currentAppPath)
+            // React Router's Link components will automatically prepend the basename
             const _item: IMenuItem = {
                 label: group[0].group,
                 key: slugify(group[0].group),
                 icon: group[0].icon || groupIcons[group[0].group],
                 group: slugify(group[0].group),
                 model: group[0].model,
-                //to: group[0].redirect ? `/${group[0].redirect}` : `/${dashStorage.getItem('currentAppPath') || ''}/${group[0].model}`.replace(/\/+/g, '/'),
                 to: group[0].redirect?.startsWith('/')
                     ? group[0].redirect
                     : group[0].redirect
-                        ? `/${dashStorage.getItem('currentAppPath') || ''}/${group[0].model}/${group[0].redirect}`.replace(/\/+/g, '/')
-                        : `/${dashStorage.getItem('currentAppPath') || ''}/${group[0].model}`.replace(/\/+/g, '/'),
+                        ? `/${group[0].model}/${group[0].redirect}`.replace(/\/+/g, '/')
+                        : `/${group[0].model}`.replace(/\/+/g, '/'),
                 txtLabel: group[0].group,
                 ...(_childrens && _childrens.length > 1 && { children: _children }) as any
             };
