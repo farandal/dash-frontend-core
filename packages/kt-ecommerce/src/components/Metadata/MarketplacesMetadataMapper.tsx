@@ -22,8 +22,8 @@ import { useLogger } from '../../hooks/useLogger';
 import { FormControl, InputLabel, MenuItem, Select, SelectChangeEvent } from '@mui/material';
 import DictionaryContext from '@panel/providers/DictionaryContext';*/
 
-import { Category } from "../interfaces/Category";
-import { Metadata } from "../interfaces/Metadata";
+
+import { Metadata,Category } from "../../interfaces";
 import { FormControl, SelectChangeEvent, InputLabel, Select, MenuItem } from "@mui/material";
 import DictionaryContext from "dash-admin/src/contexts/dictionary/DictionaryContext";
 import { IDashAutoAdminCustomFieldComponent } from "dash-auto-admin";
@@ -31,7 +31,7 @@ import { useAxios } from 'dash-axios-hook';
 
 import React, { useState, useEffect } from "react";
 import { useRecordContext, Loading } from "react-admin";
-import { Table } from "react-feather";
+import { Table } from 'antd';
 import { useController, useWatch } from "react-hook-form";
 import MarketplaceTag from "../Misc/MarketplaceTag";
 import SearchableSelect from "../SearchableSelect";
@@ -251,13 +251,13 @@ const MarketplacesMetadataMapperEdit: React.FC<IDashAutoAdminCustomFieldComponen
   if (systemMarketplaces && marketplacesCount && (metadaCurrentRequests < marketplacesCount)) return <Loading loadingSecondary={`Cargando Filtros ${metadaCurrentRequests}/${marketplacesCount}`} />
   return <>{systemMarketplaces.map(
     (systemMarketplace, idx) => <MarketplaceMetadaEdit
-      metadata={metadata}
-      isInternal={isInternal}
-      systemMarketplace={systemMarketplace}
-      idx={idx}
-      metadataFormatFilters={metadataFormatFilters}
-      attribute={attribute}
-      method={'edit'} />
+          metadata={metadata}
+          isInternal={isInternal}
+          systemMarketplace={systemMarketplace}
+          idx={idx}
+          metadataFormatFilters={metadataFormatFilters}
+          attribute={attribute}
+          method={'edit'} resourceConfig={null} />
   )}</>
 
   //}
@@ -330,7 +330,7 @@ const OwnerableTypeFilter = ({ selectedOwnerableType, systemMarketplace, attribu
 
     <Selector defaultValue={defaultValue} />
     <SearchableSelectChipsControl
-
+        /* @ts-ignore */
       attribute={attribute.attribute}
       resource={"ecommerce/system_marketplace_metadata_format"}
       useBaseAttributeName={false}
@@ -523,14 +523,14 @@ const MarketplacesMetadataMapperView: React.FC<IDashAutoAdminCustomFieldComponen
   );
 };
 
-const MarketplacesMetadataMapper = ({ method, attribute }: IDashAutoAdminCustomFieldComponent) => {
+const MarketplacesMetadataMapper = ({ method, attribute,resourceConfig }: IDashAutoAdminCustomFieldComponent) => {
   switch (method) {
     case "edit":
     case "create":
-      return <MarketplacesMetadataMapperEdit attribute={attribute} method={method} />
-    //return <MarketplacesMetadataMapperSearcherEdit attribute={attribute} method={method} />
+      return <MarketplacesMetadataMapperEdit attribute={attribute} method={method} resourceConfig={resourceConfig} />
+    //return <MarketplacesMetadataMapperSearcherEdit attribute={attribute} method={method} resourceConfig={resourceConfig} />
     case "view":
-      return <MarketplacesMetadataMapperView attribute={attribute} method={method} />
+      return <MarketplacesMetadataMapperView attribute={attribute} method={method} resourceConfig={resourceConfig} />
   }
 }
 

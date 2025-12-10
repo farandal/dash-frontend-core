@@ -30,7 +30,7 @@ import { useAxios } from 'dash-axios-hook';
 import { useFormContext, useWatch } from "react-hook-form";
 import { Tenant } from "dash-admin/src/interfaces/Tenant";
 // ADD: Import useAuthContext
-import { useAuthContext } from "dash-auth";
+import { useAuthContext } from "dash-admin";
 
 interface TenantImageProps extends IDashAutoAdminCustomFieldComponent {
   endpoint: string;

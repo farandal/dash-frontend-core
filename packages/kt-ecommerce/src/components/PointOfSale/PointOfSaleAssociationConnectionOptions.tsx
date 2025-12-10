@@ -1,25 +1,3 @@
-/*import { AutoFormGroups, IDashAutoAdminCustomFieldComponent } from 'dash-auto-admin';
-import React, { useEffect, useState } from 'react'
-import { useController, useFormContext, useWatch } from 'react-hook-form';
-import { Alert, AlertTitle, Button, Chip, Switch } from '@mui/material';
-
-import { useRecordContext } from 'react-admin';
-import MUISimpleJsonTable from '../../components/MuiSimpleJsonTable';
-import { IPointOfsaleAssociation } from '../../schemas/pointofsaleAssociationSchema';
-import { useGetOne } from 'react-admin';
-import { Loading } from 'react-admin';
-import { values } from 'lodash';
-import { useRedirect } from 'react-admin';
-import useAxios from '../../hooks/axios';
-import CONSTANTS from '../../config/CONSTANTS';
-import { setCookie } from '../../utils/cookies';
-import { useNotify } from 'react-admin';
-import { useRefresh } from 'react-admin';
-import { useDialog } from '@panel/components/Dialog/DialogService';
-import { AppDialogOptions } from '@panel/components/Dialog/AppDialog';
-//const connectionParamsResource = "system_point_of_sale/connectionParamFormat";*/
-
-import { IPointOfsaleAssociation } from "../schemas/pointofsaleAssociationSchema";
 import { Alert, AlertTitle } from "@mui/material";
 import { DashAutoFormGroups, IDashAutoAdminCustomFieldComponent } from "dash-auto-admin";
 import { useAxios } from 'dash-axios-hook';
@@ -30,6 +8,7 @@ import { useGetOne, useRedirect, useRefresh, useNotify, Loading, Button, useReco
 import { useFormContext, useController, useWatch } from "react-hook-form";
 import MUISimpleJsonTable from "../MuiSimpleJsonTable";
 import {DASHAdminSystemConstants} from "dash-constants";
+import { IPointOfsaleAssociation } from "../../schemas/pointofsaleAssociationSchema";
 
 const PointOfSaleAssociationConnectionOptionsCreate: React.FC<IDashAutoAdminCustomFieldComponent> = ({ method, attribute }) => {
 
@@ -248,6 +227,7 @@ const PointOfSaleAssociationConnectionOptionsEdit: React.FC<IDashAutoAdminCustom
   return <>
 
     <section>
+        {/* @ts-ignore */}
       {infoSchema ? DashAutoFormGroups(infoSchema, null, {
         mode: "view", label: "Información", readOnlyComponent: (props) => {
           return <Alert severity="info">
@@ -259,6 +239,7 @@ const PointOfSaleAssociationConnectionOptionsEdit: React.FC<IDashAutoAdminCustom
     </section>
 
     <section>
+         {/* @ts-ignore */}
       {connectionOptionSchema ? DashAutoFormGroups(connectionOptionSchema, null, { mode: "edit", useReadOnlyInputAsTextField: true, label: "Opciones de conexión" }) : <></>}
     </section>
 
@@ -280,15 +261,15 @@ const PointOfSaleAssociationConnectionOptionsView: React.FC<IDashAutoAdminCustom
   )
 }
 
-const PointOfSaleAssociationConnectionOptions = ({ method, attribute }: IDashAutoAdminCustomFieldComponent) => {
+const PointOfSaleAssociationConnectionOptions = ({ method, attribute, resourceConfig }: IDashAutoAdminCustomFieldComponent) => {
   const record: IPointOfsaleAssociation = useRecordContext();
   switch (method) {
     case "edit":
-      return <PointOfSaleAssociationConnectionOptionsEdit record={record} attribute={attribute} method={method} />
+      return <PointOfSaleAssociationConnectionOptionsEdit record={record} attribute={attribute} method={method} resourceConfig={resourceConfig} />
     case "view":
-      return <PointOfSaleAssociationConnectionOptionsView record={record} attribute={attribute} method={method} />
+      return <PointOfSaleAssociationConnectionOptionsView record={record} attribute={attribute} method={method} resourceConfig={resourceConfig} />
     case "create":
-      return <PointOfSaleAssociationConnectionOptionsCreate attribute={attribute} method={method} />
+      return <PointOfSaleAssociationConnectionOptionsCreate attribute={attribute} method={method} resourceConfig={resourceConfig} />
   }
 }
 

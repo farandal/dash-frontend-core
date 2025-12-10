@@ -4,7 +4,7 @@ import { useGetList } from "react-admin";
 import { Loading } from "react-admin";
 import moment from "moment";
 import { useDialog } from "dash-dialog";
-import ICampaign from "../interfaces/campaign/ICampaign";
+
 import MarketplaceTags from "../../Misc/MarketplaceTags";
 import { CampaignStatus } from "../Utils";
 import { LinearProgress, Popover, Tooltip } from "@mui/material";
@@ -15,6 +15,7 @@ import { Calendar } from '@fullcalendar/core';
 import FullCalendar from '@fullcalendar/react' // must go before plugins
 import dayGridPlugin from '@fullcalendar/daygrid' // a plugin!
 import interactionPlugin from "@fullcalendar/interaction" // needed for dayClick
+import { ICampaign } from "../../../interfaces";
 //import '@fullcalendar/react/dist/vdom';
 /*
 import Popover from 'react-bootstrap/Popover';

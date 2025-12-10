@@ -1,9 +1,10 @@
 import { Row, Col } from "antd";
-import ICampaign from "../../../interfaces/campaign/ICampaign";
+
 import { useRecordContext } from "react-admin";
 import { useGetList, Loading, SelectInput, CheckboxGroupInput } from "react-admin";
 import { FC } from "react";
 import MarketplaceTags from "../../Misc/MarketplaceTags";
+import { ICampaign } from "../../../interfaces";
 
 export interface IPriceStock {
   hide_overwrite_prices?: boolean
@@ -36,12 +37,12 @@ const PriceStock: FC<IPriceStock> = ({ hide_overwrite_prices, ...props }) => {
 
   const { data: stockType, isLoading: isLoadingStocks }: { data: IStockType[], isLoading: boolean } = useGetList(
     'ecommerce/stock_type',
-    { pagination: false },
+    { },
     { refetchOnWindowFocus: false }
   );
   const { data: priceList, isLoading: isLoadingPrices }: { data: IPriceList[], isLoading: boolean } = useGetList(
     'ecommerce/pricelist',
-    { pagination: false },
+    { },
     { refetchOnWindowFocus: false }
   );
 

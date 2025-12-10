@@ -11,6 +11,7 @@ import { IDashAutoAdminCustomFieldComponent } from 'dash-auto-admin';
 const CampaignDateTimeView: React.FC<IDashAutoAdminCustomFieldComponent> = ({ method, attribute }) => {
   const record = useRecordContext();
   // return <>{record.geocoded_address}</>
+  {/* @ts-ignore */}
   return <RATextField label={attribute.label} source={attribute.attribute} options={attribute.fieldOptions} />;
 }
 
@@ -21,13 +22,13 @@ const CampaignDateTimeEdit: React.FC<IDashAutoAdminCustomFieldComponent> = ({ me
 }
 
 
-const CampaignDateTime = ({ method, attribute }: IDashAutoAdminCustomFieldComponent) => {
+const CampaignDateTime = ({ method, attribute, resourceConfig }: IDashAutoAdminCustomFieldComponent) => {
   switch (method) {
     case "edit":
     case "create":
-      return <CampaignDateTimeEdit attribute={attribute} method={method} />
+      return <CampaignDateTimeEdit attribute={attribute} method={method} resourceConfig={resourceConfig} />
     case "view":
-      return <CampaignDateTimeView attribute={attribute} method={method} />
+      return <CampaignDateTimeView attribute={attribute} method={method} resourceConfig={resourceConfig} />
   }
 }
 

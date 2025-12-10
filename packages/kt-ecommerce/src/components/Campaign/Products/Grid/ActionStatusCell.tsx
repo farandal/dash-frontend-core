@@ -1,62 +1,8 @@
-/*import moment from "moment";
-import { stringify } from "query-string";
-import { useState } from "react";
-import { useParams } from "react-router";
-//import * as Icon from 'react-feather';
-import * as Icon from "react-icons/fa";
-import {
-    Button,
-    ButtonGroup,
-    //    Chip,
-    //    Dialog,
-    FormControl,
-    //    InputLabel,
-    //    MenuItem,
-    //    Select,
-} from "@mui/material";
-
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
-
-import { useUpdate, useNotify, useRefresh, useDelete } from "react-admin";
-
-import { GridRenderCellParams } from "@mui/x-data-grid";
-import MarketplaceTag from "../../../../components/Misc/MarketplaceTag";
-
-import { useRecordContext } from "react-admin";
-//import { ProductStatus } from "../../Utils";
-//import CampaignProductStatuses, { RenderStatusHistory } from "./CampaignProductStatuses";
-import CellSettings from "./CellSettings";
-//import { CampaignStatusesActions } from "../../../../interfaces/campaign/ICampaign";
-import ICampaign, {
-    SystemMarketplace,
-} from "@panel/interfaces/campaign/ICampaign";
-import ICampaignProduct, {
-    CampaignMarketplace,
-    Pivot,
-    StatusHistory,
-} from "@panel/interfaces/campaign/ICampaignProduct";
-
-import useAxios from "@panel/hooks/axios";
-import { useDispatch } from "react-redux";
-import { useDialog } from "@panel/components/Dialog/DialogService";
-import { SUDO_REDUX_ACTIONS } from "dash-uikit";
-import { AppDialogOptions } from "@panel/components/Dialog/AppDialog";
-import { getCookie } from "@panel/utils/cookies";
-import { CustomSystemMarketplace } from "../Interfaces/CustomSystemMarketplace";
-import selectedStatusToAction from "./Helpers/selectedStatusToAction";
-import MUISimpleJsonTable from "@panel/components/MuiSimpleJsonTable";
-
-
-*/
-
 import MarketplaceTag from "../../../Misc/MarketplaceTag";
 import MUISimpleJsonTable from "../../../MuiSimpleJsonTable";
 
 import { ButtonGroup, FormControl } from "@mui/material";
-import * as Icon from "react-icons/fa";
+
 import { GridRenderCellParams } from "@mui/x-data-grid";
 import { getCookie } from "dash-admin/src/utils/cookies";
 import { useAxios } from 'dash-axios-hook';
@@ -64,7 +10,7 @@ import { useDialog } from "dash-dialog";
 import { AppDialogOptions } from "dash-dialog/src/IAppDialogProps";
 import moment from "moment";
 import queryString from "query-string";
-import React, { useState } from "react";
+import React, { JSX, useState } from "react";
 import { useDelete, useUpdate, useRefresh, useNotify, useRecordContext, Button } from "react-admin";
 import { useDispatch } from "react-redux";
 import { useParams } from "react-router";
@@ -355,7 +301,7 @@ export const ActionStatusCell = (props: GridRenderCellParams) => {
           },
           color: "primary",
           className: "",
-          icon: <Icon.FaPlay />,
+          icon: <>&gt;</>,
         },
         {
           enabled:
@@ -370,7 +316,7 @@ export const ActionStatusCell = (props: GridRenderCellParams) => {
           },
           color: "primary",
           className: "",
-          icon: <Icon.FaPause />,
+          icon: <>||</>,
         },
         {
           enabled:
@@ -380,7 +326,7 @@ export const ActionStatusCell = (props: GridRenderCellParams) => {
           onClick: () => selectStatus("finish", selectedMarketplace),
           color: "primary",
           className: "",
-          icon: <Icon.FaStop />,
+          icon: <>■</>,
         },
         {
           enabled: ["pending", "finished"].includes(productStatus),
@@ -393,7 +339,7 @@ export const ActionStatusCell = (props: GridRenderCellParams) => {
           onClick: () => selectStatus("delete", selectedMarketplace),
           color: "error",
           className: "",
-          icon: <Icon.FaTrash />,
+          icon: <>🗑</>,
         },
       ];
 

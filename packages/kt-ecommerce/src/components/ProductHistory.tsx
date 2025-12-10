@@ -1,10 +1,7 @@
-import { Button, FormControlLabel, Switch } from '@mui/material';
-import { Product } from '../interfaces/Product';
+import { Product } from '..';
 import { IDashAutoAdminCustomFieldComponent } from 'dash-auto-admin';;
-import React, { Fragment, useEffect, useState } from 'react'
-import { TextInput } from 'react-admin';
+import React, {  } from 'react'
 import { useRecordContext } from "react-admin";
-import { useGetList } from 'react-admin';
 import History from './Product/History';
 import { Loading } from 'react-admin';
 
@@ -38,13 +35,13 @@ const ProductHistoryView: React.FC<IDashAutoAdminCustomFieldComponent> = ({ meth
 }
 
 
-const ProductHistory = ({ method, attribute }: IDashAutoAdminCustomFieldComponent) => {
+const ProductHistory = ({ method, attribute ,resourceConfig}: IDashAutoAdminCustomFieldComponent) => {
   switch (method) {
     case "edit":
     case "create":
-      return <ProductHistoryEdit attribute={attribute} method={method} />
+      return <ProductHistoryEdit attribute={attribute} method={method} resourceConfig={resourceConfig} />
     case "view":
-      return <ProductHistoryView attribute={attribute} method={method} />
+      return <ProductHistoryView attribute={attribute} method={method} resourceConfig={resourceConfig} />
   }
 }
 

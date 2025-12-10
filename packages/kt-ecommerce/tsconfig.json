@@ -4,6 +4,9 @@
         "outDir": "./dist",
         "rootDir": "./src",
         "baseUrl": ".",
+        "skipLibCheck": true,
+        "skipDefaultLibCheck": true,
+        "types": [],
         "paths": {
             "@kt-ecommerce/*": ["src/*"]
         }

@@ -12,7 +12,6 @@ import selectedStatusToAction from "./Grid/Helpers/selectedStatusToAction";
 import {
   DataGrid as MUIGrid,
   GridColDef,
-  esES,
   GridRenderCellParams,
   GridRowParams
 } from "@mui/x-data-grid";
@@ -78,6 +77,7 @@ const BatchCampaignProductDialog: React.FC<any> = ({
         checkboxSelection
         disableRowSelectionOnClick
         onRowSelectionModelChange={(ids) => {
+            // @ts-ignore
           const selectedRowsData = ids.map((id) =>
             _rows.find((row) => row.id === id)
           );

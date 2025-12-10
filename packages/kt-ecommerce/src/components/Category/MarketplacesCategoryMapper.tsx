@@ -1,5 +1,5 @@
 import { Table } from 'antd';
-import { Category } from '../../interfaces/Category';
+import { Category } from '../../interfaces';
 import { IDashAutoAdminCustomFieldComponent } from 'dash-auto-admin';
 import React, { useEffect, useMemo, useState } from 'react'
 import { useRecordContext } from "react-admin";
@@ -24,9 +24,9 @@ const convertArrayToObject = (array, key) => {
 };
 
 export interface ISystemMarketplace {
-  class: string
-  icon_path: string
-  icon_url: string
+  class?: string
+  icon_path?: string
+  icon_url?: string
   id: number
   name: string
 }
@@ -202,6 +202,7 @@ const CategoryTree: React.FC<ICategoryTree> = ({ marketplaceId, title, categorie
         onExpand={onExpand}
         expandedKeys={expandedKeys}
         autoExpandParent={autoExpandParent}
+          /* @ts-ignore */
         onCheck={onCheck}
         checkedKeys={checkedKeys}
         //onSelect={onSelect}
@@ -222,7 +223,7 @@ const MarketplacesCategoryMapperEdit: React.FC<IDashAutoAdminCustomFieldComponen
   const [parsedCategoriesByMarketplaceValues, setParsedCategoriesByMarketplaceValues] = useState(null);
   const [systemMarketplaces, setSystemMarketplaces] = useState<ISystemMarketplace[]>(null);
   const [systemMarketplacesCategories, setSystemMarketplacesCategories] = useState<ISystemMarketplaceCategory[]>(null);
-  const { axios } = useAxios();
+  const axios = useAxios();
   const [loadingCategories, setLoadingCategories] = useState<boolean>(false);
   const defaultSelectedKeys = category?.output_category_mappings ? category.output_category_mappings.map(ele => ele.system_marketplace_category_id) : []
   const output_category_mappings = useController({ name: "output_category_mappings", defaultValue: defaultSelectedKeys })
@@ -292,13 +293,13 @@ const MarketplacesCategoryMapperView: React.FC<IDashAutoAdminCustomFieldComponen
   )
 }
 
-const MarketplacesCategoryMapper = ({ method, attribute }: IDashAutoAdminCustomFieldComponent) => {
+const MarketplacesCategoryMapper = ({ method, attribute,resourceConfig }: IDashAutoAdminCustomFieldComponent) => {
   switch (method) {
     case "edit":
     case "create":
-      return <MarketplacesCategoryMapperEdit attribute={attribute} method={method} />
+      return <MarketplacesCategoryMapperEdit attribute={attribute} method={method} resourceConfig={resourceConfig} />
     case "view":
-      return <MarketplacesCategoryMapperView attribute={attribute} method={method} />
+      return <MarketplacesCategoryMapperView attribute={attribute} method={method} resourceConfig={resourceConfig} />
   }
 }
 

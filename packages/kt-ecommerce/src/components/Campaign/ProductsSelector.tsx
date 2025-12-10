@@ -12,6 +12,7 @@ import { DataGrid, GridColDef } from '@mui/x-data-grid';
 const CampaignProductsSelectorView: React.FC<IDashAutoAdminCustomFieldComponent> = ({ method, attribute }) => {
   const record = useRecordContext();
   // return <>{record.geocoded_address}</>
+  /* @ts-ignore */
   return <RATextField label={attribute.label} source={attribute.attribute} options={attribute.fieldOptions} />;
 }
 
@@ -74,20 +75,24 @@ const CampaignProductsSelectorEdit: React.FC<IDashAutoAdminCustomFieldComponent>
             productIds?.length > 0 && productIds[0].id ? productIds : []
           }
           columns={columns}
-          pageSize={5}
-          rowsPerPageOptions={[25, 50, 100, 200, 500]}
+          initialState={{
+            pagination: {
+              paginationModel: { pageSize: 5 },
+            },
+          }}
+          pageSizeOptions={[25, 50, 100, 200, 500]}
           checkboxSelection
 
 
           onRowSelectionModelChange={(ids) => {
 
 
-
+            /* @ts-ignore */
             setToDeleteProduct(ids.map((e) => parseInt(e as string)));
 
           }}
 
-          disableSelectionOnClick
+          disableRowSelectionOnClick
         />
       </Box>
      

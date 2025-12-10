@@ -4,7 +4,7 @@ import { useRecordContext } from "react-admin";
 import { GalleryComponent } from './Gallery/GalleryComponent';
 import { GalleryComponentView } from './Gallery/GalleryComponentView';
 import { IDashAutoAdminCustomFieldComponent } from 'dash-auto-admin';
-import { IGallery } from '../interfaces/Gallery';
+import { IGallery } from '../interfaces';
 
 
 const GalleryEdit: React.FC<IDashAutoAdminCustomFieldComponent> = ({ method, attribute }) => {

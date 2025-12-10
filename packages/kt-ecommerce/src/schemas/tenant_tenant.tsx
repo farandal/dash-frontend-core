@@ -3,8 +3,7 @@ import TenantMarketplaceAssociation from "../components/TenantMarketplaceAssocia
 import TenantPointOfSaleAssociation from "../components/TenantPointOfSaleAssociation";
 import TenantSettings from "../components/TenantSettings";
 import TenantTheme from "../components/TenantTheme";
-import ColorPallete from "kt-utilsColorPallete";
-import ThemePallete from "kt-utilsThemePallete";
+import { ColorPallete, ThemePallete } from "kt-utils";
 import { IDashAutoAdminAttribute } from "dash-auto-admin";
 import { SelectArrayInput, SelectInput } from "react-admin";
 

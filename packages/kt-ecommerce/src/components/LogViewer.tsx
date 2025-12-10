@@ -1,5 +1,5 @@
 import { Button, FormControlLabel, Switch } from '@mui/material';
-import { Product } from '../interfaces/Product';
+import { Product } from '..';
 import { IDashAutoAdminCustomFieldComponent } from 'dash-auto-admin';;
 import React, { Fragment, useEffect, useState } from 'react'
 import { TextInput } from 'react-admin';
@@ -35,13 +35,13 @@ const LogViewerView: React.FC<IDashAutoAdminCustomFieldComponent> = ({ method, a
 }
 
 
-const LogViewer = ({ method, attribute }: IDashAutoAdminCustomFieldComponent) => {
+const LogViewer = ({ method, attribute, resourceConfig }: IDashAutoAdminCustomFieldComponent) => {
   switch (method) {
     case "edit":
     case "create":
-      return <LogViewerEdit attribute={attribute} method={method} />
+      return <LogViewerEdit attribute={attribute} method={method} resourceConfig={resourceConfig} />
     case "view":
-      return <LogViewerView attribute={attribute} method={method} />
+      return <LogViewerView attribute={attribute} method={method} resourceConfig={resourceConfig} />
   }
 }
 

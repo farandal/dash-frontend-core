@@ -3,8 +3,7 @@ import React, { useState } from 'react'
 import { useRecordContext } from "react-admin";
 import { useForm } from 'react-hook-form';
 import { useNotify, useRefresh } from 'react-admin';
-import ICampaignProduct from '../../../../interfaces/campaign/ICampaignProduct';
-import ICampaign, { SystemMarketplace } from '../../../../interfaces/campaign/ICampaign';
+import { ICampaignProduct, ICampaign, CampaignMarketplace, SystemMarketplace } from '../../../../interfaces';
 import MarketplaceTag from '../../../Misc/MarketplaceTag';
 import { useDelete } from 'react-admin';
 

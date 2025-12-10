@@ -1,10 +1,11 @@
 import { Table } from 'antd';
-import { Category } from '../../interfaces/Category';
+
 import { IDashAutoAdminCustomFieldComponent } from 'dash-auto-admin';
 import React from 'react'
 import { useRecordContext } from "react-admin";
 import MapperAntD from '../MapperAntD';
 import { Alert } from '@mui/material';
+import { Category } from '../../interfaces';
 
 const CategoryMapperEdit: React.FC<IDashAutoAdminCustomFieldComponent> = ({ method, attribute }) => {
   const category: Category = useRecordContext();
@@ -33,13 +34,13 @@ const CategoryMapperView: React.FC<IDashAutoAdminCustomFieldComponent> = ({ meth
   </>)
 }
 
-const CategoryMapper = ({ method, attribute }: IDashAutoAdminCustomFieldComponent) => {
+const CategoryMapper = ({ method, attribute,resourceConfig}: IDashAutoAdminCustomFieldComponent) => {
   switch (method) {
     case "edit":
     case "create":
-      return <CategoryMapperEdit attribute={attribute} method={method} />
+      return <CategoryMapperEdit attribute={attribute} method={method} resourceConfig={resourceConfig} />
     case "view":
-      return <CategoryMapperView attribute={attribute} method={method} />
+      return <CategoryMapperView attribute={attribute} method={method} resourceConfig={resourceConfig} />
   }
 }
 
@@ -152,13 +153,13 @@ const CategoryMapperView: React.FC<IDashAutoAdminCustomFieldComponent> = ({ meth
     )
 }
 
-const CategoryMapper = ({ method, attribute }: IDashAutoAdminCustomFieldComponent) => {
+const CategoryMapper = ({ method, attribute, resourceConfig }: IDashAutoAdminCustomFieldComponent) => {
     switch (method) {
         case "edit":
         case "create":
-            return <CategoryMapperEdit attribute={attribute} method={method} />
+            return <CategoryMapperEdit attribute={attribute} method={method} resourceConfig={resourceConfig} />
         case "view":
-            return <CategoryMapperView attribute={attribute} method={method} />
+            return <CategoryMapperView attribute={attribute} method={method} resourceConfig={resourceConfig} />
     }
   }
 

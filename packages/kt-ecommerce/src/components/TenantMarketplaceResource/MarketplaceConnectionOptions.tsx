@@ -1,4 +1,4 @@
-import { ITenantMarketplace } from "../schemas/tenantMarketplace";
+
 import { Alert, Paper, AlertTitle, ButtonGroup, Card } from "@mui/material";
 import { DashAutoFormGroups, DashAutoFormMuiTabs, DashAutoFormTabs, IDashAutoAdminCustomFieldComponent } from "dash-auto-admin";
 import { useAxios } from 'dash-axios-hook';
@@ -11,6 +11,7 @@ import MUISimpleJsonTable from "../MuiSimpleJsonTable";
 import { DASHAdminSystemConstants } from "dash-constants";
 import MultiLevelTable from "../MultiLevelTable";
 import nativeAxios from 'axios';
+import { ITenantMarketplace } from "../../schemas/tenantMarketplace";
 
 const TenantMarketplaceConnectionOptionsCreate: React.FC<IDashAutoAdminCustomFieldComponent> = ({ method, attribute }) => {
     return <Alert severity="info">Ingrese un nombre antes de configurar la integración</Alert>

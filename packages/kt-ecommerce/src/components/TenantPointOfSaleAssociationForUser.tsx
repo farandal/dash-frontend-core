@@ -1,13 +1,11 @@
-import { Badge, Box, Chip, TextField } from '@mui/material';
+import { Box } from '@mui/material';
 
 import { IDashAutoAdminCustomFieldComponent } from 'dash-auto-admin';
-import React, { useEffect, useState } from 'react'
-import { Loading, useGetList, useRecordContext, useGetOne } from "react-admin";
+import React, { useEffect } from 'react'
+import { useRecordContext, useGetOne } from "react-admin";
 
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
-import { useWatch, useController, useFormContext } from 'react-hook-form';
-import SearchableSelect from './SearchableSelect';
-import { Col, Row, Divider, Button as ButtonAntd } from "antd";
+import { useWatch, useFormContext } from 'react-hook-form';
 import { Tenant } from '../interfaces';
 
 export interface ITenantPointOfSaleSelectorForUser {
@@ -72,9 +70,17 @@ export const TenantPointOfSaleSelectorForUser: React.FC<ITenantPointOfSaleSelect
             <DataGrid
               rows={systemPointOfSaleIds}
               columns={columns}
-              pageSize={5}
-              rowsPerPageOptions={[25, 50, 100, 200, 500]}
-              disableSelectionOnClick
+              initialState={{
+                pagination: {
+                  paginationModel: { pageSize: 5 },
+                },
+              }}
+              slotProps={{
+                pagination: {
+                  rowsPerPageOptions: [25, 50, 100, 200, 500],
+                },
+              }}
+              disableRowSelectionOnClick
             />
           </Box>
         </div></>
@@ -107,23 +113,31 @@ const TenantPointOfSaleAssociationForUserView: React.FC<IDashAutoAdminCustomFiel
 
   return <Box sx={{ height: 200, width: "100%" }}>
     <DataGrid
-      rows={tenant.systemPointOfSales}
+         rows={tenant.systemPointOfSales}
       columns={columns}
-      pageSize={5}
-      rowsPerPageOptions={[25, 50, 100, 200, 500]}
+      initialState={{
+        pagination: {
+          paginationModel: { pageSize: 5 },
+        },
+      }}
+      slotProps={{
+        pagination: {
+          rowsPerPageOptions: [25, 50, 100, 200, 500],
+        },
+      }}
       hideFooter={true}
-      disableSelectionOnClick
+      disableRowSelectionOnClick
     />
   </Box>
 }
 
-const TenantPointOfSaleAssociationForUser = ({ method, attribute }: IDashAutoAdminCustomFieldComponent) => {
+const TenantPointOfSaleAssociationForUser = ({ method, attribute, resourceConfig }: IDashAutoAdminCustomFieldComponent) => {
   switch (method) {
     case "edit":
     case "create":
-      return <TenantPointOfSaleAssociationForUserEdit attribute={attribute} method={method} />
+      return <TenantPointOfSaleAssociationForUserEdit attribute={attribute} method={method} resourceConfig={resourceConfig} />
     case "view":
-      return <TenantPointOfSaleAssociationForUserView attribute={attribute} method={method} />
+      return <TenantPointOfSaleAssociationForUserView attribute={attribute} method={method} resourceConfig={resourceConfig} />
   }
 }
 

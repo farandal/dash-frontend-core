@@ -3,7 +3,7 @@ import React, { } from 'react'
 import { IGalleryComponent } from './Interfaces';
 import { Avatar } from "antd";
 import * as Icons from '@mui/icons-material';
-import { IGalleryImage } from '../interfaces/Gallery';
+import { IGalleryImage } from '../../interfaces';
 
 
 

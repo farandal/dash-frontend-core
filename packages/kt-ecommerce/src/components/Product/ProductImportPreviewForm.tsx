@@ -2,7 +2,7 @@ import React, { useEffect, useImperativeHandle, useState } from 'react'
 import * as Icons from '@mui/icons-material';
 
 import { Table, Button, Popconfirm, Row, Col, Upload, Form, Steps } from "antd";
-const Step = Steps.Step;
+
 
 import { ExcelRenderer } from "react-excel-renderer";
 import { useController, useWatch } from 'react-hook-form';
@@ -11,7 +11,7 @@ import { ColumnsType } from 'antd/lib/table';
 
 import { Switch } from '@mui/material';
 import { useDialog } from "../Dialog/DialogService";
-import { IProductTemplate, IProductTemplateColumn } from '../interfaces/Product';
+import { IProductTemplate, IProductTemplateColumn } from '../../interfaces';
 import { IProductImportTemplateRow } from './ProductImportExport/Interfaces';
 
 export type TProductImportPreviewFormHandlers = {

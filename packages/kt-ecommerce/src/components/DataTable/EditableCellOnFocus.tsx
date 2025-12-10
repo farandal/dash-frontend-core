@@ -2,6 +2,7 @@ import { Form, FormInstance, Input, InputRef, Table } from "antd";
 import React, { useEffect } from "react";
 import { useContext, useRef, useState } from "react";
 
+/* DEPRECATED */
 
 const EditableContext = React.createContext<FormInstance<any> | null>(null);
 
@@ -71,11 +72,13 @@ const EditableCellOnFocus = <T extends EditableCellOnFocusProps>(props: T) => {
 
     const toggleEdit = () => {
         setEditing(!editing);
+        /* @ts-ignore */
         form.setFieldsValue({ [dataIndex]: record[dataIndex] });
     };
 
     const save = async () => {
         try {
+             /* @ts-ignore */
             const values = await form.validateFields();
 
             toggleEdit();

@@ -22,7 +22,7 @@ import {
 } from "@mui/material";
 import { FileUploader } from "react-drag-drop-files";
 import * as Icons from "@mui/icons-material";
-import { IGalleryImage } from "../interfaces/Gallery";
+import { IGalleryImage } from "../../interfaces";
 import {useAxios} from "dash-axios-hook";
 
 const THUMB_SIZE = [120, 120];
@@ -351,6 +351,7 @@ const GalleryManager = ({ gallery, onGalleryUpdate }: { gallery: any, onGalleryU
                     }
                 }}>
                     <FileUploader
+                    /* @ts-ignore */
                         handleChange={handleFileChange}
                         name="file"
                         types={fileTypes}
@@ -656,6 +657,7 @@ const GallerySelectorEdit = ({ method, attribute, resourceConfig, ...props }: ID
                     TextFieldProps={{
                         placeholder: 'Buscar galería existente...',
                     }}
+                    /* @ts-ignore */
                     options={{ refetchOnWindowFocus: false }}
                 />
 
@@ -692,6 +694,7 @@ const GallerySelectorEdit = ({ method, attribute, resourceConfig, ...props }: ID
                             }
                         }}>
                             <FileUploader
+                            /* @ts-ignore */
                                 handleChange={handleFileChange}
                                 name="gallery_images"
                                 types={fileTypes}
@@ -865,6 +868,7 @@ const GallerySelectorEdit = ({ method, attribute, resourceConfig, ...props }: ID
                 TextFieldProps={{
                     placeholder: 'Buscar galería...',
                 }}
+                /* @ts-ignore */
                 options={{ refetchOnWindowFocus: false }}
             />
 
@@ -1029,6 +1033,7 @@ const GallerySelectorCreate = ({ method, attribute, resourceConfig, ...props }: 
                 TextFieldProps={{
                     placeholder: 'Buscar galería existente...',
                 }}
+                /* @ts-ignore */
                 options={{ refetchOnWindowFocus: false }}
             />
 
@@ -1091,6 +1096,7 @@ const GallerySelectorCreate = ({ method, attribute, resourceConfig, ...props }: 
                             }
                         }}>
                             <FileUploader
+                            /* @ts-ignore */
                                 handleChange={handleFileChange}
                                 name="gallery_images"
                                 types={fileTypes}

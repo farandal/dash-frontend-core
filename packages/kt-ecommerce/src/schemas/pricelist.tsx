@@ -29,7 +29,7 @@ const pricelistSchema: IDashAutoAdminAttribute[] = [
     pagination: false,
     multiple: false,
     component: SelectInput,
-    componentProps: { fullWidth: true, filter: { pagination: false }, multiple: false },
+    componentProps: { fullWidth: true, filter: { }, multiple: false },
     inList: false
   },
 

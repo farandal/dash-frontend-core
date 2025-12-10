@@ -403,7 +403,8 @@ export const Graphs: React.FC<IGrpahs> = ({ resourceConfig }) => {
       toReturn = selectedStat.graph.map((item) => {
         switch (item) {
           case 'Bar':
-            return <Grid item xs={12} md={6}>
+            {/* @ts-ignore */ }
+            return <Grid xs={12} md={6}>
               <Button
                 sx={{ backgroundColor: '#242943', color: '#fff', width: '100%' }}
                 onClick={() => setGraphType('bar')}>
@@ -411,7 +412,8 @@ export const Graphs: React.FC<IGrpahs> = ({ resourceConfig }) => {
               </Button>
             </Grid>
           case 'Pie':
-            return <Grid item xs={12} md={6}>
+             {/* @ts-ignore */ }
+            return <Grid xs={12} md={6}>
               <Button
                 sx={{ backgroundColor: '#242943', color: '#fff', width: '100%' }}
                 onClick={() => setGraphType('pie')}>
@@ -419,7 +421,8 @@ export const Graphs: React.FC<IGrpahs> = ({ resourceConfig }) => {
               </Button>
             </Grid>;
           default:
-            return <Grid item xs={12} md={6}>
+             {/* @ts-ignore */ }
+            return <Grid xs={12} md={6}>
               <Button
                 sx={{ backgroundColor: '#242943', color: '#fff', width: '100%' }}
                 onClick={() => setGraphType('bar')}>
@@ -579,7 +582,8 @@ export const Graphs: React.FC<IGrpahs> = ({ resourceConfig }) => {
       <br />
       <Grid container spacing={3}>
         {!id && statsData?.map((item, key) => {
-          return <Grid item xs={24} md={12} key={key}>
+             {/* @ts-ignore */ }
+          return <Grid xs={24} md={12} key={key}>
             <Card>
               <div style={{ display: 'flex', alignItems: 'center' }}>
                 {/* <span style={{display: 'inline-block', fontSize: 20}}>Total: </span> */}
@@ -599,7 +603,8 @@ export const Graphs: React.FC<IGrpahs> = ({ resourceConfig }) => {
             <MUITable data={selectedStat?.chartData?.config?.table || []} /> :
             <Grid container spacing={3}>
               {selectedStat.chartData.config.results.map((item, key) => {
-                return <Grid item xs={24} md={8} key={key}>
+                 {/* @ts-ignore */ }
+                return <Grid xs={24} md={8} key={key}>
                   <Card style={{ padding: '1rem', backgroundColor: 'aliceblue', }}>
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                       <span style={{ display: 'inline-block', fontSize: 20 }}>{item[Object.keys(item)[0]]} </span>

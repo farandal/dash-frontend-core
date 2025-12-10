@@ -1,4 +1,3 @@
-import { CampaignStatuses } from "../../../interfaces";
 import {
     ButtonGroup,
     IconButton,
@@ -8,19 +7,13 @@ import { useParams } from "react-router";
 import { useAxios } from 'dash-axios-hook';
 import { useDialog } from "dash-dialog";
 import { useRefresh } from "react-admin";
-import { getCookie } from "dash-admin/src/utils/cookies";
 import queryString from "query-string";
-import MarketplaceTag from "./Misc/MarketplaceTag";
-import MUISimpleJsonTable from "./MuiSimpleJsonTable";
 
-import VisibilityIcon from "@mui/icons-material/Visibility";
-import EditIcon from "@mui/icons-material/Edit";
-import PublishIcon from "@mui/icons-material/Publish";
 import PauseIcon from "@mui/icons-material/Pause";
-import UpdateIcon from "@mui/icons-material/Update";
 import DeleteIcon from "@mui/icons-material/Delete";
 import StopIcon from "@mui/icons-material/Stop";
 import PlayIcon from "@mui/icons-material/PlayArrow";
+import { dashStorage } from "dash-utils";
 
 const CampaignProductsBatchActions = ({ batchSelectedCampaignProducts, campaign }) => {
     const { id } = useParams();

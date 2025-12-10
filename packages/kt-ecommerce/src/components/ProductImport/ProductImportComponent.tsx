@@ -600,7 +600,7 @@ const ProductImportComponentView: React.FC<IDashAutoAdminCustomFieldComponent> =
       setStats(JSON.parse(JSON.stringify(data.stats)));
     }
 
-  } catch (error) {
+  } catch (error:any) {
     console.error('Import failed:', error);
     setIsNormalizedImportActive(false);
     

@@ -1,9 +1,10 @@
-import { INotificationPayload } from "panel/notificationFormats";
+
 import { ReactNode } from "react";
 import NotificationAttributesTable from "../NotificationAttributesTable";
 
 export interface IProductImportNotification {
-    notificationPayload: INotificationPayload<IProductImportNotification>
+   // notificationPayload: INotificationPayload<IProductImportNotification>
+    notificationPayload:any
     children?: ReactNode
 }
 

@@ -1,9 +1,10 @@
 import { IDashAutoAdminResourceConfig } from "dash-auto-admin";
+import { Route } from "react-router-dom";
+
 import orderSchema from "../schemas/order";
 import PointOfSale from "@mui/icons-material/PointOfSale";
-import TrashTemplate from "dash-admin/src/resources/Trash/TrashTemplate";
-import ResourceTemplate from "dash-admin/src/templates/ResourceTemplate";
 import React from "react";
+import { Graphs } from "../components/Stats/Graphs";
 
 const Icon = PointOfSale as unknown as React.FC;
 

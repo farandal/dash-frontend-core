@@ -95,7 +95,7 @@ const ProductListBulkActions = (props) => {
         } catch (error) {
             setIsDuplicatingLoading(false);
             dialog({
-                variant: 'error',
+                variant: 'danger',
                 title: 'Error',
                 content: 'Error al duplicar los elementos seleccionados',
                 onConfirm: () => { },
@@ -128,7 +128,7 @@ const ProductListBulkActions = (props) => {
         } catch (error) {
             setIsDeletingLoading(false);
             dialog({
-                variant: 'error',
+                variant: 'danger',
                 title: 'Error',
                 content: 'Error al eliminar los elementos seleccionados',
                 onConfirm: () => { },

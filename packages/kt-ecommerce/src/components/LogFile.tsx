@@ -7,9 +7,10 @@ import { useRecordContext } from "react-admin";
 import { useGetList } from 'react-admin';
 import { useAxios } from 'dash-axios-hook';
 import { saveAs } from 'file-saver';
-import { ILog, ILogTxtFileComponent } from '../interfaces/Log';
+
 
 import { IDashAutoAdminCustomFieldComponent } from 'dash-auto-admin';
+import { ILog, ILogTxtFileComponent } from 'dash-admin/src/interfaces/Log';
 
 export const LogTxtFileComponent: React.FC<ILogTxtFileComponent> = ({ log }) => {
 

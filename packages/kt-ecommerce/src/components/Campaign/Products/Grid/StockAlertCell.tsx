@@ -1,11 +1,6 @@
 import { Chip, Tooltip } from "@mui/material";
 import {
-    GridEditInputCell,
-    GridRenderEditCellParams,
-    GridRenderCellParams
-} from "@mui/x-data-grid";
-import { ReactNode, useEffect } from "react";
-import { useForm } from "react-hook-form";
+    GridEditInputCell} from "@mui/x-data-grid";
 import CampaignProductStockAlertsEdit from "./CampaignProductStockAlerts";
 
 import CellSettings from "./CellSettings";
@@ -47,7 +42,7 @@ const EditionWarning = (props: any) => {
                 </>}
         </>
     );*/
-
+             {/* @ts-ignore */}
             return<><GridEditInputCell {...props} />
                         <CellSettings   type="drawer" error={_error} warning={_warning} row={props.row} field={props.field} >
                 </CellSettings></>

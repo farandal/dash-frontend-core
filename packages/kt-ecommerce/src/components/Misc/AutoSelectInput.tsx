@@ -25,14 +25,14 @@ export const AutoSelectView: React.FC<IAutoSelectInput> = ({ method, attribute, 
 
 }
 
-const AutoSelect = ({ method, attribute, ...selectProps }: IAutoSelectInput) => {
+const AutoSelect = ({ method, attribute, resourceConfig,...selectProps }: IAutoSelectInput) => {
 
   switch (method) {
     case "edit":
     case "create":
-      return <AutoSelectInput method={method} attribute={attribute} {...selectProps} />
+      return <AutoSelectInput method={method} attribute={attribute} resourceConfig={resourceConfig} {...selectProps} />
     case "view":
-      return <AutoSelectView method={'view'} attribute={attribute} />
+      return <AutoSelectView method={'view'} attribute={attribute} resourceConfig={resourceConfig} />
   }
 }
 

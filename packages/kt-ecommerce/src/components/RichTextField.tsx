@@ -10,12 +10,12 @@ const RichTextFieldEdit: React.FC<IDashAutoAdminCustomFieldComponent> = ({ metho
 
 }
 
-const RichTextFieldWrapper = ({ method, attribute }: IDashAutoAdminCustomFieldComponent) => {
+const RichTextFieldWrapper = ({ method, attribute,resourceConfig }: IDashAutoAdminCustomFieldComponent) => {
 
   switch (method) {
     case "edit":
     case "create":
-      return <RichTextFieldEdit attribute={attribute} method={method} />
+      return <RichTextFieldEdit attribute={attribute} method={method} resourceConfig={resourceConfig} />
     case "view":
       return <RichTextField source={attribute.attribute} />
   }

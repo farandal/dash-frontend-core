@@ -17,7 +17,7 @@ import MarketplaceTag from '../Misc/MarketplaceTag';
 import { useLogger } from '../../hooks/useLogger';*/
 
 import { Button, Form, FormInstance, Input, InputNumber, InputRef, Popconfirm, Table, Typography } from 'antd';
-import { Metadata, IMetadataMappingRow, MetadataMappingResource } from "../interfaces/Metadata";
+import { Metadata, IMetadataMappingRow, MetadataMappingResource, Tenant} from "../../interfaces";
 
 import * as Icons from '@mui/icons-material';
 
@@ -31,7 +31,7 @@ import { useFieldArray } from "react-hook-form";
 import EditableCellOnFocus, { ColumnTypes, EditableRow } from "../DataTable/EditableCellOnFocus";
 import MarketplaceTag from "../Misc/MarketplaceTag";
 import { ISystemMarketplace } from "./MarketplacesMetadataMapper";
-import { Tenant } from '../interfaces';
+
 import { dashStorage } from 'dash-utils';
 
 
@@ -46,6 +46,7 @@ const InputMetadataFormatMappingsEdit: React.FC<IDashAutoAdminCustomFieldCompone
   const [tenantSystemMarketplaces, setTenantSystemMarketplaces] = useState<ISystemMarketplace[]>(null);
   useEffect(() => {
     if (tenant && !tenantLoading && !tenantError) {
+        /* @ts-ignore */
       setTenantSystemMarketplaces((tenant as Tenant).systemMarketplaces);
     }
   }, [tenant, tenantLoading, tenantError])
@@ -250,9 +251,9 @@ const InputMetadataFormatMappings = ({ method, attribute, resourceConfig }: IDas
   switch (method) {
     case "edit":
     case "create":
-      return <InputMetadataFormatMappingsEdit resourceConfig={resourceConfig} attribute={attribute} method={method} />
+      return <InputMetadataFormatMappingsEdit attribute={attribute} method={method} resourceConfig={resourceConfig} />
     case "view":
-      return <InputMetadataFormatMappingsView resourceConfig={resourceConfig} attribute={attribute} method={method} />
+      return <InputMetadataFormatMappingsView attribute={attribute} method={method} resourceConfig={resourceConfig} />
   }
 }
 

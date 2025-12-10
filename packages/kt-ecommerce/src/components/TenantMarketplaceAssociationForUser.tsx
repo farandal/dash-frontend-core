@@ -1,11 +1,8 @@
-import { Badge, Box, Chip, TextField } from '@mui/material';
-import { Price } from '../interfaces/Price';
-import { Product } from '../interfaces/Product';
+import { Box } from '@mui/material';
+import { ITenant as Tenant } from '../interfaces';
 import { IDashAutoAdminCustomFieldComponent } from 'dash-auto-admin';
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import { useRecordContext } from "react-admin";
-import { Tenant } from '../interfaces/Tenant';
-import { TenantMarketplaceSelector, TenantMarketplaceSelectorCreate } from './TenantMarketplaceSelector';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { TenantMarketplaceSelectorForUserEdit } from './TenantMarketplaceSelectorForUser';
 
@@ -36,21 +33,25 @@ const TenantMarketplaceAssociationForUserView: React.FC<IDashAutoAdminCustomFiel
     <DataGrid
       rows={tenant.systemMarketplaces}
       columns={columns}
-      pageSize={5}
-      rowsPerPageOptions={[25, 50, 100, 200, 500]}
+      initialState={{
+                    pagination: {
+                        paginationModel: { pageSize: 5 },
+                    },
+                }}
+      pageSizeOptions={[25, 50, 100, 200, 500]}
       hideFooter={true}
-      disableSelectionOnClick
+      disableRowSelectionOnClick
     />
   </Box>
 }
 
-const TenantMarketplaceAssociationForUser = ({ method, attribute }: IDashAutoAdminCustomFieldComponent) => {
+const TenantMarketplaceAssociationForUser = ({ method, attribute, resourceConfig }: IDashAutoAdminCustomFieldComponent) => {
   switch (method) {
     case "edit":
-      return <TenantMarketplaceAssociationForUserEdit attribute={attribute} method={method} />
+      return <TenantMarketplaceAssociationForUserEdit attribute={attribute} method={method} resourceConfig={resourceConfig} />
 
     case "view":
-      return <TenantMarketplaceAssociationForUserView attribute={attribute} method={method} />
+      return <TenantMarketplaceAssociationForUserView attribute={attribute} method={method} resourceConfig={resourceConfig} />
   }
 }
 

@@ -1,10 +1,8 @@
 // in posts.js
 import { matchPath, Route, useLocation, useNavigate } from "react-router";
 import {
-    ShowBase,
     Resource,
     useNotify,
-    useGetList,
     useRefresh,
     useRedirect,
     CustomRoutes,
@@ -16,12 +14,12 @@ import {
 } from "react-admin";
 
 
-import { useMediaQuery, Drawer } from "@mui/material";
+import { Drawer } from "@mui/material";
 import ApplicationLayout from "dash-admin/src/layout/ApplicationLayout";
 import { useDialog } from "dash-dialog";
 import moment from "moment";
 import React, { useCallback, useMemo, Suspense } from "react";
-import { Theme } from "react-pick-color";
+
 import { 
     DashAutoList, 
     DashAutoEdit, 

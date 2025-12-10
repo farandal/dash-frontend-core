@@ -57,6 +57,7 @@ const RenderCell:FC<IRenderCell> = ({dataIndex, record, title,handleSave,childre
   console.log("rendering cell", form, props);
   return editing ? (
     <Form.Item style={{ margin: 0 }}>
+        { /* @ts-ignore */}
       {form.getFieldDecorator(dataIndex, {
         rules: [
           {

@@ -1,10 +1,9 @@
 import React, { FC, useImperativeHandle } from 'react'
 
 import { Row, Col, Steps } from "antd";
-const Step = Steps.Step;
 
 import { useController } from 'react-hook-form';
-import { IProductTemplate } from '../../interfaces/Product';
+import { IProductTemplate } from '../../interfaces';
 import { Chip, Paper, Stack, Switch } from '@mui/material';
 import { useDialog } from "../../components/Dialog/DialogService";
 import MUISimpleJsonTable from '../MuiSimpleJsonTable';

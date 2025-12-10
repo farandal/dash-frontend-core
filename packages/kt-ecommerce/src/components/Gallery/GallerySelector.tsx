@@ -2,7 +2,7 @@ import { IconButton, ImageList, ImageListItem, ImageListItemBar } from '@mui/mat
 import React, { useEffect } from 'react'
 import { useController, useWatch } from 'react-hook-form';
 import SearchableSelect from '../SearchableSelect';
-import { IGalleryImage } from '../interfaces/Gallery';
+import { IGalleryImage } from '../../interfaces';
 
 
 const GallerySelector: React.FC<any> = ({ props }) => {

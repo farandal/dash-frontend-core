@@ -54,6 +54,7 @@ export interface IGalleryImage {
     preview: string;
     medium: string;
     large: string;
+    url?: string;
     custom_properties: {
         source_url: string;
         display_order: number;
@@ -61,6 +62,7 @@ export interface IGalleryImage {
         product_sku: string;
         product_id: number;
     };
+    title?: string;
 }
 
 export interface IGallery {
@@ -175,6 +177,8 @@ export interface IProductMetadata {
     key: string;
     value: any;
     product_id: number;
+    metadata_format_id?: number;
+    metadata_format_name?: string;
 }
 
 // ============================================================================
@@ -183,10 +187,10 @@ export interface IProductMetadata {
 
 export interface ISystemMarketplace {
     id: number;
-    class: string;
+    class?: string;
     name: string;
-    icon_path: string;
-    icon_url: string;
+    icon_path?: string;
+    icon_url?: string;
 }
 
 export interface ISystemPointOfSale {
@@ -243,6 +247,7 @@ export interface ICampaignMarketplace {
     sale_pricelist_id: number;
     source_stock_type_id: number;
     stock_type_id: number;
+    pivot?: any
 }
 
 export interface ICampaignInfo {
@@ -301,6 +306,8 @@ export interface ITrackerSummary {
         id: number;
         name: string;
     };
+    progress?: number;
+    status?: string;
 }
 
 export interface ITrackerEndpointResponse {
@@ -409,6 +416,7 @@ export enum ProductStatuses {
     FINISHING = 'FINISHING',
     FINISHED = 'FINISHED',
     ERROR = 'ERROR',
+    ERRORED = 'ERROR',
     WARNING = 'WARNING'
 }
 
@@ -434,9 +442,67 @@ export interface ICampaignProduct {
 export type Tenant = ITenant;
 export type Category = ICategory;
 export type Product = IProduct;
-export type Gallery = IGallery;
+// export type Gallery = IGallery;
 export type GalleryImage = IGalleryImage;
 export type CampaignMarketplace = ICampaignMarketplace;
 export type SystemMarketplace = ISystemMarketplace;
 export type TrackerSummary = ITrackerSummary;
 export type TrackerEndpointResponse = ITrackerEndpointResponse;
+
+
+
+//input interfaces
+export interface MetadataMappingResource {
+    input: string,
+    output: string,
+    id?: number,
+    metadata_format_id?: number,
+    system_marketplace_id: number
+}
+
+export interface Metadata {
+    id: number,
+    tenant_id: number,
+    name: string,
+    slug: string,
+    group: string,
+    required: boolean,
+    //has_mapping: boolean,
+    is_internal: boolean,
+    tenant?: Tenant,
+    input_metadata_format_mappings: MetadataMappingResource[]
+    output_metadata_format_mappings: any[] // @TODO!
+}
+
+export interface MetadataAvailableFormat {
+    id: number,
+    name: string,
+    slug: string,
+    group?: string,
+    required: boolean,
+    options?: string[],
+    type: "HTML" | "STRING"
+    
+}
+
+export interface IProductMetadataFormat {
+    id?:number
+    value?: string
+    product_id: number
+    metadata_format_id: number
+    metadata_format_name: string
+    // missing group
+}
+
+//controller interface
+export interface IMetadataMappingCol {
+    key: React.Key,
+    editable: boolean,
+    title: string,
+    dataIndex: string,
+    name: string
+}
+
+export interface IMetadataMappingRow extends MetadataMappingResource {
+    key: React.Key
+}

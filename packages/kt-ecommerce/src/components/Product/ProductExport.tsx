@@ -130,6 +130,7 @@ const ProductExport: React.FC<ProductExportProps> = () => {
         case "ProductExportProgressNotification":
         case "ProductExportNotification":
         case "ProductExportErrorNotification":
+            /* @ts-ignore */
           setLastExportNotification(lastEvent);
           dashStorage.setItem('lastExportEvent', currentEvent);
           break;

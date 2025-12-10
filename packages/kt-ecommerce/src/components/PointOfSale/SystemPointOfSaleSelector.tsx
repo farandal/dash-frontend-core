@@ -9,8 +9,9 @@ import { useController, useForm } from 'react-hook-form';
 
 import { getCookie } from 'dash-admin/src/utils/cookies';
 import { IDashAutoAdminCustomFieldComponent } from 'dash-auto-admin';
-import { Tenant } from '../interfaces';
+
 import { dashStorage } from 'dash-utils';
+import { Tenant } from '../../interfaces';
 
 
 const SystemPointOfSaleSelectorCreate: React.FC<IDashAutoAdminCustomFieldComponent> = ({ method, attribute }) => {

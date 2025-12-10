@@ -20,7 +20,7 @@ drawerPaper: {
 },
 content: {
     flexGrow: 1,
-    padding: theme.spacing(3),
+    padding: 1,
 },
 list: {
     display: 'flex',

@@ -34,12 +34,14 @@ export const PriceEditCell = ({...props}) => {
         <>
             {props?.hasFocus ?
                 <>
+                {/* @ts-ignore */}
                     <GridEditInputCell {...props} />
                     <CellSettings error={_error} warning={_warning} row={props.row} field={props.field} >
                     </CellSettings>
                 </>
                 :
                 <>
+                 {/* @ts-ignore */}
                     <GridEditInputCell readOnly={true}  {...props} />
                     <CellSettings  error={_error} warning={_warning} row={props.row} field={props.field} >
                     </CellSettings>

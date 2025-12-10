@@ -122,7 +122,7 @@ const MarketplaceEdit: FC = () => {
           { data: { product_ids: selectedProducts } },
           {
             onSuccess: () => { setOpen(false); notify('Productos guardados correctamente.') },
-            onError: (error) => { console.log(error); notify(`Error al guardar los  productos, ${error?.body?.message || ''}`) },
+            onError: (error:any) => { console.log(error); notify(`Error al guardar los  productos, ${error?.body?.message || ''}`) },
             returnPromise: true
           }
         );
@@ -290,6 +290,7 @@ const MarketplaceEdit: FC = () => {
             />
             <CardContent className="dash-pt-0">
               {selectedTab === 'product' && <Button onClick={() => setOpen(true)}>Seleccionar productos</Button>}
+              {/* @ts-ignore */}
               {selectedTab === 'product' ? (isLoadingCampaignProducts && campaignProducts && campaignProducts.length) ? <Loading /> : <ProductTable products={campaignProducts} /> : <PriceStock />}
               {selectedTab !== 'product' && <Button loading={isLoadingUpdate} htmlType="submit">Guardar precios y stock</Button>}
             </CardContent>

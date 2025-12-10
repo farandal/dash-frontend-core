@@ -25,7 +25,7 @@ import { useListContext } from "react-admin";
 import { useRecordContext } from "react-admin";
 import { PaginationComponent } from "dash-components";
 import { useRecordSelection } from 'react-admin'
-import { IGalleryImage } from "../interfaces/Gallery";
+import { IGalleryImage } from "../../interfaces";
 
 
 const ListAutoSelectIds = ({ resource, selectedIdsFn }) => {

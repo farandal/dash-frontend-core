@@ -2,7 +2,7 @@ import { FC } from "react";
 import { useRecordContext } from "react-admin";
 import MultiLevelTable from "../MultiLevelTable";
 import React from "react";
-import { IProductTemplate } from "../interfaces/Product";
+import { IProductTemplate } from "../../interfaces";
 
 interface IProductTemplateShow {
   record?: IProductTemplate

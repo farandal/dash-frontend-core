@@ -4,13 +4,13 @@ import { useRecordContext, useGetList, Loading } from "react-admin";
 import {
     DataGrid as MUIGrid,
     GridColDef,
-    esES,
     GridRowParams} from "@mui/x-data-grid";
 import { Box, Button, Dialog } from "@mui/material";
 import React from "react";
-import { ILog } from "../interfaces/Log";
-import { ICampaign } from "../interfaces/campaign/ICampaign";
+
 import { LogTxtFileComponent } from "../../LogFile";
+import { ICampaign } from "../../../interfaces";
+import { ILog } from "dash-admin/src/interfaces/Log";
 
 const Logs = () => {
 
@@ -20,7 +20,7 @@ const Logs = () => {
     const { data, isLoading, error } = useGetList(
         'system/log',
         {
-            pagination:false,
+            //pagination:false,
             filter: {
                 loggeable_type: "App\\Models\\Campaign",
                 loggeable_id: contextCampaign.id

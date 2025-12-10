@@ -1,17 +1,15 @@
-import { Badge, Chip, TextField } from '@mui/material';
-import { Price } from '../../interfaces/Price';
-import { PriceList } from '../../interfaces/PriceList';
-import { Product } from '../../interfaces/Product';
-import { IMetadataMappingRow, Metadata, MetadataMappingResource } from '../../interfaces/Metadata';
+
+import { IMetadataMappingRow, Metadata, Product } from '../../interfaces';
 import { IDashAutoAdminCustomFieldComponent } from 'dash-auto-admin';
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { useGetList } from 'react-admin';
-import { NumberInput } from 'react-admin';
 import { useRecordContext } from "react-admin";
 import { useController, useFieldArray } from 'react-hook-form';
 import { Form, Popconfirm, Table } from 'antd';
 import EditableCellOnFocus, { ColumnTypes, EditableRow } from '../DataTable/EditableCellOnFocus';
 import * as Icons from '@mui/icons-material';
+import { Chip, TextField } from '@mui/material';
+import { Badge } from '@mui/material';
 
 const MetadataField = ({ name, label, defaultValue }) => {
   const {
@@ -46,7 +44,7 @@ const ProductMetadataEdit: React.FC<IDashAutoAdminCustomFieldComponent> = ({ met
   const product: Product = useRecordContext();
   const { data: availableMetadataFormats, isLoading: availableMetadataFormatsLoading } = useGetList(
     'ecommerce/metadata_format',
-    { pagination: false },
+    {},
     { refetchOnWindowFocus: false }
   );
 
@@ -55,13 +53,16 @@ const ProductMetadataEdit: React.FC<IDashAutoAdminCustomFieldComponent> = ({ met
   const [form] = Form.useForm()
   const [editingKey, setEditingKey] = useState(null)
   const isEditing = (record: IMetadataMappingRow) => record.key === editingKey
+  /* @ts-ignore */
   const [count, setCount] = useState(availableMetadataFormats?.metadata_mappings ? availableMetadataFormats.metadata_mappings.length : 0);
 
   const processRowData = (rows: IMetadataMappingRow[]) => {
     replaceMetadataMappings(rows);
   }
 
+  /* @ts-ignore */
   const handleAdd = () => {
+    /* @ts-ignore */
     const newData: IMetadataMappingRow = {
       key: count,
       input: "",
@@ -113,6 +114,7 @@ const ProductMetadataEdit: React.FC<IDashAutoAdminCustomFieldComponent> = ({ met
       title: 'Acciones',
       dataIndex: 'operation',
       width: '20%',
+        /* @ts-ignore */
       render: (_, record: IMetadataMappingRow) =>
         rows.length >= 1 ? (
           <Popconfirm title="¿Seguro que desea eliminar?" onConfirm={() => handleDelete(record.key)}>
@@ -140,7 +142,7 @@ const ProductMetadataEdit: React.FC<IDashAutoAdminCustomFieldComponent> = ({ met
       }),
     };
   });
-
+  /* @ts-ignore */
   const _rows: IMetadataMappingRow[] = availableMetadataFormats && availableMetadataFormats.map((metadata_format: Metadata) => {
     return {
       key: metadata_format.id,
@@ -174,6 +176,7 @@ const ProductMetadataEdit: React.FC<IDashAutoAdminCustomFieldComponent> = ({ met
           }}
           bordered
           dataSource={rows}
+          /* @ts-ignore */
           columns={mergedCols}
           rowClassName="editable-row"
           pagination={{
@@ -191,7 +194,7 @@ const ProductMetadataView: React.FC<IDashAutoAdminCustomFieldComponent> = ({ met
 
   const { data: availableMetadataFormats, isLoading: availableMetadataFormatsLoading } = useGetList(
     'ecommerce/metadata_format',
-    { pagination: false },
+    {},
     { refetchOnWindowFocus: false }
   );
 
@@ -213,13 +216,13 @@ const ProductMetadataView: React.FC<IDashAutoAdminCustomFieldComponent> = ({ met
   )
 }
 
-const ProductMetadata = ({ method, attribute }: IDashAutoAdminCustomFieldComponent) => {
+const ProductMetadata = ({ method, attribute,resourceConfig }: IDashAutoAdminCustomFieldComponent) => {
   switch (method) {
     case "edit":
     case "create":
-      return <ProductMetadataEdit attribute={attribute} method={method} />
+      return <ProductMetadataEdit attribute={attribute} method={method} resourceConfig={resourceConfig} />
     case "view":
-      return <ProductMetadataView attribute={attribute} method={method} />
+      return <ProductMetadataView attribute={attribute} method={method} resourceConfig={resourceConfig} />
   }
 }
 

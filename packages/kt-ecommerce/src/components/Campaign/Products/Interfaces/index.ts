@@ -1,1 +1,1 @@
-export { default as CustomSystemMarketplace } from './CustomSystemMarketplace';
+export type { default as CustomSystemMarketplace } from './CustomSystemMarketplace';

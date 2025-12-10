@@ -79,10 +79,12 @@ const countryResource: IDashAutoAdminResourceConfig = {
 	formGroupMode: 'layout', // groups or tabs,
 	editLayout: (render) => {
 		return <Grid container sx={{p:2}} spacing={3}>
-		<Grid item md={12} sx={{ p: 1 }}>
+            {/* @ts-ignore */}
+		<Grid md={12} sx={{ p: 1 }}>
 			<strong>Datos comuna</strong>
 		</Grid>
-		<Grid item md={12} sx={{ p: 1 }}>
+        {/* @ts-ignore */}
+		<Grid md={12} sx={{ p: 1 }}>
 			{render('datos')}
 		</Grid>
 

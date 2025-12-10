@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 
 import { Avatar, Tooltip } from "@mui/material";
-import { SystemMarketplace } from "../interfaces/campaign/ICampaign";
+import { ISystemMarketplace } from "../../interfaces";
 
 const checkIfImageExists = (path, callback) => {
 	return new Promise((resolve) => {
@@ -22,7 +22,7 @@ const checkIfImageExists = (path, callback) => {
 };
 
 export interface IMarketplaceTag {
-    marketplace: SystemMarketplace;
+    marketplace: ISystemMarketplace;
     key?: number | string;
     noTitle?: boolean;
 }

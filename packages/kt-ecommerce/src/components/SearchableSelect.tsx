@@ -35,7 +35,7 @@ const SearchableSelect: React.FC<any> = ({
     } = useGetList(
         resource,
         {
-            pagination: false,
+        
             filter: { q, ...filter },
         },
         { refetchOnWindowFocus: false }
@@ -93,7 +93,7 @@ const SearchableSelect: React.FC<any> = ({
                         </Box>
                     )}
                     onChange={(event: any, rawValue) => {
-                        let newValue = rawValue;
+                        let newValue:any = rawValue;
                         if (Array.isArray(rawValue)) {
                             if (isEmpty)
                                 newValue = [...rawValue, ...field.field.value];

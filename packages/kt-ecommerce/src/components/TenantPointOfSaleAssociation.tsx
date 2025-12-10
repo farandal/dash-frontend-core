@@ -92,7 +92,7 @@ export const TenantPointOfSaleSelector: React.FC<ITenantPointOfSaleSelector> = (
                                 
                                 onRowSelectionModelChange={(ids) => {
                                    
-                       
+                           /* @ts-ignore */
                                     setToDeletesystemPointOfSale(ids);
                                     //setToDeletesystemPointOfSale(ids.map((e) => parseInt(e as string)));
                                   
@@ -185,7 +185,7 @@ export const TenantPointOfSaleSelectorCreate: React.FC<ITenantPointOfSaleSelecto
                     onRowSelectionModelChange={(ids) => {
                                    
                  
-                          
+                          /* @ts-ignore */
                         setToDeletesystemPointOfSale(ids)
                       
                       }}

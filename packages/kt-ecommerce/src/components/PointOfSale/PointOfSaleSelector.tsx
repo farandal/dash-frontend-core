@@ -1,10 +1,10 @@
-import { AutoFormGroups, IDashAutoAdminCustomFieldComponent } from 'dash-auto-admin';
+import { IDashAutoAdminCustomFieldComponent } from 'dash-auto-admin';
 import React, { useEffect, useState } from 'react'
 import { useGetOne } from 'react-admin';
-import { getCookie } from '../../utils/cookies';
+
 import { FormControl } from '@mui/material';
 import { SelectInput } from 'react-admin';
-import { Tenant } from '../../interfaces/Tenant';
+
 import { Loading } from 'react-admin';
 import { useGetList } from 'react-admin';
 import { dashStorage } from 'dash-utils/src/utils/dashDtorage';
@@ -15,6 +15,7 @@ const PointOfSaleSelectorCreate: React.FC<IDashAutoAdminCustomFieldComponent> = 
   const tenant_id = dashStorage.getItem('tenant_id');
   const { data: pointOfSales, isLoading: pointOfSalesLoading, error: pointOfSalesError } = useGetList(
     "ecommerce/point_of_sale",
+    /* @ts-ignore */
     { id: tenant_id },
     { refetchOnWindowFocus: false }
   );
@@ -53,15 +54,15 @@ const PointOfSaleSelectorView: React.FC<IDashAutoAdminCustomFieldComponent> = ({
   return <></>
 }
 
-const PointOfSaleSelector = ({ method, attribute }: IDashAutoAdminCustomFieldComponent) => {
+const PointOfSaleSelector = ({ method, attribute, resourceConfig }: IDashAutoAdminCustomFieldComponent) => {
   switch (method) {
     case "edit":
-      return <PointOfSaleSelectorEdit attribute={attribute} method={method} />
+      return <PointOfSaleSelectorEdit attribute={attribute} method={method} resourceConfig={resourceConfig} />
     case "view":
-      return <PointOfSaleSelectorView attribute={attribute} method={method} />
+      return <PointOfSaleSelectorView attribute={attribute} method={method} resourceConfig={resourceConfig} />
     case "create":
-      return <PointOfSaleSelectorCreate attribute={attribute} method={method} />
+      return <PointOfSaleSelectorCreate attribute={attribute} method={method} resourceConfig={resourceConfig} />
   }
-}
+}       
 
 export default PointOfSaleSelector

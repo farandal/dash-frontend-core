@@ -1,33 +1,4 @@
-/*import { AutoFormGroups, IDashAutoAdminCustomFieldComponent } from 'dash-auto-admin';
-import React, { useEffect, useState } from 'react'
-import { FormProvider, useController, useForm, useWatch } from 'react-hook-form';
-import { Alert, AlertTitle, AppBar, Button, Chip, Dialog, DialogActions, DialogContent, DialogTitle, Drawer, IconButton, InputLabel, Paper, SwipeableDrawer, Switch, Toolbar, Typography } from '@mui/material';
-
-import { TextField, useRecordContext } from 'react-admin';
-import MUISimpleJsonTable from '../../components/MuiSimpleJsonTable';
-
-import { useGetOne } from 'react-admin';
-import { Loading } from 'react-admin';
-import { values } from 'lodash';
-import { useRedirect } from 'react-admin';
-import useAxios from '../../hooks/axios';
-import CONSTANTS from '../../config/CONSTANTS';
-import { getCookie, setCookie } from '../../utils/cookies';
-import { useNotify } from 'react-admin';
-import { useRefresh } from 'react-admin';
 import { ITenantMarketplace } from '../../schemas/tenantMarketplace';
-import { useDialog } from '@panel/components/Dialog/DialogService';
-import { AppDialogOptions } from '@panel/components/Dialog/AppDialog';
-//const connectionParamsResource = "system_marketplace/connectionParamFormat";
-import { toast } from 'react-toastify';
-//import RASearchableSelectChips from '@panel/components/RASearchableSelectChips';
-import { IOptionForOutputCategoryMapping, IValueForOutputCategoryMapping } from '@panel/components/Category/CategoryOutputMapper';
-import SearchableSelectChips from '@panel/components/SearchableSelectChips';
-//import notification from 'antd/lib/notification';
-*/
-
-
-import { ITenantMarketplace } from '../schemas/tenantMarketplace';
 import CloseIcon from '@mui/icons-material/Close';
 import { Paper, SwipeableDrawer, IconButton, Typography, DialogContent, DialogActions, Box } from '@mui/material';
 import { getCookie } from 'dash-admin/src/utils/cookies';

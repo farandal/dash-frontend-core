@@ -44,7 +44,7 @@ import UsersFilters from "./ProductElements/UsersFilters";
 import SvgBoxCheck from "../SvgElements/SvgBoxCheck";
 import { useAxios } from 'dash-axios-hook';
 import React from "react";
-import IUser from "../interfaces";
+import {IUser} from "../../interfaces";
 import { useAuthContext } from 'dash-admin/src/contexts/auth/AuthContext';
 
 interface IHistory {
@@ -115,7 +115,7 @@ const History = ({ currentProduct }) => {
 
     const { data, isLoading, error, refetch, total } = useGetList(`ecommerce/product_log`, {
         pagination: { page: 1, perPage: itemPerPage },
-        sort: false,
+        //sort: false,
         filter: { ...filters, product_id: currentProduct.id, tenant_id: currentProduct.tenant_id },
     },
         { refetchOnWindowFocus: false });
@@ -261,13 +261,13 @@ const History = ({ currentProduct }) => {
                 { id: currentProduct.id, data: newProduct },
                 {
                     onSuccess: () => { notify('Restaurado correctamente') },
-                    onError: (error) => { console.error(error); notify(`Error al restaurar, ${error?.body?.message || ''}`) },
+                    onError: (error:any) => { console.error(error); notify(`Error al restaurar, ${error?.body?.message || ''}`) },
                     returnPromise: true
                 }
             );
             navigate('/product')
         }
-        catch (e) {
+        catch (e:any) {
             console.error(e)
         }
         finally {
@@ -290,7 +290,7 @@ const History = ({ currentProduct }) => {
             //     }
             // );
             // saveAs(file, 'name.txt');
-        } catch (error) {
+        } catch (error:any) {
             console.log(error)
         }
         finally {
@@ -373,14 +373,14 @@ const History = ({ currentProduct }) => {
         )
     }
 
-    const deprecatedFilters = () => {
+    /*const deprecatedFilters = () => {
         return (
             <UsersFilters
                 options={authContext.user ? [{ id: -1, name: 'Seleccione' }, { id: 0, name: 'Sistema' }, ...userData] : [{ id: -1, name: 'Seleccione' }]}
                 setSelectedUser={(selUser) => setFilters(prevState => ({ ...prevState, ...(selUser && { user_id: selUser }) }))}
             />
         )
-    }
+    }*/
 
     return (
         <Card>

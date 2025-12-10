@@ -91,7 +91,7 @@ formPostFormatter: (params, form) => {
 
   // Log form entries
   console.log('Form data entries:');
-  for (const pair of form.entries()) {
+  for (const pair of (form as any).entries()) {
     console.log(pair[0], pair[1]);
   }
 

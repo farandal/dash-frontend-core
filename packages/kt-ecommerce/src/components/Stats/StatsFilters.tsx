@@ -65,6 +65,7 @@ const StatsFilters = ({
                         {/* <InputLabel id="demo-multiple-name-label">{field.label}</InputLabel> */}
                         <Select
                             label={field.label}
+                            /* @ts-ignore */
                             placeholder='Seleccione'
                             multiple={field.multiple}
                             name={field.fieldName}
@@ -116,10 +117,12 @@ const StatsFilters = ({
                     {!noMonthDates ?
                     <>
                         <DatePicker
+                         /* @ts-ignore */
                             value={filters['start'] ?
                                 moment(filters['start'], 'YYYY-MM-DD'):
                                 moment().startOf('month').toDate()
                             }
+                             /* @ts-ignore */
                             onChange={(e) => onInputChange({target: {name: 'start', value: moment(e).format('YYYY-MM-DD')}})}
                             label="Desde"
                             renderInput={(props) => (
@@ -128,10 +131,12 @@ const StatsFilters = ({
                             
                         />
                         <DatePicker
+                         /* @ts-ignore */
                             value={filters['end'] ?
                                 moment(filters['end'], 'YYYY-MM-DD'):
                                 moment().startOf('month').toDate()
                             }
+                             /* @ts-ignore */
                             onChange={(e) => onInputChange({target: {name: 'end', value: moment(e).format('YYYY-MM-DD')}})}
                             label="Hasta"
                             renderInput={(props) => (

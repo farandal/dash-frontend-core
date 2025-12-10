@@ -1,11 +1,10 @@
 import React, { } from 'react'
-import MarketplaceTag from './MarketplaceTag';
-import { Marketplace } from '../interfaces/ICampaign';
+import { IMarketplace } from '../../interfaces';
 import { Chip } from '@mui/material';
 
 
 export interface IMarketplaceTags {
-    marketplaces: Marketplace[]
+    marketplaces: IMarketplace[]
 }
 
 const MarketplaceTags: React.FC<IMarketplaceTags> = ({ marketplaces, ...props }) => {

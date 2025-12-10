@@ -2,7 +2,7 @@ import * as React from 'react';
 import { memo, ReactElement } from 'react';
 import ImageEye from '@mui/icons-material/RemoveRedEye';
 import { Link } from 'react-router-dom';
-import { RaRecord } from 'ra-core';
+import { RaRecord } from 'react-admin';
 
 import {
 
@@ -30,10 +30,12 @@ const CustomRAButton = <RecordType extends RaRecord = any>(
     icon = defaultIcon,
     label = 'ra.action.show',
     record: recordProp,
+    /* @ts-ignore */
     resource: resourceProp,
     scrollToTop = true,
     ...rest
   } = props;
+    /* @ts-ignore */
   const resource = useResourceContext(props);
   const record = useRecordContext(props);
   const createPath = useCreatePath();

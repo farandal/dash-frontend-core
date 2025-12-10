@@ -1,13 +1,10 @@
-import { Button, Paper, Stack, styled } from '@mui/material';
-
 import React, { useMemo } from 'react'
 import { useRecordContext } from "react-admin";
-import ICampaignProduct, { CampaignMarketplace, Pivot, StatusHistory } from '../../../../interfaces/campaign/ICampaignProduct';
-import ICampaign from '../../../../interfaces/campaign/ICampaign';
+
 import MarketplaceTag from '../../../Misc/MarketplaceTag';
 import { ProductStatus } from '../../Utils';
 import moment from "moment";
-import MUISimpleJsonTable from '../../../../components/MuiSimpleJsonTable';
+import { ICampaignProduct, Pivot, ICampaign, CampaignMarketplace } from '../../../../interfaces';
 moment.locale("es-es");
 
 interface ICampaignProductStatuses {

@@ -120,7 +120,7 @@ const BrandsList: FC = ({ ...props }) => {
             </Button>
           </Col>
           <Col span={24}>
-            <Button type="danger" className="btn-min btn-full">Restaurar</Button>
+            <Button className="btn-min btn-full">Restaurar</Button>
           </Col>
         </Row>
       </div>

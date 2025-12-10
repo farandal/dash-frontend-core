@@ -1,11 +1,12 @@
 import { Button, FormControlLabel, Switch } from '@mui/material';
 import { IDashAutoAdminCustomFieldComponent } from 'dash-auto-admin';
-import React, { Fragment, useEffect, useState } from 'react'
+import React, { Fragment, useEffect } from 'react'
 import { TextInput, useInput } from 'react-admin';
 import { useRecordContext } from "react-admin";
 import { useFieldArray, useFormContext } from 'react-hook-form';
 import SearchableSelect from './SearchableSelect';
-import { Product } from '../interfaces/Product';
+import { Product } from '..';
+
 
 const ProductProductsEdit: React.FC<IDashAutoAdminCustomFieldComponent> = ({ method, attribute }) => {
 

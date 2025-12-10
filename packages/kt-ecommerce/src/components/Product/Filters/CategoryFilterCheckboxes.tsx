@@ -1,7 +1,7 @@
 import React from 'react';
 import { useInput, InputProps } from 'react-admin';
 import SearchableSelectCheckboxes from '../../RASearchableSelectCheckboxes';
-import { Category } from '../interfaces/Category';
+import { Category } from '../../../interfaces';
 
 interface CategoryFilterCheckboxesProps extends InputProps {
     source: string;

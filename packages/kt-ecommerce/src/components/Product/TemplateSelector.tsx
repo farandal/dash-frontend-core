@@ -2,7 +2,7 @@ import { Autocomplete, Box, CircularProgress, TextField } from "@mui/material";
 import React, { useEffect, useImperativeHandle, useState } from "react";
 import { useController } from "react-hook-form";
 import { useGetList } from "react-admin";
-import { IProductTemplate } from "../../interfaces/Product";
+import { IProductTemplate } from "../../interfaces";
 
 import { useAxios } from "dash-axios-hook";
 import ProductTemplateShow from "./ProductTemplateShow";
@@ -22,7 +22,7 @@ const TemplateSelector = React.forwardRef<
   TTemplateSelectorHandlers,
   ITemplateSelectorProps
 >(({ selectedTemplateInput, ...props }, ref) => {
-  const { axios } = useAxios();
+  const axios = useAxios();
   const [q, setQ] = useState("");
   const [selectedTemplate, setSelectedTemplate] = useState<IProductTemplate>(
     selectedTemplateInput ?? null
@@ -62,7 +62,7 @@ const TemplateSelector = React.forwardRef<
   } = useGetList(
     "ecommerce/product_template",
     {
-      pagination: false,
+      //pagination: false,
       filter: { q: q },
     },
     { refetchOnWindowFocus: false }

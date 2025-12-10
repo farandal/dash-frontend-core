@@ -1,7 +1,7 @@
 import React from 'react'
 import { IDashAutoAdminCustomFieldComponent } from 'dash-auto-admin';
 import { useRecordContext} from "react-admin";
-import { IGallery } from '../interfaces/Gallery';
+import { IGallery } from '../interfaces';
 import { Avatar, CircularProgress } from '@mui/material';
 import { ImagePlaceHolder as ImagePlaceHolder } from 'kt-utils';
 const placeholder = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII="

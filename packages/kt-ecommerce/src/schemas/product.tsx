@@ -8,7 +8,7 @@ import ProductPrices from "../components/ProductPrices";
 import ProductStocks from "../components/ProductStocks";
 import RASearchableSelectChips from "../components/RASearchableSelectChips";
 import SearchableSelectChipsControlRecordContext from "../components/RASearchableSelectChipsRecordContext";
-import { Category } from "../interfaces/Category";
+import { Category } from "../interfaces";
 
 //import ProductURLs from "../components/ProductUrls";
 //import { SearchableSelectChipsControlRecordContext } from "../components/RASearchableSelectChipsRecordContext";

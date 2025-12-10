@@ -1,20 +1,15 @@
-import { Chip, TextField, Tooltip } from '@mui/material';
+import { Chip, Tooltip } from '@mui/material';
 
 import { IDashAutoAdminCustomFieldComponent } from 'dash-auto-admin';
-import React, { useEffect, useMemo, useState } from 'react'
+import React, {  } from 'react'
 import { useGetList } from 'react-admin';
-import { NumberInput } from 'react-admin';
 import { useRecordContext } from "react-admin";
-import { useController } from 'react-hook-form';
 import { NumericFormat } from 'react-number-format';
 import numeral from 'numeral';
-import { Loading } from 'react-admin';
 import { TextInput } from 'react-admin';
-import { NumberField } from 'react-admin';
-import { LinearProgress } from 'react-admin';
 import { LoadingIndicator } from 'react-admin';
-import { PriceList } from '../interfaces/PriceList';
-import { Product } from '../interfaces/Product';
+
+import { Product } from '..';
 
 interface IProductPrices extends IDashAutoAdminCustomFieldComponent {
 

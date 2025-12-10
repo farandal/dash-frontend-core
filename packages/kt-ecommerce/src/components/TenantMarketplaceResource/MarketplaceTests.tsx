@@ -1,4 +1,4 @@
-import { ITenantMarketplace } from '../schemas/tenantMarketplace';
+
 import CloseIcon from '@mui/icons-material/Close';
 import {
     SwipeableDrawer,
@@ -31,6 +31,7 @@ import {
 } from 'react-admin';
 import MUISimpleJsonTable from '../MuiSimpleJsonTable';
 import { useAxios } from 'dash-axios-hook';
+import { ITenantMarketplace } from '../../schemas/tenantMarketplace';
 
 const LoadingProgress: React.FC<{ message: string }> = ({ message }) => (
     <Box sx={{ width: '100%', p: 3, textAlign: 'center' }}>
@@ -88,7 +89,7 @@ const TenantMarketplaceTestsEdit: React.FC<IDashAutoAdminCustomFieldComponent> =
                 }
             }));
             notify(`Test "${testName}" executed successfully`, { type: 'success' });
-        } catch (error) {
+        } catch (error: any) {
             console.error('Test execution failed:', error);
             setTestResults(prev => ({
                 ...prev,

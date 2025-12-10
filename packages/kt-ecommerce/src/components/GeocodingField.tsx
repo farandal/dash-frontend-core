@@ -13,6 +13,7 @@ import { TextField as MUITextField } from '@mui/material';
 const GeocodingFieldView: React.FC<IDashAutoAdminCustomFieldComponent> = ({ method, attribute }) => {
   const record = useRecordContext();
   // return <>{record.geocoded_address}</>
+  {/* @ts-ignore */ }
   return <RATextField label={attribute.label} source={attribute.attribute} options={attribute.fieldOptions} />;
 }
 
@@ -86,6 +87,7 @@ const GeocodingFieldEdit: React.FC<IDashAutoAdminCustomFieldComponent> = ({ meth
                   placeholder: attribute.label,
                   className: `input location-search-input`,
                 })}
+                /* @ts-ignore */ 
                 options={{ ...attribute.fieldOptions }}
                 autoComplete='off'
                 defaultValue={address}
@@ -136,13 +138,13 @@ const GeocodingFieldEdit: React.FC<IDashAutoAdminCustomFieldComponent> = ({ meth
 }
 
 
-const GeocodingField = ({ method, attribute }: IDashAutoAdminCustomFieldComponent) => {
+const GeocodingField = ({ method, attribute, resourceConfig }: IDashAutoAdminCustomFieldComponent) => {
   switch (method) {
     case "edit":
     case "create":
-      return <GeocodingFieldEdit attribute={attribute} method={method} />
+      return <GeocodingFieldEdit attribute={attribute} method={method} resourceConfig={resourceConfig} />
     case "view":
-      return <GeocodingFieldView attribute={attribute} method={method} />
+      return <GeocodingFieldView attribute={attribute} method={method} resourceConfig={resourceConfig} />
   }
 }
 

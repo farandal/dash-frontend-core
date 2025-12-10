@@ -97,17 +97,22 @@ export const TenantMarketplaceSelectorEdit: React.FC<ITenantMarketplaceSelector>
                             <DataGrid
                                 rows={systemMarketplaceIds}
                                 columns={columns}
-                                pageSize={5}
-                                rowsPerPageOptions={[25,50,100,200,500]}
+                                 initialState={{
+                    pagination: {
+                        paginationModel: { pageSize: 5 },
+                    },
+                }}
+                pageSizeOptions={[25, 50, 100, 200, 500]}
+              
                                 checkboxSelection
                                 onRowSelectionModelChange={(ids) => {
-                          
+                                    /* @ts-ignore */
                                     setToDeleteSystemMarketplace(ids)
                                 
                                 }}
 
                                
-                                disableSelectionOnClick
+                                disableRowSelectionOnClick
                             />
                         </Box>
                         <Button
@@ -177,8 +182,12 @@ export const TenantMarketplaceSelectorCreate: React.FC<ITenantMarketplaceSelecto
                 <DataGrid
                     rows={systemMarketplaceList}
                     columns={columns}
-                    pageSize={5}
-                    rowsPerPageOptions={[25,50,100,200,500]}
+                    initialState={{
+                    pagination: {
+                        paginationModel: { pageSize: 5 },
+                    },
+                }}
+                    pageSizeOptions={[25, 50, 100, 200, 500]}
                     checkboxSelection
                     
                     onRowSelectionModelChange={(ids) => {
@@ -189,7 +198,7 @@ export const TenantMarketplaceSelectorCreate: React.FC<ITenantMarketplaceSelecto
                       }}
 
 
-                    disableSelectionOnClick
+                    disableRowSelectionOnClick
                 />
 
      </>

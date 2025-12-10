@@ -1,11 +1,11 @@
 // in posts.js
 import { FC, useEffect, useState } from "react";
-import IAppResourceConfig from '../../interfaces/IAppResourceConfig';
-import { getCookie } from '../../utils/cookies';
+import IAppResourceConfig from 'dash-admin/src/interfaces/IAppResourceConfig';
+import { getCookie } from 'dash-admin/src/utils/cookies';
 import { useGetOne } from 'react-admin';
 import { SelectInput } from 'react-admin';
 import { FormControl } from '@mui/material';
-import {Tenant} from '../../interfaces/Tenant';
+import {Tenant} from 'dash-admin/src/interfaces/Tenant';
 import { Loading } from "react-admin";
 import { dashStorage } from "dash-utils";
 

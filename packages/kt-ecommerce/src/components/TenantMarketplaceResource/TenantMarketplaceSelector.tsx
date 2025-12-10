@@ -9,7 +9,7 @@ import { useController, useForm } from 'react-hook-form';
 
 import { getCookie } from 'dash-admin/src/utils/cookies';
 import { IDashAutoAdminCustomFieldComponent } from 'dash-auto-admin';
-import { Tenant } from '../interfaces';
+import { Tenant } from 'dash-admin/src/interfaces/Tenant';
 import { dashStorage } from 'dash-utils';
 
 

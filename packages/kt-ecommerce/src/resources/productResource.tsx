@@ -1,22 +1,16 @@
 import { IDashAutoAdminResourceConfig } from "dash-auto-admin";
 
-import React, { Fragment, useState, Suspense } from "react";
-import * as schemas from "../schemas";
+import React, {  } from "react";
 
 import Inventory from "@mui/icons-material/Inventory";
 import AttachMoney from "@mui/icons-material/AttachMoney";
 import Archive from "@mui/icons-material/Archive";
 import Label from "@mui/icons-material/Label";
 import Image from "@mui/icons-material/Image";
-import Inventory2 from "@mui/icons-material/Inventory2";
 import History from "@mui/icons-material/History";
 import Tag from "@mui/icons-material/Tag";
 import {DASHAppConstants} from "dash-constants";
-import { Button, Confirm, useListContext, useRefresh, useUnselectAll, SelectInput } from "react-admin";
-import { useDialog } from "dash-dialog";
-import { useAxios } from "dash-axios-hook";
 import ResourceTemplate from 'dash-admin/src/templates/ResourceTemplate';
-import ResourceTemplateFull from 'dash-admin/src/templates/ResourceTemplateFull';
 import { Category } from "../interfaces";
 import productSchema from "../schemas/product";
 
@@ -26,7 +20,6 @@ import ExportProductsButton from "../components/Misc/ExportProductsButton";
 import { ProductResourceShow } from "../components/Product/ProductResourceHelper";
 import ProductListBulkActions from "../components/Product/ProductListBulkActions";
 import CategoryFilter from "../components/Product/Filters/CategoryFilter";
-import CategoryFilterCheckboxes from "../components/Product/Filters/CategoryFilterCheckboxes";
 
 /*
 - PACKS FEATURE: PENDING.
@@ -179,7 +172,8 @@ const productResource: IDashAutoAdminResourceConfig =
         const transformed = params;
         
         // Clear the form to rebuild it properly
-        Array.from(form.keys()).forEach(key => form.delete(key));
+         /*@ts-ignore*/
+        Array.from((form as any).keys()).forEach(key => form.delete(key));
 
         // Append all simple fields
         Object.keys(transformed).forEach(key => {

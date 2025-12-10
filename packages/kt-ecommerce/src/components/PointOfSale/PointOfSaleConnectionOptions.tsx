@@ -10,7 +10,7 @@ import { useRedirect } from 'react-admin';
 
 import { useNotify } from 'react-admin';
 import { useRefresh } from 'react-admin';
-import { IPointOfsale } from '../schemas/pointofsaleSchema';
+
 import { DashAutoFormGroups, DashAutoFormMuiTabs, IDashAutoAdminCustomFieldComponent } from 'dash-auto-admin';
 import { useAxios } from 'dash-axios-hook';
 import { useDialog } from 'dash-dialog';
@@ -18,6 +18,7 @@ import { AppDialogOptions } from 'dash-dialog/src/IAppDialogProps';
 import MUISimpleJsonTable from '../MuiSimpleJsonTable';
 import { DASHAdminSystemConstants } from 'dash-constants';
 import MultiLevelTable from '../MultiLevelTable';
+import { IPointOfsale } from '../../schemas/pointOfSale';
 
 const PointOfSaleConnectionOptionsCreate: React.FC<IDashAutoAdminCustomFieldComponent> = ({ method, attribute }) => {
   return <Alert severity="info">Ingrese un nombre antes de configurar la integración</Alert>

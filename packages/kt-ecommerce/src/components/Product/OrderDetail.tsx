@@ -14,13 +14,13 @@ const OrderDetailView: React.FC<IDashAutoAdminCustomFieldComponent> = ({ method,
 
 }
 
-const OrderDetail = ({ method, attribute }: IDashAutoAdminCustomFieldComponent) => {
+const OrderDetail = ({ method, attribute, resourceConfig }: IDashAutoAdminCustomFieldComponent) => {
   switch (method) {
     case "edit":
     case "create":
       return <>edit</>
     case "view":
-      return <OrderDetailView attribute={attribute} method={method} />
+      return <OrderDetailView attribute={attribute} method={method} resourceConfig={resourceConfig} />
   }
 }
 

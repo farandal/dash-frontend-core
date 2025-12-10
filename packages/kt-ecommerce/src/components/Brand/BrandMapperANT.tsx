@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { Button, Form, useRecordContext } from 'react-admin';
-import { useController, useFieldArray, useWatch, useForm } from 'react-hook-form';
-import { Dialog, DialogActions, DialogTitle, Fab, FormControlLabel, Switch, Table, TableBody, TableCell, TableHead, TableRow, Typography } from '@mui/material';
+import { Button, useRecordContext } from 'react-admin';
+import { useFieldArray, useForm } from 'react-hook-form';
+import { Dialog, DialogActions, DialogTitle, Table, TableBody, TableCell, TableHead, TableRow } from '@mui/material';
 //import EditableCell from '../DataTable/EditableCell';
 import * as Icons from '@mui/icons-material';
 import { IDashAutoAdminCustomFieldComponent } from 'dash-auto-admin';
@@ -268,13 +268,13 @@ const BrandMapperANTEdit: React.FC<IDashAutoAdminCustomFieldComponent> = ({ meth
   )
 }
 
-const BrandMapperANT = ({ method, attribute }: IDashAutoAdminCustomFieldComponent) => {
+const BrandMapperANT = ({ method, attribute,resourceConfig }: IDashAutoAdminCustomFieldComponent) => {
   switch (method) {
       case "edit":
       case "create":
-          return <BrandMapperANTEdit attribute={attribute} method={method} />
+          return <BrandMapperANTEdit attribute={attribute} method={method} resourceConfig={resourceConfig} />
       case "view":
-          return <BrandMapperANTView attribute={attribute} method={method} />
+          return <BrandMapperANTView attribute={attribute} method={method} resourceConfig={resourceConfig} />
   }
 }
 

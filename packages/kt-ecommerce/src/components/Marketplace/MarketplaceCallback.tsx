@@ -22,6 +22,8 @@ const MarketplaceCallback = () => {
     const redirect = useRedirect();
     const notify = useNotify();
     const axios = useAxios();
+
+    /* @ts-ignore */
     const urlQuery: any = getUrlParamsObject(searchParams.entries());
 
     const verify = async (query) => {

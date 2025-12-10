@@ -9,7 +9,7 @@ import { useMemo } from "react";
 import { useRecordContext } from "react-admin";
 
 import CellSettings from "./CellSettings";
-import MarketplaceTag from "./Misc/MarketplaceTag";
+
 
 import React from "react";
 import { ICampaignProduct, ICampaign } from "../../../../interfaces";

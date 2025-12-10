@@ -1,6 +1,6 @@
-import { DashAutoFormGroups, DashAutoFormTabs, IDashAutoAdminCustomFieldComponent } from "dash-auto-admin";
+import { DashAutoFormTabs, IDashAutoAdminCustomFieldComponent } from "dash-auto-admin";
 import React, { useState, useEffect } from "react";
-import { useGetList, Loading, useRecordContext } from "react-admin";
+import { Loading, useRecordContext } from "react-admin";
 
 import { useAxios } from 'dash-axios-hook';
 import { useFormContext, useWatch } from "react-hook-form";

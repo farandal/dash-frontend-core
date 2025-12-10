@@ -7,7 +7,7 @@ import { useGetList } from "react-admin";
 import { Autocomplete, Box, CircularProgress, TextField, Alert } from "@mui/material";
 import { useRecordContext } from "react-admin";
 import ProductTemplateShow from "../Product/ProductTemplateShow";
-import { IProductTemplate } from "../interfaces/Product";
+import { IProductTemplate } from "../../interfaces";
 import { IDashAutoAdminCustomFieldComponent } from "dash-auto-admin";
 import { useAxios } from 'dash-axios-hook';
 import { useController, useWatch } from "react-hook-form";
@@ -48,7 +48,7 @@ const TemplateSelectorRAAEdit: React.FC<IDashAutoAdminCustomFieldComponent> = ({
   } = useGetList(
     "ecommerce/product_template",
     {
-      pagination: false,
+      //pagination: false,
       filter: { q: q },
     },
     { refetchOnWindowFocus: false }

@@ -7,8 +7,9 @@ import moment from "moment";
 
 import { Loading } from "react-admin";
 import ProductView from "./ProductView";
-import IAppResourceConfig from "dash-auto-admin";
+
 import React from "react";
+import { IAppResourceConfig } from "kt-utils/src/interfaces";
 moment.locale("es-es");
 
 export const beforeSubmit = (data) => {

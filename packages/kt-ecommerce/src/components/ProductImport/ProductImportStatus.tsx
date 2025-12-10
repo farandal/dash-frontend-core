@@ -21,15 +21,15 @@ const ProductImportStatusView: React.FC<IDashAutoAdminCustomFieldComponent> = ({
 }
 
 
-const ProductImportStatus = ({ method, attribute }: IDashAutoAdminCustomFieldComponent) => {
+const ProductImportStatus = ({ method, attribute, resourceConfig }: IDashAutoAdminCustomFieldComponent) => {
   switch (method) {
     case "edit":
     case "create":
-      return <ProductImportStatusEdit attribute={attribute} method={method} />
+      return <ProductImportStatusEdit attribute={attribute} method={method} resourceConfig={resourceConfig} />
     case "view":
-      return <ProductImportStatusView attribute={attribute} method={method} />
+      return <ProductImportStatusView attribute={attribute} method={method} resourceConfig={resourceConfig} />
     case "list":
-      return <ProductImportStatusView attribute={attribute} method={method} />
+      return <ProductImportStatusView attribute={attribute} method={method} resourceConfig={resourceConfig} />
   }
 }
 

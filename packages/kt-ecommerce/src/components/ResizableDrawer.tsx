@@ -1,6 +1,6 @@
 import { Drawer, DrawerProps } from "@mui/material";
 import { makeStyles } from '@mui/styles';
-import React, { ReactNode, useCallback } from "react";
+import React, { JSX, ReactNode, useCallback } from "react";
 
 
 const minDrawerWidth = 100;
@@ -25,6 +25,7 @@ const maxDrawerWidth = 1200;
   }
 }));*/
 
+/* @ts-ignore */
 export interface IResizableDrawer extends DrawerProps {
     defaultWidth: number
     content: (drawerWidth:number) => JSX.Element

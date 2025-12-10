@@ -7,7 +7,7 @@ import { useWatch } from "react-hook-form"
 import SearchableSelect from "./SearchableSelect"
 import { DataGrid, GridColDef } from "@mui/x-data-grid"
 import { Col, Row, Divider, Button as ButtonAntd } from "antd"
-import { Tenant } from "../interfaces/Tenant"
+import { Tenant } from "dash-admin/src/interfaces/Tenant"
 import { Loading, useGetList, useGetOne, useRecordContext } from "react-admin"
 
 export interface ITenantMarketplaceSelectorForUser {
@@ -23,21 +23,21 @@ export const TenantMarketplaceSelectorForUserEdit: React.FC<ITenantMarketplaceSe
 
     const tenantContext: Tenant = useRecordContext();
 
-   
+
     const systemMarketplaceIds = useWatch({ name: "systemMarketplaces", defaultValue: [] })
 
-    const { data: tenant, isLoading: tenantLoading, error: tenantError } = useGetOne('tenant/tenant', { id: tenantContext.id}, { refetchOnWindowFocus: false});
+    const { data: tenant, isLoading: tenantLoading, error: tenantError } = useGetOne('tenant/tenant', { id: tenantContext.id }, { refetchOnWindowFocus: false });
 
     useEffect(() => {
         console.log(systemMarketplaceIds);
     }, [systemMarketplaceIds])
 
     useEffect(() => {
-       
-        if(tenant) {
+
+        if (tenant) {
             setValue("systemMarketplaces", tenant.systemMarketplaces)
         }
-  
+
     }, [tenant])
 
     const columns: GridColDef[] = [
@@ -56,38 +56,43 @@ export const TenantMarketplaceSelectorForUserEdit: React.FC<ITenantMarketplaceSe
         }
     ]
 
-    if(!tenant) return <Loading/>
+    if (!tenant) return <Loading />
     return (
 
         <>
-           
-                <><h2
-                    style={{
-                        fontSize: 20,
-                        fontWeight: "bold",
-                        textAlign: "center",
-                        margin: "1rem 0",
-                    }}
-                >
-                    Marketplaces asociados con el Tenant
-                </h2>
 
-                    <div style={{ margin: "1rem auto", width: "100%" }}>
+            <><h2
+                style={{
+                    fontSize: 20,
+                    fontWeight: "bold",
+                    textAlign: "center",
+                    margin: "1rem 0",
+                }}
+            >
+                Marketplaces asociados con el Tenant
+            </h2>
 
-                        
-                        <Box sx={{ height: 400, width: "100%" }}>
-                            <DataGrid
-                                rows={systemMarketplaceIds}
-                                columns={columns}
-                                pageSize={5}
-                                rowsPerPageOptions={[25,50,100,200,500]}
-                               
-                               
-                                disableSelectionOnClick
-                            />
-                        </Box>
-                        
-                    </div></>
+                <div style={{ margin: "1rem auto", width: "100%" }}>
+
+
+                    <Box sx={{ height: 400, width: "100%" }}>
+                       
+            <DataGrid
+                rows={systemMarketplaceIds}
+                columns={columns}
+                initialState={{
+                    pagination: {
+                        paginationModel: { pageSize: 5 },
+                    },
+                }}
+                pageSizeOptions={[25, 50, 100, 200, 500]}
+              
+                disableRowSelectionOnClick
+            />
+
+                    </Box>
+
+                </div></>
 
         </>
 
@@ -99,13 +104,13 @@ export const TenantMarketplaceSelectorForUserCreate: React.FC<ITenantMarketplace
     ...props
 }) => {
     const systemMarketplaceIdsDefaultValue = []
-    
+
     const { data: systemMarketplaceList, total, isLoading, error, isFetching } = useGetList(
         'ecommerce/system_marketplace',
         {
-            pagination: false,
+            /*pagination: false,*/
         },
-        { refetchOnWindowFocus: false}
+        { refetchOnWindowFocus: false }
     );
 
     const columns: GridColDef[] = [
@@ -126,42 +131,40 @@ export const TenantMarketplaceSelectorForUserCreate: React.FC<ITenantMarketplace
 
     const { setValue } = useFormContext();
 
-    
+
 
     const onChange = (values) => {
-    
-        setValue("system_marketplace_ids",values);
+
+        setValue("system_marketplace_ids", values);
     }
 
     useEffect(() => {
-        setValue("system_marketplace_ids",systemMarketplaceIdsDefaultValue)
+        setValue("system_marketplace_ids", systemMarketplaceIdsDefaultValue)
 
-    },[])
+    }, [])
 
-    if(!systemMarketplaceList) return <Loading/>
+    if (!systemMarketplaceList) return <Loading />
     return (
 
         <>
-            
-                <DataGrid
-                    rows={systemMarketplaceList}
-                    columns={columns}
-                    pageSize={5}
-                    rowsPerPageOptions={[25,50,100,200,500]}
-                    checkboxSelection
-                    
-                    onRowSelectionModelChange={(ids) => {
-                       
-                          
-                        onChange(ids)
-                      
-                      }}
 
+            <DataGrid
+                rows={systemMarketplaceList}
+                columns={columns}
+                initialState={{
+                    pagination: {
+                        paginationModel: { pageSize: 5 },
+                    },
+                }}
+                pageSizeOptions={[25, 50, 100, 200, 500]}
+                checkboxSelection
+                onRowSelectionModelChange={(ids) => {
+                    onChange(ids)
+                }}
+                disableRowSelectionOnClick
+            />
 
-                    disableSelectionOnClick
-                />
-
-     </>
+        </>
 
 
     )
@@ -174,11 +177,11 @@ export const TenantMarketplaceSelectorForUser: React.FC<ITenantMarketplaceSelect
     ...props
 }) => {
 
-   return props.method === "edit" ? 
-                <TenantMarketplaceSelectorForUserEdit {...props} /> 
-                : 
-                <TenantMarketplaceSelectorForUserCreate  {...props} />
+    return props.method === "edit" ?
+        <TenantMarketplaceSelectorForUserEdit {...props} />
+        :
+        <TenantMarketplaceSelectorForUserCreate  {...props} />
 
-    
+
 }
 

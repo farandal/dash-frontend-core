@@ -1,10 +1,11 @@
 
 import moment from "moment";
 import React from "react";
-import ICampaign from "panel/interfaces/campaign/ICampaign";
+
 import { Chip } from "@mui/material";
 
 import * as Icon from 'react-feather';
+import { ICampaign } from "../../interfaces";
 
 moment.locale("es-es");
 

@@ -1,5 +1,5 @@
-import { IProductMetadata, MetadataAvailableFormat } from "../interfaces/Metadata";
-import { Product } from "../interfaces/Product";
+
+import { IProductMetadata, MetadataAvailableFormat, Product } from "../../interfaces";
 import { InputLabel, TextField } from "@mui/material";
 import { DesktopDatePicker } from "@mui/x-date-pickers";
 import { Divider } from "antd";
@@ -111,6 +111,7 @@ const MetadataField: FC<IMetadataField> = ({
                 date.format("YYYY-MM-DD")
               );
           }}
+          /* @ts-ignore */
           renderInput={(params) => <TextField {...params} />}
         />
       </div>
@@ -118,6 +119,7 @@ const MetadataField: FC<IMetadataField> = ({
 };
 interface IFieldProductMetadata extends IProductMetadata {
   metadata_format: MetadataAvailableFormat;
+  metadata_format_id?: number;
 }
 
 const ProductMetadataEdit: React.FC<IDashAutoAdminCustomFieldComponent> = ({
@@ -132,7 +134,7 @@ const ProductMetadataEdit: React.FC<IDashAutoAdminCustomFieldComponent> = ({
     isLoading: availableMetadataFormatsLoading,
   } = useGetList(
     "ecommerce/metadata_format/availableMetadataFormats",
-    { pagination: false },
+    { },
     { refetchOnWindowFocus: false }
   );
 
@@ -168,7 +170,8 @@ const ProductMetadataEdit: React.FC<IDashAutoAdminCustomFieldComponent> = ({
                       metadata_format.id
                   )
                 : [];
-
+            
+                {/* @ts-ignore */}
             const output: IFieldProductMetadata = {
               metadata_format_id: metadata_format.id,
               metadata_format_name: metadata_format.name,
@@ -262,11 +265,11 @@ const ProductMetadata = ({
   switch (method) {
     case "edit":
       return (
-        <ProductMetadataEdit resourceConfig={resourceConfig} attribute={attribute} method={method} />
+        <ProductMetadataEdit attribute={attribute} method={method} resourceConfig={resourceConfig} />
       );
     case "create":
       return (
-        <ProductMetadataView resourceConfig={resourceConfig} attribute={attribute} method={method} />
+        <ProductMetadataView attribute={attribute} method={method} resourceConfig={resourceConfig} />
       );
     case "view":
       return <></>;

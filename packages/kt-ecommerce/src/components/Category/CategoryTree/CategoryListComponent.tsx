@@ -211,9 +211,9 @@ const CategoryListComponent = ({ method, attribute, resourceConfig }: IDashAutoA
     // switch (method) {
     //     case "edit":
     //     case "create":
-    // return <CategoryEdit attribute={attribute} method={method} />
+    // return <CategoryEdit attribute={attribute} method={method} resourceConfig={resourceConfig} />
     //     case "view":
-    //         return <MarketplacesCategoryMapperView attribute={attribute} method={method} />
+    //         return <MarketplacesCategoryMapperView attribute={attribute} method={method} resourceConfig={resourceConfig} />
     // }
 }
 

@@ -11,7 +11,7 @@ import { Loading } from "react-admin";
 import { ISystemMarketplaceCategory } from "../Metadata/MarketplacesMetadataMapper";
 import { SearchableSelectChipsControlRecordContext } from "../RASearchableSelectChipsRecordContext";*/
 
-import { Category } from "../interfaces/Category";
+
 import { getCookie } from "dash-admin/src/utils/cookies";
 import { Table } from "antd";
 import React, { useState, useEffect, Fragment } from "react";
@@ -19,8 +19,9 @@ import { useRecordContext, useGetOne, Loading } from "react-admin";
 import  SearchableSelectChipsControlRecordContext from "../RASearchableSelectChipsRecordContext";
 import { ISystemMarketplaceCategory, ISystemMarketplace } from "./MarketplacesCategoryMapper";
 import { IDashAutoAdminCustomFieldComponent } from "dash-auto-admin";
-import { Tenant } from "../interfaces";
+
 import { dashStorage } from "dash-utils";
+import { Category, Tenant } from "../../interfaces";
 
 
 export interface IValueForOutputCategoryMapping {

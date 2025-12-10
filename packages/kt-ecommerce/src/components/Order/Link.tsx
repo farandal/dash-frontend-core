@@ -15,12 +15,12 @@ const CustomLinkComponent: React.FC<IDashAutoAdminCustomFieldComponent> = ({ met
   return link ? <a target='_blank' href={link}>{attribute.label}</a> : <></>
 }
 
-const CustomLink = ({ method, attribute }: IDashAutoAdminCustomFieldComponent) => {
+const CustomLink = ({ method, attribute, resourceConfig }: IDashAutoAdminCustomFieldComponent) => {
   switch (method) {
     case "edit":
     case "create":
     case "view":
-      return <CustomLinkComponent attribute={attribute} method={method} />
+      return <CustomLinkComponent attribute={attribute} method={method} resourceConfig={resourceConfig} />
   }
 }
 

@@ -1,6 +1,5 @@
-import { ICampaign, CampaignStatuses } from "../../../interfaces";
+import { ICampaign } from "../../../interfaces";
 import {
-    GridRenderCellParams,
     GridColDef,
     gridStringOrNumberComparator,
     GridPreProcessEditCellProps,
@@ -18,16 +17,12 @@ import { Box, TextField, InputAdornment } from "@mui/material";
 import { Search as SearchIcon } from "@mui/icons-material";
 import { useForm } from "react-hook-form";
 import { useParams } from "react-router";
-import MarketplaceTag from "../../Misc/MarketplaceTag";
-import MUISimpleJsonTable from "../../MuiSimpleJsonTable";
 import { PriceEditCell, PriceRenderCell } from "../MarketplaceEdit";
-import CampaignProductsBatchOperations from "../Products/CampaignProductsBatchOperations";
-import ActionStatusCell from "../Products/Grid/ActionStatusCell";
-import CellSettings from "../Products/Grid/CellSettings";
 import { StatusRenderCell } from "../Products/Grid/StatusCell";
 import { StockAlertEditCell, StockAlertRenderCell } from "../Products/Grid/StockAlertCell";
 import { StockEditCell, StockRenderCell } from "../Products/Grid/StockCell";
 import { VentasRenderCell } from "../Products/Grid/VentasCell";
+// @ts-ignore - MarketplaceCell component not found
 import MarketPlacesCell from "../Marketplace/MarketplaceCell";
 import CampaignProductsBatchActions from "./CampaignProductsBatchActions";
 

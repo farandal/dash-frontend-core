@@ -1,5 +1,5 @@
 import { Table } from 'antd';
-import { Category } from '../../interfaces/Category';
+import { Category } from '../../interfaces';
 import { IDashAutoAdminCustomFieldComponent } from 'dash-auto-admin';
 import React from 'react'
 import { useRecordContext } from "react-admin";
@@ -12,31 +12,30 @@ const MarketplacesCategoryMapperSelectComponent: React.FC<IDashAutoAdminCustomFi
 
   return <RASearchableSelect
 
-    resource={"ecommerce/system_marketplace_category"}
-    selectLabel={"Categoría"}
-    viewAttribute={'name'}
-    renderText={(option) => `${option}`}
-    transformData={(value: any) => value.id}
-    isOptionEqualToValue={(option: any, value) => {
-      return option.id === value;
-    }}
-    filter={{ flat: true, pagination: false }}
-    method={method}
-    attribute={attribute}
-    searchResults={50}
-  //multiple={false}
+      resource={"ecommerce/system_marketplace_category"}
+      selectLabel={"Categoría"}
+      viewAttribute={'name'}
+      renderText={(option) => `${option}`}
+      transformData={(value: any) => value.id}
+      isOptionEqualToValue={(option: any, value) => {
+          return option.id === value;
+      } }
+      filter={{ flat: true, pagination: false }}
+      method={method}
+      attribute={attribute}
+      searchResults={50} resourceConfig={undefined}  //multiple={false}
   //inList={false}
 
   />
 }
 
-const MarketplacesCategoryMapperSelect = ({ method, attribute }: IDashAutoAdminCustomFieldComponent) => {
+const MarketplacesCategoryMapperSelect = ({ method, attribute,resourceConfig }: IDashAutoAdminCustomFieldComponent) => {
   switch (method) {
     case "edit":
     case "create":
-      return <MarketplacesCategoryMapperSelectComponent attribute={attribute} method={method} />
+      return <MarketplacesCategoryMapperSelectComponent attribute={attribute} method={method} resourceConfig={resourceConfig} />
     case "view":
-      return <MarketplacesCategoryMapperSelectComponent attribute={attribute} method={method} />
+      return <MarketplacesCategoryMapperSelectComponent attribute={attribute} method={method} resourceConfig={resourceConfig} />
   }
 }
 

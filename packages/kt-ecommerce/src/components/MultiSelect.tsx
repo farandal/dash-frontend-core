@@ -35,13 +35,13 @@ const MultiSelectEdit: React.FC<IDashAutoAdminCustomFieldComponent> = ({ method,
 
 }
 
-const MultiSelect = ({ method, attribute }: IDashAutoAdminCustomFieldComponent) => {
+const MultiSelect = ({ method, attribute,resourceConfig }: IDashAutoAdminCustomFieldComponent) => {
   switch (method) {
     case "edit":
     case "create":
-      return <MultiSelectEdit attribute={attribute} method={method} />
+      return <MultiSelectEdit attribute={attribute} method={method} resourceConfig={resourceConfig} />
     case "view":
-      return <MultiSelectView attribute={attribute} method={method} />
+      return <MultiSelectView attribute={attribute} method={method} resourceConfig={resourceConfig} />
   }
 }
 

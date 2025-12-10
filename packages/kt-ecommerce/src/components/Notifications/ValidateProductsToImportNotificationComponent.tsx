@@ -1,13 +1,12 @@
-import { INotificationPayload } from "panel/notificationFormats";
+
 import { ReactNode } from "react";
-import { LogTxtFileComponent } from "../LogFile";
+
 import MUISimpleJsonTable from "../MuiSimpleJsonTable";
-import NotificationAttributesTable from "../NotificationAttributesTable";
-import { ILog, ILogTxtFileComponent } from 'panel/interfaces/Log';
 
 export interface IValidateProductsToImportNotification {
     filepath: string;
-    notificationPayload: INotificationPayload<IValidateProductsToImportNotification>
+    //notificationPayload: INotificationPayload<IValidateProductsToImportNotification>
+    notificationPayload: any;
     json: any;
     children?: ReactNode
 }

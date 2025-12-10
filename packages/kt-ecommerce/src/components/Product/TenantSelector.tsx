@@ -3,7 +3,7 @@ import React, { useEffect, useImperativeHandle, useState } from "react";
 import { useController } from "react-hook-form";
 import { useGetList } from "react-admin";
 import { useAxios } from "dash-axios-hook";
-import { Tenant } from "../../interfaces/Tenant";
+import { Tenant } from "../../interfaces";
 import { Loading } from "react-admin";
 
 export type TTenantSelectorHandlers = {
@@ -19,7 +19,7 @@ const TenantSelector = React.forwardRef<
   TTenantSelectorHandlers,
   ITenantSelectorProps
 >(({ selectedTenantInput, ...props }, ref) => {
-  const { axios } = useAxios();
+  const axios = useAxios();
   const [q, setQ] = useState("");
   //const [selectedTenant,setSelectedTenant] = useState<string>(selectedTenantInput ?? null);
   const [tenant, setTenant] = useState<Tenant>(null);
@@ -57,7 +57,7 @@ const TenantSelector = React.forwardRef<
   } = useGetList(
     "system/tenant",
     {
-      pagination: false,
+      //pagination: false,
       filter: { q: q },
     },
     { refetchOnWindowFocus: false }

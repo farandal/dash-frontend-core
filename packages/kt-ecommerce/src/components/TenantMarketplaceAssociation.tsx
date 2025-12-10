@@ -1,10 +1,8 @@
-import { Badge, Box, Chip, TextField } from '@mui/material';
-import { Price } from '../interfaces/Price';
-import { Product } from '../interfaces/Product';
+import { Box } from '@mui/material';
+import { ITenant as Tenant } from '../interfaces';
 import { IDashAutoAdminCustomFieldComponent } from 'dash-auto-admin';
-import React, { useEffect, useState } from 'react'
-import { Empty, useRecordContext } from "react-admin";
-import { Tenant } from '../interfaces/Tenant';
+import React from 'react'
+import { useRecordContext } from "react-admin";
 import { TenantMarketplaceSelector, TenantMarketplaceSelectorCreate } from './TenantMarketplaceSelector';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { NoResults } from 'dash-admin/src/components/misc/NoResults';
@@ -49,9 +47,9 @@ const TenantMarketplaceAssociationView: React.FC<IDashAutoAdminCustomFieldCompon
             paginationModel: { pageSize: 5 }
           }
         }}
-        rowsPerPageOptions={[25, 50, 100, 200, 500]}
+        pageSizeOptions={[25, 50, 100, 200, 500]}
         hideFooter={true}
-        disableSelectionOnClick
+        disableRowSelectionOnClick
       />
     ) : (
       <NoResults
@@ -62,14 +60,14 @@ const TenantMarketplaceAssociationView: React.FC<IDashAutoAdminCustomFieldCompon
   </Box>
 }
 
-const TenantMarketplaceAssociation = ({ method, attribute }: IDashAutoAdminCustomFieldComponent) => {
+const TenantMarketplaceAssociation = ({ method, attribute, resourceConfig }: IDashAutoAdminCustomFieldComponent) => {
   switch (method) {
     case "edit":
-      return <TenantMarketplaceAssociationEdit attribute={attribute} method={method} />
+      return <TenantMarketplaceAssociationEdit attribute={attribute} method={method} resourceConfig={resourceConfig} />
     case "create":
-      return <TenantMarketplaceAssociationCreate attribute={attribute} method={method} />
+      return <TenantMarketplaceAssociationCreate attribute={attribute} method={method} resourceConfig={resourceConfig} />
     case "view":
-      return <TenantMarketplaceAssociationView attribute={attribute} method={method} />
+      return <TenantMarketplaceAssociationView attribute={attribute} method={method} resourceConfig={resourceConfig} />
   }
 }
 

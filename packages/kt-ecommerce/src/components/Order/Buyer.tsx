@@ -19,12 +19,12 @@ const BuyerView: React.FC<IDashAutoAdminCustomFieldComponent> = ({ method, attri
 
 
 
-const Buyer = ({ method, attribute }: IDashAutoAdminCustomFieldComponent) => {
+const Buyer = ({ method, attribute, resourceConfig }: IDashAutoAdminCustomFieldComponent) => {
   switch (method) {
     case "edit":
     case "create":
     case "view":
-      return <BuyerView attribute={attribute} method={method} />
+      return <BuyerView attribute={attribute} method={method} resourceConfig={resourceConfig} />
   }
 }
 

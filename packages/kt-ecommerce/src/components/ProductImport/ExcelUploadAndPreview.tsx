@@ -9,7 +9,7 @@ import { FileField } from 'react-admin';
 import Table, { ColumnsType } from 'antd/lib/table';
 import { ExcelRenderer } from "react-excel-renderer";
 import { useWatch } from 'react-hook-form';
-import { IProductTemplateColumn, Product } from '../interfaces/Product';
+import { IProductTemplateColumn, Product } from '../../interfaces';
 import { IProductImportTemplateRow } from '../Product/ProductImportExport/Interfaces';
 import { Alert, Typography } from '@mui/material';
 

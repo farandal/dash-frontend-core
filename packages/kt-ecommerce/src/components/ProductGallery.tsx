@@ -3,7 +3,7 @@ import { useRecordContext } from "react-admin";
 import { GalleryComponent } from './Gallery/GalleryComponent';
 import { GalleryComponentView } from './Gallery/GalleryComponentView';
 import GallerySelector from './Gallery/GallerySelector';
-import { Product } from '../interfaces/Product';
+import { Product } from '..';
 import { IDashAutoAdminCustomFieldComponent } from 'dash-auto-admin';
 
 const ProductGalleryEdit: React.FC<IDashAutoAdminCustomFieldComponent> = ({ method, attribute }) => {
@@ -21,13 +21,13 @@ const ProductGalleryView: React.FC<IDashAutoAdminCustomFieldComponent> = ({ meth
     )
 }
 
-const ProductGallery = ({ method, attribute }: IDashAutoAdminCustomFieldComponent) => {
+const ProductGallery = ({ method, attribute ,resourceConfig}: IDashAutoAdminCustomFieldComponent) => {
     switch (method) {
         case "edit":
         case "create":
-            return <ProductGalleryEdit attribute={attribute}  method={method} />
+            return <ProductGalleryEdit attribute={attribute} method={method} resourceConfig={resourceConfig} />
         case "view":
-            return <ProductGalleryView attribute={attribute} method={method} />
+            return <ProductGalleryView attribute={attribute} method={method} resourceConfig={resourceConfig} />
     }
 }
 

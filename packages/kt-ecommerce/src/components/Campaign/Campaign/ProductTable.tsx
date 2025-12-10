@@ -123,7 +123,7 @@ const ProductTable = ({ products }) => {
       width: 50,
       renderCell: (params) => <VentasRenderCell {...params} />,
       sortable: true,
-      valueGetter: (params) => {
+      valueGetter: (params:any) => {
         return params.value || 0;
       },
       sortComparator: gridStringOrNumberComparator,
@@ -365,6 +365,7 @@ const ProductTable = ({ products }) => {
     <>
    
       <Box
+        /* @ts-ignore */
         sx={{
           width: "100%",
           height: 500, // Set explicit height
@@ -401,6 +402,7 @@ const ProductTable = ({ products }) => {
           onProcessRowUpdateError={(error: any) => {
             console.error(error);
           }}
+          /* @ts-ignore */
           components={{
             NoRowsOverlay: () => (
               <div style={{ 

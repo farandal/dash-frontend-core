@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useInput, InputProps } from 'react-admin';
 import SearchableSelectChips from '../../RASearchableSelectChips';
-import { Category } from '../interfaces/Category';
+import { Category } from '../../../interfaces';
 
 interface CategoryFilterProps extends InputProps {
     source: string;
