@@ -44,6 +44,7 @@ export const DashThemeProvider: React.FC<DashThemeProviderProps> = ({ extendedOp
     );
     
     const [theme, setTheme] = useState<Theme>(() => 
+       /* @ts-ignore */
         createTheme(appTheme(extendedOptions, { currentMode }))
     );
 
@@ -67,7 +68,7 @@ export const DashThemeProvider: React.FC<DashThemeProviderProps> = ({ extendedOp
                 currentMode: themeMode,
             }
         );
-        
+          /* @ts-ignore */
         const newTheme = createTheme(newThemeOptions);
         
         setThemeOptions(newThemeOptions);

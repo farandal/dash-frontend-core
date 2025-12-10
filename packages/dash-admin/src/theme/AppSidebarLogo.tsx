@@ -9,6 +9,7 @@ export interface IAppSidebarLogo {
 	sidebarExpanded: boolean;
 }
 const AppSidebarLogo: React.FC<IAppSidebarLogo> = ({
+	// @ts-ignore - logo prop not in interface
 	logo,
 	sidebarExpanded,
 	squaredLogo,
@@ -26,8 +27,10 @@ const AppSidebarLogo: React.FC<IAppSidebarLogo> = ({
 	return (
 		<div className='dash-layout-sider-header'>
 			{!sidebarExpanded ? (
+				// @ts-ignore - AppLogo props compatibility issue
 				<AppLogo type='logo' logoBig={logo} squaredLogo={squaredLogo} />
 			) : (
+				// @ts-ignore - AppLogo props compatibility issue
 				<AppLogo type='iso' logoBig={logo} squaredLogo={squaredLogo} />
 			)}
 

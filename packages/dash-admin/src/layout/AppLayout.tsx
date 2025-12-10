@@ -15,6 +15,7 @@ import { LaravelEchoProvider } from '../contexts/com/LaravelEchoContext';
 
 //import GlobalErrorsHandler from '../components/misc/GlobalErrorsHandler';
 import { DialogServiceProvider } from 'dash-dialog';
+import IAppResourceConfig from '../interfaces/IAppResourceConfig';
 
 export interface IAppLayout extends React.PropsWithChildren {}
 
@@ -25,7 +26,7 @@ const CustomAppLayout: React.FC<IAppLayout> = (props) => {
 	const contentRef = useRef(null);
 
 	const [authenticated, setAuthenticated] = useLocalStorage('authenticated');
-	const [resourceConfig] = useStore('resourceConfig');
+	const [resourceConfig] = useStore<IAppResourceConfig>('resourceConfig');
 	const navigate = useNavigate();
 
     /*

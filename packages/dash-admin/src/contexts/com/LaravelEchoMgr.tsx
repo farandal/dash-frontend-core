@@ -18,9 +18,9 @@ export type ILaravelEchoManager = {
 const popPrivateMessage = (notification: IDashNotificationPayloadBase) => {
 
   toast(
-    <NotificationWrapper notification={notification} key={0}>
+    <NotificationWrapper notification={notification as any} key={0}>
       {' '}
-      <NotificationComponent notification={notification} />{' '}
+      <NotificationComponent notification={notification as any} />{' '}
     </NotificationWrapper>,
     {
       position: 'top-right',
@@ -39,9 +39,9 @@ const popStickyMessage = (notification: IDashNotificationPayloadBase) => {
   //if (!appearance) appearance = constants.toastAppearances[0];
   //addToast(<>{message}</>, { appearance, autoDismiss: false });
   toast(
-    <NotificationWrapper notification={notification} key={0}>
+    <NotificationWrapper notification={notification as any} key={0}>
       {' '}
-      <NotificationComponent notification={notification} />{' '}
+      <NotificationComponent notification={notification as any} />{' '}
     </NotificationWrapper>,
     {
       position: 'top-right',

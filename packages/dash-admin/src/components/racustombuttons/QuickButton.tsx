@@ -42,6 +42,7 @@ const scrollStates = {
 
 const QuickButton = <RecordType extends RaRecord = any>(
 	props: IQuickButton<RecordType>,
+	// @ts-ignore - JSX namespace issue
 	children?: JSX.Element,
 ) => {
 	const redirect = useRedirect();

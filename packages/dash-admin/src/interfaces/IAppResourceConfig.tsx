@@ -1,4 +1,5 @@
 import { IDashAutoAdminResourceConfig } from 'dash-auto-admin';
+import { JSX } from 'react';
 /**
  * Extends the `IDashAutoAdminResourceConfig` interface to provide additional configuration options for an application resource.
  * 

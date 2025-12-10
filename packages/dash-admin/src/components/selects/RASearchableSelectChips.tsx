@@ -15,7 +15,7 @@ import {
 import React, { useEffect, useState } from 'react';
 import { useController } from 'react-hook-form';
 import { useGetList } from 'react-admin';
-import { IDashAutoAdminCustomFieldComponent } from 'panel/dash-auto-admin/src';
+import { IDashAutoAdminCustomFieldComponent } from 'dash-auto-admin';
 import { useRecordContext } from 'react-admin';
 import { Loading } from 'react-admin';
 import { isArray } from 'lodash';

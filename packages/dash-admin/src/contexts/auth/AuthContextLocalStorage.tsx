@@ -81,13 +81,13 @@ export const AuthContextProvider: FC<IAuthContextProvider> = (props) => {
   };
 
   return (
-    <AuthContextdashStorage.Provider value={{ ...contextValues, updateValues }}>
+    <AuthContextLocalStorage.Provider value={{ ...contextValues, updateValues }}>
       {children}
-    </AuthContextdashStorage.Provider>
+    </AuthContextLocalStorage.Provider>
   );
 };
 
-export const AuthContextConsumer = AuthContextdashStorage.Consumer;
+export const AuthContextConsumer = AuthContextLocalStorage.Consumer;
 
 export const useAuthContext = () => {
   const authContext: IAuthContext = useContext(AuthContextLocalStorage);

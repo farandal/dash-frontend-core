@@ -63,13 +63,14 @@ const ComponentEdit: React.FC<IDashAutoAdminCustomFieldComponent> = ({
 const FormatCurrency = ({
 	method,
 	attribute,
+	resourceConfig,
 }: IDashAutoAdminCustomFieldComponent) => {
 	switch (method) {
 		case 'edit':
 		case 'create':
-			return <ComponentEdit attribute={attribute} method={method} />;
+			return <ComponentEdit attribute={attribute} method={method} resourceConfig={resourceConfig} />;
 		case 'view':
-			return <ComponentView attribute={attribute} method={method} />;
+			return <ComponentView attribute={attribute} method={method} resourceConfig={resourceConfig} />;
 	}
 };
 

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import queryString from 'query-string';
 import { useStore } from 'react-admin';
-import hashCode from '@app/utils/hasCode';
+import hashCode from '../../utils/hasCode';
 import { useAxios } from 'dash-axios-hook';
 
 export interface IUseStats<T> {
@@ -78,7 +78,7 @@ export function useStats<T>(
 			clearInterval(intervalId);
 			setIntervalId(null);
 		}
-		setCurrentOptions({ ...({...options,...ops} || options)});
+		setCurrentOptions(ops ? { ...options, ...ops } : options);
 		//loadDashboardStats();
 	};
 

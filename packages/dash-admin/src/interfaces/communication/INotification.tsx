@@ -9,6 +9,7 @@ export interface IDashNotificationPayloadBase {
     notify: "dialog" | "toast" | "none";
     type?:string
     data?:any
+    notificationPayload?:any;
 }
 
 export interface IDashNotificationBase<T> {

@@ -1,12 +1,10 @@
-import { IDASHAppState } from 'dash-admin-state';
-import { IDashAutoAdminResourceConfig } from 'dash-auto-admin';
 import * as React from 'react';
-import { useSelector } from 'react-redux';
 import { useTheme, useMediaQuery } from '@mui/material';
-import { useEffect, useState } from 'react';
+/* @ts-ignore */
 import Logo from '@app/assets/logo-horizontal.png';
-import LogoSquared from '@app/assets/logo-squared.png';
+/* @ts-ignore */
 import BackImage from '@app/assets/login-back.png';
+
 export interface IFullLayoutMarkup<U = any, A = any> extends React.PropsWithChildren {
     logo?: string | React.ReactNode;
     loginBackground?: string | React.ReactNode;

@@ -1,12 +1,17 @@
 import { useContext, useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { toast } from 'react-toastify';
-import { IAuthContext, ILaravelEchoManager, NotificationComponent, IDashNotificationPayloadBase } from 'dash-admin';
-import { AuthContext, NotificationWrapper, useLaravelEcho } from 'dash-admin';
+import { IAuthContext } from '../../contexts/auth/AuthContextLocalStorage';
+import { AuthContextLocalStorage } from '../../contexts/auth/AuthContextLocalStorage';
+import type { ILaravelEchoManager } from '../../contexts/com/LaravelEchoMgr';
+import type { IDashNotificationPayloadBase } from '../../interfaces/communication/INotification';
+import { NotificationComponent } from '../../contexts/com/components/NotificationRenderer';
+import { NotificationWrapper } from '../../contexts/com/components/NotificationsWidget';
+import useLaravelEcho from '../../contexts/com/useLaravelEcho';
 
 const WSPusherManager = (): ILaravelEchoManager => {
   const [events, setEvents] = useState<IDashNotificationPayloadBase[]>([]);
   const [lastEvent, setLastEvent] = useState<IDashNotificationPayloadBase>(null);
-  const authContext: IAuthContext = useContext(AuthContext);
+  const authContext: IAuthContext = useContext(AuthContextLocalStorage);
   const initialized = useRef(false);
 
   // Memoize the user ID

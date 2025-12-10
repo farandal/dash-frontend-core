@@ -5,7 +5,7 @@
  * TODO: Implement MemoryHistory instead of history.
  */
 import * as React from 'react';
-import { Route, Routes, useLocation, useNavigate } from 'react-router-dom';
+import { Route, useNavigate } from 'react-router-dom';
 //import { appTheme } from 'dash-styles';
 
 //import RoutingWrapper from './RoutingWrapper';
@@ -16,7 +16,7 @@ const MyLoginPage = React.lazy(() => import('./pages/Login'));
 const Profile = React.lazy(() => import('./pages/Profile'));
 
 import { useDispatch, useSelector } from 'react-redux';
-import { getCookie, setCookie } from './utils/cookies';
+import { setCookie } from './utils/cookies';
 import {  useAuthContext } from './contexts/auth';
 import { IDASHAppState } from 'dash-admin-state';
 import { Error } from './components/error/Error';
@@ -24,7 +24,7 @@ import { Error } from './components/error/Error';
 import coreResources from './resources';
 import { dashStorage } from 'dash-utils';
 
-import { CustomRoutes, useTheme, AdminUI, AdminContext, AdminUIProps, Resource, Admin } from 'react-admin';
+import { CustomRoutes, AdminUI, AdminContext, AdminUIProps } from 'react-admin';
 
 export interface IAppResourceGroupsIcon {
   [x: string]: JSX.Element;
@@ -70,7 +70,6 @@ import { QueryClient } from '@tanstack/react-query';
 
 import checkRole from './helpers/checkRole';
 
-import { Provider } from 'react-redux';
 
 import ConstantsProvider, { ConstantsContext } from './config/ConstantsService';
 
@@ -87,9 +86,7 @@ import {
 } from './contexts/dictionary/DictionaryContext';
 import { IDashAutoAdminResourceConfig } from 'dash-auto-admin';
 import ResourceTemplate from './templates/ResourceTemplate';
-import { JSX, useEffect, useMemo, useCallback } from 'react';
-import RADashComponent from './react-admin-dash/RADashComponent';
-import DASHAuthenticationService from './contexts/auth/DASHAuthenticationService';
+import { JSX, useMemo, useCallback } from 'react';
 import { useDashThemeContext } from '../src/default-theme/DashThemeContext';
 import {DASHAdminSystemConstants} from 'dash-constants';
 
@@ -158,6 +155,7 @@ const AsyncResources: React.FC<IAsyncResources> = React.memo((props) => {
 
       {getCustomRoutes()
       .filter(route => {
+        /* @ts-ignore */
         if ((authenticated) && getCustomAuthRoutes().some(authRoute => authRoute.props.path === route.props.path)) {
           return false
         }
@@ -175,6 +173,8 @@ const AsyncResources: React.FC<IAsyncResources> = React.memo((props) => {
 
       {getCustomRoutes()
       .filter(route => {
+        /* TODO interface authRoute */
+        /* @ts-ignore */ 
         if (authenticated && getCustomAuthRoutes().some(authRoute => authRoute.props.path === route.props.path)) {
           return false
         }
@@ -336,7 +336,7 @@ const DASHAdminApp: React.FC<IDASHAdmin<unknown, unknown, unknown, unknown>> = R
     ...(customQueryClient && { queryClient: customQueryClient as QueryClient }),
     ...(history && { history: history }),
     ...(basePath ? { basename: basePath } : { basename: DASHAdminSystemConstants.system.URL_PREFIX }),
-  };
+  } as any;
 
 
   // Add this debug right before the AdminContext

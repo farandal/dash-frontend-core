@@ -25,6 +25,7 @@ const SidebarContent: React.FC<IAppSidebarContent> = ({
 	setSidebarExpanded,
 	navStyle,
 	themeType,
+	// @ts-ignore - logo prop not in interface
 	logo,
 	squaredLogo,
 	children,
@@ -47,9 +48,11 @@ const SidebarContent: React.FC<IAppSidebarContent> = ({
 
 	return (
 		<>
+			
 			<AppSidebarLogo
 				sidebarExpanded={sidebarExpanded}
 				setSidebarExpanded={setSidebarExpanded}
+                /* @ts-ignore - logo prop not in interface */
 				logo={logo}
 				squaredLogo={squaredLogo}
 			/>

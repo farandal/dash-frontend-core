@@ -7,7 +7,6 @@ import { useSelector } from 'react-redux';
 import { dashStorage } from 'dash-utils';
 declare global {
     interface Window {
-        DashIPCService: any;
         __DASH_DEBUG__: any;
     }
 }

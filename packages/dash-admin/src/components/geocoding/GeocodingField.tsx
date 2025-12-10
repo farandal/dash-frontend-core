@@ -12,6 +12,7 @@ import { IDashAutoAdminCustomFieldComponent } from 'dash-auto-admin';
 const GeocodingFieldView: React.FC<IDashAutoAdminCustomFieldComponent> = ({
 	method,
 	attribute,
+	resourceConfig,
 }) => {
 	const record = useRecordContext();
 	// return <>{record.geocoded_address}</>
@@ -19,7 +20,8 @@ const GeocodingFieldView: React.FC<IDashAutoAdminCustomFieldComponent> = ({
 		<RATextField
 			label={attribute.label}
 			source={attribute.attribute}
-			options={attribute.fieldProps}
+			/* @ts-ignore */
+            options={attribute.fieldProps}
 		/>
 	);
 };
@@ -97,6 +99,7 @@ const GeocodingFieldEdit: React.FC<IDashAutoAdminCustomFieldComponent> = ({
 									placeholder: attribute.label,
 									className: `input location-search-input`,
 								})}
+                                /* @ts-ignore */
 								options={{ ...attribute.fieldProps }}
 								autoComplete='off'
 								defaultValue={address}
@@ -150,13 +153,14 @@ const GeocodingFieldEdit: React.FC<IDashAutoAdminCustomFieldComponent> = ({
 const GeocodingField = ({
 	method,
 	attribute,
+	resourceConfig,
 }: IDashAutoAdminCustomFieldComponent) => {
 	switch (method) {
 		case 'edit':
 		case 'create':
-			return <GeocodingFieldEdit attribute={attribute} method={method} />;
+			return <GeocodingFieldEdit attribute={attribute} method={method} resourceConfig={resourceConfig} />;
 		case 'view':
-			return <GeocodingFieldView attribute={attribute} method={method} />;
+			return <GeocodingFieldView attribute={attribute} method={method} resourceConfig={resourceConfig} />;
 	}
 };
 

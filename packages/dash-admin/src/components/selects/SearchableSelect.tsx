@@ -33,7 +33,7 @@ const SearchableSelect: React.FC<any> = ({
 		isLoading,
 		error,
 	} = useGetList(resource, {
-		pagination: false,
+		pagination: { page: 1, perPage: 100 },
 		filter: { q, ...filter },
 	});
 
@@ -94,7 +94,7 @@ const SearchableSelect: React.FC<any> = ({
 						let newValue = rawValue;
 						if (Array.isArray(rawValue)) {
 							if (isEmpty) newValue = [...rawValue, ...field.field.value];
-							newValue = [...new Map(newValue.map((v) => [v.id, v])).values()];
+							newValue = [...new Map((newValue as any[]).map((v) => [v.id, v])).values()];
 						}
 
 						if (transformData) field.field.onChange(transformData(newValue));

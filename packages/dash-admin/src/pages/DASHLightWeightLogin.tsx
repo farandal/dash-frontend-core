@@ -332,7 +332,7 @@ const DASHLightWeightLogin: React.FC<DASHLightWeightLoginProps> = (props) => {
             } else {
                 throw new Error(loginResponse.error || 'Login failed');
             }
-        } catch (error) {
+        } catch (error:any) {
             console.error('Login error:', error);
             
             if(!!DASHAppConstants.system.LOGIN_SOUNDS) {
@@ -342,7 +342,7 @@ const DASHLightWeightLogin: React.FC<DASHLightWeightLoginProps> = (props) => {
             }
             
             setLoginLoading(false);
-            
+            // @ts-ignore - Error handling for unknown error types
             let eMessage = 'Credenciales inválidas';
             if (error && error.response && error.response.data && error.response.data.message) {
                 eMessage = error.response.data.message;

@@ -2,8 +2,6 @@ import React, { useEffect, useState, useCallback, useMemo, useRef, memo } from '
 import { 
     useRecordContext, 
     useEditContext,
-    SearchInput,
-    SelectInput,
 } from 'react-admin';
 import { useController, useFormContext } from 'react-hook-form';
 import { IDashAutoAdminCustomFieldComponent } from 'dash-auto-admin';
@@ -23,6 +21,12 @@ import {
     TableRow,
     TablePagination,
     Divider,
+    TextField,
+    Select,
+    MenuItem,
+    FormControl,
+    InputLabel,
+    SelectChangeEvent,
 } from '@mui/material';
 import { 
     SelectAll as SelectAllIcon, 
@@ -364,20 +368,29 @@ const PermissionsSelectorListBase: React.FC<IDashAutoAdminCustomFieldComponent &
 
                 {/* Filters */}
                 <Box sx={{ display: 'flex', gap: 2 }}>
-                    <SearchInput 
-                        source="q" 
-                        placeholder="Search permissions" 
-                        alwaysOn
-                        onChange={(e: any) => setSearchTerm(e.target.value)}
+                    <TextField
+                        placeholder="Search permissions"
+                        value={searchTerm}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
+                        size="small"
+                        sx={{ minWidth: 200 }}
                     />
                     {uniqueGroups && uniqueGroups.length > 0 && (
-                        <SelectInput 
-                            source="group" 
-                            choices={uniqueGroups.map(g => ({ id: g, name: g }))}
-                            alwaysOn
-                            emptyText="All Groups"
-                            onChange={(e: any) => setGroupFilter(e.target.value)}
-                        />
+                        <FormControl size="small" sx={{ minWidth: 150 }}>
+                            <InputLabel>Group</InputLabel>
+                            <Select
+                                value={groupFilter}
+                                onChange={(event: SelectChangeEvent<string>) => setGroupFilter(event.target.value)}
+                                label="Group"
+                            >
+                                <MenuItem value="">
+                                    <em>All Groups</em>
+                                </MenuItem>
+                                {uniqueGroups.map(g => (
+                                    <MenuItem key={g} value={g}>{g}</MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
                     )}
                 </Box>
             </Paper>
@@ -414,12 +427,11 @@ const PermissionsSelectorListBase: React.FC<IDashAutoAdminCustomFieldComponent &
                     </TableBody>
                 </Table>
                 <TablePagination
-                    component="div"
                     count={filteredData.length}
                     page={page}
                     onPageChange={(_, newPage) => setPage(newPage)}
                     rowsPerPage={rowsPerPage}
-                    onRowsPerPageChange={(e) => {
+                    onRowsPerPageChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                         setRowsPerPage(parseInt(e.target.value, 10));
                         setPage(0);
                     }}

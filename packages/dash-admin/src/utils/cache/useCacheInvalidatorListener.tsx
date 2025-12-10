@@ -12,11 +12,11 @@ const useCacheInvalidatorListener = () => {
   useEffect(() => {
 		const lastNotification = laravelEchoContext?.lastEvent;
 
-		if (lastNotification?.class === 'invalidated-cache') {
-      if(lastNotification.notificationPayload?.resource) {
-        updateEntry(lastNotification.notificationPayload?.resource)
-      }
-		}
+		/*if (lastNotification?.type === 'invalidate-cache') {
+            if(lastNotification.notificationPayload?.resource) {
+                updateEntry(lastNotification.notificationPayload?.resource)
+            }
+		}*/
 	}, [laravelEchoContext]);
   
 	return {

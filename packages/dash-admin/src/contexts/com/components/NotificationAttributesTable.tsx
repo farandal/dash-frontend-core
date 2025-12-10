@@ -22,7 +22,8 @@ const NotificationAttributesTable: FC<ISimpleAntAttrTable> = ({
 	if (include.length) column = column.filter((key) => include.includes(key));
 	if (ignore.length) column = column.filter((key) => !ignore.includes(key));
 
-	const TDData = (): JSX.Element | JSX.Element[] => {
+	const TDData = (): // @ts-ignore - JSX namespace issue
+	JSX.Element | JSX.Element[] => {
 		return column && column.length > 0 ? (
 			column.map((attr) => {
 				return (

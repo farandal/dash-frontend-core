@@ -1,5 +1,5 @@
 import LaravelEchoMgr from './LaravelEchoMgr';
-import { IDashNotificationPayloadBase } from './components/notificationFormats';
+import { IDashNotificationPayloadBase } from '../../interfaces/communication/INotification';
 import React, { FC, useEffect } from 'react';
 
 export type ILaravelEchoContext = {

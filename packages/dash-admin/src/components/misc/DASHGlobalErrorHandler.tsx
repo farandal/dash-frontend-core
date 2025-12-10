@@ -21,7 +21,7 @@ const _checkError = (errorData: any): IDashGlobalError => {
     if (errorData.originalError && errorData.status && errorData.message) {
         const processedError = errorData as IDashAutoAdminBackendError;
         
-        let errorMessage = processedError.message;
+        let errorMessage = processedError.message || "";
         
         // Add status-specific context if needed
         if (processedError.status >= 400 && processedError.status < 499) {

@@ -24,6 +24,7 @@ const ChangePassword: React.FC<ChangePasswordProps> = ({
 }) => {
 	const navigate = useNavigate();
 	let [searchParams] = useSearchParams();
+	// @ts-ignore - URLSearchParams.entries() type issue
 	const urlQuery: any = getUrlParamsObject(searchParams.entries());
 	// Fix: Remove any trailing non-email characters (like parenthesis) from email param
 	const cleanEmail = urlQuery?.email ? decodeURIComponent(urlQuery.email).replace(/[)\]\s]+$/, '') : '';

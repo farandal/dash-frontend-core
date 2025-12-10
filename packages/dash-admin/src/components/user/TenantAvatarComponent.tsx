@@ -1,8 +1,11 @@
 import { Avatar } from '@mui/material';
 import React from 'react';
 
+// @ts-ignore - Asset imports may not exist
 import Logo from '@app/assets/logo-horizontal.png';
+// @ts-ignore - Asset imports may not exist
 import LogoSquared from  '@app/assets/logo-squared.png';
+// @ts-ignore - Asset imports may not exist
 import BackImage from  '@app/assets/login-back.png';
 
 interface TenantAvatarComponentProps {

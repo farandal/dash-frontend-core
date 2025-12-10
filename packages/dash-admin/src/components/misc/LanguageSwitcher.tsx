@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { MouseEvent, useState, useRef, useEffect } from 'react';
-import { useLocaleState, useLocales } from 'ra-core';
+import { useLocaleState, useLocales } from 'react-admin';
 import { Avatar, useMediaQuery, useTheme } from '@mui/material';
 import LanguageIcon from '@mui/icons-material/Translate';
 import ReactDOM from 'react-dom';

@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 // Remove this import
 // import { usePermissions } from 'react-admin';
 
-import { CircularProgress, Divider, List, IconButton, Box } from '@mui/material';
+import { List, IconButton, Box } from '@mui/material';
 import KeyboardDoubleArrowLeftIcon from '@mui/icons-material/KeyboardDoubleArrowLeft';
 import KeyboardDoubleArrowRightIcon from '@mui/icons-material/KeyboardDoubleArrowRight';
 import { useEffect } from 'react';
@@ -19,8 +19,6 @@ import checkRole from '../../helpers/checkRole';
 import { slugify } from '../../utils/slugify';
 // Direct imports to avoid circular barrel imports
 import AvatarComponent from '../../components/user/AvatarComponent';
-import DarkModeSwitcher from '../../components/misc/DarkModeSwitcher';
-import LanguageSwitcher from '../../components/misc/LanguageSwitcher';
 import TenantAvatarComponent from '../../components/user/TenantAvatarComponent';
 
 import Scrollbar from '../../components/scrollbar/Scrollbar';
@@ -40,7 +38,7 @@ interface IAppMenuExtended extends IAppMenu {
 }
 
 // Group icons
-const GenerateItems: React.FC<{ items: IMenuItem[]; navExpanded: boolean, navSize: string, level: number }> = ({
+const GenerateItems: React.FC<{ items: IMenuItem[]; navExpanded: boolean, navSize: "large" | "small", level: number }> = ({
     items,
     navExpanded,
     navSize,
@@ -159,9 +157,8 @@ const AppMaterialMenu: React.FC<IAppMenuExtended> = (props) => {
                 }
 
                 //console.log(resource.group + " | ", resource.label + " | ", permissions, resource.roles, checkRole(permissions, resource.roles));
-                return (
-                    resource.group === group && checkRole(authContext.user?.roles ? authContext.user?.roles?.flatMap(role => role.name) : ["Public"] || [], resource.roles)
-                );
+                /* @ts-ignore */
+                return ( resource.group === group && checkRole(authContext.user?.roles ? authContext.user?.roles?.flatMap(role => role.name) : ["Public"] || [], resource.roles));
             });
         });
         const _items: IMenuItem[] = [];

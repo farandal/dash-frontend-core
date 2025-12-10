@@ -30,13 +30,13 @@ const LogViewerView: React.FC<IDashAutoAdminCustomFieldComponent> = ({
 	return <>{log && <LogViewerComponent log={log} />}</>;
 };
 
-const LogViewer = ({ method, attribute }: IDashAutoAdminCustomFieldComponent) => {
+const LogViewer = ({ method, attribute, resourceConfig }: IDashAutoAdminCustomFieldComponent) => {
 	switch (method) {
 		case 'edit':
 		case 'create':
-			return <LogViewerEdit attribute={attribute} method={method} />;
+			return <LogViewerEdit attribute={attribute} method={method} resourceConfig={resourceConfig} />;
 		case 'view':
-			return <LogViewerView attribute={attribute} method={method} />;
+			return <LogViewerView attribute={attribute} method={method} resourceConfig={resourceConfig} />;
 	}
 };
 

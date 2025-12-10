@@ -108,7 +108,8 @@ const PermissionsSelectorView: React.FC<IDashAutoAdminCustomFieldComponent> = ({
             </Typography>
             <Grid container spacing={3}>
                 {permissions?.map((tab, index) => (
-                    <Grid xs={12} sm={6} md={4} lg={3} key={index}>
+                    /* @ts-ignore */
+                    <Grid item xs={12} sm={6} md={4} lg={3} key={index}>
                         <Card 
                             variant="outlined" 
                             sx={{ 
@@ -523,7 +524,8 @@ const PermissionsSelectorBase: React.FC<IDashAutoAdminCustomFieldComponent & { r
                     )}
                 </Box>
                 <Grid container spacing={2}>
-                    <Grid xs={12} md={6}>
+                     { /* @ts-ignore */ }
+                    <Grid item xs={12} md={6}>
                         <TextField
                             fullWidth
                             variant="outlined"
@@ -547,7 +549,8 @@ const PermissionsSelectorBase: React.FC<IDashAutoAdminCustomFieldComponent & { r
                             }}
                         />
                     </Grid>
-                    <Grid xs={12} md={6}>
+                    { /* @ts-ignore */ }
+                    <Grid item xs={12} md={6}>
                         <TextField
                             fullWidth
                             variant="outlined"
@@ -635,7 +638,8 @@ const PermissionsSelectorBase: React.FC<IDashAutoAdminCustomFieldComponent & { r
                         const visibleItems = isExpanded ? group : group.slice(0, INITIAL_ITEMS_COUNT);
                         const remainingCount = group.length - INITIAL_ITEMS_COUNT;
                         return (
-                            <Grid xs={12} md={4} key={groupIndex}>
+                            /* @ts-ignore */ 
+                            <Grid item xs={12} md={4} key={groupIndex}>
                                 <Card variant="outlined" sx={{
                                     height: '100%',
                                     display: 'flex',

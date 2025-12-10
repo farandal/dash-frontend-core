@@ -105,6 +105,7 @@ const RecoverPassword = ({  }: {  }) => {
 					) : (
 						<form onSubmit={handleSubmit} className='dash-app-login-form'>
 							<Grid container sx={{ mb:4, mt:2 }} spacing={2} alignItems="center">
+                                {/* @ts-ignore */}
 								<Grid item xs={2}>
 									<IconButton
 										color={'primary'}
@@ -114,6 +115,7 @@ const RecoverPassword = ({  }: {  }) => {
 										<HomeIcon />
 									</IconButton>
 								</Grid>
+                                {/* @ts-ignore */}
 								<Grid item xs={10}>
 									<h1 className="dash-app-login-form-title" style={{ margin: 0 }}>Recuperar Contraseña</h1>
 								</Grid>

@@ -72,13 +72,13 @@ const PDFViewerView: React.FC<IDashAutoAdminCustomFieldComponent> = ({
 	);
 };
 
-const PDFViewer = ({ method, attribute }: IDashAutoAdminCustomFieldComponent) => {
+const PDFViewer = ({ method, attribute, resourceConfig }: IDashAutoAdminCustomFieldComponent) => {
 	switch (method) {
 		case 'edit':
 		case 'create':
 			return <>edit</>;
 		case 'view':
-			return <PDFViewerView attribute={attribute} method={method} />;
+			return <PDFViewerView attribute={attribute} method={method} resourceConfig={resourceConfig} />;
 	}
 };
 

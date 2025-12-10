@@ -3,7 +3,7 @@ import { memo, ReactElement } from 'react';
 import PropTypes from 'prop-types';
 import ImageEye from '@mui/icons-material/RemoveRedEye';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { RaRecord } from 'ra-core';
+import { RaRecord } from 'react-admin';
 import {
 	useResourceContext,
 	useRecordContext,

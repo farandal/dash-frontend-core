@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Button, useRedirect, useStore } from 'react-admin';
-import { Drawer } from '@mui/material';
 import { dashStorage } from 'dash-utils';
 import useVirtualHash from '../hooks/useVirtualHash';
 import { IDashAutoAdminResourceConfig } from 'dash-auto-admin';
-import Scrollbar from '../components/scrollbar/Scrollbar';
 
 export interface IApplicationLayoutMenuItem {
     title: string;
@@ -81,7 +79,7 @@ const ApplicationLayout: React.FC<IApplicationLayout> = ({
             
            
         } else if (resourceConfig.mainAction.onClick) {
-            debugger;
+            //debugger;
             resourceConfig.mainAction.onClick();
         }
     };
@@ -103,6 +101,7 @@ const ApplicationLayout: React.FC<IApplicationLayout> = ({
                             {menu.map((menuItem, index) => (
                                 <li
                                     key={index}
+                                    /* @ts-ignore */
                                     onClick={() => handleMenuClick(menuItem)}
                                 >
                                     <span className="dash-link">
@@ -121,6 +120,7 @@ const ApplicationLayout: React.FC<IApplicationLayout> = ({
                       
                         <div className="dash-module-action">
                             <Button
+                             /* @ts-ignore */
                                 type={resourceConfig.mainAction.type}
                                 className="dash-btn-block"
                                 onClick={handleMainAction}

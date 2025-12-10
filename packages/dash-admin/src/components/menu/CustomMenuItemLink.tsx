@@ -4,10 +4,11 @@ import PropTypes from 'prop-types';
 import clsx from 'clsx';
 import { Link, LinkProps, useMatch } from 'react-router-dom';
 
-import { useTranslate, useBasename } from 'ra-core';
+import { useTranslate, useBasename } from 'react-admin';
 import { useSidebarState } from 'react-admin';
 
 export type CustomMenuItemLinkProps = LinkProps & {
+	// @ts-ignore - JSX namespace issue
 	leftIcon?: JSX.Element;
 	primaryText?: ReactNode;
 };

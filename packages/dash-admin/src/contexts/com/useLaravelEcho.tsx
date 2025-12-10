@@ -56,8 +56,8 @@ export const echoManager = EchoClientManager.getInstance();
 const useLaravelEcho = ({
     type,
     channel,
-    //events,
-    //userId,
+    events,
+    userId,
     socketId,
     pingInterval = 30000, // Default ping interval: 30 seconds
     debug = true,
@@ -65,8 +65,8 @@ const useLaravelEcho = ({
 }: {
     type: 'public' | 'private';
     channel: string;
-    //events: { [key: string]: (e: any) => any };
-    //userId?: number;
+    events?: { [key: string]: (e: any) => any };
+    userId?: number;
     socketId?: string;
     pingInterval?: number;
     debug?: boolean,
@@ -84,15 +84,15 @@ const useLaravelEcho = ({
         (state: IDASHAppState<any, any, IDashAutoAdminResourceConfig>) =>
             state.auth
     );
-    const [userId, setUserId] = useState(null);
+    const [currentUserId, setCurrentUserId] = useState(null);
 
     useEffect(() => {
 
         if (auth.user?.id && typeof auth.user.id === 'number' && auth.user.id !== userId) {
-            setUserId(auth.user.id);
+            setCurrentUserId(auth.user.id);
         }
         if (auth?.authenticated === false) {
-            setUserId(null);
+            setCurrentUserId(null);
         }
 
     }, [auth])

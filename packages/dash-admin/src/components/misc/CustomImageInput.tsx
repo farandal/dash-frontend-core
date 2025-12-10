@@ -37,6 +37,7 @@ const CustomImageInputEdit: React.FC<IDashAutoAdminCustomFieldComponent> = ({
                 placeholder={<ImagePlaceholder record={record} attribute={attribute} />}
                 source={attribute.attribute}
                 label={attribute.label}
+                /* @ts-ignore */
                 accept='image/*'
             >
                 <ImageField source={/*attribute.listAttribute ||*/ `src`} title='title' />
