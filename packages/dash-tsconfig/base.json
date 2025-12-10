@@ -38,8 +38,7 @@
 		
         "allowJs": true,
         "noEmit": true,
-        "incremental": true,
-        "ignoredDiagnostics": [2769] 
+        "incremental": true
         
 	},
 	"exclude": [

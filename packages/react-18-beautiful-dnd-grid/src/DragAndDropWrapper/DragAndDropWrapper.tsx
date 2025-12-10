@@ -30,7 +30,7 @@ const horizontalStyle: React.CSSProperties = {
   flexDirection: "row",
   alignItems: "flex-start"
 };
-
+{/* @ts-ignore */ }
 export const DragAndDropWrapper: React.StatelessComponent<Props> = ({
   onDragEnd,
   chunks,

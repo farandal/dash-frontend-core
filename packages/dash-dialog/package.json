@@ -76,7 +76,7 @@
 		"eslint-plugin-prettier": "latest",
 		"eslint-plugin-react": "latest",
 		"eslint-plugin-react-hooks": "latest",
-		"eslint-plugin-storybook": "latest",
+	
 		
 	"dash-prettier": "workspace:*",
 		"query-string": "latest",
@@ -104,5 +104,8 @@
 	},
 	"eslintConfig": {
 		"extends": "react-app"
-	}
+	},
+    "_todo_storybook": {
+        	"eslint-plugin-storybook": "latest"
+    }
 }

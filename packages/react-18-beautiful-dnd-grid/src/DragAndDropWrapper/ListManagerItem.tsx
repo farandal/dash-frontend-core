@@ -8,7 +8,7 @@ export interface ListManagerItemProps {
   index: number;
   render(item: any): ReactElement<{}>;
 }
-
+{/* @ts-ignore */}
 export const ListManagerItem: React.StatelessComponent<ListManagerItemProps> = ({
   item,
   index,
