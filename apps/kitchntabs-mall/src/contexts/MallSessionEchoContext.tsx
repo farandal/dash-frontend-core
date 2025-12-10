@@ -78,17 +78,26 @@ export const MallSessionEchoProvider: FC<MallSessionEchoProviderProps> = ({
 
     // Process incoming events
     useEffect(() => {
-        if (echoEvent?.data) {
-            const eventData = echoEvent.data;
+        if (echoEvent) {
+            // Store the FULL event (with notificationPayload) not just echoEvent.data
+            const eventData = echoEvent.data || echoEvent;
+            const notificationPayload = echoEvent.notificationPayload || eventData?.notificationPayload;
             
-            console.log('📬 Mall session event received:', eventData);
-            setLastEvent(eventData);
-            setEvents(prev => [...prev, eventData]);
+            console.log('📬 Mall session event received:', echoEvent);
             
-            // Handle different event types
-            if (eventData.type === 'mall_order_status_update' || eventData.type === 'mall_order_confirmation') {
-                // Extract data from nested data property if it exists, otherwise use top level
-                const payload = eventData.data || eventData;
+            // Set lastEvent to the FULL echoEvent so consumers get notificationPayload too
+            setLastEvent(echoEvent);
+            setEvents(prev => [...prev, echoEvent]);
+            
+            // Handle different event types - check notificationPayload.class for notification type
+            const isMallOrderUpdate = 
+                eventData.type === 'mall_order_status_update' || 
+                eventData.type === 'mall_order_confirmation' ||
+                notificationPayload?.class === 'MallSessionOrderStatusNotification';
+            
+            if (isMallOrderUpdate) {
+                // Extract data from nested notificationPayload if present, otherwise from top level
+                const payload = notificationPayload?.notificationPayload || eventData.data || eventData;
                 const { tenant_name, status, tenant_id, products, new: newStatus } = payload;
                 const finalStatus = newStatus || status;
                 
