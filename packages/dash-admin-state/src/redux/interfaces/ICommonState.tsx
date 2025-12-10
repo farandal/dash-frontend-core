@@ -10,7 +10,7 @@ export interface ICommonState {
 	loading: boolean;
 	message: any;
 	navExpanded: boolean;
-  navSize: string; //"large" | "small";
+  navSize: "large" | "small";//string; //"large" | "small";
 	width: number | string | any;
 	height: number | string | any;
 	content_width?: number;

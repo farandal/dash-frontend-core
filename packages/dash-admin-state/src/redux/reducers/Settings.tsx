@@ -15,6 +15,7 @@ const SettingsReducer = (
 		themeType: undefined,
 		themeColor: '',
 		isDirectionRTL: false,
+        /* @ts-ignore */
 		locale: {
 			languageId: '',
 			locale: '',
