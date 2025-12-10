@@ -17,17 +17,17 @@ const getMallId = () => {
 
 const getSessionId = () => {
     try {
-        const appPath = dashStorage.getItem('currentAppPath');
-        if (!appPath) return null;
-        const segments = appPath.split('/');
-        return segments[segments.length - 1] || null;
+        // @deprecated - removed currentAppPath logic, use mall-session-hash instead
+        const sessionHash = dashStorage.getItem('mall-session-hash');
+        if (sessionHash) {
+            return sessionHash;
+        }
+        return null;
     } catch (error) {
         console.warn('Failed to get session_id from localStorage:', error);
         return null;
     }
-};
-
-// Helper function to add mall_id to params
+};// Helper function to add mall_id to params
 const addMallIdToParams = (params: any) => {
   const mall_id = getMallId();
    const mall_session = getSessionId();

@@ -1,4 +1,12 @@
-import { AuthPersistenceService } from "dash-auth";
+/**
+ * DASHMallClientDataProvider
+ * 
+ * Data provider for public mall client (guest ordering).
+ * 
+ * IMPORTANT: This provider only requires `mall_session` (the session hash).
+ * The backend resolves the mall_id from the session using ResolveMallFromSessionTrait.
+ * We do NOT send mall_id from the frontend - the backend handles this.
+ */
 import { AxiosError } from 'axios';
 import { processAxiosError } from 'dash-axios-hook';
 import { IDashAutoAdminDefaultBackendStructure } from 'dash-axios-hook/src/interfaces/IDashAutoAdminBackendError';
@@ -25,64 +33,40 @@ const mapResourceToApiPath = (resource: string): string => {
   return RESOURCE_PATH_MAP[baseResource] || resource;
 };
 
-// Helper function to get mall_id
-const getMallId = () => {
-  try {
-    return AuthPersistenceService.getSystemValues()["mall"]["id"] || null;
-  } catch (error) {
-    console.warn('Failed to get mall_id from AuthPersistenceService:', error);
-    return null;
-  }
-};
-
-const getSessionId = () => {
+/**
+ * Get the session hash from localStorage.
+ * This is the only identifier needed - backend resolves mall from session.
+ */
+const getSessionId = (): string | null => {
     try {
-        const appPath = dashStorage.getItem('currentAppPath');
-        // Also check for mall-session-hash as fallback (set by MallClientWrapper)
+        // Primary source: mall-session-hash (set by MallClientWrapper)
         const sessionHash = dashStorage.getItem('mall-session-hash');
         
         if (sessionHash) {
-            console.log('[MallClientDataProvider] getSessionId from mall-session-hash:', sessionHash);
+            console.log('[MallClientDataProvider] getSessionId:', sessionHash);
             return sessionHash;
         }
         
-        if (!appPath) {
-            console.warn('[MallClientDataProvider] No currentAppPath in storage');
-            return null;
-        }
+        // @deprecated - removed currentAppPath fallback that caused issues
+        // Use mall-session-hash which is set by MallClientWrapper
         
-        const segments = appPath.split('/');
-        const sessionId = segments[segments.length - 1] || null;
-        console.log('[MallClientDataProvider] getSessionId from path:', appPath, '-> sessionId:', sessionId);
-        return sessionId;
+        console.warn('[MallClientDataProvider] No session hash found in storage');
+        return null;
     } catch (error) {
-        console.warn('Failed to get session_id from localStorage:', error);
+        console.warn('[MallClientDataProvider] Failed to get session_id:', error);
         return null;
     }
 };
 
-// Helper function to add mall_id and mall_session to params
-const addMallIdToParams = (params: any) => {
-  const mall_id = getMallId();
+/**
+ * Add mall_session to request params.
+ * The backend uses this to resolve the mall context via ResolveMallFromSessionTrait.
+ */
+const addSessionToParams = (params: any) => {
   const mall_session = getSessionId();
   
-  // Build filter object - mall_session is required for tab filtering
-  const additionalFilters: Record<string, any> = {};
-  const additionalMeta: Record<string, any> = {};
-  
-  if (mall_id) {
-    additionalFilters.mall_id = mall_id;
-    additionalMeta.mall_id = mall_id;
-  }
-  
-  if (mall_session) {
-    additionalFilters.mall_session = mall_session;
-    additionalMeta.mall_session = mall_session;
-  }
-  
-  // Only warn if BOTH are missing
-  if (!mall_id && !mall_session) {
-    console.warn('No mall_id or mall_session available for mall data provider request');
+  if (!mall_session) {
+    console.warn('[MallClientDataProvider] No mall_session available - request may fail');
     return params;
   }
 
@@ -90,11 +74,11 @@ const addMallIdToParams = (params: any) => {
     ...params,
     filter: {
       ...params.filter,
-      ...additionalFilters
+      mall_session
     },
     meta: {
       ...params.meta,
-      ...additionalMeta
+      mall_session
     }
   };
 };
@@ -103,75 +87,62 @@ const dataProvider = {
   ...genericDataProvider,
   
   getList: async (resource: string, params: any, options?: any) => {
-    console.log('🔥🔥🔥 [MallClientDataProvider] getList CALLED 🔥🔥🔥', { resource, params });
+    console.log('[MallClientDataProvider] getList:', { resource, params });
     const apiResource = mapResourceToApiPath(resource);
-    const enhancedParams = addMallIdToParams(params);
-    console.log('[MallClientDataProvider] getList:', { 
-      resource, 
-      apiResource, 
-      originalFilter: params.filter, 
-      enhancedFilter: enhancedParams.filter 
-    });
+    const enhancedParams = addSessionToParams(params);
     return genericDataProvider.getList(apiResource, enhancedParams, options);
   },
 
   getOne: async (resource: string, params: any) => {
     const apiResource = mapResourceToApiPath(resource);
-    const mall_id = getMallId();
-    if (!mall_id) {
-      console.warn('No mall_id available for getOne request');
-      return genericDataProvider.getOne(apiResource, params);
-    }
-
     const session_id = getSessionId();
+    
     if (!session_id) {
-      console.warn('No session_id available for getOne request');
+      console.warn('[MallClientDataProvider] No session_id for getOne - using generic provider');
       return genericDataProvider.getOne(apiResource, params);
     }
 
-    // Create a custom getOne that adds mall_id to the URL
+    // Add mall_session to the URL query - backend resolves mall from session
     const { useAxios } = await import('dash-axios-hook');
     const axios = useAxios();
 
     try {
-      const url = `${apiResource}/${params.id}?mall_id=${mall_id}&mall_session=${session_id}`;
+      const url = `${apiResource}/${params.id}?mall_session=${session_id}`;
       const response = await axios.get(url, params.meta ? { params: params.meta } : {});
 
       return {
         data: response.data,
       };
     } catch (e: any) {
-      // Handle error similar to original getOne
-      console.error('Error in mall getOne:', e);
+      console.error('[MallClientDataProvider] Error in getOne:', e);
       throw e;
     }
   },
 
   getMany: async (resource: string, params: any) => {
     const apiResource = mapResourceToApiPath(resource);
-    const enhancedParams = addMallIdToParams(params);
+    const enhancedParams = addSessionToParams(params);
     return genericDataProvider.getMany(apiResource, enhancedParams);
   },
 
   getManyReference: async (resource: string, params: any) => {
     const apiResource = mapResourceToApiPath(resource);
-    const enhancedParams = addMallIdToParams(params);
+    const enhancedParams = addSessionToParams(params);
     return genericDataProvider.getManyReference(apiResource, enhancedParams);
   },
 
+  /**
+   * Create a new resource (e.g., create a tab/order).
+   * Only mall_session is required - backend resolves mall from session.
+   */
   create: async (resource: string, params: any) => {
     const apiResource = mapResourceToApiPath(resource);
     const { useAxios } = await import('dash-axios-hook');
     const axios = useAxios();
     
-    const mall_id = getMallId();
-    if (!mall_id) {
-      throw new Error('No mall_id available for create request. Mall context is required.');
-    }
-
     const mall_session = getSessionId();
     if (!mall_session) {
-      throw new Error('No mall_session available for create request. Mall context is required.');
+      throw new Error('No mall_session available. Please scan a valid QR code to start a session.');
     }
 
     const resourceConfig = getResourceConfig(apiResource);
@@ -188,15 +159,21 @@ const dataProvider = {
 
     const action = method === 'POST' ? axios.post : axios.put;
 
+    // Only add mall_session - backend resolves mall from session
     const postData = processPostData(
         resourcePath,
         {
             ...params.data,
-            mall_id: mall_id, // Add mall_id to the data
             mall_session: mall_session
         },
         'create',
     );
+
+    console.log('[MallClientDataProvider] create:', { 
+      resource: apiResource, 
+      mall_session,
+      data: postData 
+    });
 
     try {
         if (isFormData) {
@@ -210,142 +187,77 @@ const dataProvider = {
 
     } catch (e: unknown) {
         const error = e as AxiosError<IDashAutoAdminDefaultBackendStructure>;
-        throw processAxiosError(error, apiResource, 'create')
+        throw processAxiosError(error, apiResource, 'create');
     }
   },
 
+  /**
+   * Update an existing resource.
+   * Only mall_session is required - backend resolves mall from session.
+   */
   update: async (resource: string, params: any) => {
     const apiResource = mapResourceToApiPath(resource);
     const { useAxios } = await import('dash-axios-hook');
     const axios = useAxios();
-    
-    const mall_id = getMallId();
-    if (!mall_id) {
-      throw new Error('No mall_id available for update request. Mall context is required.');
-    }
 
     const mall_session = getSessionId();
     if (!mall_session) {
-      throw new Error('No mall_session available for update request. Mall context is required.');
+      throw new Error('No mall_session available. Please scan a valid QR code to start a session.');
     }
 
-    // Get the record ID - try params.id first, then params.data.id
-    const recordId = params.id ?? params.data?.id;
-    if (!recordId) {
-      throw new Error('No record ID available for update request.');
-    }
+    const resourceConfig = getResourceConfig(apiResource);
+    const isFormData =
+        resourceConfig?.isFormData === true ||
+        params.data?.isFormData === true ||
+        params.meta?.isFormData === true;
 
-    const resourcePath = `${apiResource}/${recordId}`;
+    const id = params.id;
+    const resourcePath = `${apiResource}/${id}`;
 
-    console.log('[MallClientDataProvider] update:', {
-      originalResource: resource,
-      apiResource,
-      recordId,
-      resourcePath,
-      mall_session
-    });
+    // Only add mall_session - backend resolves mall from session
+    const postData = processPostData(
+        resourcePath,
+        {
+            ...params.data,
+            mall_session: mall_session
+        },
+        'update',
+    );
 
-    const postData = {
-      ...params.data,
-      mall_id: mall_id,
-      mall_session: mall_session
-    };
-
-    try {
-      const response = await axios.put(resourcePath, postData);
-      
-      // Check if there was a partial update with warnings
-      if (response.data?.meta?.partial_update) {
-        // Dispatch a warning event for the UI to handle
-        window.dispatchEvent(new MessageEvent('DASHGlobalWarning', { 
-          data: { 
-            warning: {
-              status: 206, // Partial Content
-              body: response.data.meta.message || 'Algunos productos no pudieron actualizarse',
-              warnings: response.data.meta.warnings
-            }
-          } 
-        }));
-      }
-      
-      return {
-        data: response.data.data || response.data,
-      };
-    } catch (e: unknown) {
-      const error = e as AxiosError<IDashAutoAdminDefaultBackendStructure>;
-      throw processAxiosError(error, apiResource, 'update');
-    }
-  },
-
-  updateMany: async (resource: string, params: any) => {
-    throw new Error('Bulk store updates are not supported through the Mall interface. Use the main Tenant interface instead.');
-  },
-
-  delete: async (resource: string, params: any) => {
-    const apiResource = mapResourceToApiPath(resource);
-    const { useAxios } = await import('dash-axios-hook');
-    const axios = useAxios();
-    
-    const mall_id = getMallId();
-    const mall_session = getSessionId();
-
-    if (!mall_id || !mall_session) {
-      throw new Error('Mall context is required for delete operation.');
-    }
-
-    // Get the record ID - try params.id first, then params.data.id
-    const recordId = params.id ?? params.data?.id ?? params.previousData?.id;
-    if (!recordId) {
-      throw new Error('No record ID available for delete request.');
-    }
-
-    const resourcePath = `${apiResource}/${recordId}`;
-
-    console.log('[MallClientDataProvider] delete:', {
-      originalResource: resource,
-      apiResource,
-      recordId,
-      resourcePath,
+    console.log('[MallClientDataProvider] update:', { 
+      resource: apiResource, 
+      id,
       mall_session
     });
 
     try {
-      const response = await axios.delete(resourcePath, {
-        params: {
-          mall_id,
-          mall_session
+        if (isFormData) {
+            const form: FormData = processFormData(apiResource, postData);
+            return await axios.put(resourcePath, form, {
+                headers: { 'Content-Type': 'multipart/form-data' },
+            });
         }
-      });
-      
-      // Check if there was a partial delete with warnings
-      if (response.data?.meta?.partial_delete) {
-        window.dispatchEvent(new MessageEvent('DASHGlobalWarning', { 
-          data: { 
-            warning: {
-              status: 206,
-              body: response.data.meta.message || 'Algunos productos no pudieron eliminarse',
-              warnings: response.data.meta.warnings
-            }
-          } 
-        }));
-      }
-      
-      return {
-        data: response.data.data || response.data || { id: params.id },
-      };
+
+        return await axios.put(resourcePath, postData);
+
     } catch (e: unknown) {
-      const error = e as AxiosError<IDashAutoAdminDefaultBackendStructure>;
-      throw processAxiosError(error, apiResource, 'delete');
+        const error = e as AxiosError<IDashAutoAdminDefaultBackendStructure>;
+        throw processAxiosError(error, apiResource, 'update');
     }
   },
 
-  deleteMany: async (resource: string, params: any) => {
-    throw new Error('Bulk store deletion is not supported through the Mall interface. Use the main Tenant interface instead.');
+  // Disable delete operations for public mall client
+  delete: async () => {
+    throw new Error('Delete operation is not allowed for mall client.');
   },
 
-  import: async (resource: string, params: any) => {
-    throw new Error('Store import is not supported through the Mall interface. Use the main Tenant interface instead.');
-  }
+  deleteMany: async () => {
+    throw new Error('Delete operation is not allowed for mall client.');
+  },
+
+  updateMany: async () => {
+    throw new Error('Bulk update is not allowed for mall client.');
+  },
 };
 
 export default dataProvider;
