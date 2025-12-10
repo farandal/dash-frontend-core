@@ -28,7 +28,7 @@ const KitchnTabsPublicApp: React.FC<KitchnTabsPublicAppProps> = () => {
         BUILD_TIME: getEnv('BUILD_TIME') || new Date().toISOString(),
         IS_ELECTRON: JSON.parse(getEnv('IS_ELECTRON') || 'false'),
         PLATFORM: getEnv('PLATFORM') || "unknown",
-        PLATFORM_TYPE: getEnv('PLATFORM_TYPE') || "desktop",
+        PLATFORM_TYPE: getEnv('PLATFORM_TYPE') || "web", // Default to web for BrowserRouter
     }), []);
 
     console.log('KitchnTabsPublicApp: Environment Variables:', envVars);

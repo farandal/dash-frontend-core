@@ -21,6 +21,9 @@ import { dashPrivateRoutes, dashPublicRoutes } from './KitchnTabsMallRoutes';
 import MainAppHookComponent from './contexts/MainAppHookComponent';
 import { KitchnTabsPrivateAppProps } from './core/KitchnTabsPrivateApp';
 import { DASHMallAuthProvider, DASHMallClientAuthProvider, DASHMallClientDataProvider, DASHMallDataProvider } from './dash-extensions';
+import  MallAppMediator from 'kt-mall/src/components/MallAppMediator';
+import { MallClientWrapper } from './components/mall';
+import PublicSessionAppHookComponent from './contexts/PublicSessionAppHookComponent';
 
 // Lazy load the main apps
 const KitchnTabsPublicApp = lazy(() => import('./core/KitchnTabsPublicApp'));
@@ -29,12 +32,54 @@ const KitchnTabsPrivateApp = lazy(() => import('./core/KitchnTabsPrivateApp'));
 const KitchnTabsMallBootstrap: React.FC = () => {
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [initializationError, setInitializationError] = useState<string | null>(null);
+    // Track pathname in state to trigger re-render when URL changes
+    const [pathname, setPathname] = useState<string>(window.location.pathname);
 
     // Use Redux directly
     const auth: IAuthState<any, any> = useSelector((state: IDASHAppState<any, any, any>) => state.auth);
     const dispatch = useDispatch();
 
     const isAuthenticated = auth.authenticated;
+
+    // Check if URL matches a mall session pattern (/:mallSlug/s/:sessionId)
+    // Must be computed early before any conditional returns
+    const isSessionUrl = /^\/[^/]+\/s\/[A-Z0-9]{5,}/i.test(pathname);
+    
+    // CRITICAL: For session URLs, set authenticated=true in localStorage IMMEDIATELY
+    // This ensures React Admin renders private routes for guest mall users
+    // Must happen BEFORE any render that includes AdminContext
+    if (isSessionUrl) {
+        const currentAuth = dashStorage.getItem('authenticated');
+        if (currentAuth !== 'true') {
+            console.log('🔐 KitchnTabsMallBootstrap: Session URL detected, setting guest authenticated=true');
+            dashStorage.setItem('authenticated', 'true');
+        }
+    }
+    
+    console.log('🚀 KitchnTabsMallBootstrap: INITIAL RENDER', {
+        pathname,
+        isSessionUrl,
+        isAuthenticated,
+        isLoading
+    });
+
+    // Listen for URL changes (popstate for back/forward)
+    useEffect(() => {
+        const handleUrlChange = () => {
+            const newPathname = window.location.pathname;
+            if (newPathname !== pathname) {
+                console.log('🔍 KitchnTabsMallBootstrap: URL changed from', pathname, 'to', newPathname);
+                setPathname(newPathname);
+            }
+        };
+
+        // Listen for browser back/forward navigation
+        window.addEventListener('popstate', handleUrlChange);
+
+        return () => {
+            window.removeEventListener('popstate', handleUrlChange);
+        };
+    }, [pathname]);
 
     console.log('🔍 KitchnTabsBootstrap: Redux auth state:', {
         authenticated: auth.authenticated,
@@ -222,7 +267,7 @@ const KitchnTabsMallBootstrap: React.FC = () => {
         );
     }
 
-    console.log('🔍 KitchnTabsMallBootstrap: Rendering app - isAuthenticated:', isAuthenticated);
+    console.log('🔍 KitchnTabsMallBootstrap: Rendering app', { isAuthenticated, isSessionUrl, pathname });
 
     const privateAppProps:KitchnTabsPrivateAppProps = {
         customAuthProvider: DASHMallAuthProvider,
@@ -239,19 +284,23 @@ const KitchnTabsMallBootstrap: React.FC = () => {
         customResources: KitchnTabsMallResources,
         customPublicRoutes: dashPublicRoutes,
         customPrivateRoutes: dashPrivateRoutes,
-        AdminHook: () => { return <>{/*<RADashComponent />*/}<MainAppHookComponent /></> },
+        AdminHook: () => <><PublicSessionAppHookComponent/><MallAppMediator/></>,  
     };
 
-    // Private props are handled by independent wrappers within the dash public app.
-    //const publicAppProps = app === "mall" ?  { customGlobalRoutes: mallClientGlobalRoutes } : { customGlobalRoutes: DASHResources }
-
+    // Render based on auth state and URL pattern:
+    // - Authenticated users → KitchnTabsPrivateApp (admin)
+    // - Unauthenticated + session URL → MallClientWrapper + KitchnTabsPrivateApp (mall ordering)
+    // - Unauthenticated + non-session URL → KitchnTabsPublicApp (landing, login, etc.)
     return (
         <Suspense fallback={<GlobalSmallLoader message={isAuthenticated ? "Loading admin panel..." : "Loading application..."} />}>
             {isAuthenticated ? (
                 <KitchnTabsPrivateApp {...privateAppProps} />
+            ) : isSessionUrl ? (
+                <MallClientWrapper>
+                    <KitchnTabsPrivateApp {...publicAppProps} />
+                </MallClientWrapper>
             ) : (
                 <KitchnTabsPublicApp />
-                 /*<KitchnTabsPrivateApp {...publicAppProps} />*/
             )}
         </Suspense>
     );

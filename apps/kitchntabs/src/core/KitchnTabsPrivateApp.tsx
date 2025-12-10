@@ -137,7 +137,8 @@ const KitchnTabsPrivateApp: React.FC<KitchnTabsPrivateAppProps> = ({
         const calculateRoutePath = () => {
             const path = appPath || (common?.appPath || DASHAdminSystemConstants.system.URL_PREFIX);
             const cleanPath = path.replace(/\/\*$/, '');
-            dashStorage.setItem('currentAppPath', cleanPath);
+            // @deprecated - removed currentAppPath storage that caused path duplication
+            // dashStorage.setItem('currentAppPath', cleanPath);
             console.log('ROUTE-BASE-PATH:', cleanPath);
             return path;
         };

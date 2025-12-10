@@ -1,22 +1,14 @@
 import React, { Suspense } from 'react';
 import { Route } from 'react-router-dom';
-import { Box } from '@mui/material';
 import RecoverPassword from 'dash-admin/src/pages/RecoverPassword';
 import ChangePassword from 'dash-admin/src/pages/ChangePassword';
 import VerifyAccount from 'dash-admin/src/pages/VerifyAccount';
-//import MallAppWrapper from 'kt-mall/src/components/MallAppWrapper';
-//import MallClientWrapper from 'kt-mall/src/components/MallClientWrapper';
 import { NotFound } from 'dash-components';
 import DASHLightWeightLogin from 'kt-pages/src/dash-pages/DASHLightWeightLogin';
 import GlobalSmallLoader from './dash-extensions/components/GlobalSmallLoader';
-import MallClientWrapper from './components/mall/MallClientWrapper';
-import MallAppWrapper from './components/mall/MallAppWrapper';
-import MallPublicWrapper from './components/mall/MallPublicWrapper';
-import MallLanding from 'kt-mall/src/components/MallLanding';
 
 // Lazy load shared components
 const MarketplaceCallback = React.lazy(() => import('kt-ecommerce/src/components/Marketplace/MarketplaceCallback'));
-const DashLanding = React.lazy(() => import('kt-pages/src/dash-pages/DASHLanding'));
 const Register = React.lazy(() => import('kt-pages/src/pages/Account/Register'));
 const SignUp = React.lazy(() => import('kt-pages/src/pages/Account/SignUp'));
 const SignUpSuccess = React.lazy(() => import('kt-pages/src/pages/Account/SignUpSuccess'));
@@ -104,9 +96,9 @@ export const dashSharedRoutes = () => [
 ]
 export const dashPrivateRoutes = () => [
     ...dashSharedRoutes(),
-    // Mall client session routes - for guest ordering with session
+    // Mall client session routes - for 'guest' ordering with session
     // IMPORTANT: This more specific route MUST come before the generic /:mallSlug/* route
-    <Route
+    /*<Route
         key={'mall-client-session'}
         path='/:mallSlug/s/:sessionId/*'
         element={<MallClientWrapper appPath={"/"} />}
@@ -116,6 +108,16 @@ export const dashPrivateRoutes = () => [
         key={'mall-admin'}
         path='/:mallSlug/*'
         element={<MallAppWrapper appPath={"/"} />}
+    />,*/
+     <Route
+        key="landing"
+        data-layout="no-layout"
+        path='/'
+        element={
+            <Suspense fallback={<GlobalSmallLoader />}>
+                <MallClientWelcome />
+            </Suspense>
+        }
     />,
     <Route
         key="private-login"
@@ -134,27 +136,14 @@ export const dashPrivateRoutes = () => [
 
 export const dashPublicRoutes = () => [
     ...dashSharedRoutes(),
-    // Mall client session routes - for guest ordering with session (public access)
-    // IMPORTANT: This more specific route MUST come before the generic /:mallSlug/* route
-    <Route
-        key={'mall-public-session'}
-        path='/:mallSlug/s/:sessionId/*'
-        element={<MallClientWrapper appPath={"/"} />}
-    />,
-    // Mall public routes - lightweight, no React-Admin (unauthenticated users)
-    <Route
-        key={'mall-public-landing'}
-        path='/:mallSlug/*'
-        element={<MallPublicWrapper appPath={"/"} />}
-    />,
+    // Root shows login page for non-session URLs (like https://pw.ngrok.dev/)
+    // Users must scan QR code to access a mall session
     <Route
         key="landing"
         data-layout="no-layout"
         path='/'
         element={
-            <Suspense fallback={<GlobalSmallLoader />}>
-                <MallLanding />
-            </Suspense>
+            <DASHLightWeightLogin />
         }
     />,
     <Route
@@ -164,11 +153,12 @@ export const dashPublicRoutes = () => [
             <DASHLightWeightLogin />
         }
     />,
-    // Catch-all route - must be last
+    // Catch-all route - any path that doesn't match gets 404
+    // Session URLs (/:mallSlug/s/:sessionId/*) are handled by MallClientWrapper in Bootstrap
     <Route
         key="public-not-found"
         path="*"
-        element={<NotFound disableCountdown={true} time={5} redirect="/login" />}
+        element={<NotFound disableCountdown={true} time={5} redirect="/" />}
     />
 ];
 

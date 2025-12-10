@@ -76,7 +76,7 @@ const KitchnTabsPrivateApp: React.FC<KitchnTabsPrivateAppProps> = ({
         BUILD_TIME: getEnv('BUILD_TIME') || new Date().toISOString(),
         IS_ELECTRON: JSON.parse(getEnv('IS_ELECTRON') || 'false'),
         PLATFORM: getEnv('PLATFORM') || "unknown",
-        PLATFORM_TYPE: getEnv('PLATFORM_TYPE') || "desktop",
+        PLATFORM_TYPE: getEnv('PLATFORM_TYPE') || "web", // Default to web for BrowserRouter
         IS_ANDROID: JSON.parse(getEnv('IS_ANDROID') || 'false'),
         IS_IOS: JSON.parse(getEnv('IS_IOS') || 'false'),
         IS_CAPACITOR: JSON.parse(getEnv('IS_CAPACITOR') || 'false'),
@@ -139,7 +139,8 @@ const KitchnTabsPrivateApp: React.FC<KitchnTabsPrivateAppProps> = ({
         const calculateRoutePath = () => {
             const path = appPath || (common?.appPath || DASHAdminSystemConstants.system.URL_PREFIX);
             const cleanPath = path.replace(/\/\*$/, '');
-            dashStorage.setItem('currentAppPath', cleanPath);
+            // @deprecated - removed currentAppPath storage that caused path duplication
+            // dashStorage.setItem('currentAppPath', cleanPath);
             console.log('ROUTE-BASE-PATH:', cleanPath);
             return path;
         };
@@ -292,12 +293,12 @@ const KitchnTabsPrivateApp: React.FC<KitchnTabsPrivateAppProps> = ({
                             LayoutComponent={DomainAppLayout}
                         >
                             <Route
-                                path={routePath + "/*"}
+                                path={"/*"}
                                 element={
                                     <Suspense fallback={<GlobalSmallLoader message="Loading admin interface..." />}>
                                         {children}
                                         <DASHAdmin
-                                            basePath={routePath}
+                                            basePath={"/"}
                                             customDataProvider={dataProvider}
                                             customAuthProvider={authProvider}
                                             customQueryClient={customQueryClient}

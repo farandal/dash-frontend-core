@@ -81,14 +81,15 @@ const tenantImages = AuthPersistenceService.getTenantImages();
 
 // Create initial app state for Redux
 const getDefaultAppCommon = () => {
-    return {
+   
+    const settings =  {
         ...defaultCommon,
         appPath: '/',
         navExpanded: dashStorage.getItem('dashNavExpanded') ? dashStorage.getItem('dashNavExpanded') === 'true' : true,
         navSize: dashStorage.getItem('dashNavSize') || 'small',       
         width: window.innerWidth,
         height: window.innerHeight,
-        headerToolBar: () => <></>,
+        headerToolBar: () => <>...</>,
         panelSettings: {
             appName: 'KitchnTabs.com',
             horizontalLogo: tenantImages?.horizontal_logo?.original || horizontalLogo,
@@ -96,6 +97,8 @@ const getDefaultAppCommon = () => {
             loginBackground: tenantImages?.banner?.original || LoginBackground,
         },
     };
+
+    return settings;
 };
 
 const defaultAppSettings = () => ({
