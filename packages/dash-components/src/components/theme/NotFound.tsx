@@ -1,16 +1,12 @@
 import * as React from 'react';
 import {
-	useAuthenticated,
-	useTranslate,
-	Title,
-	CatchAllComponent,
 	TitleComponent,
 } from 'react-admin';
 
 import { Button } from '@mui/material';
 import  ErrorOutline  from '@mui/icons-material/ErrorOutline'
 import { useNavigate } from 'react-router';
-import { DASHAuthenticationService } from 'dash-admin';
+
 
 function goBack() {
 	window.history.go(-1);

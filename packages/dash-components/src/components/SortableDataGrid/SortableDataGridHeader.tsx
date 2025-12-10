@@ -44,8 +44,10 @@ export const SortableDatagridHeader = (props: SortableDatagridHeaderProps) => {
         isRowSelectable,
     } = props;
 
+    {/* @ts-ignore */}
     const resource = useResourceContext(props);
     const translate = useTranslate();
+        {/* @ts-ignore */}
     const { sort, data, onSelect, selectedIds, setSort } = useListContext(props);
     // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
     const { expandSingle } = useDatagridContext();
@@ -155,6 +157,7 @@ export const SortableDatagridHeader = (props: SortableDatagridHeaderProps) => {
                                 ((field.props as any).sortBy || (field.props as any).source)
                             }
                             key={(field.props as any).source || index}
+                                /* @ts-ignore */
                             resource={resource}
                             updateSort={updateSort}
                         />

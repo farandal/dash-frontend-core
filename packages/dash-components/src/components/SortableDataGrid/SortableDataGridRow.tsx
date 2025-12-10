@@ -143,6 +143,7 @@ const SortableDatagridRow: FC<DatagridRowProps> = React.forwardRef(
 
         return (
             <RecordContextProvider value={record}>
+                {/* @ts-ignore */}
                 <TableRow
                     ref={ref}
                     className={clsx(className, {
@@ -213,11 +214,13 @@ const SortableDatagridRow: FC<DatagridRowProps> = React.forwardRef(
                     >
                         <TableCell colSpan={nbColumns}>
                             {isElement(expand)
+                            /*  @ts-ignore */
                                 ? cloneElement(expand, {
                                     record,
                                     resource,
                                     id: String(id),
                                 })
+                                  /*  @ts-ignore */
                                 : createElement(expand, {
                                     record,
                                     resource,
