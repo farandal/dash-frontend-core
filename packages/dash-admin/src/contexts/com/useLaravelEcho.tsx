@@ -296,7 +296,7 @@ const useLaravelEcho = ({
                 cleanup();
             }
         };
-    }, [userId]);
+    }, [userId, enabled]);
 
 
 
