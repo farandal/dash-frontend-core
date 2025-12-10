@@ -631,7 +631,7 @@ const AttributeToInput = (
                     label={input.label}
                     source={input.attribute}
                     choices={enumToChoices(input.type)}
-                    options={input.fieldProps}
+                    InputProps={input.fieldOptions}
                     onChange={e => {
                         if (options?.handleChange) {
                             options.handleChange(e);

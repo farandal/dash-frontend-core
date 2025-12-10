@@ -76,7 +76,6 @@ const DashAutoListFilterFormWithButton = React.forwardRef<IToolbarFiltersHandler
 				<FilterFormBase
 					onSubmit={onSubmit}
 					filters={filters}
-					initialValues={filterValues}
 					
 				/>
 				{ resourceConfig?.filterButtonPosition === 'filters-container' &&

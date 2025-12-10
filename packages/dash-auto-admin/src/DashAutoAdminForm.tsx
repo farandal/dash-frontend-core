@@ -1,5 +1,5 @@
 import { Box } from '@mui/material';
-import { JSX, useCallback } from 'react';
+import { JSX } from 'react';
 import {
 	useResourceContext,
 	useRecordContext,
@@ -92,7 +92,9 @@ const DashAutoAdminForm: React.FC<IDashAutoAdminForm> = ({
 				}
 
                 const { data } = await dataProvider.update(resource, { 
-                    data: values 
+                    id: record?.id,
+                    data: values,
+                    previousData: record
                 });
 				if (debug) console.log('dataProvider.update returned data:', data);
 

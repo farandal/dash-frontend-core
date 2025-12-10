@@ -1,3 +1,4 @@
+import { JSX } from 'react';
 import IDashAutoAdminAttribute from '../interfaces/IDashAutoAdminAttribute';
 
 const validate =

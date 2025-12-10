@@ -112,7 +112,9 @@ const DashAutoTabbedForm: React.FC<IDashAutoTabbedForm> = ({
 				
 
                 const { data } = await dataProvider.update(resource+"/"+record.id, { 
-                    data: values 
+                    id: record?.id,
+                    data: values,
+                    previousData: record
                 });
        
 				if (onSubmit) {

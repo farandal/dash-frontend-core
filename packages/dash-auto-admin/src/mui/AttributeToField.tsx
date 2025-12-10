@@ -393,6 +393,7 @@ export const AttributeToField = (
 		}
 		return (
 			<ComponentWrapper {...componentWrapperProps} >
+			{/* @ts-ignore - Record type compatibility */}
 			<ReferenceArrayField {...componentProps} >
                 <SingleFieldList>
 					<ChipField source={sourceName} />

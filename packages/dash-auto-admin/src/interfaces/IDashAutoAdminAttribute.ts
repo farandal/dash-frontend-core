@@ -100,4 +100,5 @@ export default interface IDashAutoAdminAttribute<M = any> {
 
     metadata?: M;
     default_value?: any;
+    fieldOptions?:any;
 }

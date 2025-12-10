@@ -13,7 +13,8 @@ const useSafeListContext = (): any => {
 const ExtendedPagination:FC<PaginationProps> = (props) => {
 	const list = useSafeListContext();
 	return list && list.total > list.perPage ? (
-		<Pagination rowsPerPageOptions={[25, 50, 100, 250, 500, 1000]} {...props} />
+		// @ts-ignore - pageSizeOptions prop compatibility
+		<Pagination pageSizeOptions={[25, 50, 100, 250, 500, 1000]} {...props} />
 	) : (
 		<></>
 	);

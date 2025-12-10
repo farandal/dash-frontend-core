@@ -18,6 +18,7 @@ interface AutoDataGridProps {
     /** BulkActions,(optional) resolves from resourceConfig, but in some cases without schema could work, not tested. */
     resourceConfig?: IDashAutoAdminResourceConfig;
     className?: string;
+    bulkActions?: React.ReactNode;
 }
 
 export type IAutoDataGrid = AutoDataGridProps;

@@ -6,7 +6,7 @@
  * 
  * Can be extended or overridden by apps for custom behavior.
  */
-import type { AuthProvider } from 'ra-core';
+import type { AuthProvider } from 'react-admin';
 
 // ============================================================================
 // TYPES

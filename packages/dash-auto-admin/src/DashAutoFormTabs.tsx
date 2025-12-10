@@ -4,12 +4,6 @@ import IDashAutoAdminFormOptions from './interfaces/IDashAutoAdminFormOptions';
 import groupByTabs from './utils/groupByTabs';
 import AttributeToInput from './mui/AttributeToInput';
 import IDashAutoAdminResourceConfig from './interfaces/IDashAutoAdminResourceConfig';
-
-import { IDASHAppState } from 'dash-admin-state';
-import { CLEAR_FORM_DATA, SET_FORM_DATA } from 'dash-admin-state/src/redux/actions/ActionTypes';
-import { useEffect } from 'react';
-import { useFormContext } from 'react-hook-form';
-
 interface IAutoForm {
 	schema: IDashAutoAdminAttribute[],
 	resourceConfig: IDashAutoAdminResourceConfig,

@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import autoFiltersGenerator from './DashAutoFiltersGenerator';
-import { PaginationProps, useUnselectAll } from 'react-admin';
+import {  useUnselectAll } from 'react-admin';
+import { PaginationProps } from 'react-admin/src';
 
 import { List } from 'react-admin';
 
@@ -173,7 +174,7 @@ const DashAutoList: React.FC<IDashAutoList> = ({
 
 	const finalListProps = {
 		/* default storeKey */
-		sort: { field: 'id', order: 'ASC' },
+		sort: { field: 'id', order: 'ASC' as const },
 		storeKey: resourceConfig?.model,
 		// Explicitly set resource to ensure List component works correctly
 		resource: resourceConfig?.model,

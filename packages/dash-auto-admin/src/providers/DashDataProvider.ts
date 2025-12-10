@@ -6,7 +6,7 @@
  * 
  * Can be extended or overridden by apps for custom behavior.
  */
-import type { DataProvider } from 'ra-core';
+import type { DataProvider } from 'react-admin';
 import queryString from 'query-string';
 
 // ============================================================================
