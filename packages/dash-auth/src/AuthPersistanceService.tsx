@@ -33,7 +33,9 @@ export class AuthPersistenceService {
 
       // Remove logout markers when saving new auth data
       const cleanAuthData = { ...authToPersist };
+      /* @ts-ignore */
       delete cleanAuthData._loggedOut;
+       /* @ts-ignore */
       delete cleanAuthData._loggedOutAt;
 
       dashStorage.setItem(this.AUTH_KEY, JSON.stringify(cleanAuthData));
