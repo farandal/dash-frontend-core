@@ -11,7 +11,8 @@ import {
   Input,
   Card,
   CardMedia,
-  IconButton
+  IconButton,
+  Chip
 } from "@mui/material";
 import { CloudUpload, Delete } from "@mui/icons-material";
 

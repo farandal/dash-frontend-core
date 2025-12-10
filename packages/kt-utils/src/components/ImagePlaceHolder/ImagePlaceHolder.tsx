@@ -1,17 +1,17 @@
 import { Tooltip } from "@mui/material";
 import checkIfImageExists from "./checkIfImageExists";
-import { HtmlHTMLAttributes, useEffect, useState } from "react";
+import { HtmlHTMLAttributes, JSX, useEffect, useState } from "react";
 
 type IImagePlaceHolder = {
     loading?: JSX.Element
-    placeHolder: JSX.Element | string
+    placeHolder?: JSX.Element | string
     src: string,
     alt?: string,
     title?: string
 } & HtmlHTMLAttributes<HTMLDivElement>
 
 const ImagePlaceHolder: React.FC<IImagePlaceHolder> = ({
-    placeHolder,
+    placeHolder = null,
     src,
     alt = "",
     loading = null,
@@ -49,7 +49,7 @@ const ImagePlaceHolder: React.FC<IImagePlaceHolder> = ({
                 <Tooltip
                     title={alt}
                 >
-                    {typeof placeHolder === "string" ? <img src={placeHolder} alt={alt} style={{ objectFit: 'cover', width: '100%', height: '100%' }} /> : placeHolder}
+                    { typeof placeHolder === "string" ? <img src={placeHolder} alt={alt} style={{ objectFit: 'cover', width: '100%', height: '100%' }} /> : placeHolder}
                 </Tooltip>
             )}
         </div>
