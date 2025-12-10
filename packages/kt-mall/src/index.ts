@@ -20,3 +20,11 @@ export * from './components';
 
 // Interfaces
 export * from './interfaces';
+
+// Contexts - Bridge context for WebSocket events
+export { 
+    MallEchoBridgeContext,
+    MallEchoBridgeProvider,
+    useMallEchoBridge,
+    type IMallEchoBridgeContext,
+} from './contexts/MallEchoBridgeContext';

@@ -346,8 +346,8 @@ const OrderProductsMallFilters: React.FC<IOrderProductsMallFilters> = (props) =>
                 window.dispatchEvent(new MessageEvent('DASHGlobalErrorIgnore'));
             }*/
 
-            const currentAppPath = dashStorage.getItem('currentAppPath');
-            const session_hash = currentAppPath ? currentAppPath.split('/').pop() : undefined;
+            // @deprecated - removed currentAppPath logic, use mall-session-hash instead
+            const session_hash = dashStorage.getItem('mall-session-hash');
             
             const {data} = await axios.post(
                 `${storesPath}/${selectedStore.id}/assistance`,

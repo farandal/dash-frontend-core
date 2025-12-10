@@ -112,7 +112,7 @@ const MallClientAppResources: IDashAutoAdminResourceConfig[] = [
         closeDrawerAfterSave: true,
         showNotifyAfterSubmit: false,
         showDialogAfterSubmit: false,
-        redirectAfterCreate: "edit",
+        redirectAfterCreate: "list",
         redirectAfterUpdate: "edit",
         refreshAfter: true,
        /*referenceFilters: [

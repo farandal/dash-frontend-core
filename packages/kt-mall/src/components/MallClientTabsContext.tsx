@@ -1,8 +1,12 @@
-import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useAxios } from 'dash-axios-hook';
 import { dashStorage } from 'dash-utils';
-import useLaravelEcho from 'dash-admin/src/contexts/com/useLaravelEcho';
 import type { IDashAutoAdminResourceConfig } from 'dash-auto-admin';
+import { useMallEchoBridge } from '../contexts/MallEchoBridgeContext';
+
+// NOTE: This context uses the MallEchoBridge to receive WebSocket events.
+// The MallEchoBridgeProvider (in MallClientWrapper) bridges events from MallSessionEchoContext.
+// MallSessionEchoContext is the SINGLE SOURCE OF TRUTH for WebSocket subscriptions.
 
 // Notification data structure from API
 export interface IMallNotification {
@@ -56,6 +60,7 @@ export interface ITenantTabStatus {
     tenant_id: number;
     tenant_name: string;
     status: string;
+    progress: number;
     timestamp: string;
     products: Array<{
         id: number;
@@ -75,8 +80,11 @@ export interface IMallClientTabsContextValue {
     error: string | null;
     unreadCount: number;
     totalCount: number;
-    refreshNotifications: (tabId?: number) => Promise<void>;
+    lastEvent: any | null; // Last WebSocket event received
+    refreshNotifications: (force?: boolean) => Promise<void>;
     getTenantStatusesForTab: (masterTabId: number) => ITenantTabStatus[];
+    markAsRead: (notificationId: number) => Promise<void>;
+    markAllAsRead: () => Promise<void>;
 }
 
 // Create context with default values
@@ -88,8 +96,11 @@ const MallClientTabsContext = createContext<IMallClientTabsContextValue>({
     error: null,
     unreadCount: 0,
     totalCount: 0,
+    lastEvent: null,
     refreshNotifications: async () => {},
     getTenantStatusesForTab: () => [],
+    markAsRead: async () => {},
+    markAllAsRead: async () => {},
 });
 
 // Hook to use the context
@@ -112,7 +123,7 @@ interface MallClientTabsProviderProps {
 export const MallClientTabsProvider: React.FC<MallClientTabsProviderProps> = ({ 
     children, 
     mode,
-    resourceConfig 
+    resourceConfig,
 }) => {
     const [sessionHash, setSessionHash] = useState<string | null>(null);
     const [notifications, setNotifications] = useState<IMallNotification[]>([]);
@@ -122,7 +133,14 @@ export const MallClientTabsProvider: React.FC<MallClientTabsProviderProps> = ({
     const [unreadCount, setUnreadCount] = useState(0);
     const [totalCount, setTotalCount] = useState(0);
     
+    // Track if initial fetch has been done to prevent duplicate requests
+    const initialFetchDone = useRef(false);
+    
     const axios = useAxios();
+
+    // Get lastEvent from the MallEchoBridge context
+    // This is the SINGLE SOURCE OF TRUTH - events come from MallSessionEchoContext via bridge
+    const { lastEvent } = useMallEchoBridge();
 
     // Get session hash from localStorage
     useEffect(() => {
@@ -131,20 +149,14 @@ export const MallClientTabsProvider: React.FC<MallClientTabsProviderProps> = ({
         setSessionHash(hash);
     }, []);
 
-    // Subscribe to mall session WebSocket channel directly
-    const { lastEvent, isConnected } = useLaravelEcho({
-        type: 'public',
-        channel: sessionHash ? `session.${sessionHash}` : null,
-        enabled: !!sessionHash,
-        debug: true,
-    });
-
-    // Log connection status
+    // DEBUG: Log every lastEvent change from external source
     useEffect(() => {
-        if (sessionHash) {
-            console.log(`[MallClientTabsContext] WebSocket ${isConnected ? 'connected' : 'disconnected'} to session.${sessionHash}`);
-        }
-    }, [isConnected, sessionHash]);
+        console.log('[MallClientTabsContext] 🔔 externalLastEvent changed:', lastEvent ? {
+            event: lastEvent.event,
+            hasData: !!lastEvent.data,
+            dataType: lastEvent.data?.type,
+        } : 'null');
+    }, [lastEvent]);
 
     // Process notifications to extract tenant statuses grouped by master_tab_id
     const processNotifications = useCallback((notificationList: IMallNotification[]) => {
@@ -173,10 +185,25 @@ export const MallClientTabsProvider: React.FC<MallClientTabsProviderProps> = ({
                         // Status can come in different field names depending on source
                         const status = data.child_status || data.status || data.tenant_tab_status || notification.status || 'CREATED';
                         
+                        // Get progress from notification data, fallback to calculation
+                        const progress = (data as any).progress ?? (() => {
+                            switch (status) {
+                                case 'CREATED': return 10;
+                                case 'CONFIRMED': return 25;
+                                case 'IN_PREPARATION': return 50;
+                                case 'PREPARED': return 75;
+                                case 'DELIVERED': return 90;
+                                case 'CLOSED': return 100;
+                                case 'CANCELLED': return 0;
+                                default: return 0;
+                            }
+                        })();
+                        
                         console.log('[MallClientTabsContext] Processing notification for tenant', {
                             tenantId,
                             tenantName: data.tenant_name,
                             status,
+                            progress,
                             masterTabId,
                         });
 
@@ -185,6 +212,7 @@ export const MallClientTabsProvider: React.FC<MallClientTabsProviderProps> = ({
                             tenant_id: tenantId,
                             tenant_name: data.tenant_name || notification.tenant_name || `Tienda #${tenantId}`,
                             status: status,
+                            progress: progress,
                             timestamp: notification.created_at,
                             products: data.products || [],
                         });
@@ -203,7 +231,13 @@ export const MallClientTabsProvider: React.FC<MallClientTabsProviderProps> = ({
     }, []);
 
     // Fetch notifications from API
-    const fetchNotifications = useCallback(async (tabId?: number) => {
+    const fetchNotifications = useCallback(async (force = false) => {
+        // Skip if already fetched and not forced
+        if (initialFetchDone.current && !force) {
+            console.log('[MallClientTabsContext] Skipping fetch - already loaded');
+            return;
+        }
+
         if (!sessionHash) {
             console.log('[MallClientTabsContext] No session hash available');
             return;
@@ -213,11 +247,7 @@ export const MallClientTabsProvider: React.FC<MallClientTabsProviderProps> = ({
         setError(null);
 
         try {
-            // Build URL with optional tab_id filter
-            let url = `/public/mall/session/${sessionHash}/notifications`;
-            if (tabId) {
-                url += `?tab_id=${tabId}`;
-            }
+            const url = `/public/mall/session/${sessionHash}/notifications`;
 
             console.log('[MallClientTabsContext] Fetching notifications:', url);
             const response = await axios.get(url);
@@ -231,6 +261,9 @@ export const MallClientTabsProvider: React.FC<MallClientTabsProviderProps> = ({
                 // Process notifications to extract tenant statuses
                 processNotifications(notificationList);
                 
+                // Mark initial fetch as done
+                initialFetchDone.current = true;
+                
                 console.log('[MallClientTabsContext] Loaded notifications:', notificationList.length);
             }
         } catch (err: any) {
@@ -241,10 +274,44 @@ export const MallClientTabsProvider: React.FC<MallClientTabsProviderProps> = ({
         }
     }, [sessionHash, axios, processNotifications]);
 
-    // Refresh notifications
-    const refreshNotifications = useCallback(async (tabId?: number) => {
-        await fetchNotifications(tabId);
+    // Refresh notifications (force fetch)
+    const refreshNotifications = useCallback(async (force = false) => {
+        await fetchNotifications(force);
     }, [fetchNotifications]);
+
+    // Mark a single notification as read
+    const markAsRead = useCallback(async (notificationId: number) => {
+        if (!sessionHash) return;
+        
+        // Update local state immediately
+        setNotifications(prev => 
+            prev.map(n => n.id === notificationId ? { ...n, is_read: true } : n)
+        );
+        setUnreadCount(prev => Math.max(0, prev - 1));
+
+        try {
+            await axios.post(`/public/mall/session/${sessionHash}/notifications/mark-read`, {
+                notification_ids: [notificationId]
+            });
+        } catch (error) {
+            console.error('[MallClientTabsContext] Error marking notification as read:', error);
+        }
+    }, [sessionHash, axios]);
+
+    // Mark all notifications as read
+    const markAllAsRead = useCallback(async () => {
+        if (!sessionHash) return;
+        
+        // Update local state immediately
+        setNotifications(prev => prev.map(n => ({ ...n, is_read: true })));
+        setUnreadCount(0);
+
+        try {
+            await axios.post(`/public/mall/session/${sessionHash}/notifications/mark-read`, {});
+        } catch (error) {
+            console.error('[MallClientTabsContext] Error marking all notifications as read:', error);
+        }
+    }, [sessionHash, axios]);
 
     // Get tenant statuses for a specific master tab
     const getTenantStatusesForTab = useCallback((masterTabId: number): ITenantTabStatus[] => {
@@ -253,7 +320,7 @@ export const MallClientTabsProvider: React.FC<MallClientTabsProviderProps> = ({
 
     // Initial fetch when session hash is available
     useEffect(() => {
-        if (sessionHash) {
+        if (sessionHash && !initialFetchDone.current) {
             fetchNotifications();
         }
     }, [sessionHash]);
@@ -265,27 +332,33 @@ export const MallClientTabsProvider: React.FC<MallClientTabsProviderProps> = ({
         // The lastEvent from useLaravelEcho has structure: { event: string, data: any, channel?: string }
         // The data contains the actual event payload with type, model, etc.
         const eventData = lastEvent.data || lastEvent;
+        const notificationPayload = lastEvent.notificationPayload || eventData?.notificationPayload;
         
         console.log('[MallClientTabsContext] Checking lastEvent:', {
             eventName: lastEvent.event,
             eventType: eventData?.type,
             dataType: eventData?.data?.type,
             model: eventData?.model,
+            notificationClass: notificationPayload?.class,
         });
 
         // Check if this is a mall order status update event
         // The event can come in different formats depending on how it's dispatched
         const isMallStatusUpdate = 
             lastEvent.event === 'mall_order_status_update' ||
+            lastEvent.type === 'mall_order_status_update' ||
             eventData?.type === 'mall_order_status_update' ||
             eventData?.data?.type === 'mall_order_status_update' ||
+            eventData?.data?.event === 'mall_order_status_update' ||
+            notificationPayload?.class === 'MallSessionOrderStatusNotification' ||
             (eventData?.model === 'Domain\\App\\Models\\Mall\\MallSession' && eventData?.type === 'mall_order_status_update');
 
         if (isMallStatusUpdate) {
             console.log('[MallClientTabsContext] ✅ Received status update event');
             
-            // Extract data from event - the actual payload is in eventData.data or eventData
-            const payload = eventData?.data || eventData || {};
+            // Extract data from event - handle nested notificationPayload structure
+            // The data can be in: notificationPayload.notificationPayload, eventData.data, or eventData directly
+            const payload = notificationPayload?.notificationPayload || eventData?.data || eventData || {};
             const masterTabId = payload.master_tab_id;
             const tenantTabId = payload.tenant_tab_id;
             const tenantId = payload.tenant_id;
@@ -307,6 +380,26 @@ export const MallClientTabsProvider: React.FC<MallClientTabsProviderProps> = ({
                     const updated = { ...prev };
                     const existingStatuses = updated[masterTabId] || [];
                     
+                    // Calculate progress from notification data or fallback
+                    const progress = (() => {
+                        // First try to get progress from the notification data if available
+                        const notificationData = lastEvent?.data;
+                        if (notificationData && (notificationData as any).progress !== undefined) {
+                            return (notificationData as any).progress;
+                        }
+                        // Fallback to status-based calculation
+                        switch (status) {
+                            case 'CREATED': return 10;
+                            case 'CONFIRMED': return 25;
+                            case 'IN_PREPARATION': return 50;
+                            case 'PREPARED': return 75;
+                            case 'DELIVERED': return 90;
+                            case 'CLOSED': return 100;
+                            case 'CANCELLED': return 0;
+                            default: return 0;
+                        }
+                    })();
+                    
                     // Find and update existing tenant status or add new one
                     const existingIndex = existingStatuses.findIndex(s => s.tenant_id === tenantId);
                     
@@ -315,6 +408,7 @@ export const MallClientTabsProvider: React.FC<MallClientTabsProviderProps> = ({
                         tenant_id: tenantId,
                         tenant_name: tenantName || `Tienda #${tenantId}`,
                         status: status,
+                        progress: progress,
                         timestamp: new Date().toISOString(),
                         products: products,
                     };
@@ -334,12 +428,12 @@ export const MallClientTabsProvider: React.FC<MallClientTabsProviderProps> = ({
                 });
             }
             
-            // Also refresh from API to get full data
-            refreshNotifications(masterTabId);
+            // Don't auto-refresh from API on WebSocket event - we already updated local state
+            // refreshNotifications will be called manually if needed
         } else {
             console.log('[MallClientTabsContext] ❌ Event not recognized as mall status update');
         }
-    }, [lastEvent, refreshNotifications]);
+    }, [lastEvent]);
 
     // Memoize context value
     const contextValue = useMemo<IMallClientTabsContextValue>(() => ({
@@ -350,8 +444,11 @@ export const MallClientTabsProvider: React.FC<MallClientTabsProviderProps> = ({
         error,
         unreadCount,
         totalCount,
+        lastEvent,
         refreshNotifications,
         getTenantStatusesForTab,
+        markAsRead,
+        markAllAsRead,
     }), [
         sessionHash,
         notifications,
@@ -360,8 +457,11 @@ export const MallClientTabsProvider: React.FC<MallClientTabsProviderProps> = ({
         error,
         unreadCount,
         totalCount,
+        lastEvent,
         refreshNotifications,
         getTenantStatusesForTab,
+        markAsRead,
+        markAllAsRead,
     ]);
 
     return (

@@ -14,12 +14,10 @@ import {
     linearProgressClasses,
     styled
 } from "@mui/material";
-import React, { useContext, useEffect, useState } from "react";
-import { useGetOne, useRefresh, WithListContext } from "react-admin";
+import React, { useEffect, useState } from "react";
+import { useGetOne, useRefresh, WithListContext, useListContext } from "react-admin";
 import DashResourceButton from "dash-auto-admin/src/toolbar/buttons/DashResourceButton";
 import { toast } from 'react-toastify';
-import LaravelEchoContext from 'dash-admin/src/contexts/com/LaravelEchoContext';
-import type { ILaravelEchoContext } from 'dash-admin/src/contexts/com/LaravelEchoContext';
 import { ImagePlaceHolder as ImagePlaceHolder } from "kt-utils";
 import { useMallClientTabsContext, ITenantTabStatus } from './MallClientTabsContext';
 
@@ -86,14 +84,49 @@ const STATUS_LABELS: Record<string, string> = {
 
 const OrderProductsView: React.FC<IDashAutoAdminCustomFieldComponent> = ({ record, resourceConfig }) => {
     const tab: ITab = record as ITab;
+    
+    // Use MallClientTabsContext for WebSocket events
+    // This context subscribes to the WebSocket channel and provides lastEvent
+    const { lastEvent } = useMallClientTabsContext();
 
     // Use the resource model from config, which will be mapped by the data provider
-    const { data: tabData } = useGetOne(resourceConfig?.model || 'tab', { id: tab.id });
+    const { data: tabData, refetch } = useGetOne(resourceConfig?.model || 'tab', { id: tab.id });
+
+    // Refetch when notification arrives for this tab
+    useEffect(() => {
+        if (!lastEvent) return;
+        
+        console.log('[OrderProductsView] Checking lastEvent for tab', tab.id, lastEvent);
+        
+        const eventData = lastEvent?.data || lastEvent;
+        const notificationPayload = (lastEvent as any)?.notificationPayload;
+        
+        // Check if this notification is for this tab
+        const masterTabId = eventData?.master_tab_id || notificationPayload?.notificationPayload?.master_tab_id;
+        const tenantTabId = eventData?.tenant_tab_id || notificationPayload?.notificationPayload?.tenant_tab_id;
+        
+        if (masterTabId === tab.id || tenantTabId === tab.id) {
+            console.log('[OrderProductsView] Tab ID match, refetching...');
+            refetch();
+        }
+        
+        // Also refetch on any mall order status update
+        const isMallOrderUpdate = 
+            (lastEvent as any)?.type === "mall_order_status_update" ||
+            lastEvent?.event === "mall_order_status_update" ||
+            eventData?.type === "mall_order_status_update" ||
+            eventData?.event === "mall_order_status_update";
+            
+        if (isMallOrderUpdate) {
+            console.log('[OrderProductsView] Mall order update detected, refetching...');
+            refetch();
+        }
+    }, [lastEvent, tab.id, refetch]);
 
     if (!tabData) return <CircularProgress />;
     return (
         <div>
-            <StoreProgressBars masterTabId={tabData.id} />
+            <StoreProgressBars masterTabId={tabData.id} record={tabData} />
          
             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                 <tbody>
@@ -112,13 +145,13 @@ const OrderProductsView: React.FC<IDashAutoAdminCustomFieldComponent> = ({ recor
                                 <div style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>
                                     x{item.quantity} - {item.product.name}
                                 </div>
-                                <Chip 
+                                {/*<Chip 
                                     label={tabData.status_localized || tabData.status} 
                                     size="small" 
                                     color={getStatusColor(tabData.status) as any} 
                                     variant="outlined"
                                     sx={{ mt: 0.5, mb: 0.5 }}
-                                />
+                                />*/}
                                 {item.note && <div>Nota: {item.note}</div>}
                                 {item.modifiers && item.modifiers.length > 0 && (
                                     <div>
@@ -153,36 +186,149 @@ interface IOrderStatusUpdateNotification {
 
 interface StoreProgressBarsProps {
     masterTabId: number;
+    record?: any; // API record with progress data
 }
 
 // Compact component to display store progress bars with label overlay
-const StoreProgressBars: React.FC<StoreProgressBarsProps> = ({ masterTabId }) => {
+const StoreProgressBars: React.FC<StoreProgressBarsProps> = ({ masterTabId, record }) => {
     const { getTenantStatusesForTab, loading } = useMallClientTabsContext();
     
-    // Get tenant statuses from context
+    // Get tenant statuses from context (WebSocket updates)
     const tenantTabs = getTenantStatusesForTab(masterTabId);
 
-    // Don't render if no tenant tabs and not loading
-    if (tenantTabs.length === 0 && !loading) {
-        return null;
-    }
-
-    if (loading && tenantTabs.length === 0) {
+    // If we have tenant statuses from context, use them (real-time updates)
+    if (tenantTabs.length > 0) {
         return (
-            <Box sx={{ display: 'flex', justifyContent: 'center', py: 0.5 }}>
-                <CircularProgress size={16} />
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5, mb: 1 }}>
+                {tenantTabs.map((tenantTab: ITenantTabStatus) => (
+                    <Box key={tenantTab.tenant_tab_id} sx={{ position: 'relative' }}>
+                        <ThinProgressBar 
+                            variant="determinate" 
+                            value={tenantTab.progress || STATUS_PROGRESS[tenantTab.status] || 0}
+                            color={getProgressColor(tenantTab.status)}
+                            sx={{ height: 18, borderRadius: 1 }}
+                        />
+                        <Box 
+                            sx={{ 
+                                position: 'absolute', 
+                                top: 0, 
+                                left: 0, 
+                                right: 0, 
+                                bottom: 0, 
+                                display: 'flex', 
+                                justifyContent: 'space-between', 
+                                alignItems: 'center',
+                                px: 1
+                            }}
+                        >
+                            <Typography 
+                                variant="caption" 
+                                sx={{ 
+                                    fontSize: '0.65rem', 
+                                    fontWeight: 'medium',
+                                    color: 'text.primary',
+                                    textShadow: '0 0 2px rgba(255,255,255,0.8)',
+                                    lineHeight: 1
+                                }}
+                                noWrap
+                            >
+                                {tenantTab.tenant_name}
+                            </Typography>
+                            <Typography 
+                                variant="caption" 
+                                sx={{ 
+                                    fontSize: '0.6rem',
+                                    fontWeight: 'bold',
+                                    color: 'text.secondary',
+                                    textShadow: '0 0 2px rgba(255,255,255,0.8)',
+                                    lineHeight: 1
+                                }}
+                            >
+                                {STATUS_LABELS[tenantTab.status] || tenantTab.status}
+                            </Typography>
+                        </Box>
+                    </Box>
+                ))}
             </Box>
         );
     }
 
-    return (
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5, mb: 1 }}>
-            {tenantTabs.map((tenantTab: ITenantTabStatus) => (
-                <Box key={tenantTab.tenant_tab_id} sx={{ position: 'relative' }}>
+    // Fallback: Show progress from API record's tenant_tabs (initial load before WebSocket updates)
+    if (record?.tenant_tabs && Array.isArray(record.tenant_tabs) && record.tenant_tabs.length > 0) {
+        return (
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5, mb: 1 }}>
+                {record.tenant_tabs.map((tenantTab: any) => {
+                    const status = tenantTab.status || 'CREATED';
+                    const progress = tenantTab.progress ?? STATUS_PROGRESS[status] ?? 0;
+                    const tenantName = tenantTab.tenant_name || 'Tienda';
+
+                    return (
+                        <Box key={tenantTab.id} sx={{ position: 'relative' }}>
+                            <ThinProgressBar 
+                                variant="determinate" 
+                                value={progress}
+                                color={getProgressColor(status)}
+                                sx={{ height: 18, borderRadius: 1 }}
+                            />
+                            <Box 
+                                sx={{ 
+                                    position: 'absolute', 
+                                    top: 0, 
+                                    left: 0, 
+                                    right: 0, 
+                                    bottom: 0, 
+                                    display: 'flex', 
+                                    justifyContent: 'space-between', 
+                                    alignItems: 'center',
+                                    px: 1
+                                }}
+                            >
+                                <Typography 
+                                    variant="caption" 
+                                    sx={{ 
+                                        fontSize: '0.65rem', 
+                                        fontWeight: 'medium',
+                                        color: 'text.primary',
+                                        textShadow: '0 0 2px rgba(255,255,255,0.8)',
+                                        lineHeight: 1
+                                    }}
+                                    noWrap
+                                >
+                                    {tenantName}
+                                </Typography>
+                                <Typography 
+                                    variant="caption" 
+                                    sx={{ 
+                                        fontSize: '0.6rem',
+                                        fontWeight: 'bold',
+                                        color: 'text.secondary',
+                                        textShadow: '0 0 2px rgba(255,255,255,0.8)',
+                                        lineHeight: 1
+                                    }}
+                                >
+                                    {STATUS_LABELS[status] || status}
+                                </Typography>
+                            </Box>
+                        </Box>
+                    );
+                })}
+            </Box>
+        );
+    }
+
+    // Fallback for single store or legacy records without tenant_tabs
+    if (record) {
+        const status = record.status || 'CREATED';
+        const progress = record.progress ?? STATUS_PROGRESS[status] ?? 0;
+        const tenantName = record.tenant?.name || record.tenant?.attributes?.public_name || 'Tienda';
+
+        return (
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5, mb: 1 }}>
+                <Box sx={{ position: 'relative' }}>
                     <ThinProgressBar 
                         variant="determinate" 
-                        value={STATUS_PROGRESS[tenantTab.status] || 0}
-                        color={getProgressColor(tenantTab.status)}
+                        value={progress}
+                        color={getProgressColor(status)}
                         sx={{ height: 18, borderRadius: 1 }}
                     />
                     <Box 
@@ -209,7 +355,7 @@ const StoreProgressBars: React.FC<StoreProgressBarsProps> = ({ masterTabId }) =>
                             }}
                             noWrap
                         >
-                            {tenantTab.tenant_name}
+                            {tenantName}
                         </Typography>
                         <Typography 
                             variant="caption" 
@@ -221,17 +367,30 @@ const StoreProgressBars: React.FC<StoreProgressBarsProps> = ({ masterTabId }) =>
                                 lineHeight: 1
                             }}
                         >
-                            {STATUS_LABELS[tenantTab.status] || tenantTab.status}
+                            {STATUS_LABELS[status] || status}
                         </Typography>
                     </Box>
                 </Box>
-            ))}
-        </Box>
-    );
+            </Box>
+        );
+    }
+
+    // Loading state
+    if (loading) {
+        return (
+            <Box sx={{ display: 'flex', justifyContent: 'center', py: 0.5 }}>
+                <CircularProgress size={16} />
+            </Box>
+        );
+    }
+
+    return null;
 };
 
 const MallClientTabsList: React.FC<IDashAutoAdminDataGrid> = ({ resourceConfig }) => {
-    const { lastEvent } = useContext<ILaravelEchoContext>(LaravelEchoContext);
+    // Use MallClientTabsContext for WebSocket events and tenant status tracking
+    // This context subscribes to the WebSocket channel and provides lastEvent
+    const { lastEvent, tenantStatusesByTab } = useMallClientTabsContext();
     const refresh = useRefresh();
 
     const [statusLabel] = useState({
@@ -257,35 +416,63 @@ const MallClientTabsList: React.FC<IDashAutoAdminDataGrid> = ({ resourceConfig }
 
     // Listen for tab status updates via WebSocket
     useEffect(() => {
+        if (!lastEvent) return;
+
+        
+        console.log('[MallClientTabsList] 🔔 Processing lastEvent:', {
+            event: lastEvent?.event,
+            type: (lastEvent as any)?.type,
+            dataType: lastEvent?.data?.type,
+            model: (lastEvent as any)?.model,
+        });
+        
         // Handle classic tab status updates
-        if (lastEvent?.model === "Domain\\App\\Models\\Tab\\Tab" && 
+        if ((lastEvent as any)?.model === "Domain\\App\\Models\\Tab\\Tab" && 
             lastEvent.data?.type === "tab.status") {
+            console.log('[MallClientTabsList] ✅ Tab status update detected');
             showMessage(`Se ha cambiado el estado de la orden ${lastEvent.data.old} a ${lastEvent.data.new}`);
             refresh();
+            return;
         }
         
         // Handle tab updates
-        if (lastEvent?.model === "Domain\\App\\Models\\Tab\\Tab" && 
+        if ((lastEvent as any)?.model === "Domain\\App\\Models\\Tab\\Tab" && 
             lastEvent.data?.type === "tab.update") {
+            console.log('[MallClientTabsList] ✅ Tab update detected');
             refresh();
+            return;
         }
 
-        // Handle mall order status updates - from Tab model
-        if ((lastEvent?.model === "Domain\\App\\Models\\Tab\\Tab" || lastEvent?.model === "Domain\\App\\Models\\Mall\\MallSession") && 
-            lastEvent.data?.type === "mall_order_status_update") {
-            const data = lastEvent.data.data || lastEvent.data;
-            showMessage(`${data.tenant_name || 'El restaurante'} ha actualizado tu orden a: ${statusLabel[data.status] || data.status}`);
-            refresh();
-        }
+        // Handle mall order status updates - check all possible event structures
+        const notificationPayload = lastEvent?.notificationPayload;
+        const eventData = lastEvent?.data || lastEvent;
+        const isMallOrderUpdate = 
+            lastEvent?.event === "mall_order_status_update" ||
+            lastEvent?.type === "mall_order_status_update" ||
+            eventData?.type === "mall_order_status_update" ||
+            eventData?.event === "mall_order_status_update" ||
+            notificationPayload?.class === "MallSessionOrderStatusNotification" ||
+            (lastEvent?.model === "Domain\\App\\Models\\Tab\\Tab" && eventData?.type === "mall_order_status_update") ||
+            (lastEvent?.model === "Domain\\App\\Models\\Mall\\MallSession" && eventData?.type === "mall_order_status_update") ||
+            (lastEvent?.model === "Domain\\App\\Models\\Order\\Order" && eventData?.type === "mall_order_status_update");
 
-        // Handle mall order status updates - from Order model
-        if (lastEvent?.model === "Domain\\App\\Models\\Order\\Order" && 
-            lastEvent.data?.type === "mall_order_status_update") {
-            const data = lastEvent.data.data || lastEvent.data;
-            showMessage(`${data.tenant_name || 'El restaurante'} ha actualizado tu orden a: ${statusLabel[data.status] || data.status}`);
+        console.log('[MallClientTabsList] isMallOrderUpdate check:', isMallOrderUpdate, {
+            'lastEvent.event': lastEvent?.event,
+            'lastEvent.type': lastEvent?.type,
+            'eventData.type': eventData?.type,
+            'eventData.event': eventData?.event,
+        });
+
+        if (isMallOrderUpdate) {
+            // Extract data from nested notificationPayload if present
+            const payload = notificationPayload?.notificationPayload || eventData?.data || eventData || {};
+            const tenantName = payload.tenant_name || 'El restaurante';
+            const status = payload.status || payload.new || 'actualizado';
+            console.log('[MallClientTabsList] ✅ Mall order update detected, calling refresh()');
+            showMessage(`${tenantName} ha actualizado tu orden a: ${statusLabel[status] || status}`);
             refresh();
         }
-    }, [lastEvent]);
+    }, [lastEvent, refresh, statusLabel]);
 
     return (
         <WithListContext render={({ isPending, data }) => (
@@ -336,7 +523,7 @@ const MallClientTabsList: React.FC<IDashAutoAdminDataGrid> = ({ resourceConfig }
                                         }
                                     />
                                     <CardContent sx={{ p: 0 }}>
-                                        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, mb: 2 }}>
+                                       {/*<Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, mb: 2 }}>
                                             <Chip
                                                 label={`${record.status_localized || statusLabel[(record as ITab).status] || record.status} ${record.date_confirmed ? `- ${new Date(
                                                     record.status === 'CREATED' ? record.date_created :
@@ -350,7 +537,9 @@ const MallClientTabsList: React.FC<IDashAutoAdminDataGrid> = ({ resourceConfig }
                                                 size="small"
                                                 color={getStatusColor(record.status) as any}
                                             />
-                                        </Box>
+                                        </Box>*/}
+
+                                      
 
                                         <OrderProductsView resourceConfig={resourceConfig} record={record} attribute={undefined} method={"view"} />
                                          

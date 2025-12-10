@@ -12,16 +12,16 @@ import React from "react";
 import { RaRecord, WithListContext, useRedirect } from "react-admin";
 import { Store } from "@mui/icons-material";
 import DashResourceButton from "dash-auto-admin/src/toolbar/buttons/DashResourceButton";
-import { dashStorage } from 'dash-utils';
 
 const StoresList: React.FC<IDashAutoAdminDataGrid> = ({ resourceConfig }) => {
 
     const redirect = useRedirect();
 
+    // @deprecated - removed currentAppPath logic that caused path duplication
     const redirectFn = (link) => {
         let _redirect =  link.startsWith('/')
                     ? link
-                    : `/${dashStorage.getItem('currentAppPath') || ''}/${link}`.replace(/\/+/g, '/');
+                    : `/${link}`.replace(/\/+/g, '/');
         redirect(_redirect);
     }
 

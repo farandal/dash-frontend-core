@@ -52,6 +52,8 @@ const MallAppMediator = () => {
     };
 
      const handleEnterPublicOrderData = (event: CustomEvent<CustomEventData>) => {
+
+        debugger;
         // Always set a new function reference to force re-render
         if (event.detail?.onConfirm) {
           setCustomOnConfirm(() => () => event.detail.onConfirm && event.detail.onConfirm());
@@ -82,6 +84,7 @@ const MallAppMediator = () => {
 
 
     useEffect(() => {
+   
       window.addEventListener('enter-public-order-data', handleEnterPublicOrderData as EventListener);
 
       return () => {
