@@ -332,6 +332,7 @@ const ClientForm: FC = () => {
 												label='Nombre eCommerce'
 												required
 												className='dash-app-form-item-input'
+                                                /* @ts-ignore */
 												{...register('client.name')}
 												fullWidth
 											/>

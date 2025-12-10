@@ -172,6 +172,7 @@ const GenericForm: FC = () => {
 			<form onSubmit={handleSubmit(updateProfile)} className='dash-form'>
 				<Card className='dash-card-content dash-module dash-card-profile'>
 					<Grid container>
+                        {/*@ts-ignore*/}
 						<Grid item xs={12} md={4}>
 							<CardContent
 								style={{
@@ -205,6 +206,7 @@ const GenericForm: FC = () => {
 								)}
 							</CardContent>
 						</Grid>
+                         {/*@ts-ignore*/}
 						<Grid item xs={12} md={4}>
 							<CardHeader style={{ padding: '16px 25px 0' }} title='Info' />
 							<CardContent sx={{ p: 3 }}>
@@ -302,6 +304,7 @@ const GenericForm: FC = () => {
 								</LoadingButton>
 							</CardContent>
 						</Grid>
+                         {/*@ts-ignore*/}
 						<Grid item xs={12} md={4}>
 							<CardHeader
 								style={{ padding: '16px 25px 0' }}

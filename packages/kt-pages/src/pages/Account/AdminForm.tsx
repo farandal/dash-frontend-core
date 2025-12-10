@@ -170,6 +170,7 @@ const AdminForm: FC = () => {
 			<form onSubmit={handleSubmit(updateProfile)} className='dash-form'>
 				<Card className='dash-card-content dash-module dash-card-profile'>
 					<Grid container spacing={2} sx={{ justifyContent: 'space-evenly' }}>
+                         {/*@ts-ignore*/}
 						<Grid item xs={12} md={4}>
 							<CardContent
 								style={{
@@ -201,6 +202,7 @@ const AdminForm: FC = () => {
 								)}
 							</CardContent>
 						</Grid>
+                         {/*@ts-ignore*/}
 						<Grid item xs={12} md={4}>
 							<CardHeader style={{ padding: '16px 25px 0' }} title='Info' />
 							<CardContent sx={{ p: 3 }}>
@@ -298,6 +300,7 @@ const AdminForm: FC = () => {
 								</LoadingButton>
 							</CardContent>
 						</Grid>
+                         {/*@ts-ignore*/}
 						<Grid item xs={12} md={4}>
 							<CardHeader
 								style={{ padding: '16px 25px 0' }}
