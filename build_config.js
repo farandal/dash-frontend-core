@@ -8,7 +8,7 @@ const path = require('path');
  * Parses environment variables and creates build_config.json
  */
 
-function loadEnvFile(customMode) {
+function loadEnvFile(customMode, appPath = null) {
     const envFiles = [
         `.env.${customMode}`,
         //`.env.local`,
@@ -17,8 +17,11 @@ function loadEnvFile(customMode) {
 
     const envVars = {};
     
+    // Use provided appPath or fall back to APP_PATH env var or default
+    const resolvedAppPath = appPath || process.env.APP_PATH || 'apps/dash';
+    
     for (const envFile of envFiles) {
-        const envPath = path.resolve(process.cwd(), 'apps/dash', envFile);
+        const envPath = path.resolve(process.cwd(), resolvedAppPath, envFile);
         
         if (fs.existsSync(envPath)) {
             console.log(`📄 Loading env file: ${envFile}`);
@@ -47,6 +50,7 @@ function parseEnvironmentVariables() {
         customMode: process.env.CUSTOM_MODE || null,
         targetType: process.env.TARGET_TYPE || 'desktop',
         platform: process.env.PLATFORM || null,
+        appPath: process.env.APP_PATH || 'apps/dash',
         nodeOptions: process.env.NODE_OPTIONS || null,
         timestamp: new Date().toISOString(),
         buildId: generateBuildId()
@@ -60,8 +64,8 @@ function parseEnvironmentVariables() {
         }
     }
 
-    // Load environment variables from .env files
-    const envVars = loadEnvFile(config.customMode);
+    // Load environment variables from .env files using appPath
+    const envVars = loadEnvFile(config.customMode, config.appPath);
 
     // Add platform-specific configurations
     if (config.platform) {
@@ -272,6 +276,7 @@ function displayConfig(config) {
     console.log(`Target Type: ${config.targetType}`);
     console.log(`Platform: ${config.platform || 'N/A'}`);
     console.log(`Custom Mode: ${config.customMode || 'N/A'}`);
+    console.log(`App Path: ${config.appPath}`);
     console.log(`Memory Limit: ${config.memoryLimit ? config.memoryLimit + 'MB' : 'Default'}`);
     console.log(`Build ID: ${config.buildId}`);
     console.log(`Timestamp: ${config.timestamp}`);
@@ -339,19 +344,20 @@ if (process.argv.includes('--help') || process.argv.includes('-h')) {
 Build Configuration Generator
 
 Usage:
-  MODE=production CUSTOM_MODE=pinoywok.ngrok TARGET_TYPE=mobile PLATFORM=android node build_config.js
+  MODE=production CUSTOM_MODE=pinoywok.ngrok TARGET_TYPE=mobile PLATFORM=android APP_PATH=apps/kitchntabs node build_config.js
 
 Environment Variables:
   MODE              Build mode (development|staging|production)
   CUSTOM_MODE       Custom configuration mode
   TARGET_TYPE       Target platform type (mobile|desktop|web)
-  PLATFORM          Specific platform (android|ios|web)
+  PLATFORM          Specific platform (android|ios|web|electron)
+  APP_PATH          Path to the app directory (e.g., apps/kitchntabs)
   NODE_OPTIONS      Node.js options (e.g., --max-old-space-size=4048)
 
 Examples:
-  MODE=production TARGET_TYPE=mobile PLATFORM=android node build_config.js
-  MODE=development CUSTOM_MODE=pinoywok.ngrok TARGET_TYPE=desktop node build_config.js
-  MODE=staging TARGET_TYPE=web node build_config.js
+  MODE=production TARGET_TYPE=mobile PLATFORM=android APP_PATH=apps/kitchntabs node build_config.js
+  MODE=development CUSTOM_MODE=kitchntabs.development TARGET_TYPE=desktop APP_PATH=apps/kitchntabs node build_config.js
+  MODE=staging TARGET_TYPE=web APP_PATH=apps/dash node build_config.js
 `);
     process.exit(0);
 }

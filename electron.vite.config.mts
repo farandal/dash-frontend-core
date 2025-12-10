@@ -1,10 +1,38 @@
-import { rmSync } from 'node:fs'
+import fs from 'node:fs'
 import path from 'node:path'
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import electron from 'vite-plugin-electron/simple'
 import pkg from './package.json'
 // import basicSsl from '@vitejs/plugin-basic-ssl';
+
+// Load build configuration to get APP_PATH
+interface IBuildConfig {
+  mode?: string;
+  customMode?: string;
+  targetType?: string;
+  platform?: string;
+  appPath?: string;
+  buildId?: string;
+}
+
+const loadBuildConfig = (): IBuildConfig => {
+  const configPath = path.resolve(__dirname, 'build_config.json');
+  try {
+    if (fs.existsSync(configPath)) {
+      const configContent = fs.readFileSync(configPath, 'utf8');
+      return JSON.parse(configContent);
+    }
+  } catch (error) {
+    console.warn('⚠️ Could not load build_config.json, using defaults');
+  }
+  return {};
+};
+
+const buildConfig = loadBuildConfig();
+const APP_PATH = buildConfig.appPath || process.env.APP_PATH || 'apps/dash';
+
+console.log('📁 Electron build using APP_PATH:', APP_PATH);
 
 // Modules that MUST remain external (native modules that can't be bundled)
 // electron-updater and electron-log MUST be bundled (not external) for packaged apps
@@ -23,7 +51,7 @@ const bundledModules = [
 
 // https://vitejs.dev/config/
 export default defineConfig(({ command }) => {
-  rmSync('dist-electron', { recursive: true, force: true })
+  fs.rmSync('dist-electron', { recursive: true, force: true })
 
   const isServe = command === 'serve'
   const isBuild = command === 'build'
@@ -32,7 +60,7 @@ export default defineConfig(({ command }) => {
   return {
     resolve: {
       alias: {
-        '@app': path.resolve(__dirname, 'apps/kitchntabs/src'),
+        '@app': path.resolve(__dirname, `${APP_PATH}/src`),
         '@': path.join(__dirname, 'src')
       },
     },
@@ -53,7 +81,7 @@ export default defineConfig(({ command }) => {
       electron({
         main: {
           // Shortcut of `build.lib.entry`
-          entry: 'apps/kitchntabs/electron/main/index.ts',
+          entry: `${APP_PATH}/electron/main/index.ts`,
           onstart(args) {
             if (process.env.VSCODE_DEBUG) {
               console.log(/* For `.vscode/.debug.script.mjs` */'[startup] Electron App')
@@ -65,7 +93,7 @@ export default defineConfig(({ command }) => {
             build: {
               //sourcemap,
               minify: false, // Keep it false for better debugging
-              outDir: 'apps/kitchntabs/dist-electron/main',
+              outDir: `${APP_PATH}/dist-electron/main`,
               rollupOptions: {
                 // Only externalize 'electron' - bundle everything else including electron-updater
                 external: (id) => {
@@ -87,12 +115,12 @@ export default defineConfig(({ command }) => {
         preload: {
           // Shortcut of `build.rollupOptions.input`.
           // Preload scripts may contain Web assets, so use the `build.rollupOptions.input` instead `build.lib.entry`.
-          input: 'apps/kitchntabs/electron/preload/index.ts',
+          input: `${APP_PATH}/electron/preload/index.ts`,
           vite: {
             build: {
               //sourcemap: sourcemap ? 'inline' : undefined, // #332
               minify: false, // Keep it false for easier debugging
-              outDir: 'apps/kitchntabs/dist-electron/preload',
+              outDir: `${APP_PATH}/dist-electron/preload`,
               rollupOptions: {
                 // Only externalize native modules - bundle everything else
                 external: nativeModules,
