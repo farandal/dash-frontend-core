@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, createContext, useContext } from "react";
-import type { IDashIPCService } from "../utils/dashIPCService";
+import { DashIPCServiceType } from "../utils/dashIPCService";
 
 /**
  * IPCMessageBrokerContext
@@ -117,7 +117,7 @@ export const useIPCMessageBroker = () => useContext(IPCMessageBrokerContext);
 // Global type declaration for DashIPCService
 declare global {
   interface Window {
-    DashIPCService?: IDashIPCService;
+    DashIPCService?: DashIPCServiceType;
   }
 }
 

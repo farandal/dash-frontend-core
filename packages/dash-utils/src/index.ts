@@ -75,7 +75,7 @@ export {
     executeIPCAction,
     onIPCStdout,
     useDashIPCService,
-    type IDashIPCService
+    type DashIPCServiceType
 } from './utils/dashIPCService';
 
 // Stored Theme
