@@ -22,8 +22,7 @@ import { StatusRenderCell } from "../Products/Grid/StatusCell";
 import { StockAlertEditCell, StockAlertRenderCell } from "../Products/Grid/StockAlertCell";
 import { StockEditCell, StockRenderCell } from "../Products/Grid/StockCell";
 import { VentasRenderCell } from "../Products/Grid/VentasCell";
-// @ts-ignore - MarketplaceCell component not found
-import MarketPlacesCell from "../Marketplace/MarketplaceCell";
+import MarketPlacesCell from "../../Marketplace/MarketplaceCell";
 import CampaignProductsBatchActions from "./CampaignProductsBatchActions";
 
 // Remove React.memo from the component export to ensure it re-renders properly

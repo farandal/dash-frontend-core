@@ -2823,6 +2823,9 @@ importers:
       kt-utils:
         specifier: workspace:*
         version: link:../kt-utils
+      qrcode.react:
+        specifier: ^4.2.0
+        version: 4.2.0(react@19.1.0)
       react:
         specifier: 19.1.0
         version: 19.1.0
@@ -3005,6 +3008,9 @@ importers:
       react-hook-form:
         specifier: ^7.54.0
         version: 7.68.0(react@19.1.0)
+      swiper:
+        specifier: ^12.0.3
+        version: 12.0.3
     devDependencies:
       '@types/react':
         specifier: ^19.2.7
@@ -22333,6 +22339,14 @@ packages:
       (For a CapTP with native promises, see @endo/eventual-send and @endo/captp)
     dev: true
 
+  /qrcode.react@4.2.0(react@19.1.0):
+    resolution: {integrity: sha512-QpgqWi8rD9DsS9EP3z7BT+5lY5SFhsqGjpgW5DY/i3mK4M9DTBNz3ErMi8BWYEfI3L0d8GIbGmcdFAS1uIRGjA==}
+    peerDependencies:
+      react: 19.1.0
+    dependencies:
+      react: 19.1.0
+    dev: false
+
   /qs@6.14.0:
     resolution: {integrity: sha512-YWWTjgABSKcvs/nWBi9PycY/JiPJqOD4JA6o9Sej2AtvSGarXxKC3OQSk4pAarbdQlKAh5D4FCQkJNkW+GAn3w==}
     engines: {node: '>=0.6'}
@@ -25312,6 +25326,11 @@ packages:
       csso: 5.0.5
       picocolors: 1.1.1
     dev: true
+
+  /swiper@12.0.3:
+    resolution: {integrity: sha512-BHd6U1VPEIksrXlyXjMmRWO0onmdNPaTAFduzqR3pgjvi7KfmUCAm/0cj49u2D7B0zNjMw02TSeXfinC1hDCXg==}
+    engines: {node: '>= 4.7.0'}
+    dev: false
 
   /symbol-tree@3.2.4:
     resolution: {integrity: sha512-9QNk5KwDF+Bvz+PyObkmSYjI5ksVUYtjW7AU22r2NKcfLJcXp96hkDWU3+XndOsUb+AQ9QhfzfCT2O+CNWT5Tw==}
