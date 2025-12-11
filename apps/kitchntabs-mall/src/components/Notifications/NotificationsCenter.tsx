@@ -188,8 +188,6 @@ const NotificationsCenter: React.FC = () => {
     useEffect(() => {
         if (!lastEvent) return;
 
-        console.log('[NotificationsCenter] Received lastEvent:', lastEvent);
-
         // The event structure from console log shows:
         // lastEvent.data = { status, tenant_name, tenant_id, products, etc. }
         // lastEvent.notificationPayload = { class, title, message, notificationPayload: {...} }
@@ -208,14 +206,6 @@ const NotificationsCenter: React.FC = () => {
         // Check for urgency alerts (assistance requests)
         const isUrgencyAlert = lastEvent.type === 'urgency-alert';
 
-        console.log('[NotificationsCenter] Event check:', { 
-            isMallOrderUpdate, 
-            isUrgencyAlert,
-            eventType: lastEvent.type,
-            dataType: eventData?.type,
-            notificationClass: notificationPayload?.class
-        });
-
         if (isMallOrderUpdate) {
             // Extract payload following the same pattern as MallSessionEchoContext
             // The data can be in different locations depending on the event source:
@@ -232,7 +222,6 @@ const NotificationsCenter: React.FC = () => {
             const eventId = `${payload?.tenant_tab_id}-${status}-${payload?.timestamp || Date.now()}`;
             
             if (processedEventIds.current.has(eventId)) {
-                console.log('[NotificationsCenter] Skipping duplicate event:', eventId);
                 return;
             }
             processedEventIds.current.add(eventId);
@@ -271,14 +260,6 @@ const NotificationsCenter: React.FC = () => {
                 isRead: false,
                 data: payload
             };
-
-            console.log('[NotificationsCenter] ✅ Processing mall order update:', {
-                tenantName,
-                status,
-                statusLabel,
-                title: processedNotification.title,
-                id: processedNotification.id
-            });
 
             // Add to real-time notifications list
             setRealTimeNotifications(prev => [processedNotification, ...prev.slice(0, 49)]);

@@ -32,14 +32,10 @@ const DASHWSSessionMessagesManager = () => {
     useEffect(() => {
         if (event?.data) {
             setLastEvent(event.data);
-           /* 
-            // Log notification for debugging
-            console.log('Mall session event received:', event.data);
-            
+            /* 
             // Handle mall order status updates
             if (event.data.type === 'mall_order_status_update') {
                 const { tenant_name, status, tenant_id, products, master_tab_id, timestamp } = event.data;
-                console.log(`Order status update from ${tenant_name}: Status changed to ${status}`);
                 
                 // Update tenant status tracking
                 if (tenant_id) {

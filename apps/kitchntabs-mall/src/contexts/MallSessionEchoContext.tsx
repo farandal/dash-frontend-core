@@ -83,8 +83,6 @@ export const MallSessionEchoProvider: FC<MallSessionEchoProviderProps> = ({
             const eventData = echoEvent.data || echoEvent;
             const notificationPayload = echoEvent.notificationPayload || eventData?.notificationPayload;
             
-            console.log('📬 Mall session event received:', echoEvent);
-            
             // Set lastEvent to the FULL echoEvent so consumers get notificationPayload too
             setLastEvent(echoEvent);
             setEvents(prev => [...prev, echoEvent]);
@@ -100,8 +98,6 @@ export const MallSessionEchoProvider: FC<MallSessionEchoProviderProps> = ({
                 const payload = notificationPayload?.notificationPayload || eventData.data || eventData;
                 const { tenant_name, status, tenant_id, products, new: newStatus } = payload;
                 const finalStatus = newStatus || status;
-                
-                console.log(`📦 Order status update from ${tenant_name}: ${finalStatus}`);
                 
                 // Update tenant status
                 if (tenant_id) {
@@ -137,9 +133,7 @@ export const MallSessionEchoProvider: FC<MallSessionEchoProviderProps> = ({
 
     // Log connection status changes
     useEffect(() => {
-        if (sessionId) {
-            console.log(`🔌 Mall session WebSocket ${isConnected ? 'connected' : 'disconnected'} to session.${sessionId}`);
-        }
+        // WebSocket connection status effect
     }, [isConnected, sessionId]);
 
     const clear = () => {

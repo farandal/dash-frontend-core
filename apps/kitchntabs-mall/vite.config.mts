@@ -364,25 +364,78 @@ export default ({ mode }) => {
         return 'vendor-react-router';
       }
 
-      // MUI packages - keep ALL MUI together to avoid circular deps
-      // This includes @mui/*, @emotion/*, and related utilities
+      // MUI Material core components
+      if (id.includes('node_modules/@mui/material')) {
+        return 'vendor-mui-material';
+      }
+
+      // MUI Icons - separate chunk
+      if (id.includes('node_modules/@mui/icons-material')) {
+        return 'vendor-mui-icons';
+      }
+
+      // MUI Lab components - separate chunk
+      if (id.includes('node_modules/@mui/lab')) {
+        return 'vendor-mui-lab';
+      }
+
+      // MUI X Data Grid - separate chunk
+      if (id.includes('node_modules/@mui/x-data-grid')) {
+        return 'vendor-mui-x-data-grid';
+      }
+
+      // MUI X Date Pickers - separate chunk
+      if (id.includes('node_modules/@mui/x-date-pickers')) {
+        return 'vendor-mui-x-date-pickers';
+      }
+
+      // MUI X Tree View - separate chunk
+      if (id.includes('node_modules/@mui/x-tree-view')) {
+        return 'vendor-mui-x-tree-view';
+      }
+
+      // Emotion styling - separate chunk
+      if (id.includes('node_modules/@emotion/')) {
+        return 'vendor-mui-emotion';
+      }
+
+      // MUI utilities and dependencies
       if (
-        id.includes('node_modules/@mui/') ||
-        id.includes('node_modules/@emotion/') ||
         id.includes('node_modules/@popperjs/') ||
         id.includes('node_modules/popper.js') ||
         id.includes('node_modules/clsx') ||
         id.includes('node_modules/prop-types')
       ) {
-        return 'vendor-mui';
+        return 'vendor-mui-utils';
       }
 
-      // React Admin - must include all ra-* packages together
+      // React Admin core
+      if (id.includes('node_modules/react-admin')) {
+        return 'vendor-react-admin-core';
+      }
+
+      // React Admin UI components - separate from core
+      if (id.includes('node_modules/ra-ui-materialui')) {
+        return 'vendor-react-admin-ui';
+      }
+
+      // React Admin other modules
+      if (id.includes('node_modules/ra-')) {
+        return 'vendor-react-admin-modules';
+      }
+
+      // TanStack Query - separate chunk
+      if (id.includes('node_modules/@tanstack/react-query')) {
+        return 'vendor-tanstack';
+      }
+
+      // Redux ecosystem
       if (
-        id.includes('node_modules/react-admin') ||
-        id.includes('node_modules/ra-')
+        id.includes('node_modules/redux') ||
+        id.includes('node_modules/react-redux') ||
+        id.includes('node_modules/@reduxjs/toolkit')
       ) {
-        return 'vendor-react-admin';
+        return 'vendor-redux';
       }
 
       // Utilities - commonly used standalone libraries
@@ -405,8 +458,27 @@ export default ({ mode }) => {
         return 'vendor-heavy';
       }
 
-      // Let Rollup handle everything else automatically
-      return undefined;
+      // kt-mall package chunks
+      if (id.includes('node_modules/kt-mall/src/components')) {
+        return 'kt-mall-components';
+      }
+
+      if (id.includes('node_modules/kt-mall/src/contexts')) {
+        return 'kt-mall-contexts';
+      }
+
+      if (id.includes('node_modules/kt-mall/src/schemas')) {
+        return 'kt-mall-schemas';
+      }
+
+      if (id.includes('node_modules/kt-mall/src/resources')) {
+        return 'kt-mall-resources';
+      }
+
+      // Other kt-* packages
+      if (id.includes('node_modules/kt-')) {
+        return 'kt-packages';
+      }
     };
   };
 

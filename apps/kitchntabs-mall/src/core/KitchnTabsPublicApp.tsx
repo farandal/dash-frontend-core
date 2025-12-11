@@ -31,8 +31,6 @@ const KitchnTabsPublicApp: React.FC<KitchnTabsPublicAppProps> = () => {
         PLATFORM_TYPE: getEnv('PLATFORM_TYPE') || "web", // Default to web for BrowserRouter
     }), []);
 
-    console.log('KitchnTabsPublicApp: Environment Variables:', envVars);
-
     const routePath = DASHAdminSystemConstants.system.URL_PREFIX || "/";
    
     const RouterComponent = useCallback(({ children }: { children: React.ReactNode }) => {

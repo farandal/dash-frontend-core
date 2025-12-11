@@ -154,8 +154,6 @@ const playAlarmPattern = async (useHighFreq: boolean): Promise<void> => {
  * Returns a Promise that resolves when alarm completes
  */
 const playDigitalWatchAlarm = async (durationSeconds: number = ALARM_DURATION_SECONDS): Promise<void> => {
-    console.log(`🔔 Starting digital watch alarm for ${durationSeconds} seconds...`);
-    
     const initialized = await initializeAudio();
     if (!initialized) {
         console.error('Failed to initialize audio for alarm');
@@ -178,8 +176,6 @@ const playDigitalWatchAlarm = async (durationSeconds: number = ALARM_DURATION_SE
             await new Promise(r => setTimeout(r, BEEP_PATTERN_GAP_MS));
         }
     }
-
-    console.log(`🔔 Digital watch alarm completed (${patternCount} patterns played)`);
 };
 
 /**
@@ -208,13 +204,9 @@ export const processCustomNotification = async (notification: any): Promise<{ al
 
     if (play) {
       
-        console.log("🚨 Playing digital watch alarm for new order...");
-        
         // Play the digital watch alarm for 10 seconds
         // This returns a Promise that resolves when alarm is complete
         await playDigitalWatchAlarm(ALARM_DURATION_SECONDS);
-        
-        console.log("✅ Alarm sequence completed - TTS can now play");
       
         // Also show a browser notification if permissions allow
         if ('Notification' in window && Notification.permission === 'granted') {

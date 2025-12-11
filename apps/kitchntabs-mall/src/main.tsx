@@ -149,7 +149,6 @@ const injectTenantStyles = () => {
     if (tenantSettings) {
         try {
             const colors = tenantSettings.colors;
-            console.log('updating colors from local storage');
             updateDomCssVariables(defaultTheme, colors);
         } catch (error) {
             console.error('Error parsing tenant settings:', error);

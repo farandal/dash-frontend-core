@@ -14,7 +14,7 @@ const SignUp = React.lazy(() => import('kt-pages/src/pages/Account/SignUp'));
 const SignUpSuccess = React.lazy(() => import('kt-pages/src/pages/Account/SignUpSuccess'));
 const Legal = React.lazy(() => import('kt-pages/src/pages/Static/Legal'));
 
-const MallClientWelcome = React.lazy(() => import('kt-mall/src/components/MallClientWelcome'));
+const MallClientWelcome = React.lazy(() => import('kt-mall/src/components').then(m => ({ default: m.MallClientWelcome })));
 // Shared routes factory function
 
 export const dashSharedRoutes = () => [

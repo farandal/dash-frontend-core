@@ -12,7 +12,9 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Box, CircularProgress, Typography, Button } from '@mui/material';
 import { NotFound } from 'dash-components';
 import { useAxios } from 'dash-axios-hook';
-import MallLanding from 'kt-mall/src/components/MallLanding';
+
+// Lazy load MallLanding from components chunk
+const MallLanding = React.lazy(() => import('kt-mall/src/components').then(m => ({ default: m.MallLanding })));
 
 interface MallPublicWrapperProps {
     appPath?: string;

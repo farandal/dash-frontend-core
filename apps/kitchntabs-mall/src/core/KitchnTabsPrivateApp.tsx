@@ -83,8 +83,6 @@ const KitchnTabsPrivateApp: React.FC<KitchnTabsPrivateAppProps> = ({
         IS_MOBILE: JSON.parse(getEnv('IS_MOBILE') || 'false'),
     }), []);
 
-    console.log('KitchnTabsPrivateApp: Environment Variables:', envVars);
-
     // Create React Query client
     const customQueryClient = useMemo(() => new QueryClient({
         defaultOptions: {
@@ -140,8 +138,6 @@ const KitchnTabsPrivateApp: React.FC<KitchnTabsPrivateAppProps> = ({
             const path = appPath || (common?.appPath || DASHAdminSystemConstants.system.URL_PREFIX);
             const cleanPath = path.replace(/\/\*$/, '');
             // @deprecated - removed currentAppPath storage that caused path duplication
-            // dashStorage.setItem('currentAppPath', cleanPath);
-            console.log('ROUTE-BASE-PATH:', cleanPath);
             return path;
         };
 
@@ -266,14 +262,6 @@ const KitchnTabsPrivateApp: React.FC<KitchnTabsPrivateAppProps> = ({
     if (isResourceManifest(customResources) && resourcesLoading) {
         return <GlobalSmallLoader message="Loading resources..." />;
     }
-
-    console.log('KitchnTabsPrivateApp Debug:', {
-        useOwnRouter,
-        routePath,
-        appPath,
-        windowPathname: window.location.pathname,
-        resourceCount: resolvedResources.length,
-    });
 
     return (
         <Suspense fallback={<GlobalSmallLoader message="Loading admin providers..." />}>

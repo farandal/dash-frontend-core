@@ -43,7 +43,6 @@ const getSessionId = (): string | null => {
         const sessionHash = dashStorage.getItem('mall-session-hash');
         
         if (sessionHash) {
-            console.log('[MallClientDataProvider] getSessionId:', sessionHash);
             return sessionHash;
         }
         
@@ -87,10 +86,10 @@ const dataProvider = {
   ...genericDataProvider,
   
   getList: async (resource: string, params: any, options?: any) => {
-    console.log('[MallClientDataProvider] getList:', { resource, params });
     const apiResource = mapResourceToApiPath(resource);
     const enhancedParams = addSessionToParams(params);
-    return genericDataProvider.getList(apiResource, enhancedParams, options);
+    const result = await genericDataProvider.getList(apiResource, enhancedParams, options);
+    return result;
   },
 
   getOne: async (resource: string, params: any) => {
@@ -169,12 +168,6 @@ const dataProvider = {
         'create',
     );
 
-    console.log('[MallClientDataProvider] create:', { 
-      resource: apiResource, 
-      mall_session,
-      data: postData 
-    });
-
     try {
         if (isFormData) {
             const form: FormData = processFormData(apiResource, postData);
@@ -223,12 +216,6 @@ const dataProvider = {
         },
         'update',
     );
-
-    console.log('[MallClientDataProvider] update:', { 
-      resource: apiResource, 
-      id,
-      mall_session
-    });
 
     try {
         if (isFormData) {

@@ -1,6 +1,6 @@
 /**
  * KitchnTabsBootstrap
- * 
+ *
  * Main bootstrap component for the KitchnTabs application.
  * This handles authentication state and renders either the public or private app.
  */
@@ -12,26 +12,39 @@ import { ACTION_UPDATE_AUTH } from 'dash-admin-state/src/redux/reducers/Auth';
 import DASHAuthenticationService from 'dash-admin/src/contexts/auth/DASHAuthenticationService';
 import { dashStorage } from 'dash-utils';
 
-// Import resources from kt-* packages
+// Import resources from kt-* packages (keep these as they are needed immediately)
 import { KitchnTabsMallResources } from './KitchnTabsMallResources';
 
-// Import GlobalSmallLoader from local dash-extensions
+// Import GlobalSmallLoader from local dash-extensions (keep for loading states)
 import GlobalSmallLoader from './dash-extensions/components/GlobalSmallLoader';
-import { dashPrivateRoutes, dashPublicRoutes } from './KitchnTabsMallRoutes';
-import MainAppHookComponent from './contexts/MainAppHookComponent';
-import { KitchnTabsPrivateAppProps } from './core/KitchnTabsPrivateApp';
-import { DASHMallAuthProvider, DASHMallClientAuthProvider, DASHMallClientDataProvider, DASHMallDataProvider } from './dash-extensions';
-import  MallAppMediator from 'kt-mall/src/components/MallAppMediator';
-import { MallClientWrapper } from './components/mall';
-import PublicSessionAppHookComponent from './contexts/PublicSessionAppHookComponent';
+
+// Lazy load route configurations to reduce initial bundle
+const dashPrivateRoutesPromise = import('./KitchnTabsMallRoutes').then(module => module.dashPrivateRoutes);
+const dashPublicRoutesPromise = import('./KitchnTabsMallRoutes').then(module => module.dashPublicRoutes);
+
+// Lazy load hook components
+const MainAppHookComponent = lazy(() => import('./contexts/MainAppHookComponent'));
+const PublicSessionAppHookComponent = lazy(() => import('./contexts/PublicSessionAppHookComponent'));
+
+// Lazy load provider configurations (these are objects, not components)
+const providerImportsPromise = import('./dash-extensions').then(module => ({
+  DASHMallAuthProvider: module.DASHMallAuthProvider,
+  DASHMallClientAuthProvider: module.DASHMallClientAuthProvider,
+  DASHMallClientDataProvider: module.DASHMallClientDataProvider,
+  DASHMallDataProvider: module.DASHMallDataProvider,
+}));
+
+// Lazy load mall components
+const MallAppMediator = lazy(() => import('kt-mall/src/components').then(m => ({ default: m.MallAppMediator })));
+const MallClientWrapper = lazy(() => import('./components/mall').then(module => ({ default: module.MallClientWrapper })));
 
 // Lazy load the main apps
 const KitchnTabsPublicApp = lazy(() => import('./core/KitchnTabsPublicApp'));
-const KitchnTabsPrivateApp = lazy(() => import('./core/KitchnTabsPrivateApp'));
-
-const KitchnTabsMallBootstrap: React.FC = () => {
+const KitchnTabsPrivateApp = lazy(() => import('./core/KitchnTabsPrivateApp'));const KitchnTabsMallBootstrap: React.FC = () => {
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [initializationError, setInitializationError] = useState<string | null>(null);
+    const [dependencies, setDependencies] = useState<any>(null);
+    
     // Track pathname in state to trigger re-render when URL changes
     const [pathname, setPathname] = useState<string>(window.location.pathname);
 
@@ -62,6 +75,32 @@ const KitchnTabsMallBootstrap: React.FC = () => {
         isAuthenticated,
         isLoading
     });
+
+    // Load dependencies on mount
+    useEffect(() => {
+        const loadDependencies = async () => {
+            try {
+                const [providerModule, privateRoutes, publicRoutes] = await Promise.all([
+                    providerImportsPromise,
+                    dashPrivateRoutesPromise,
+                    dashPublicRoutesPromise
+                ]);
+                
+                setDependencies({
+                    providers: providerModule,
+                    routes: {
+                        private: privateRoutes,
+                        public: publicRoutes
+                    }
+                });
+            } catch (error) {
+                console.error('Failed to load dependencies:', error);
+                setInitializationError('Failed to load application dependencies');
+            }
+        };
+
+        loadDependencies();
+    }, []);
 
     // Listen for URL changes (popstate for back/forward)
     useEffect(() => {
@@ -226,7 +265,7 @@ const KitchnTabsMallBootstrap: React.FC = () => {
         }
     }, []);
 
-    if (isLoading) {
+    if (isLoading || !dependencies) {
         return <GlobalSmallLoader message="" />;
     }
 
@@ -269,21 +308,21 @@ const KitchnTabsMallBootstrap: React.FC = () => {
 
     console.log('🔍 KitchnTabsMallBootstrap: Rendering app', { isAuthenticated, isSessionUrl, pathname });
 
-    const privateAppProps:KitchnTabsPrivateAppProps = {
-        customAuthProvider: DASHMallAuthProvider,
-        customDataProvider: DASHMallDataProvider, 
+    const privateAppProps = {
+        customAuthProvider: dependencies.providers.DASHMallAuthProvider,
+        customDataProvider: dependencies.providers.DASHMallDataProvider, 
         customResources: KitchnTabsMallResources,
-        customPublicRoutes: dashPublicRoutes,
-        customPrivateRoutes: dashPrivateRoutes,
+        customPublicRoutes: dependencies.routes.public,
+        customPrivateRoutes: dependencies.routes.private,
         AdminHook: () => { return <>{/*<RADashComponent />*/}<MainAppHookComponent /></> },
     };
 
-    const publicAppProps:KitchnTabsPrivateAppProps = {
-        customAuthProvider: DASHMallClientAuthProvider,
-        customDataProvider: DASHMallClientDataProvider, 
+    const publicAppProps = {
+        customAuthProvider: dependencies.providers.DASHMallClientAuthProvider,
+        customDataProvider: dependencies.providers.DASHMallClientDataProvider, 
         customResources: KitchnTabsMallResources,
-        customPublicRoutes: dashPublicRoutes,
-        customPrivateRoutes: dashPrivateRoutes,
+        customPublicRoutes: dependencies.routes.public,
+        customPrivateRoutes: dependencies.routes.private,
         AdminHook: () => <><PublicSessionAppHookComponent/><MallAppMediator/></>,  
     };
 

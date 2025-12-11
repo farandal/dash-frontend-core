@@ -76,12 +76,9 @@ const MallAppWrapper: React.FC<MallAppWrapperProps> = () => {
     const fetchTenantData = useCallback(async (slug: string) => {
         // Prevent re-fetch if we've already attempted this slug
         if (fetchAttemptRef.current.slug === slug && fetchAttemptRef.current.attempted) {
-            console.log('🔄 MallAppWrapper: Skipping fetch - already attempted for:', slug);
             return;
         }
 
-        console.log('🚀 MallAppWrapper: Starting fetch for mall:', slug);
-        
         // Mark as attempting
         fetchAttemptRef.current = {
             slug,
@@ -100,8 +97,6 @@ const MallAppWrapper: React.FC<MallAppWrapperProps> = () => {
             fetchAttemptRef.current.state = LoadingState.SUCCESS;
             setTenantData(data);
             setLoadingState(LoadingState.SUCCESS);
-            console.log('✅ MallAppWrapper: Tenant data loaded successfully for:', slug);
-            
         } catch (err: any) {
             console.error('❌ MallAppWrapper: Failed to fetch tenant data for:', slug, err);
             
@@ -227,11 +222,6 @@ const MallAppWrapper: React.FC<MallAppWrapperProps> = () => {
 
     // Handle success state - render the private app
     if (loadingState === LoadingState.SUCCESS && tenantData) {
-        console.log('🎉 MallAppWrapper: Rendering MallApp with tenant data:', {
-            mallSlug,
-            tenantDataName: tenantData.name || tenantData.slug
-        });
-
         return (
             <React.Suspense fallback={
                 <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
