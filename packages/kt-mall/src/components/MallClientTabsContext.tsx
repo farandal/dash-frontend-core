@@ -145,18 +145,8 @@ export const MallClientTabsProvider: React.FC<MallClientTabsProviderProps> = ({
     // Get session hash from localStorage
     useEffect(() => {
         const hash = dashStorage.getItem('mall-session-hash');
-        console.log('[MallClientTabsContext] Session hash from storage:', hash);
         setSessionHash(hash);
     }, []);
-
-    // DEBUG: Log every lastEvent change from external source
-    useEffect(() => {
-        console.log('[MallClientTabsContext] 🔔 externalLastEvent changed:', lastEvent ? {
-            event: lastEvent.event,
-            hasData: !!lastEvent.data,
-            dataType: lastEvent.data?.type,
-        } : 'null');
-    }, [lastEvent]);
 
     // Process notifications to extract tenant statuses grouped by master_tab_id
     const processNotifications = useCallback((notificationList: IMallNotification[]) => {
@@ -199,13 +189,6 @@ export const MallClientTabsProvider: React.FC<MallClientTabsProviderProps> = ({
                             }
                         })();
                         
-                        console.log('[MallClientTabsContext] Processing notification for tenant', {
-                            tenantId,
-                            tenantName: data.tenant_name,
-                            status,
-                            progress,
-                            masterTabId,
-                        });
 
                         statusesByTab[masterTabId].set(tenantId, {
                             tenant_tab_id: tenantTabId,
@@ -234,12 +217,10 @@ export const MallClientTabsProvider: React.FC<MallClientTabsProviderProps> = ({
     const fetchNotifications = useCallback(async (force = false) => {
         // Skip if already fetched and not forced
         if (initialFetchDone.current && !force) {
-            console.log('[MallClientTabsContext] Skipping fetch - already loaded');
             return;
         }
 
         if (!sessionHash) {
-            console.log('[MallClientTabsContext] No session hash available');
             return;
         }
 
@@ -249,7 +230,6 @@ export const MallClientTabsProvider: React.FC<MallClientTabsProviderProps> = ({
         try {
             const url = `/public/mall/session/${sessionHash}/notifications`;
 
-            console.log('[MallClientTabsContext] Fetching notifications:', url);
             const response = await axios.get(url);
 
             if (response.data) {
@@ -263,8 +243,6 @@ export const MallClientTabsProvider: React.FC<MallClientTabsProviderProps> = ({
                 
                 // Mark initial fetch as done
                 initialFetchDone.current = true;
-                
-                console.log('[MallClientTabsContext] Loaded notifications:', notificationList.length);
             }
         } catch (err: any) {
             console.error('[MallClientTabsContext] Error fetching notifications:', err);
@@ -333,14 +311,6 @@ export const MallClientTabsProvider: React.FC<MallClientTabsProviderProps> = ({
         // The data contains the actual event payload with type, model, etc.
         const eventData = lastEvent.data || lastEvent;
         const notificationPayload = lastEvent.notificationPayload || eventData?.notificationPayload;
-        
-        console.log('[MallClientTabsContext] Checking lastEvent:', {
-            eventName: lastEvent.event,
-            eventType: eventData?.type,
-            dataType: eventData?.data?.type,
-            model: eventData?.model,
-            notificationClass: notificationPayload?.class,
-        });
 
         // Check if this is a mall order status update event
         // The event can come in different formats depending on how it's dispatched
@@ -354,8 +324,6 @@ export const MallClientTabsProvider: React.FC<MallClientTabsProviderProps> = ({
             (eventData?.model === 'Domain\\App\\Models\\Mall\\MallSession' && eventData?.type === 'mall_order_status_update');
 
         if (isMallStatusUpdate) {
-            console.log('[MallClientTabsContext] ✅ Received status update event');
-            
             // Extract data from event - handle nested notificationPayload structure
             // The data can be in: notificationPayload.notificationPayload, eventData.data, or eventData directly
             const payload = notificationPayload?.notificationPayload || eventData?.data || eventData || {};
@@ -365,14 +333,6 @@ export const MallClientTabsProvider: React.FC<MallClientTabsProviderProps> = ({
             const tenantName = payload.tenant_name;
             const status = payload.child_status || payload.status || payload.tenant_tab_status;
             const products = payload.products || [];
-            
-            console.log('[MallClientTabsContext] Event data:', {
-                masterTabId,
-                tenantTabId,
-                tenantId,
-                tenantName,
-                status,
-            });
 
             // Immediately update local state if we have all needed data
             if (masterTabId && tenantId && status) {
@@ -423,15 +383,12 @@ export const MallClientTabsProvider: React.FC<MallClientTabsProviderProps> = ({
                         updated[masterTabId] = [...existingStatuses, newStatus];
                     }
                     
-                    console.log('[MallClientTabsContext] Updated tenant statuses:', updated[masterTabId]);
                     return updated;
                 });
             }
             
             // Don't auto-refresh from API on WebSocket event - we already updated local state
             // refreshNotifications will be called manually if needed
-        } else {
-            console.log('[MallClientTabsContext] ❌ Event not recognized as mall status update');
         }
     }, [lastEvent]);
 

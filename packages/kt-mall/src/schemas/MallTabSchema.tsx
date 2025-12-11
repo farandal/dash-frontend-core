@@ -1,9 +1,17 @@
 
 import { IDashAutoAdminAttribute } from "dash-auto-admin";
+import { lazy } from "react";
 import { TabStatus, ViewMarketplaceDetail } from "kt-tabs";
 import MallOrderProductsField from "../components/MallOrderProductsField";
 import MallOrderProducts from "../components/MallOrderProducts";
 
+// Lazy load heavy components
+/*
+const LazyMallOrderProductsField = lazy(() => import("../components/MallOrderProductsField"));
+const LazyMallOrderProducts = lazy(() => import("../components/MallOrderProducts"));
+const LazyTabStatus = lazy(() => import("kt-tabs").then(module => ({ default: module.TabStatus })));
+const LazyViewMarketplaceDetail = lazy(() => import("kt-tabs").then(module => ({ default: module.ViewMarketplaceDetail })));
+*/
 
 const MallTabSchema: IDashAutoAdminAttribute[] = [
 

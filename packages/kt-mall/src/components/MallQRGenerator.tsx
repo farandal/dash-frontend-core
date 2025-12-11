@@ -106,13 +106,11 @@ const MallQRGenerator: FC<MallQRGeneratorProps> = (props) => {
         // 1. First priority: Get from authenticated user's managed_mall
         const authMallSlug = getMallSlugFromAuth();
         if (authMallSlug) {
-            console.log('MallQRGenerator: Using mall slug from auth user:', authMallSlug);
             return authMallSlug;
         }
         
         // 2. Second priority: Use route params if available (from /:mallSlug/* pattern)
         if (routeMallSlug) {
-            console.log('MallQRGenerator: Using mall slug from route params:', routeMallSlug);
             return routeMallSlug;
         }
         
@@ -124,19 +122,16 @@ const MallQRGenerator: FC<MallQRGeneratorProps> = (props) => {
             // Try old pattern: /apps/mall/:mallSlug
             const oldMatch = window.location.pathname.match(/^\/apps\/mall\/([^/]+)/);
             if (oldMatch?.[1]) {
-                console.log('MallQRGenerator: Using mall slug from old URL pattern:', oldMatch[1]);
                 return oldMatch[1];
             }
             
             // Try new pattern: /:mallSlug (first segment that's not excluded)
             const newMatch = window.location.pathname.match(/^\/([^/]+)/);
             if (newMatch?.[1] && !excludedRoutes.includes(newMatch[1])) {
-                console.log('MallQRGenerator: Using mall slug from new URL pattern:', newMatch[1]);
                 return newMatch[1];
             }
         }
         
-        console.log('MallQRGenerator: No mall slug found');
         return null;
     };
 

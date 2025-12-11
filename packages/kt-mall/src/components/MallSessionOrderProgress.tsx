@@ -1,5 +1,11 @@
 import React from 'react';
-import { Box, Typography, LinearProgress, Divider, Chip, Paper, CircularProgress } from '@mui/material';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import LinearProgress from '@mui/material/LinearProgress';
+import Divider from '@mui/material/Divider';
+import Chip from '@mui/material/Chip';
+import Paper from '@mui/material/Paper';
+import CircularProgress from '@mui/material/CircularProgress';
 import { useTranslate } from 'react-admin';
 import { useMallClientTabsContext, ITenantTabStatus } from './MallClientTabsContext';
 

@@ -20,7 +20,6 @@ const MallAppMediator = () => {
     const [customCancelText, setCustomCancelText] = useState<string | undefined>();
     
     const handleOpenDialog = () => {
-        console.log("OPENING DIALOG")
       setOpen(true);
     };
 

@@ -11,14 +11,23 @@ import {
 } from "kt-tabs";
 import MallSessionOrderProgress from "./MallSessionOrderProgress";
 import MallSessionOrderNotifications from "./MallSessionOrderNotifications";
+import { useEffect } from "react";
 
 const ListComponent: React.FC<IDashAutoAdminCustomFieldComponent> = ({ method, attribute, resourceConfig }) => {
     const tab = useRecordContext<ITab>();
+
+
+    useEffect(() => {
+
+        debugger;
+    }, []);
+
     return <>{tab.order?.items?.reduce((acc, item) => acc + (item.quantity || 0), 0) || 0}</>
 }
 
 const MallOrderProductsEdit: React.FC<IDashAutoAdminCustomFieldComponent> = ({ method, attribute, pagination, resourceConfig }) => {
     const tab: ITab = useRecordContext();
+
 
     return <Box sx={{ flex: 1 }}>
                     <OrderProductsMallFilters storesPath="public/mall/stores"  >
@@ -44,6 +53,8 @@ const MallOrderProductsEdit: React.FC<IDashAutoAdminCustomFieldComponent> = ({ m
 const MallOrderProducts = ({ method, attribute, resourceConfig }: IDashAutoAdminCustomFieldComponent) => {
     const tab: ITab = useRecordContext();
     
+ 
+
     switch (method) {
         case "edit":
             return (
@@ -58,7 +69,7 @@ const MallOrderProducts = ({ method, attribute, resourceConfig }: IDashAutoAdmin
         case "view":
             return <OrderProductsView useInfiniteScroll={true} showPrice={true} tabsResource="public/mall/tab" productsResource="public/mall/products" attribute={attribute} method={method} resourceConfig={resourceConfig} record={tab} />
         case "list":
-            return <ListComponent productsResource="public/mall/products" attribute={attribute} method={method} resourceConfig={resourceConfig} record={tab} />
+            return <><ListComponent productsResource="public/mall/products" attribute={attribute} method={method} resourceConfig={resourceConfig} record={tab} /></>
         default:
             return <></>;
     }

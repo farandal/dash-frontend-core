@@ -1,19 +1,16 @@
 import { IDashAutoAdminCustomFieldComponent, IDashAutoAdminDataGrid } from "dash-auto-admin";
 import { ITab, TabTimerClock } from "kt-tabs";
-import {
-    Box,
-    Card,
-    CardContent,
-    CardHeader,
-    Chip,
-    Typography,
-    CircularProgress,
-    ButtonGroup,
-    Alert,
-    LinearProgress,
-    linearProgressClasses,
-    styled
-} from "@mui/material";
+import Box from "@mui/material/Box";
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
+import CardHeader from "@mui/material/CardHeader";
+import Chip from "@mui/material/Chip";
+import Typography from "@mui/material/Typography";
+import CircularProgress from "@mui/material/CircularProgress";
+import ButtonGroup from "@mui/material/ButtonGroup";
+import Alert from "@mui/material/Alert";
+import LinearProgress from "@mui/material/LinearProgress";
+import { linearProgressClasses, styled } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { useGetOne, useRefresh, WithListContext, useListContext } from "react-admin";
 import DashResourceButton from "dash-auto-admin/src/toolbar/buttons/DashResourceButton";
@@ -96,8 +93,6 @@ const OrderProductsView: React.FC<IDashAutoAdminCustomFieldComponent> = ({ recor
     useEffect(() => {
         if (!lastEvent) return;
         
-        console.log('[OrderProductsView] Checking lastEvent for tab', tab.id, lastEvent);
-        
         const eventData = lastEvent?.data || lastEvent;
         const notificationPayload = (lastEvent as any)?.notificationPayload;
         
@@ -106,7 +101,6 @@ const OrderProductsView: React.FC<IDashAutoAdminCustomFieldComponent> = ({ recor
         const tenantTabId = eventData?.tenant_tab_id || notificationPayload?.notificationPayload?.tenant_tab_id;
         
         if (masterTabId === tab.id || tenantTabId === tab.id) {
-            console.log('[OrderProductsView] Tab ID match, refetching...');
             refetch();
         }
         
@@ -118,12 +112,14 @@ const OrderProductsView: React.FC<IDashAutoAdminCustomFieldComponent> = ({ recor
             eventData?.event === "mall_order_status_update";
             
         if (isMallOrderUpdate) {
-            console.log('[OrderProductsView] Mall order update detected, refetching...');
             refetch();
         }
     }, [lastEvent, tab.id, refetch]);
 
-    if (!tabData) return <CircularProgress />;
+    if (!tabData) {
+        return <CircularProgress />;
+    }
+    
     return (
         <div>
             <StoreProgressBars masterTabId={tabData.id} record={tabData} />
@@ -131,7 +127,8 @@ const OrderProductsView: React.FC<IDashAutoAdminCustomFieldComponent> = ({ recor
             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                 <tbody>
                
-                    {tabData?.order?.items?.map((item) => (
+                    {tabData?.order?.items?.map((item) => {
+                        return (
                         <tr key={item.id} style={{ borderBottom: '1px solid #ddd' }}>
                             <td style={{ width: '100px', verticalAlign: 'top' }}>
                                 <ImagePlaceHolder
@@ -164,7 +161,8 @@ const OrderProductsView: React.FC<IDashAutoAdminCustomFieldComponent> = ({ recor
                                 )}
                             </td>
                         </tr>
-                    ))}
+                        );
+                    })}
                 </tbody>
             </table>
         </div>
@@ -418,18 +416,9 @@ const MallClientTabsList: React.FC<IDashAutoAdminDataGrid> = ({ resourceConfig }
     useEffect(() => {
         if (!lastEvent) return;
 
-        
-        console.log('[MallClientTabsList] 🔔 Processing lastEvent:', {
-            event: lastEvent?.event,
-            type: (lastEvent as any)?.type,
-            dataType: lastEvent?.data?.type,
-            model: (lastEvent as any)?.model,
-        });
-        
-        // Handle classic tab status updates
+        // Handle tab status updates
         if ((lastEvent as any)?.model === "Domain\\App\\Models\\Tab\\Tab" && 
             lastEvent.data?.type === "tab.status") {
-            console.log('[MallClientTabsList] ✅ Tab status update detected');
             showMessage(`Se ha cambiado el estado de la orden ${lastEvent.data.old} a ${lastEvent.data.new}`);
             refresh();
             return;
@@ -438,7 +427,6 @@ const MallClientTabsList: React.FC<IDashAutoAdminDataGrid> = ({ resourceConfig }
         // Handle tab updates
         if ((lastEvent as any)?.model === "Domain\\App\\Models\\Tab\\Tab" && 
             lastEvent.data?.type === "tab.update") {
-            console.log('[MallClientTabsList] ✅ Tab update detected');
             refresh();
             return;
         }
@@ -456,19 +444,11 @@ const MallClientTabsList: React.FC<IDashAutoAdminDataGrid> = ({ resourceConfig }
             (lastEvent?.model === "Domain\\App\\Models\\Mall\\MallSession" && eventData?.type === "mall_order_status_update") ||
             (lastEvent?.model === "Domain\\App\\Models\\Order\\Order" && eventData?.type === "mall_order_status_update");
 
-        console.log('[MallClientTabsList] isMallOrderUpdate check:', isMallOrderUpdate, {
-            'lastEvent.event': lastEvent?.event,
-            'lastEvent.type': lastEvent?.type,
-            'eventData.type': eventData?.type,
-            'eventData.event': eventData?.event,
-        });
-
         if (isMallOrderUpdate) {
             // Extract data from nested notificationPayload if present
             const payload = notificationPayload?.notificationPayload || eventData?.data || eventData || {};
             const tenantName = payload.tenant_name || 'El restaurante';
             const status = payload.status || payload.new || 'actualizado';
-            console.log('[MallClientTabsList] ✅ Mall order update detected, calling refresh()');
             showMessage(`${tenantName} ha actualizado tu orden a: ${statusLabel[status] || status}`);
             refresh();
         }
@@ -489,7 +469,8 @@ const MallClientTabsList: React.FC<IDashAutoAdminDataGrid> = ({ resourceConfig }
                         lg: 'repeat(3, 1fr)'
                     }
                 }}>
-                    {data?.map((record: any) => (
+                    {data?.map((record: any) => {
+                        return (
                         <Card className="dash-kitchen-tab" key={record.id} sx={{ p: 1, mb: 2 }}>
                             <Box sx={{ display: 'flex' }}>
                                 <Box sx={{ flex: 1 }}>
@@ -547,7 +528,8 @@ const MallClientTabsList: React.FC<IDashAutoAdminDataGrid> = ({ resourceConfig }
                                 </Box>
                             </Box>
                         </Card>
-                    ))}
+                        );
+                    })}
                 </Box>
             </>
         )} />

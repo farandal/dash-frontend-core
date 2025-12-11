@@ -1,28 +1,40 @@
 /**
  * kt-mall - KitchnTabs Mall Features Package
- * 
+ *
  * This package contains multi-tenant mall features, mall sessions,
  * store management, and mall-specific routes.
  */
 
-// Mall App Resources
+// Core mall resources (always needed)
 export { default as MallAppResources } from './MallAppResources';
 export { default as MallClientAppResources } from './MallClientAppResources';
 
-// Schemas
+// Lazy-loaded components for better chunking
+export const lazyComponents = {
+  // Components chunk
+  components: () => import('./components'),
+
+  // Contexts chunk
+  contexts: () => import('./contexts'),
+
+  // Schemas chunk
+  schemas: () => import('./schemas'),
+
+  // Interfaces chunk
+  interfaces: () => import('./interfaces'),
+
+  // Resources chunk
+  resources: () => import('./resources'),
+};
+
+// For backward compatibility - direct exports (consider deprecating)
 export * from './schemas';
-
-// Resources
 export * from './resources';
-
-// Components
 export * from './components';
-
-// Interfaces
 export * from './interfaces';
 
 // Contexts - Bridge context for WebSocket events
-export { 
+export {
     MallEchoBridgeContext,
     MallEchoBridgeProvider,
     useMallEchoBridge,

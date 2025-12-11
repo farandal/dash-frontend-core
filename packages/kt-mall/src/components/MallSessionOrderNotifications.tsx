@@ -1,5 +1,8 @@
 import React from 'react';
-import { Box, Typography, Alert, LinearProgress } from "@mui/material";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import Alert from "@mui/material/Alert";
+import LinearProgress from "@mui/material/LinearProgress";
 import { useTranslate } from 'react-admin';
 import { useMallClientTabsContext, IMallNotification } from './MallClientTabsContext';
 
