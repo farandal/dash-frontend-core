@@ -114,6 +114,7 @@ const DASHWSMessagesManager = (): ILaravelEchoManager => {
       removeListener: reoveListener2} = useLaravelEcho({
       type: 'private',
       channel: userId ? `user.${userId}` : null,
+      userId: userId, // Pass userId for private channel authentication
       //events: {
       //  'notification': handlePrivateUserEvent
       //},
@@ -128,11 +129,12 @@ const DASHWSMessagesManager = (): ILaravelEchoManager => {
         removeListener: reoveListener3 } = useLaravelEcho({
             type: 'private',
             channel: tenantId ? `tenant.${tenantId}.system` : null,
+            userId: userId, // Pass userId for private channel authentication
             /*events: {
               'notification': handleSystemTenantEvent,
               'print': handlePrint,
             },*/
-            enabled: !!tenantId // Only enable if tenantId exists
+            enabled: !!tenantId && !!userId // Only enable if both tenantId and userId exist
         });
 
     useEffect(() => {

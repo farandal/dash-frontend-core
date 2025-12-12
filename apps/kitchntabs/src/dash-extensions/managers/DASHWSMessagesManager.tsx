@@ -68,18 +68,26 @@ const DASHWSMessagesManager = (): ILaravelEchoManager => {
     const [userId, setUserId] = useState(null);
     const [tenantId, setTenantId] = useState(null);
 
+    console.log('🔍 DASHWSMessagesManager: Initializing...', {
+        hasAuthContext: !!authContext,
+        authUser: authContext?.user,
+        authAuthenticated: authContext?.authenticated
+    });
 
     useEffect(() => {
 
         if (!authContext?.user) {
+            console.log('🔍 DASHWSMessagesManager: No user in auth context, skipping WebSocket setup');
             return;
         }
 
+        console.log('🔍 DASHWSMessagesManager: Setting user and tenant IDs', {
+            userId: authContext.user.id,
+            tenantId: authContext.user.tenant_id
+        });
 
         setUserId(authContext.user.id);
         setTenantId(authContext.user.tenant_id);
-
-
 
     }, [authContext])
 
@@ -114,6 +122,7 @@ const DASHWSMessagesManager = (): ILaravelEchoManager => {
       removeListener: reoveListener2} = useLaravelEcho({
       type: 'private',
       channel: userId ? `user.${userId}` : null,
+      userId: userId, // Pass userId for private channel authentication
       //events: {
       //  'notification': handlePrivateUserEvent
       //},
@@ -128,11 +137,12 @@ const DASHWSMessagesManager = (): ILaravelEchoManager => {
         removeListener: reoveListener3 } = useLaravelEcho({
             type: 'private',
             channel: tenantId ? `tenant.${tenantId}.system` : null,
+            userId: userId, // Pass userId for private channel authentication
             /*events: {
               'notification': handleSystemTenantEvent,
               'print': handlePrint,
             },*/
-            enabled: !!tenantId // Only enable if tenantId exists
+            enabled: !!tenantId && !!userId // Only enable if both tenantId and userId exist
         });
 
     useEffect(() => {
