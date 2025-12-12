@@ -318,6 +318,73 @@ const dashSpanish = {
 		auto_reset_notice: 'Esta pantalla se reiniciará automáticamente en 30 segundos',
 		loading: 'Cargando...',
 	},
+	mall: {
+		// Store Selector
+		all_stores: 'Todas las Tiendas',
+		select_store: 'Selecciona una tienda',
+		all: 'Todos',
+		
+		// Assistance
+		request_assistance: 'Solicitar Asistencia',
+		assistance_sent: 'Solicitud de asistencia enviada',
+		assistance_error: 'Error al enviar solicitud de asistencia',
+		select_store_first: 'Selecciona una tienda primero',
+		assistance_requested: 'Asistencia solicitada',
+		assistance_rate_limit: 'Has solicitado asistencia recientemente, espera un momento',
+		
+		// Search
+		search_products: 'Buscar productos...',
+		
+		// Product Grid
+		no_products_found: 'No se encontraron productos',
+		try_different_store_or_search: 'Intenta seleccionar otra tienda o ajustar tu búsqueda',
+		featured: 'Destacado',
+		add: 'Agregar',
+		
+		// Pagination
+		display_mode: 'Vista',
+		horizontal_pagination: 'Mostrar productos en páginas',
+		infinite_scroll: 'Mostrar todos los productos en scroll',
+		pages: 'Páginas',
+		scroll: 'Scroll',
+		prev: 'Ant',
+		next: 'Sig',
+		
+		// Cart Summary
+		cart_empty: 'Tu carrito está vacío',
+		view_cart: 'Ver Carrito',
+		item: 'producto',
+		items: 'productos',
+		stores: 'tiendas',
+		
+		// Cart Drawer
+		your_order: 'Tu Pedido',
+		add_products_to_continue: 'Agrega productos para continuar',
+		unknown_store: 'Tienda Desconocida',
+		clear_cart: 'Vaciar Carrito',
+		total: 'Total',
+		confirm_order: 'Confirmar Pedido',
+		submitting_order: 'Enviando...',
+		continue_shopping: 'Seguir Comprando',
+		product_added: 'Producto agregado al carrito',
+		product_updated: 'Producto actualizado',
+		
+		// Cart Item Actions
+		edit_item: 'Editar producto',
+		remove_item: 'Eliminar producto',
+		update_item: 'Actualizar',
+		add_to_cart: 'Agregar al Carrito',
+		
+		// Product Modifiers Modal
+		required: 'Requerido',
+		select_up_to: 'Selecciona hasta %{count}',
+		special_instructions: 'Instrucciones especiales',
+		special_instructions_placeholder: 'Ej: sin cebolla, extra salsa, etc.',
+		
+		// Product Grid
+		all_products: 'Todos los Productos',
+		has_modifiers: 'Personalizable',
+	},
 };
 
 export default {

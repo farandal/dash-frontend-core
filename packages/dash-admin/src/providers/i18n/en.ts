@@ -318,6 +318,57 @@ const dashEnglish = {
 		auto_reset_notice: 'This screen will reset automatically in 30 seconds',
 		loading: 'Loading...',
 	},
+	mall: {
+		// Store Selector
+		all_stores: 'All Stores',
+		select_store: 'Select a store',
+		all: 'All',
+		
+		// Assistance
+		request_assistance: 'Request Assistance',
+		assistance_sent: 'Assistance request sent',
+		assistance_error: 'Failed to send assistance request',
+		
+		// Search
+		search_products: 'Search products...',
+		
+		// Product Grid
+		no_products_found: 'No products found',
+		try_different_store_or_search: 'Try selecting a different store or adjusting your search',
+		featured: 'Featured',
+		add: 'Add',
+		
+		// Pagination
+		display_mode: 'Display',
+		horizontal_pagination: 'Show products in pages',
+		infinite_scroll: 'Show all products in a scroll',
+		pages: 'Pages',
+		scroll: 'Scroll',
+		prev: 'Prev',
+		next: 'Next',
+		
+		// Cart Summary
+		cart_empty: 'Your cart is empty',
+		view_cart: 'View Cart',
+		item: 'item',
+		items: 'items',
+		stores: 'stores',
+		
+		// Cart Drawer
+		your_order: 'Your Order',
+		add_products_to_continue: 'Add some products to continue',
+		unknown_store: 'Unknown Store',
+		clear_cart: 'Clear Cart',
+		total: 'Total',
+		confirm_order: 'Confirm Order',
+		submitting_order: 'Submitting...',
+		continue_shopping: 'Continue Shopping',
+		product_added: 'Product added to cart',
+		
+		// Product Grid
+		all_products: 'All Products',
+		has_modifiers: 'Customizable',
+	},
 };
 
 export default {
