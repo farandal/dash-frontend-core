@@ -6,11 +6,17 @@ import Divider from '@mui/material/Divider';
 import Chip from '@mui/material/Chip';
 import Paper from '@mui/material/Paper';
 import CircularProgress from '@mui/material/CircularProgress';
-import { useTranslate } from 'react-admin';
+import { useTranslate, useRecordContext } from 'react-admin';
+import { IDashAutoAdminCustomFieldComponent } from 'dash-auto-admin';
 import { useMallClientTabsContext, ITenantTabStatus } from './MallClientTabsContext';
 
-interface MallSessionOrderProgressProps {
-    tabId: string | number;
+/**
+ * Props for MallSessionOrderProgress
+ * Extends IDashAutoAdminCustomFieldComponent for schema compatibility
+ * Also supports direct tabId prop for backward compatibility
+ */
+interface MallSessionOrderProgressProps extends Partial<IDashAutoAdminCustomFieldComponent> {
+    tabId?: string | number;
 }
 
 // Status progress mapping
@@ -27,12 +33,19 @@ const STATUS_PROGRESS: Record<string, number> = {
 /**
  * MallSessionOrderProgress - Displays progress bars for each tenant/store in a mall order
  * Uses MallClientTabsContext to get tenant statuses without making direct API calls
+ * 
+ * Can be used:
+ * 1. In a schema (receives IDashAutoAdminCustomFieldComponent props, gets tabId from record context)
+ * 2. Directly with tabId prop (backward compatibility)
  */
-const MallSessionOrderProgress: React.FC<MallSessionOrderProgressProps> = ({ 
-    tabId
-}) => {
+const MallSessionOrderProgress: React.FC<MallSessionOrderProgressProps> = (props) => {
+    const { tabId: propTabId } = props;
+    const record = useRecordContext();
     const { getTenantStatusesForTab, loading, lastEvent } = useMallClientTabsContext();
     const translate = useTranslate();
+
+    // Get tabId from prop or record context
+    const tabId = propTabId ?? record?.id;
 
     // Get tenant statuses from context - this updates automatically when WebSocket events arrive
     const tenantTabs = getTenantStatusesForTab(Number(tabId));
@@ -75,7 +88,7 @@ const MallSessionOrderProgress: React.FC<MallSessionOrderProgressProps> = ({
     }
 
     return (
-        <Box sx={{ mb: 3 }}>
+        <Box sx={{ mb: 3 }} className="kt-mall-session-order-progress">
             <Divider sx={{ my: 2 }} />
             <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
                 {translate('mall.session.stores_progress', { _: 'Progreso por tienda' })}

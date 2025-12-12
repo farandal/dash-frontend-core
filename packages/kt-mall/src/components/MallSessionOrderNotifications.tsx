@@ -3,22 +3,35 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Alert from "@mui/material/Alert";
 import LinearProgress from "@mui/material/LinearProgress";
-import { useTranslate } from 'react-admin';
+import { useTranslate, useRecordContext } from 'react-admin';
+import { IDashAutoAdminCustomFieldComponent } from 'dash-auto-admin';
 import { useMallClientTabsContext, IMallNotification } from './MallClientTabsContext';
 
-interface MallSessionOrderNotificationsProps {
-    tabId: string | number;
+/**
+ * Props for MallSessionOrderNotifications
+ * Extends IDashAutoAdminCustomFieldComponent for schema compatibility
+ * Also supports direct tabId prop for backward compatibility
+ */
+interface MallSessionOrderNotificationsProps extends Partial<IDashAutoAdminCustomFieldComponent> {
+    tabId?: string | number;
 }
 
 /**
  * MallSessionOrderNotifications - Displays notification history for a mall order
  * Uses MallClientTabsContext to get notifications without making direct API calls
+ * 
+ * Can be used:
+ * 1. In a schema (receives IDashAutoAdminCustomFieldComponent props, gets tabId from record context)
+ * 2. Directly with tabId prop (backward compatibility)
  */
-const MallSessionOrderNotifications: React.FC<MallSessionOrderNotificationsProps> = ({ 
-    tabId
-}) => {
+const MallSessionOrderNotifications: React.FC<MallSessionOrderNotificationsProps> = (props) => {
+    const { tabId: propTabId } = props;
+    const record = useRecordContext();
     const { notifications, loading, error } = useMallClientTabsContext();
     const translate = useTranslate();
+
+    // Get tabId from prop or record context
+    const tabId = propTabId ?? record?.id;
 
     // Filter notifications for this specific tab
     const tabNotifications = notifications.filter((n: IMallNotification) => {
@@ -56,7 +69,7 @@ const MallSessionOrderNotifications: React.FC<MallSessionOrderNotificationsProps
     }
 
     return (
-        <Box>
+        <Box className="kt-mall-session-order-notifications">
             {error && (
                 <Alert severity="error" sx={{ mb: 2 }}>
                     {error}
