@@ -8,6 +8,7 @@
 // Core mall resources (always needed)
 export { default as MallAppResources } from './MallAppResources';
 export { default as MallClientAppResources } from './MallClientAppResources';
+export { default as MallClientAppResourcesV2 } from './MallClientAppResourcesV2';
 
 // Lazy-loaded components for better chunking
 export const lazyComponents = {
@@ -40,3 +41,13 @@ export {
     useMallEchoBridge,
     type IMallEchoBridgeContext,
 } from './contexts/MallEchoBridgeContext';
+
+// Contexts - Mall Order Create context for kiosk-style UI
+export {
+    MallOrderCreateProvider,
+    useMallOrderCreate,
+    type IMallProduct,
+    type IMallCartItem,
+    type IMallProductItem,
+    type PaginationMode,
+} from './contexts/MallOrderCreateContext';

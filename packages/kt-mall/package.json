@@ -15,6 +15,7 @@
         "@mui/icons-material": "latest",
         "@mui/material": "latest",
         "dash-admin": "workspace:*",
+        "dash-admin-state": "workspace:*",
         "dash-auth": "workspace:*",
         "dash-auto-admin": "workspace:*",
         "dash-axios-hook": "workspace:*",
@@ -30,6 +31,7 @@
         "react-admin": "5.10.1",
         "react-dom": "latest",
         "react-hook-form": "latest",
+        "react-redux": "latest",
         "react-toastify": "latest"
     },
     "devDependencies": {

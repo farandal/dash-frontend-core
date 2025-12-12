@@ -16,13 +16,31 @@ export { default as MallSessionOrderProductsNotifications } from './MallSessionO
 export { default as MallSessionOrderProgress } from './MallSessionOrderProgress';
 export { default as MallSessionOrderStatus } from './MallSessionOrderStatus';
 export { MallTabsContext } from './MallTabsContext';
-export { 
-    MallClientTabsProvider, 
-    MallClientTabsContextComponent, 
-    useMallClientTabsContext 
+export { MallTabsContextV2 } from './MallTabsContextV2';
+export {
+    MallClientTabsProvider,
+    MallClientTabsContextComponent,
+    useMallClientTabsContext
 } from './MallClientTabsContext';
-export type { 
-    IMallClientTabsContextValue, 
-    IMallNotification, 
-    ITenantTabStatus 
+export type {
+    IMallClientTabsContextValue,
+    IMallNotification,
+    ITenantTabStatus
 } from './MallClientTabsContext';
+
+// New Mall Order Create Components (Kiosk-style UI)
+export { MallStoreSelector } from './MallStoreSelector';
+export { MallAssistanceButton } from './MallAssistanceButton';
+export { MallSearchBox } from './MallSearchBox';
+export { MallProductGrid } from './MallProductGrid';
+export { MallCartSummary, MallCartFloatingButton } from './MallCartSummary';
+export { MallPaginationToggle } from './MallPaginationToggle';
+export { MallOrderSummaryDrawer } from './MallOrderSummaryDrawer';
+export { MallOrderCreateView, MallOrderCreateField } from './MallOrderCreateView';
+export { MallProductModifiersModal } from './MallProductModifiersModal';
+export { default as MallOrderProductsFieldV2 } from './MallOrderProductsFieldV2';
+export { MallCartItemsList, CartItem, InlineModifiers } from './MallCartItemsList';
+
+// Refactored components
+export { default as OrderProductsView } from './OrderProductsView';
+export { default as StoreProgressBars } from './StoreProgressBars';
