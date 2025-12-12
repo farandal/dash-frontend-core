@@ -647,6 +647,14 @@ export default ({ mode }) => {
         },
       }),
       svgr(),
+      // Remove console logs in production
+      ...(isProduction ? [{
+        name: 'remove-console',
+        transform(code, id) {
+          if (id.includes('node_modules')) return code;
+          return code.replace(/console\.(log|warn|error|info|debug|trace)\([^)]*\);?/g, '');
+        }
+      }] : []),
       /*{
         name: 'generate-netlify-redirects',
         closeBundle() {

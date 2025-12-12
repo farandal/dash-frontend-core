@@ -959,7 +959,7 @@ async function createWindow() {
     // Load from built files in production
    
     win.loadFile(indexHtml);
-    win.webContents.openDevTools();
+    // Do not open DevTools in production
   }
 
   win.webContents.on('did-finish-load', async () => {

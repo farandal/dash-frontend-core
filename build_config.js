@@ -2,6 +2,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const { env } = require('process');
 
 /**
  * Build Configuration Generator
@@ -204,8 +205,8 @@ function getCustomModeConfig(customMode, envVars) {
         VITE_APP_SOCKETS_SCHEME: envVars.VITE_APP_SOCKETS_SCHEME,
         VITE_APP_SOCKETS_KEY: envVars.VITE_APP_SOCKETS_KEY,
         VITE_APP_FRONTED_URL: envVars.VITE_APP_FRONTED_URL,
-        VITE_DEV_PORT: envVars.VITE_DEV_PORT,
-        VITE_HMR_PORT: envVars.VITE_HMR_PORT,
+        VITE_DEV_PORT: process.env.VITE_DEV_PORT || envVars.VITE_DEV_PORT,
+        VITE_HMR_PORT: process.env.VITE_HMR_PORT || envVars.VITE_HMR_PORT,
         VITE_HMR_HOST: envVars.VITE_HMR_HOST
     };
 

@@ -87,7 +87,7 @@ const getConfigFileName = (): string => {
     const customConfigFile = `config.${CUSTOM_MODE}.yaml`;
     // In development, check if the custom config file exists
     if (isDev) {
-      const customConfigPath = path.join(appPath, customConfigFile);
+      const customConfigPath = path.join(appPath, "../../../dash-python-service");
       if (fs.existsSync(customConfigPath)) {
         log.info(`Using custom config file: ${customConfigFile}`);
         return customConfigFile;
@@ -108,7 +108,19 @@ log.info(`Config file name: ${configFileName}`);
 
 let configFile = "";
 if(isDev) {
-  configFile = path.join(appPath, `./${configFileName}`);
+  // In development, check if we should use custom config from dash-python-service
+  if (CUSTOM_MODE) {
+    const customConfigPath = path.join(appPath, `../../../dash-python-service/${configFileName}`);
+    if (fs.existsSync(customConfigPath)) {
+      configFile = customConfigPath;
+      log.info(`Using custom config file from dash-python-service: ${configFile}`);
+    } else {
+      configFile = path.join(appPath, `./${configFileName}`);
+      log.warn(`Custom config file not found in dash-python-service, using local: ${configFile}`);
+    }
+  } else {
+    configFile = path.join(appPath, `./${configFileName}`);
+  }
 } else {
   // In production, config files are in resources folder
   if (process.platform === 'darwin') {
@@ -909,11 +921,11 @@ async function createWindow() {
     title: config?.APP_NAME || "Dashpanel",
     width: 800,
     height: 600,
-    vibrancy: 'under-window' ,
-    titleBarStyle: process.platform === 'darwin' ? 'hiddenInset' :'hidden', // Change this line
-    frame: false, // Make sure this is false
-    transparent: true,
-    backgroundColor: '#00000000', // Transparent 
+    //vibrancy: 'under-window' ,
+    //titleBarStyle: process.platform === 'darwin' ? 'hiddenInset' :'hidden', // Change this line
+    //frame: false, // Make sure this is false
+    //transparent: true,
+    //backgroundColor: '#00000000', // Transparent 
     hasShadow: true, // Optional: adds shadow effect
     
 
@@ -937,7 +949,7 @@ async function createWindow() {
       // Consider using contextBridge.exposeInMainWorld
       // Read more on https://www.electronjs.org/docs/latest/tutorial/context-isolation
       contextIsolation: true,
-      devTools: false
+      devTools: true
     },
   });
   // On macOS, make window corners rounded
@@ -950,7 +962,8 @@ async function createWindow() {
     log.info('Creating window in development mode');
 
     // Load from dev server in development
-    win.loadURL('http://localhost:3006');
+    const devPort = process.env.PORT || '3006';
+    win.loadURL(`http://localhost:${devPort}`);
     // Open DevTools
     win.webContents.openDevTools();
   } else {
@@ -959,7 +972,7 @@ async function createWindow() {
     // Load from built files in production
    
     win.loadFile(indexHtml);
-    win.webContents.openDevTools();
+    // Do not open DevTools in production
   }
 
   win.webContents.on('did-finish-load', async () => {
