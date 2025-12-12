@@ -20,3 +20,13 @@ android/app/src/main/res/*
 build_config.json
 apps/minimal
 apps/v2
+
+# Temporary and backup files
+apps_bkup/
+bkup/
+typecheck_output*.txt
+
+# Electron runtime files
+**/dash_process.lock
+**/logs/
+**/output/
