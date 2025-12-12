@@ -61,6 +61,12 @@ const LaravelEchoMgr = (): ILaravelEchoManager => {
   //const dispatch = useDispatch();
   const authContext: IAuthContext = useContext(AuthContext);
 
+  console.log('🔍 LaravelEchoMgr: Initializing with authContext:', {
+    hasUser: !!authContext?.user,
+    userId: authContext?.user?.id,
+    authenticated: authContext?.authenticated
+  });
+
   const clear = () => {
     setLastEvent(null);
   };
@@ -69,13 +75,14 @@ const LaravelEchoMgr = (): ILaravelEchoManager => {
     console.log("Echo manager listener for private and public messages initialized")
   }, []);
 
+  console.log('🔍 LaravelEchoMgr: Setting up public channel listener...');
   useLaravelEcho({
     type: 'public',
     channel: 'public',
     events: {
       'public': (notification: IDashNotificationPayloadBase) => {
 
-        console.log('public', notification);
+        console.log('📡 LaravelEchoMgr: Received public notification:', notification);
         setEvents([...events, notification]);
         setLastEvent(notification);
         //dispatch(apiRequest(ACTIONS.GET_NOTIFICATIONS, {}));
@@ -85,8 +92,10 @@ const LaravelEchoMgr = (): ILaravelEchoManager => {
       }
     },
     userId: null,
+    enabled: true, // Enable public channel
   });
 
+  console.log('🔍 LaravelEchoMgr: Setting up private channel listener...');
   useLaravelEcho({
     type: 'private',
     channel: `user.${authContext.user.id}`,
@@ -94,12 +103,13 @@ const LaravelEchoMgr = (): ILaravelEchoManager => {
       // Try all these variations to see which one works
       'notification': (notification: IDashNotificationPayloadBase) => {
 
-        console.log('Received notification event:', notification);
+        console.log('📡 LaravelEchoMgr: Received private notification:', notification);
 
         popPrivateMessage(notification);
       }
     },
-    userId: authContext.user.id
+    userId: authContext.user.id,
+    enabled: !!authContext?.user?.id, // Enable only when user is authenticated
   });
 
 

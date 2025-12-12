@@ -86,6 +86,16 @@ const useLaravelEcho = ({
     );
     const [currentUserId, setCurrentUserId] = useState(null);
 
+    console.log('🔍 useLaravelEcho: Hook called with params:', {
+        type,
+        channel,
+        userId,
+        enabled,
+        hasAuth: !!auth?.user,
+        authUserId: auth?.user?.id,
+        authenticated: auth?.authenticated
+    });
+
     useEffect(() => {
 
         if (auth.user?.id && typeof auth.user.id === 'number' && auth.user.id !== userId) {
@@ -157,10 +167,12 @@ const useLaravelEcho = ({
     useEffect(() => {
         
         if(!enabled) {
+            console.log('🔍 useLaravelEcho: Hook disabled, skipping WebSocket setup');
             return;
         }
 
         if (!(JSON.parse(getEnv('APP_SOCKETS_ENABLED')))) {
+            console.log('🔍 useLaravelEcho: WebSockets disabled by APP_SOCKETS_ENABLED env var');
             return;
         }
         
@@ -177,7 +189,19 @@ const useLaravelEcho = ({
 
         const clientId = getClientId();
 
+        console.log('🔍 useLaravelEcho: Setting up WebSocket connection...', {
+            clientId,
+            type,
+            channel,
+            userId,
+            enabled
+        });
 
+        // For private channels, we need a userId for authentication
+        if (type === 'private' && !userId) {
+            console.log('🔍 useLaravelEcho: Skipping private channel setup - no userId provided');
+            return;
+        }
 
         if (type === 'public' || (type === 'private' && userId)) {
 
@@ -185,7 +209,7 @@ const useLaravelEcho = ({
             if (echoManager.clients.has(clientId)) {
                 const existingClient = echoManager.getClient(clientId);
 
-                log('Setting Laravel Echo client to existing client...', clientId);
+                console.log('🔍 useLaravelEcho: Using existing Echo client:', clientId);
                 setLaravelEchoClient(existingClient);
                 return;
             }
@@ -202,7 +226,7 @@ const useLaravelEcho = ({
 
        
            try {
-   const socketHostEnv = getEnv('APP_SOCKETS_HOST');
+    const socketHostEnv = getEnv('APP_SOCKETS_HOST');
     const socketScheme = getEnv('APP_SOCKETS_SCHEME')?.toLowerCase();
     const isSSL = socketScheme === 'https';
 
@@ -227,7 +251,7 @@ const useLaravelEcho = ({
         activityTimeout: 120000,
         pongTimeout: 30000,
     };
-                console.log(completeConfig);
+                console.log('🔍 useLaravelEcho: WebSocket config:', completeConfig);
 
                 if (authConfig) {
                     const baseUrl = getEnv('APP_BACKEND_URL') || window.location.origin;
@@ -236,15 +260,13 @@ const useLaravelEcho = ({
                     const formattedAuthPath = authPath.startsWith('/') ? authPath.substring(1) : authPath;
                     const authEndpoint = `${formattedBaseUrl}${formattedAuthPath}`;
 
-                    log('Using auth endpoint:', authEndpoint);
+                    console.log('🔍 useLaravelEcho: Using auth endpoint:', authEndpoint);
                     completeConfig['authEndpoint'] = authEndpoint;
                     completeConfig['auth'] = authConfig;
                 }
 
-                log('Initializing Echo client with config:', completeConfig);
+                console.log('🔍 useLaravelEcho: Initializing Echo client with config:', completeConfig);
                 const echo = new Echo(completeConfig as EchoOptions<"pusher">);
-     
-
                 if (echo.connector && echo.connector.pusher) {
                     echo.connector.pusher.bind_global((eventName, data) => {
                         log(`Global event received: ${eventName}`, data);
