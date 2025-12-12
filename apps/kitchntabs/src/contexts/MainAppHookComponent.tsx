@@ -30,15 +30,25 @@ const MainAppHookComponent = () => {
     useDeviceStorageSync();
 
     // Listen for notifications and process them
+    console.log('🔍 MainAppHookComponent: Checking LaravelEchoContext availability...');
     const laravelEchoContext = useContext<ILaravelEchoContext>(LaravelEchoContext);
+    console.log('🔍 MainAppHookComponent: LaravelEchoContext value:', laravelEchoContext);
+
     const lastNotificationRef = useRef<any>(null);
 
     useEffect(() => {
+        console.log('🔍 MainAppHookComponent: Setting up notification listener...');
         const lastNotification = laravelEchoContext?.lastEvent;
+
+        console.log('🔍 MainAppHookComponent: Current lastEvent:', lastNotification);
+
         // Prevent processing the same notification multiple times
         if (lastNotification && lastNotification !== lastNotificationRef.current) {
+            console.log('🔍 MainAppHookComponent: Processing new notification:', lastNotification);
             lastNotificationRef.current = lastNotification;
             processCustomNotification(lastNotification);
+        } else {
+            console.log('🔍 MainAppHookComponent: No new notification or duplicate');
         }
     }, [laravelEchoContext?.lastEvent]);
 
