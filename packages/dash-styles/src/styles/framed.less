@@ -1,0 +1,45 @@
+
+/* -----------------------------------------------------------------------------
+   FRAMED LAYOUT STYLES
+   ----------------------------------------------------------------------------- */
+
+.framed-layout {
+  .dash-module-box-content {
+    //max-width: calc(100vw - 60px - 107px);
+    padding: 8px;
+  }
+}
+
+@media (min-width: @mq-sm) {
+  .framed-layout #root {
+    //min-height: calc(100vh - 16px);
+  }
+
+  body.framed-layout {
+    padding: 8px;
+  }
+
+  .framed-layout {
+    > #root {
+      height: calc(100vh - 16px);
+      border-radius: 22px;
+      background-color: var(--framed_layout-bg, @framed_layout-bg);
+
+      > div > div > .lite {
+        background-color: transparent;
+      }
+
+      .dash-app-layout {
+        .dash-app-module {
+          //padding: 8px;
+        }
+
+        .dash-layout-content,
+        .dash-layout-footer {
+          background-color: transparent;
+          border-top: unset;
+        }
+      }
+    }
+  }
+}

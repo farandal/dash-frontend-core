@@ -1,290 +1,243 @@
 
-.dash-layout-content > .dash-layout-content  {
-  padding: 0 !important;
+/* =============================================================================
+   DASH LAYOUT STYLES
+   =============================================================================
+   This stylesheet manages the overall layout structure of the Dash application,
+   including responsive design, sidebar states, and framed layout support.
+   ============================================================================= */
+
+/* -----------------------------------------------------------------------------
+   GLOBAL LAYOUT SETUP
+   ----------------------------------------------------------------------------- */
+
+.dash-layout-content > .dash-layout-content {
+  padding: 0;
 }
+
 
 html {
-        height: 100vh;
-
+  height: 100vh;
 }
 
-body,#root {
-height: 100vh;
+body, #root {
+  height: 100vh;
 }
 
-/*
-body.windows, body.windows + html {
-  background: none !important;
-}
-*/
-@media (min-width: @mq-sm) {
-
-  body.framed-layout {
-padding:8px;
-}
-
-  .framed-layout {
-    > #root {
-      height: calc(100vh - 16px);
-      border-radius: 22px;
-      background-color: var(--framed_layout-bg, @framed_layout-bg);
-      > div > div > .lite {
-        background-color: transparent;
-      }
-      .dash-app-layout {
-        .dash-app-module {
-          //padding:8px;
-        }
-        .dash-layout-content,
-        .dash-layout-footer {
-          background-color: transparent;
-          border-top: unset;
-        }
-      }
-    }
-  }
-}
-
-/* Prevent layout shifts during route transitions */
-.dash-layout-content {
-  //min-height: 100vh;
-  transition: none !important;
-  contain: layout style;
-}
-
-@media (min-width: @mq-md) {
-  .framed-layout #root {
-    //min-height: calc(100vh - 16px);
-  }
-}
-/*
-.dash-layout-content {
-  min-height: calc(100vh - 75px);
-}
-*/
-.dash-app-layout {
-  //min-height: 100vh;
-  height: 100%;
-
-    .dash-app-layout-content::-webkit-scrollbar-track {
-      margin:50px 0;
-  }
-
-}
-
-/*.framed-layout .dash-app-layout {
-  min-height: calc(100vh - 32px);
-}*/
-
-
-@media (min-width: @mq-sm) {
-  .dash-app-layout-content {
-  //padding-left: 5px;
-}
-    .framed-layout .dash-app-layout {
-      border-radius: 20px;
-      overflow: hidden;
-      //min-height: calc(100vh - 16px);
-    }
-}
-/* Optimize sidebar transitions */
-.dash-app-layout {
-  transition: margin-left 0.2s ease-in-out;
-  will-change: margin-left;
-  contain: layout;
-}
-
-.dash-app-layout-sidebar-expanded {
-  margin-left: 240px;
-}
-
-.dash-app-layout-sidebar-collapsed {
-  margin-left: 80px;
-}
-
-/* Prevent flickering during theme changes */
-.dash-app-layout * {
-  transition: background-color 0.1s ease, color 0.1s ease;
-}
-
-.dash-module-box-content > .MuiBox-root {
-    height: auto;
-}
-.framed-layout{
-  .dash-module-box-content{
-      //max-width: calc(100vw - 60px - 107px);
-      padding:8px;
-  }
-}
-
-    /* Firefox */
-    #dash-app-layout > div.dash-app-layout-content.MuiBox-root {
-      overflow: auto;
-      height: 100vh;
-    }
-
-    @media (max-width: @mq-sm) {
-      #dash-app-layout > div.dash-app-layout-content.MuiBox-root {
-        overflow: auto;
-        -ms-overflow-style: none; /* IE and Edge */
-        scrollbar-width: none;    /* Firefox */
-      }
-      #dash-app-layout > div.dash-app-layout-content.MuiBox-root::-webkit-scrollbar {
-        display: none;            /* Chrome, Safari, Opera */
-      }
-    }
 
 
 
-// cannot apply this because it hides the table
-/*.RaList-noResults, .RaList-main {
-    height: calc(100vh - 180px);
-}*/
 
-.framed-layout #root {
-  box-shadow: unset;
-  //height: calc(100vh - 2 * 15px);
-}
+ @media (min-width: @mq-sm) {
+   /*.dash-app-layout-content {
+     //padding-left: 5px;
+   }*/
+ 
+   .framed-layout .dash-app-layout {
+     border-radius: 20px;
 
-/* Layout overwrites */
 
-.framed-layout {
-  .dash-module-horizontal-nav {
-  //border-bottom: none;
-    li:first-child .dash-link {
-      margin-left:8px;
-    }
-  }
-
-}
-
-.dash-app-layout {
-  .dash-layout-content {
-    //transition: all .4s;
-    .dash-app-module{
-        margin: 0;
+     //overflow: hidden;
+     
+     
+     //min-height: calc(100vh - 16px);
+   }
+ }
+ 
+ /* Optimize sidebar transitions */
+ .dash-app-layout {
+   transition: margin-left 0.2s ease-in-out;
+   will-change: margin-left;
+   contain: layout;
+ }
+ 
+ /* Prevent flickering during theme changes */
+ .dash-app-layout * {
+   transition: background-color 0.1s ease, color 0.1s ease;
+ }
+ 
+ /* -----------------------------------------------------------------------------
+    SIDEBAR MANAGEMENT
+    ----------------------------------------------------------------------------- */
+ 
+ .dash-app-layout-sidebar-expanded {
+   margin-left: 240px;
+ }
+ 
+ .dash-app-layout-sidebar-collapsed {
+   margin-left: 80px;
+ }
+ 
+ /* Sidebar width overrides */
+ .small.expanded .sidebar-drawer .MuiPaper-root,
+ .large.collapsed .sidebar-drawer .MuiPaper-root {
+   width: var(--sidebar-small-width, @sidebar-small-width);
+ }
+ 
+ .large.expanded .sidebar-drawer .MuiPaper-root {
+   width: var(--sidebar-large-width, @sidebar-large-width);
+ }
+ 
+ /* -----------------------------------------------------------------------------
+    MODULE CONTENT STYLES
+    ----------------------------------------------------------------------------- */
+ 
+ .dash-module-box-content > .MuiBox-root {
+   height: auto;
+ }
+ 
+ /* Firefox scrollbar handling */
+ #dash-app-layout > div.dash-app-layout-content.MuiBox-root {
+   overflow: auto;
+   height: 100vh;
+ }
+ 
+ @media (max-width: @mq-sm) {
+   #dash-app-layout > div.dash-app-layout-content.MuiBox-root {
+     overflow: auto;
+     -ms-overflow-style: none; /* IE and Edge */
+     scrollbar-width: none;    /* Firefox */
+   }
+ 
+   #dash-app-layout > div.dash-app-layout-content.MuiBox-root::-webkit-scrollbar {
+     display: none;            /* Chrome, Safari, Opera */
+   }
+ }
+ 
+ // cannot apply this because it hides the table
+ /*.RaList-noResults, .RaList-main {
+     height: calc(100vh - 180px);
+ }*/
+ 
+ .framed-layout #root {
+   box-shadow: unset;
+   //height: calc(100vh - 2 * 15px);
+ }
+ 
+ /* -----------------------------------------------------------------------------
+    LAYOUT OVERWRITES
+    ----------------------------------------------------------------------------- */
+ 
+ .framed-layout {
+   .dash-module-horizontal-nav {
+     //border-bottom: none;
+     li:first-child .dash-link {
+       margin-left: 8px;
+     }
+   }
+ }
+ 
+ .dash-app-layout {
+   .dash-layout-content {
+     overflow-y: auto;
+     //transition: all .4s;
+     .dash-app-module {
+       margin: 0;
        //padding: 0 0 0 12px;
-        width: 100%;
-        //min-height: calc(100vh - 70px);
-        .dash-module-box-content{
-            padding: 0;
-                //height: calc(100vh - 140px); // Approximate size of the header in mobile
-        }
-    .dash-box{
-      width: 100%;
-    }
-    }
-  }
-}
-
-
-.small.expanded .sidebar-drawer .MuiPaper-root
-.large.collapsed .sidebar-drawer .MuiPaper-root
-{
-       width: var(--sidebar-small-width, @sidebar-small-width);
-}
-
-.large.expanded .sidebar-drawer .MuiPaper-root {
-    width: var(--sidebar-large-width, @sidebar-large-width);
-}
-
-
-
-.dash-app-layout.collapsed.small{
-  .dash-layout-content, .dash-theme-content {
-        padding: 0px;
-  }
-}
-
-.dash-app-layout.collapsed.large{
-
+       width: 100%;
+       //min-height: calc(100vh - 70px);
+       .dash-module-box-content {
+         padding: 0;
+         //height: calc(100vh - 140px); // Approximate size of the header in mobile
+       }
+       .dash-box {
+         width: 100%;
+       }
+     }
+   }
+ }
+ 
+ /* -----------------------------------------------------------------------------
+    SIDEBAR STATE MANAGEMENT
+    ----------------------------------------------------------------------------- */
+ 
+ .dash-app-layout.collapsed.small {
+   .dash-layout-content, .dash-theme-content {
+     padding: 0px;
+   }
+ }
+ 
+ .dash-app-layout.collapsed.large {
    .dash-header-container {
-    padding-left: var(--sidebar-small-width, @sidebar-small-width);
-  }
-  .dash-layout-content, .dash-theme-content{
-      padding-left: var(--sidebar-small-width, @sidebar-small-width);
-  }
-}
-
-.dash-app-layout.expanded.large{
-  .dash-header-container {
-    padding-left: var(--sidebar-large-width, @sidebar-large-width);
-  }
-  .dash-layout-content, .dash-theme-content {
-      padding-left:  var(--sidebar-large-width, @sidebar-large-width);
-  }
-}
-
-.dash-app-layout {
-      //height: calc(100vh - 16px);
-}
-
-@media (max-width: @mq-sm){
-
-  body.framed-layout{
-    padding: 0px;
-    //min-height: calc(100vh - 16px);
-  }
-  .framed-layout{
-  > #root{
-    border-radius: 0px;
-
-    .dash-app-layout {
-        .dash-app-module {
-          //padding:0px;
-        }
-
-    }
-}
-}
-}
-
-
-@media (max-width: @mq-sm){
-  .dash-header, .dash-layout-content{
-      padding: 0;
-  }
-
-  .dash-app-layout-sidebar-collapsed{
-      .dash-header, .dash-layout-content{
-          padding: 0;
-      }
-  }
-
-  .dash-layout-content{
-      .dash-app-module{
-          width: calc(100%);
-          max-width: calc(100%);
-          margin: 0;
-          padding: 0;
-      }
-  }
-}
-
-/* @deprecated */
-/*
-.framed-layout{
-  .dash-app-layout.dash-header{
-      top: 30px;
-      left: 30px;
-      width: 100%;
-  }
-}
-@media screen and (max-width: 991px){
-
-  .framed-layout{
-      .dash-app-layout.dash-header{
-          top: 0;
-          left: 0px;
-          border-top-left-radius: 0;
-          border-top-right-radius: 0;
-          width: calc(100%);
-      }
-  }
-
-}
-*/
-
-.MuiPaper-root .show-page {
-  padding-inline: 15px;
-}
+     padding-left: var(--sidebar-small-width, @sidebar-small-width);
+   }
+   .dash-layout-content, .dash-theme-content {
+     padding-left: var(--sidebar-small-width, @sidebar-small-width);
+   }
+ }
+ 
+ .dash-app-layout.expanded.large {
+   .dash-header-container {
+     padding-left: var(--sidebar-large-width, @sidebar-large-width);
+   }
+   .dash-layout-content, .dash-theme-content {
+     padding-left: var(--sidebar-large-width, @sidebar-large-width);
+   }
+ }
+ 
+ .dash-app-layout {
+   //height: calc(100vh - 16px);
+ }
+ 
+ /* -----------------------------------------------------------------------------
+    MOBILE RESPONSIVENESS
+    ----------------------------------------------------------------------------- */
+ 
+ @media (max-width: @mq-sm) {
+   body.framed-layout {
+     padding: 0px;
+     //min-height: calc(100vh - 16px);
+   }
+ 
+   .framed-layout {
+     > #root {
+       border-radius: 0px;
+ 
+       .dash-app-layout {
+         .dash-app-module {
+           //padding: 0px;
+         }
+       }
+     }
+   }
+ 
+   .dash-header, .dash-layout-content {
+     padding: 0;
+   }
+ 
+   .dash-app-layout-sidebar-collapsed {
+     .dash-header, .dash-layout-content {
+       padding: 0;
+     }
+   }
+ 
+   .dash-layout-content {
+     .dash-app-module {
+       //width: calc(100%);
+       //max-width: calc(100%);
+       margin: 0;
+       padding: 0;
+     }
+   }
+ 
+   .dash-app-layout {
+     .dash-layout-content {
+       .dash-app-module {
+         height: 100%;
+         display: flex;
+       }
+     }
+   }
+ }
+ 
+ /* -----------------------------------------------------------------------------
+    MISCELLANEOUS OVERRIDES
+    ----------------------------------------------------------------------------- */
+ /*
+ .MuiPaper-root .show-page {
+   padding-inline: 15px;
+ }
+ */
+ 
+ .auto-admin-grouped-form {
+     padding: 0 !important;
+ }

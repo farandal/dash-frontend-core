@@ -153,9 +153,9 @@ const LoginPage: React.FC = (props) => {
 						onSubmit={handleSubmit(onSubmit)}
 						className='dash-app-login-form'
 					>
-						<h1 className='dash-app-login-form-title'>
+						{/*<h1 className='dash-app-login-form-title'>
 							Ingresar
-						</h1>
+						</h1>*/}
 						<div className='dash-app-form-item'>
 							{/*<InputLabel>
 								<strong>Email </strong>

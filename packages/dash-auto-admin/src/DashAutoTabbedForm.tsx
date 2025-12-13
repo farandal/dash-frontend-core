@@ -53,8 +53,27 @@ const DashAutoTabbedForm: React.FC<IDashAutoTabbedForm> = ({
 		? resourceConfig.formGroupMode
 		: 'tabs';
 
-    // Fallback to layout if only one tab
-    if (formGroupMode === "tabs" && groupByTabs(resourceConfig.schema).length === 1) {
+    // Calculate the number of visible tabs for the current mode
+    const getVisibleTabCount = () => {
+        const tabGroups = groupByTabs(resourceConfig.schema);
+        return tabGroups.filter((group) => {
+            const filteredAttributes = group.filter((attr) => {
+                if (mode === 'create') {
+                    return attr?.inCreate !== false;
+                } else if (mode === 'edit') {
+                    return attr?.inEdit !== false;
+                }
+                // For any other mode, include all
+                return true;
+            });
+            return filteredAttributes.length > 0;
+        }).length;
+    };
+
+    const visibleTabCount = getVisibleTabCount();
+
+    // Fallback to layout if only one visible tab for the current mode
+    if (formGroupMode === "tabs" && visibleTabCount <= 1) {
         formGroupMode = 'layout';
     }
     const formData = useSelector(
