@@ -44,7 +44,3 @@ export { MallCartItemsList, CartItem, InlineModifiers } from './MallCartItemsLis
 // Refactored components
 export { default as OrderProductsView } from './OrderProductsView';
 export { default as StoreProgressBars } from './StoreProgressBars';
-export { default as MallOrderVouchers } from './MallOrderVouchers';
-
-// Toolbar mediator (for schema-based top-of-layout toolbar)
-export { default as MallOrderToolbarMediator } from './MallOrderToolbarMediator';

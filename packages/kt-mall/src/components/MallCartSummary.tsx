@@ -44,9 +44,18 @@ export const MallCartSummary: React.FC = () => {
         return (
             <Paper
                 elevation={0}
-                className="kt-mall-client-tab-cart-empty"
+                sx={{
+                    p: 2,
+                    mb: 2,
+                    borderRadius: 2,
+                    //backgroundColor: 'grey.100',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: 2,
+                }}
             >
-                <ShoppingCartIcon className="kt-mall-client-tab-cart-empty-icon" />
+                <ShoppingCartIcon sx={{ opacity: 0.4, color: 'grey.500' }} />
                 <Typography variant="body2" color="text.secondary">
                     {translate('mall.cart_empty')}
                 </Typography>
@@ -56,26 +65,53 @@ export const MallCartSummary: React.FC = () => {
 
     return (
         <Paper
-            className="kt-mall-client-tab-cart-summary"
+            className="kt-mall-cart-summary"
             elevation={3}
             onClick={handleOpenCart}
+            sx={{
+                p: 2,
+                mb: 2,
+                borderRadius: 2,
+                backgroundColor: 'primary.main',
+                color: 'primary.contrastText',
+                cursor: 'pointer',
+                transition: 'transform 0.15s ease, box-shadow 0.15s ease',
+                '&:hover': {
+                    transform: 'scale(1.01)',
+                    boxShadow: 6,
+                },
+                '&:active': {
+                    transform: 'scale(0.99)',
+                },
+            }}
         >
-            <Box className="kt-mall-client-tab-cart-summary-content">
+            <Box
+                sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                }}
+            >
                 {/* Left side - Cart icon with badge */}
-                <Box className="kt-mall-client-tab-cart-left">
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                     <Badge 
                         badgeContent={cartItemCount} 
                         color="error"
-                        className="kt-mall-client-tab-cart-badge"
+                        sx={{
+                            '& .MuiBadge-badge': {
+                                fontWeight: 700,
+                                fontSize: '0.75rem',
+                            },
+                        }}
                     >
-                        <ShoppingCartIcon className="kt-mall-client-tab-cart-icon" />
+                        <ShoppingCartIcon sx={{ fontSize: 32 }} />
                     </Badge>
                     
-                    <Box className="kt-mall-client-tab-cart-info">
+                    <Box>
                         <Typography variant="subtitle1" fontWeight={700}>
                             {translate('mall.view_cart')}
                         </Typography>
-                        <Typography variant="caption" className="kt-mall-client-tab-cart-caption">
+                        <Typography variant="caption" sx={{ opacity: 0.85 }}>
                             {cartItemCount} {cartItemCount === 1 
                                 ? translate('mall.item') 
                                 : translate('mall.items')}
@@ -87,25 +123,36 @@ export const MallCartSummary: React.FC = () => {
                 </Box>
 
                 {/* Right side - Total and arrow */}
-                <Box className="kt-mall-client-tab-cart-right">
-                    <Box className="kt-mall-client-tab-cart-total">
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <Box sx={{ textAlign: 'right' }}>
                         <Typography variant="h6" fontWeight={700}>
                             {formatPrice(cartTotal)}
                         </Typography>
                     </Box>
-                    <ExpandMoreIcon className="kt-mall-client-tab-cart-arrow" />
+                    <ExpandMoreIcon 
+                        sx={{ 
+                            fontSize: 28, 
+                            transform: 'rotate(-90deg)',
+                            opacity: 0.7,
+                        }} 
+                    />
                 </Box>
             </Box>
 
             {/* Store chips */}
             {uniqueStoresCount > 1 && (
-                <Box className="kt-mall-client-tab-cart-stores">
+                <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mt: 1.5 }}>
                     {Array.from(uniqueTenantIds).map((tenantId) => (
                         <Chip
                             key={tenantId}
                             label={getStoreName(tenantId)}
                             size="small"
-                            className="kt-mall-client-tab-cart-store-chip"
+                            sx={{
+                                backgroundColor: 'rgba(255,255,255,0.2)',
+                                color: 'primary.contrastText',
+                                fontWeight: 600,
+                                fontSize: '0.7rem',
+                            }}
                         />
                     ))}
                 </Box>
@@ -136,14 +183,29 @@ export const MallCartFloatingButton: React.FC = () => {
     }
 
     return (
-        <Box className="kt-mall-client-tab-cart-floating">
+        <Box
+            sx={{
+                position: 'fixed',
+                bottom: 16,
+                left: 16,
+                right: 16,
+                zIndex: 1200,
+                display: { xs: 'block', md: 'none' },
+            }}
+        >
             <Button
                 fullWidth
                 variant="contained"
                 onClick={handleOpenCart}
-                className="kt-mall-client-tab-cart-floating-btn"
+                sx={{
+                    py: 2,
+                    borderRadius: 3,
+                    boxShadow: '0 4px 20px rgba(0,0,0,0.3)',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                }}
             >
-                <Box className="kt-mall-client-tab-cart-floating-left">
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                     <Badge badgeContent={cartItemCount} color="error">
                         <ShoppingCartIcon />
                     </Badge>

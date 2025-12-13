@@ -4,9 +4,6 @@ import MallOrderProductsFieldV2 from "../components/MallOrderProductsFieldV2";
 import MallOrderProducts from "../components/MallOrderProducts";
 import MallSessionOrderNotifications from "../components/MallSessionOrderNotifications";
 import MallSessionOrderProgress from "../components/MallSessionOrderProgress";
-import MallOrderVouchers from "../components/MallOrderVouchers";
-import MallOrderToolbarMediator from "../components/MallOrderToolbarMediator";
-
 
 /**
  * MallTabSchemaV2 - New kiosk-style schema for mall orders
@@ -20,20 +17,9 @@ import MallOrderToolbarMediator from "../components/MallOrderToolbarMediator";
  */
 
 
-// Toolbar mediator: always at the top, only in create mode
+
+
 const MallTabSchemaV2: IDashAutoAdminAttribute[] = [
-    {
-        attribute: 'toolbar',
-        tab: 'Productos',
-        label: '',
-        type: Object,
-        inCreate: true,
-        inEdit: false,
-        inShow: false,
-        inList: false,
-        custom: true,
-        component: MallOrderToolbarMediator
-    },
     // Products field with new kiosk-style UI for create mode ONLY
     {
         attribute: 'products',
@@ -60,6 +46,7 @@ const MallTabSchemaV2: IDashAutoAdminAttribute[] = [
         custom: true,
         component: MallOrderProducts,
     },
+   
     // Order total
     {
         attribute: 'order.total_amount',
@@ -128,7 +115,7 @@ const MallTabSchemaV2: IDashAutoAdminAttribute[] = [
         inEdit: false,
         inShow: false,
     },
-    // Order progress - displays progress bars for each tenant/store in a mall order
+     // Order progress - displays progress bars for each tenant/store in a mall order
     {
         attribute: 'progress',
         tab: 'Actualizaciones',
@@ -153,18 +140,6 @@ const MallTabSchemaV2: IDashAutoAdminAttribute[] = [
         inList: false,
         custom: true,
         component: MallSessionOrderNotifications,
-    },
-    {
-        attribute: 'products',
-        tab: 'Vouchers',
-        label: 'Vouchers',
-        type: Object,
-        inCreate: false,
-        inEdit: true,
-        inShow: true,
-        inList: false,
-        custom: true,
-        component: MallOrderVouchers,
     },
 ];
 

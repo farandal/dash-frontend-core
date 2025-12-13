@@ -1,6 +1,5 @@
-import React, { useCallback } from 'react';
-import { useTranslate, useSaveContext } from 'react-admin';
-import { useFormContext } from 'react-hook-form';
+import React from 'react';
+import { useTranslate } from 'react-admin';
 import { 
     Box, 
     Drawer, 
@@ -8,19 +7,15 @@ import {
     Button, 
     IconButton,
     Paper,
-    CircularProgress,
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
-import ShoppingCartCheckoutIcon from '@mui/icons-material/ShoppingCartCheckout';
 import { useMallOrderCreate } from '../contexts/MallOrderCreateContext';
 import { MallCartItemsList } from './MallCartItemsList';
 
 /**
  * MallOrderSummaryDrawer - Drawer showing full cart details
  * Uses reusable MallCartItemsList component for DRY code
- * 
- * Now includes direct form submission via React-Admin's useSaveContext
  */
 export const MallOrderSummaryDrawer: React.FC = () => {
     const translate = useTranslate();
@@ -34,48 +29,9 @@ export const MallOrderSummaryDrawer: React.FC = () => {
         formatPrice,
     } = useMallOrderCreate();
 
-    // Get React-Admin save context for form submission
-    const saveContext = useSaveContext();
-    
-    // Get form context for getting current form values
-    const formContext = useFormContext();
-
-    const [isSubmitting, setIsSubmitting] = React.useState(false);
-
     const handleClose = () => {
         setIsCartDrawerOpen(false);
     };
-
-    /**
-     * Handle order submission directly from the drawer
-     * Uses React-Admin's save function from useSaveContext
-     */
-    const handleSubmitOrder = useCallback(async () => {
-        if (!saveContext?.save || !formContext) {
-            console.warn('Save context or form context not available');
-            return;
-        }
-
-        // Disable button while submitting
-        setIsSubmitting(true);
-
-        try {
-            // Get current form values
-            const formValues = formContext.getValues();
-            
-            // Trigger form submission through React-Admin's save
-            // The save function will handle beforeSubmit hooks and validation
-            await saveContext.save(formValues);
-            
-            // Close drawer after successful submission
-            setIsCartDrawerOpen(false);
-        } catch (error) {
-            console.error('Error submitting order:', error);
-            // Error handling is done by React-Admin and resource config
-        } finally {
-            setIsSubmitting(false);
-        }
-    }, [saveContext, formContext, setIsCartDrawerOpen]);
 
     return (
         <Drawer
@@ -173,36 +129,12 @@ export const MallOrderSummaryDrawer: React.FC = () => {
                         </Typography>
                     </Box>
 
-                    {/* Submit Order Button - Primary action */}
-                    <Button
-                        fullWidth
-                        variant="contained"
-                        color="primary"
-                        size="large"
-                        onClick={handleSubmitOrder}
-                        disabled={isSubmitting || cartItemCount === 0}
-                        startIcon={isSubmitting ? <CircularProgress size={20} color="inherit" /> : <ShoppingCartCheckoutIcon />}
-                        sx={{
-                            py: 1.5,
-                            borderRadius: 2,
-                            fontWeight: 700,
-                            fontSize: '1rem',
-                            mb: 1.5,
-                        }}
-                    >
-                        {isSubmitting 
-                            ? translate('mall.submitting_order') 
-                            : translate('mall.submit_order')
-                        }
-                    </Button>
-
-                    {/* Continue shopping button - Secondary action */}
+                    {/* Close button to continue shopping or use form submit */}
                     <Button
                         fullWidth
                         variant="outlined"
                         size="large"
                         onClick={handleClose}
-                        disabled={isSubmitting}
                         sx={{
                             py: 1.5,
                             borderRadius: 2,

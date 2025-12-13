@@ -134,16 +134,7 @@ export const MallClientTabsProvider: React.FC<MallClientTabsProviderProps> = ({
     const [totalCount, setTotalCount] = useState(0);
     
     // Track if initial fetch has been done to prevent duplicate requests
-    // Using localStorage to persist across component remounts (e.g., theme switches)
-    const getFetchKey = () => sessionHash ? `mall-session-initial-fetch-${sessionHash}` : null;
-    const isInitialFetchDone = () => {
-        const key = getFetchKey();
-        return key ? localStorage.getItem(key) === 'true' : false;
-    };
-    const setInitialFetchDone = () => {
-        const key = getFetchKey();
-        if (key) localStorage.setItem(key, 'true');
-    };
+    const initialFetchDone = useRef(false);
     
     const axios = useAxios();
 
@@ -225,7 +216,7 @@ export const MallClientTabsProvider: React.FC<MallClientTabsProviderProps> = ({
     // Fetch notifications from API
     const fetchNotifications = useCallback(async (force = false) => {
         // Skip if already fetched and not forced
-        if (isInitialFetchDone() && !force) {
+        if (initialFetchDone.current && !force) {
             return;
         }
 
@@ -236,15 +227,10 @@ export const MallClientTabsProvider: React.FC<MallClientTabsProviderProps> = ({
         setLoading(true);
         setError(null);
 
-        // Refresh are quicks, so the response sometimes not performed.
-        setInitialFetchDone();
-
         try {
             const url = `/public/mall/session/${sessionHash}/notifications`;
 
             const response = await axios.get(url);
-
-             
 
             if (response.data) {
                 const notificationList = response.data.notifications || [];
@@ -256,7 +242,7 @@ export const MallClientTabsProvider: React.FC<MallClientTabsProviderProps> = ({
                 processNotifications(notificationList);
                 
                 // Mark initial fetch as done
-                //initialFetchDone.current = true;
+                initialFetchDone.current = true;
             }
         } catch (err: any) {
             console.error('[MallClientTabsContext] Error fetching notifications:', err);
@@ -268,7 +254,6 @@ export const MallClientTabsProvider: React.FC<MallClientTabsProviderProps> = ({
 
     // Refresh notifications (force fetch)
     const refreshNotifications = useCallback(async (force = false) => {
-      
         await fetchNotifications(force);
     }, [fetchNotifications]);
 
@@ -313,8 +298,7 @@ export const MallClientTabsProvider: React.FC<MallClientTabsProviderProps> = ({
 
     // Initial fetch when session hash is available
     useEffect(() => {
-        if (sessionHash && !isInitialFetchDone()) {
-        
+        if (sessionHash && !initialFetchDone.current) {
             fetchNotifications();
         }
     }, [sessionHash]);
