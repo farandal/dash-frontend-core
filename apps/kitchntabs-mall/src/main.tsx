@@ -158,6 +158,13 @@ const injectTenantStyles = () => {
 
 injectTenantStyles();
 
+// Clear initial fetch flags on app start to prevent stale state from previous sessions
+Object.keys(localStorage).forEach(key => {
+    if (key.startsWith('mall-session-initial-fetch-')) {
+        localStorage.removeItem(key);
+    }
+});
+
 // Lazy load with proper error handling - Load the main app controller
 const AppComponent = React.lazy<React.FC>(() => {
     return new Promise<{ default: React.FC }>((resolve) => {

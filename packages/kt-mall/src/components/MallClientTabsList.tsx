@@ -89,30 +89,35 @@ const MallClientTabsList: React.FC<IDashAutoAdminDataGrid> = ({ resourceConfig }
         <WithListContext render={({ isPending, data }) => (
             <>
                 {data?.length === 0 && (
-                    <Alert severity="info" sx={{ mb: 2 }}>
+                    <Alert severity="info" sx={{ mb: { xs: 0.5, sm: 2 } }}>
                         No tienes órdenes activas. Puedes crear una nueva orden usando el menú.
                     </Alert>
                 )}
                 <Box sx={{
-                    display: 'grid', gap: 1, gridTemplateColumns: {
+                    display: 'grid', 
+                    gap: { xs: 0.5, sm: 1 }, 
+                    gridTemplateColumns: {
                         xs: 'repeat(1, 1fr)',
                         md: 'repeat(2, 1fr)',
                         lg: 'repeat(3, 1fr)'
                     },
-                    backgroundColor: 'transparent'
+                    backgroundColor: 'transparent',
+                    p: { xs: 0.5, sm: 1 },
+                    m: { xs: 0.5, sm: 1 }
                 }}>
                     {data?.map((record: any) => {
                         return (
-                        <Card className="dash-kitchen-tab" key={record.id} sx={{ p: 1, mb: 2, backgroundColor: 'transparent' }}>
+                        <Card className="dash-kitchen-tab" key={record.id} sx={{ p: { xs: 0.5, sm: 1 }, mb: { xs: 0.5, sm: 2 }, backgroundColor: 'transparent' }}>
                             <Box sx={{ display: 'flex' }}>
                                 <Box sx={{ flex: 1 }}>
+                                  
                                     <CardHeader
                                         sx={{ p: 0 }}
                                         title={
                                             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
                                                 <Typography variant="h5">{`Orden #${record.id}`}</Typography>
                                                 <ButtonGroup style={{ alignItems: "center" }} orientation="horizontal" variant="text" size="small">
-                                                    <TabTimerClock createdAt={(record as ITab).date_confirmed} />
+                                                    {/*<TabTimerClock createdAt={(record as ITab).date_confirmed} />*/}
 
                                                     <DashResourceButton icon={<svg
                                                         xmlns="http://www.w3.org/2000/svg"

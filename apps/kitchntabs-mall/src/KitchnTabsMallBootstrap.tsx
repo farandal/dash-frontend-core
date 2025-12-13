@@ -40,7 +40,9 @@ const MallClientWrapper = lazy(() => import('./components/mall').then(module => 
 
 // Lazy load the main apps
 const KitchnTabsPublicApp = lazy(() => import('./core/KitchnTabsPublicApp'));
-const KitchnTabsPrivateApp = lazy(() => import('./core/KitchnTabsPrivateApp'));const KitchnTabsMallBootstrap: React.FC = () => {
+const KitchnTabsPrivateApp = lazy(() => import('./core/KitchnTabsPrivateApp'));
+
+const KitchnTabsMallBootstrap: React.FC = () => {
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [initializationError, setInitializationError] = useState<string | null>(null);
     const [dependencies, setDependencies] = useState<any>(null);
@@ -254,6 +256,7 @@ const KitchnTabsPrivateApp = lazy(() => import('./core/KitchnTabsPrivateApp'));c
             initializeApp();
         }
     }, [dispatch, isLoading]);
+
 
     // Set pending redirect on component mount if there's a redirect parameter
     useEffect(() => {

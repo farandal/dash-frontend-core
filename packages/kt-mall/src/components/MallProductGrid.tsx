@@ -4,18 +4,14 @@ import {
     Box, 
     Grid, 
     Typography, 
-    IconButton, 
     Skeleton, 
-    Paper, 
-    Button,
     Card,
     CardMedia,
     CardContent,
     CardActions,
-    Chip,
+    Button,
     CircularProgress,
 } from '@mui/material';
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import AddIcon from '@mui/icons-material/Add';
 import StarIcon from '@mui/icons-material/Star';
@@ -93,137 +89,67 @@ const MallProductCard: React.FC<MallProductCardProps> = ({ product }) => {
             onMouseMove={handlePointerMove}
             onTouchStart={handlePointerDown}
             onTouchMove={handlePointerMove}
-            sx={{
-                height: '100%',
-                display: 'flex',
-                flexDirection: 'column',
-                position: 'relative',
-                overflow: 'hidden',
-                borderRadius: 2,
-                cursor: 'pointer',
-                transition: 'transform 0.15s ease, box-shadow 0.15s ease',
-                '&:hover': {
-                    transform: 'scale(1.02)',
-                    boxShadow: 6,
-                },
-                '&:active': {
-                    transform: 'scale(0.98)',
-                },
-            }}
         >
-            <Box sx={{ position: 'absolute', top: 8, left: 8, zIndex: 2, display: 'flex', flexDirection: 'row', gap: 1 }}>
+            <Box className="kt-mall-product-card-badges">
                 {product.featured && (
-                    <StarIcon sx={{
-                        display: 'flex',
-                        fontWeight: 600,
-                        fontSize: 22,
-                    }} />
+                    <StarIcon className="kt-mall-product-card-featured-icon" />
                 )}
                 
                 {hasModifiers && (
-                    <TuneIcon sx={{ 
-                        display: 'flex',
-                        fontSize: 22,
-                        fontWeight: 600,
-                    }} />
+                    <TuneIcon className="kt-mall-product-card-modifier-icon" />
                 )}
             </Box>
 
-            {/* Product image */}
-            <Box
-                sx={{
-                    position: 'relative',
-                    paddingTop: '75%', // 4:3 aspect ratio
-                    backgroundColor: 'grey.200',
-                }}
-            >
+            {/* Image Container */}
+            <Box className="kt-mall-product-card-image-container">
                 {imageUrl ? (
                     <CardMedia
                         component="img"
                         image={imageUrl}
                         alt={product.name}
-                        sx={{
-                            position: 'absolute',
-                            top: 0,
-                            left: 0,
-                            width: '100%',
-                            height: '100%',
-                            objectFit: 'cover',
-                        }}
+                        className="kt-mall-product-card-image"
                     />
                 ) : (
-                    <Box
-                        sx={{
-                            position: 'absolute',
-                            top: 0,
-                            left: 0,
-                            width: '100%',
-                            height: '100%',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                        }}
-                    >
-                        <RestaurantIcon sx={{ fontSize: 48, opacity: 0.3, color: 'grey.500' }} />
+                    <Box className="kt-mall-product-card-image-placeholder">
+                        <RestaurantIcon className="kt-mall-product-card-image-placeholder-icon" />
                     </Box>
                 )}
                 
                 {/* Gradient overlay */}
-                <Box
-                    sx={{
-                        position: 'absolute',
-                        bottom: 0,
-                        left: 0,
-                        right: 0,
-                        height: '50%',
-                        background: 'linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 100%)',
-                    }}
-                />
+                <Box className="kt-mall-product-card-gradient" />
 
                
             </Box>
 
             {/* Content */}
-            <CardContent sx={{ flexGrow: 1, py: 1, px: 1.5 }}>
-                 {/* Price overlay */}
+            <CardContent className="kt-mall-product-card-content">
+                 {/* Tenant name */}
+                <Typography
+                    variant="caption"
+                    color="text.secondary"
+                    className="kt-mall-product-card-tenant"
+                >
+                    {product.tenant?.name}
+                </Typography>
+                {/* Price */}
                 <Typography
                     variant="subtitle1"
-                    sx={{
-                        fontWeight: 600,
-                        lineHeight: 1.3,
-                        display: '-webkit-box',
-                        WebkitLineClamp: 2,
-                        WebkitBoxOrient: 'vertical',
-                        overflow: 'hidden',
-                        fontSize: 22,
-                    }}
+                    className="kt-mall-product-card-price"
                 >
                     {formatPrice(price)}
                 </Typography>
                 <Typography
                     variant="subtitle2"
-                    sx={{
-                        fontWeight: 600,
-                        lineHeight: 1.3,
-                        display: '-webkit-box',
-                        WebkitLineClamp: 2,
-                        WebkitBoxOrient: 'vertical',
-                        overflow: 'hidden',
-                    }}
+                    className="kt-mall-product-card-name"
                 >
                     {product.name}
                 </Typography>
+                {/* Description */}
                 {product.description && (
                     <Typography
-                        variant="caption"
+                        variant="body2"
                         color="text.secondary"
-                        sx={{
-                            display: '-webkit-box',
-                            WebkitLineClamp: 4,
-                            WebkitBoxOrient: 'vertical',
-                            overflow: 'hidden',
-                            mt: 0.5,
-                        }}
+                        className="kt-mall-product-card-description"
                     >
                         {product.description}
                     </Typography>
@@ -231,18 +157,14 @@ const MallProductCard: React.FC<MallProductCardProps> = ({ product }) => {
             </CardContent>
 
             {/* Add button */}
-            <CardActions sx={{ p: 1, pt: 0 }}>
+            <CardActions className="kt-mall-product-card-actions">
                 <Button
                     fullWidth
                     variant="contained"
-                    size="small"
+                    color="primary"
                     startIcon={<AddIcon />}
                     onClick={handleButtonClick}
-                    sx={{
-                        borderRadius: 1.5,
-                        fontWeight: 600,
-                        textTransform: 'none',
-                    }}
+                    className="kt-mall-product-card-add-button"
                 >
                     {translate('mall.add')}
                 </Button>
@@ -252,7 +174,7 @@ const MallProductCard: React.FC<MallProductCardProps> = ({ product }) => {
 };
 
 /**
- * MallProductGrid - Product grid with horizontal pagination or infinite scroll
+ * MallProductGrid - Product grid with horizontal infinite scroll carousel or vertical infinite scroll
  */
 export const MallProductGrid: React.FC = () => {
     const translate = useTranslate();
@@ -261,125 +183,76 @@ export const MallProductGrid: React.FC = () => {
         allProducts,
         isLoadingProducts,
         paginationMode,
-        currentPage,
-        totalPages,
-        setCurrentPage,
-        ITEMS_PER_PAGE,
         selectedStore,
+        // Carousel pagination
+        carouselProducts,
+        isLoadingCarouselPage,
+        hasMoreCarouselPages,
+        loadNextCarouselPage,
+        carouselCurrentPage,
+        carouselTotalPages,
     } = useMallOrderCreate();
 
-    // Swipe handling for horizontal pagination
-    const containerRef = useRef<HTMLDivElement>(null);
-    const [isDragging, setIsDragging] = useState(false);
-    const [startX, setStartX] = useState(0);
-    const [translateX, setTranslateX] = useState(0);
-    const [isAnimating, setIsAnimating] = useState(false);
+    // Horizontal scroll container ref
+    const scrollContainerRef = useRef<HTMLDivElement>(null);
+    const loadMoreTriggerRef = useRef<HTMLDivElement>(null);
+    const [isNearEnd, setIsNearEnd] = useState(false);
 
-    // Calculate pages for horizontal mode
-    const pages = React.useMemo(() => {
-        if (paginationMode === 'infinite') return [allProducts];
+    // Detect when scrolling near the end to load more
+    const handleScroll = useCallback(() => {
+        const container = scrollContainerRef.current;
+        if (!container) return;
         
-        const chunks: IMallProduct[][] = [];
-        for (let i = 0; i < allProducts.length; i += ITEMS_PER_PAGE) {
-            chunks.push(allProducts.slice(i, i + ITEMS_PER_PAGE));
+        const { scrollLeft, scrollWidth, clientWidth } = container;
+        const scrollEnd = scrollWidth - clientWidth;
+        const threshold = 200; // Load more when within 200px of end
+        
+        const nearEnd = scrollLeft >= scrollEnd - threshold;
+        setIsNearEnd(nearEnd);
+        
+        // Trigger load when near end
+        if (nearEnd && hasMoreCarouselPages && !isLoadingCarouselPage) {
+            console.log('🔄 Near end of scroll, loading next page...');
+            loadNextCarouselPage();
         }
-        return chunks.length > 0 ? chunks : [[]];
-    }, [allProducts, ITEMS_PER_PAGE, paginationMode]);
+    }, [hasMoreCarouselPages, isLoadingCarouselPage, loadNextCarouselPage]);
 
-    const canScrollPrev = currentPage > 1;
-    const canScrollNext = currentPage < totalPages;
-
-    // Reset to first page when products change
+    // Attach scroll listener
     useEffect(() => {
-        setCurrentPage(1);
-        setTranslateX(0);
-    }, [selectedStore, setCurrentPage]);
-
-    const scrollPrev = useCallback(() => {
-        if (canScrollPrev && !isAnimating) {
-            setIsAnimating(true);
-            setCurrentPage(currentPage - 1);
-            setTimeout(() => setIsAnimating(false), 300);
-        }
-    }, [canScrollPrev, isAnimating, currentPage, setCurrentPage]);
-
-    const scrollNext = useCallback(() => {
-        if (canScrollNext && !isAnimating) {
-            setIsAnimating(true);
-            setCurrentPage(currentPage + 1);
-            setTimeout(() => setIsAnimating(false), 300);
-        }
-    }, [canScrollNext, isAnimating, currentPage, setCurrentPage]);
-
-    // Touch/Mouse handlers for swipe
-    const handleDragStart = useCallback((clientX: number) => {
-        if (isAnimating || paginationMode === 'infinite') return;
-        setIsDragging(true);
-        setStartX(clientX);
-        setTranslateX(0);
-    }, [isAnimating, paginationMode]);
-
-    const handleDragMove = useCallback((clientX: number) => {
-        if (!isDragging) return;
-        const diff = clientX - startX;
-        const maxDrag = 150;
-        const resistance = 0.3;
+        const container = scrollContainerRef.current;
+        if (!container) return;
         
-        if ((diff > 0 && !canScrollPrev) || (diff < 0 && !canScrollNext)) {
-            setTranslateX(diff * resistance);
-        } else {
-            setTranslateX(Math.max(-maxDrag, Math.min(maxDrag, diff)));
-        }
-    }, [isDragging, startX, canScrollPrev, canScrollNext]);
+        container.addEventListener('scroll', handleScroll, { passive: true });
+        return () => container.removeEventListener('scroll', handleScroll);
+    }, [handleScroll]);
 
-    const handleDragEnd = useCallback(() => {
-        if (!isDragging) return;
-        setIsDragging(false);
-        
-        const threshold = 50;
-        
-        if (translateX > threshold && canScrollPrev) {
-            scrollPrev();
-        } else if (translateX < -threshold && canScrollNext) {
-            scrollNext();
-        }
-        
-        setTranslateX(0);
-    }, [isDragging, translateX, canScrollPrev, canScrollNext, scrollPrev, scrollNext]);
-
-    const handleTouchStart = (e: React.TouchEvent) => handleDragStart(e.touches[0].clientX);
-    const handleTouchMove = (e: React.TouchEvent) => handleDragMove(e.touches[0].clientX);
-    const handleTouchEnd = () => handleDragEnd();
-
-    const handleMouseDown = (e: React.MouseEvent) => handleDragStart(e.clientX);
-    const handleMouseMove = (e: React.MouseEvent) => handleDragMove(e.clientX);
-    const handleMouseUp = () => handleDragEnd();
-    const handleMouseLeave = () => { if (isDragging) handleDragEnd(); };
-
-    // Loading state
-    if (isLoadingProducts) {
+    // Loading state (initial load)
+    if (isLoadingProducts && carouselProducts.length === 0) {
         return (
-            <Box sx={{ p: 2 }}>
-                <Grid container spacing={2}>
-                    {[...Array(6)].map((_, index) => (
-                        <Grid size={{ xs: 4, sm: 4, md: 4, lg: 3 }} key={index}>
+            <Box sx={{ p: { xs: 0.5, sm: 2 } }}>
+                <Box sx={{ display: 'flex', gap: { xs: 1, sm: 2 }, overflowX: 'hidden' }}>
+                    {[...Array(4)].map((_, index) => (
+                        <Box key={index} sx={{ width: { xs: 120, sm: 160, md: 180 }, flexShrink: 0 }}>
                             <Skeleton 
                                 variant="rectangular" 
                                 sx={{ 
                                     width: '100%', 
-                                    paddingTop: '100%', 
+                                    height: 180, 
                                     borderRadius: 2 
                                 }} 
                             />
-                        </Grid>
+                            <Skeleton variant="text" sx={{ mt: 1 }} />
+                            <Skeleton variant="text" width="60%" />
+                        </Box>
                     ))}
-                </Grid>
+                </Box>
             </Box>
         );
     }
 
-    // Empty state
-    if (allProducts.length === 0) {
+    // Empty state - check both allProducts (for infinite mode) and carouselProducts (for horizontal mode)
+    const productsToCheck = paginationMode === 'horizontal' ? carouselProducts : allProducts;
+    if (productsToCheck.length === 0 && !isLoadingCarouselPage) {
         return (
             <Box
                 sx={{
@@ -403,142 +276,136 @@ export const MallProductGrid: React.FC = () => {
     }
 
     // Horizontal pagination mode
+    // Horizontal infinite scroll carousel mode
     if (paginationMode === 'horizontal') {
         return (
             <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column', position: 'relative' }}>
-                {/* Navigation Header */}
-                <Paper
-                    elevation={0}
+                {/* Page indicator */}
+                <Box
                     sx={{
                         display: 'flex',
                         justifyContent: 'space-between',
                         alignItems: 'center',
                         px: 2,
-                        py: 1,
+                        py: 0.5,
                         borderBottom: 1,
                         borderColor: 'divider',
-                        backgroundColor: 'background.default',
+                        backgroundColor: 'transparent',
                     }}
                 >
-                    <Button
-                        onClick={scrollPrev}
-                        disabled={!canScrollPrev || isAnimating}
-                        variant="outlined"
-                        startIcon={<ChevronLeftIcon />}
-                        sx={{
-                            borderRadius: 5,
-                            px: 2,
-                            borderWidth: 2,
-                            borderColor: canScrollPrev ? 'primary.main' : 'divider',
-                            color: canScrollPrev ? 'primary.main' : 'text.disabled',
-                            fontWeight: 700,
-                            '&:hover': {
-                                borderWidth: 2,
-                                backgroundColor: canScrollPrev ? 'primary.main' : 'transparent',
-                                color: canScrollPrev ? 'primary.contrastText' : 'text.disabled',
-                            },
-                        }}
-                    >
-                        {translate('mall.prev')}
-                    </Button>
-
-                    <Typography variant="body2" fontWeight={600}>
-                        {currentPage} / {totalPages}
+                    <Typography variant="caption" color="text.secondary">
+                        {carouselProducts.length} productos
                     </Typography>
-
-                    <Button
-                        onClick={scrollNext}
-                        disabled={!canScrollNext || isAnimating}
-                        variant="outlined"
-                        endIcon={<ChevronRightIcon />}
-                        sx={{
-                            borderRadius: 5,
-                            px: 2,
-                            borderWidth: 2,
-                            borderColor: canScrollNext ? 'primary.main' : 'divider',
-                            color: canScrollNext ? 'primary.main' : 'text.disabled',
-                            fontWeight: 700,
-                            '&:hover': {
-                                borderWidth: 2,
-                                backgroundColor: canScrollNext ? 'primary.main' : 'transparent',
-                                color: canScrollNext ? 'primary.contrastText' : 'text.disabled',
-                            },
-                        }}
-                    >
-                        {translate('mall.next')}
-                    </Button>
-                </Paper>
-
-                {/* Products grid */}
-                <Box
-                    ref={containerRef}
-                    onMouseDown={handleMouseDown}
-                    onMouseMove={handleMouseMove}
-                    onMouseUp={handleMouseUp}
-                    onMouseLeave={handleMouseLeave}
-                    onTouchStart={handleTouchStart}
-                    onTouchMove={handleTouchMove}
-                    onTouchEnd={handleTouchEnd}
-                    sx={{
-                        flexGrow: 1,
-                        overflow: 'hidden',
-                        p: 2,
-                        transform: `translateX(${translateX}px)`,
-                        transition: isDragging ? 'none' : 'transform 0.3s ease-out',
-                    }}
-                >
-                    <Grid container spacing={2}>
-                        {products.map((product) => (
-                            <Grid size={{ xs: 4, sm: 4, md: 4, lg: 3 }} key={product.id}>
-                                <MallProductCard product={product} />
-                            </Grid>
-                        ))}
-                    </Grid>
+                    {hasMoreCarouselPages && (
+                        <Typography variant="caption" color="primary">
+                            Desliza →
+                        </Typography>
+                    )}
                 </Box>
 
-                {/* Pagination dots */}
-                {totalPages > 1 && (
+                {/* Products horizontal scroll row - single row, infinite scroll */}
+                <Box
+                    ref={scrollContainerRef}
+                    sx={{
+                        flexGrow: 1,
+                        overflowX: 'auto',
+                        overflowY: 'hidden',
+                        p: { xs: 0.5, sm: 2 },
+                        scrollbarWidth: 'thin',
+                        '&::-webkit-scrollbar': { 
+                            height: 6,
+                        },
+                        '&::-webkit-scrollbar-track': {
+                            backgroundColor: 'grey.100',
+                            borderRadius: 3,
+                        },
+                        '&::-webkit-scrollbar-thumb': {
+                            backgroundColor: 'grey.400',
+                            borderRadius: 3,
+                            '&:hover': {
+                                backgroundColor: 'grey.500',
+                            },
+                        },
+                        WebkitOverflowScrolling: 'touch', // Smooth scrolling on iOS
+                    }}
+                >
                     <Box
                         sx={{
                             display: 'flex',
-                            justifyContent: 'center',
-                            gap: 1,
-                            py: 1,
-                            borderTop: 1,
-                            borderColor: 'divider',
+                            flexDirection: 'row',
+                            gap: { xs: 1, sm: 2 },
+                            minWidth: 'max-content',
+                            alignItems: 'stretch',
                         }}
                     >
-                        {Array.from({ length: totalPages }, (_, i) => (
+                        {/* Product cards */}
+                        {carouselProducts.map((product) => (
                             <Box
-                                key={i}
-                                onClick={() => !isAnimating && setCurrentPage(i + 1)}
+                                key={product.id}
                                 sx={{
-                                    width: currentPage === i + 1 ? 24 : 8,
-                                    height: 8,
-                                    borderRadius: 4,
-                                    backgroundColor: currentPage === i + 1 ? 'primary.main' : 'grey.300',
-                                    cursor: 'pointer',
-                                    transition: 'all 0.2s ease',
+                                    // Show ~3 cards on mobile (xs), more on larger screens
+                                    width: { 
+                                        xs: 'calc((100vw - 32px) / 3 - 8px)', // 3 visible on mobile
+                                        sm: 160, 
+                                        md: 180,
+                                        lg: 200,
+                                    },
+                                    minWidth: { xs: 100, sm: 160, md: 180, lg: 200 },
+                                    maxWidth: { xs: 140, sm: 180, md: 200, lg: 220 },
+                                    flexShrink: 0,
                                 }}
-                            />
+                            >
+                                <MallProductCard product={product} />
+                            </Box>
                         ))}
+                        
+                        {/* Loading indicator at end */}
+                        {isLoadingCarouselPage && (
+                            <Box
+                                sx={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    width: { xs: 100, sm: 160 },
+                                    flexShrink: 0,
+                                }}
+                            >
+                                <CircularProgress size={32} />
+                            </Box>
+                        )}
+                        
+                        {/* Load more trigger (invisible sentinel) */}
+                        {hasMoreCarouselPages && !isLoadingCarouselPage && (
+                            <Box
+                                ref={loadMoreTriggerRef}
+                                sx={{
+                                    width: 50,
+                                    flexShrink: 0,
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                }}
+                            >
+                                <ChevronRightIcon sx={{ color: 'grey.400' }} />
+                            </Box>
+                        )}
                     </Box>
-                )}
+                </Box>
             </Box>
         );
     }
 
-    // Infinite scroll mode - shows all products with scrolling
+    // Infinite scroll mode (vertical) - shows all products with scrolling
     return (
         <Box
             className="kt-mall-product-grid"
             sx={{
                 flexGrow: 1,
                 overflow: 'auto',
-                p: 2,
+                p: { xs: 0.5, sm: 0 },
             }}
         >
-            <Grid container spacing={2}>
+            <Grid container spacing={{ xs: 1, sm: 2 }}>
                 {allProducts.map((product) => (
                     <Grid size={{ xs: 4, sm: 4, md: 4, lg: 3 }} key={product.id}>
                         <MallProductCard product={product} />
