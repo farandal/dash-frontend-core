@@ -3,8 +3,6 @@ import react from "@vitejs/plugin-react";
 import path from "path";
 import fs from "fs";
 import svgr from "vite-plugin-svgr";
-import { createRemoveConsolePlugin } from "vite-plugin-remove-console";
-
 import packageJson from "./package.json" assert { type: "json" };
 
 interface IEnvVars {
@@ -576,14 +574,7 @@ export default ({ mode }) => {
         },
       }),
       svgr(),
-      // Remove console logs in production
-      ...(isProduction ? [{
-        name: 'remove-console',
-        transform(code, id) {
-          if (id.includes('node_modules')) return code;
-          return code.replace(/console\.(log|warn|error|info|debug|trace)\([^)]*\);?/g, '');
-        }
-      }] : []),
+     
       /*{
         name: 'generate-netlify-redirects',
         closeBundle() {
