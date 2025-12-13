@@ -41,11 +41,10 @@ export const MallSearchBox: React.FC = () => {
         <Box
             className="kt-mall-search-box"
             sx={{
-                px: 2,
-                py: 1,
-                //backgroundColor: 'background.default',
-                borderBottom: 1,
-                borderColor: 'divider',
+                px: { xs: 0, sm: 2 },
+                py: { xs: 0, sm: 1 },
+                backgroundColor: 'transparent',
+                border: 'none',
             }}
         >
             <TextField

@@ -52,7 +52,7 @@ const MallAppMediator = () => {
 
      const handleEnterPublicOrderData = (event: CustomEvent<CustomEventData>) => {
 
-        debugger;
+      
         // Always set a new function reference to force re-render
         if (event.detail?.onConfirm) {
           setCustomOnConfirm(() => () => event.detail.onConfirm && event.detail.onConfirm());
@@ -92,10 +92,11 @@ const MallAppMediator = () => {
     }, []);
 
     return (
+        <>
       <Portal>
-        <DASHModal 
-          sx={{ zIndex: 100000 }} // Ensure modal is on top
-          variant='info'
+        <DASHModal
+          // Modal z-index and style handled in LESS
+          variant="info"
           open={open}
           onCancel={() => {
             handleClose();
@@ -108,13 +109,9 @@ const MallAppMediator = () => {
           title="Ingresa tus datos antes de continuar!"
           confirmText={customConfirmText || "Guardar Datos"}
           cancelText={customCancelText || "Cancelar"}
+          className="kt-mall-client-tab-modal"
         >
-          <div style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'stretch',
-            textAlign: 'left'
-          }}>
+          <div className="kt-mall-client-tab-modal-content">
             <TextField
               autoFocus
               margin="dense"
@@ -123,21 +120,11 @@ const MallAppMediator = () => {
               type="text"
               fullWidth
               variant="outlined"
+              className="kt-mall-client-tab-customer-name-field"
             />
             <Card
-              sx={{
-                position: 'relative',
-                width: '100%',
-                height: 180,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                mt: 2,
-                mb: 2,
-                mx: 'auto',
-                boxSizing: 'border-box'
-              }}
               elevation={4}
+              className="kt-mall-client-tab-table-card"
             >
               <TextField
                 id="tableNumber"
@@ -146,108 +133,30 @@ const MallAppMediator = () => {
                 variant="outlined"
                 value={tableNumber}
                 onChange={(e) => setTableNumber(e.target.value)}
+                className="kt-mall-client-tab-table-number-field"
                 inputProps={{
-                  style: {
-                    height: '120px',
-                    fontSize: '64px',
-                    textAlign: 'center',
-                    padding: 0,
-                    // Hide native number input spinners
-                    MozAppearance: 'textfield',
-                  }
-                }}
-                sx={{
-                  width: '100%',
-                  '& .MuiInputBase-root': {
-                    height: '120px',
-                    fontSize: '64px',
-                    textAlign: 'center',
-                  },
-                  '& input': {
-                    textAlign: 'center',
-                    // Hide native number input spinners for Chrome, Safari, Edge
-                    '&::-webkit-outer-spin-button': {
-                      WebkitAppearance: 'none',
-                      margin: 0,
-                    },
-                    '&::-webkit-inner-spin-button': {
-                      WebkitAppearance: 'none',
-                      margin: 0,
-                    },
-                    // Hide for Firefox
-                    MozAppearance: 'textfield',
-                  }
+                  className: "kt-mall-client-tab-table-number-input"
                 }}
               />
               <IconButton
                 onClick={handleIncrement}
-                sx={{
-                  position: 'absolute',
-                  top: 8,
-                  right: 8,
-                  zIndex: 2,
-                  background: 'white',
-                  boxShadow: 1,
-                }}
                 size="large"
+                className="kt-mall-client-tab-table-inc-btn"
               >
                 <KeyboardArrowUp fontSize="large" />
               </IconButton>
               <IconButton
                 onClick={handleDecrement}
-                sx={{
-                  position: 'absolute',
-                  bottom: 8,
-                  right: 8,
-                  zIndex: 2,
-                  background: 'white',
-                  boxShadow: 1,
-                }}
                 size="large"
+                className="kt-mall-client-tab-table-dec-btn"
               >
                 <KeyboardArrowDown fontSize="large" />
               </IconButton>
             </Card>
           </div>
         </DASHModal>
-     
-       {/* <Card>
-          <Box sx={{ display: 'flex', gap: 2 }}>
-            <TextField
-              id="customerName"
-              label="Nombre"
-              type="text"
-              variant="outlined"
-              size="small"
-              sx={{ flex: 2 }}
-            />
-            <TextField
-              id="tableNumber"
-              label="Mesa"
-              type="number"
-              variant="outlined"
-              size="small"
-              value={tableNumber}
-              onChange={(e) => setTableNumber(e.target.value)}
-              sx={{ flex: 1 }}
-              slotProps={{
-                input: {
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton size="small" onClick={handleIncrement}>
-                        <KeyboardArrowUp />
-                      </IconButton>
-                      <IconButton size="small" onClick={handleDecrement}>
-                        <KeyboardArrowDown />
-                      </IconButton>
-                    </InputAdornment>
-                  ),
-                }
-              }}
-            />
-          </Box>
-        </Card>*/}
       </Portal>
+      </>
     );
 };
 
