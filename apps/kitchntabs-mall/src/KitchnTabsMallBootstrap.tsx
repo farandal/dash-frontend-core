@@ -34,8 +34,8 @@ const providerImportsPromise = import('./dash-extensions').then(module => ({
   DASHMallDataProvider: module.DASHMallDataProvider,
 }));
 
-// Lazy load mall components
-const MallAppMediator = lazy(() => import('kt-mall/src/components').then(m => ({ default: m.MallAppMediator })));
+// Import mall components directly from specific files (avoid barrel exports for tree-shaking)
+import MallAppMediator from './kt-mall/components/MallAppMediator';
 const MallClientWrapper = lazy(() => import('./components/mall').then(module => ({ default: module.MallClientWrapper })));
 
 // Lazy load the main apps

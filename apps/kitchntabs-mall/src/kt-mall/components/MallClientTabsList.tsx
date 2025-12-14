@@ -1,5 +1,5 @@
 import { IDashAutoAdminDataGrid } from "dash-auto-admin";
-import { ITab, TabTimerClock } from "kt-tabs";
+// Direct imports from kt-tabs (avoid barrel exports for tree-shaking)
 import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";

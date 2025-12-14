@@ -1,114 +1,21 @@
 import React, { Suspense } from 'react';
 import { Route } from 'react-router-dom';
-import RecoverPassword from 'dash-admin/src/pages/RecoverPassword';
-import ChangePassword from 'dash-admin/src/pages/ChangePassword';
-import VerifyAccount from 'dash-admin/src/pages/VerifyAccount';
 import { NotFound } from 'dash-components';
 import DASHLightWeightLogin from 'kt-pages/src/dash-pages/DASHLightWeightLogin';
 import GlobalSmallLoader from './dash-extensions/components/GlobalSmallLoader';
 
 // Lazy load shared components
-const MarketplaceCallback = React.lazy(() => import('kt-ecommerce/src/components/Marketplace/MarketplaceCallback'));
-const Register = React.lazy(() => import('kt-pages/src/pages/Account/Register'));
-const SignUp = React.lazy(() => import('kt-pages/src/pages/Account/SignUp'));
-const SignUpSuccess = React.lazy(() => import('kt-pages/src/pages/Account/SignUpSuccess'));
-const Legal = React.lazy(() => import('kt-pages/src/pages/Static/Legal'));
 
-const MallClientWelcome = React.lazy(() => import('kt-mall/src/components').then(m => ({ default: m.MallClientWelcome })));
+// Direct import from specific file (avoid barrel exports for tree-shaking)
+import MallClientWelcome from './kt-mall/components/MallClientWelcome';
 // Shared routes factory function
 
 export const dashSharedRoutes = () => [
-    <Route
-        key="oauth-callback"
-        data-layout="no-layout"
-        path="oauth/marketplace/callback"
-        element={
-            <Suspense fallback={<GlobalSmallLoader />}>
-                <MarketplaceCallback />
-            </Suspense>
-        }
-    />,
    
-    <Route
-        key="register"
-        path='/registrarse'
-        element={
-            <Suspense fallback={<GlobalSmallLoader />}>
-                <Register />
-            </Suspense>
-        }
-    />,
-    <Route
-        key="signup"
-        path='/signup'
-        element={
-            <Suspense fallback={<GlobalSmallLoader />}>
-                <SignUp />
-            </Suspense>
-        }
-    />,
-    <Route
-        key="signup-success"
-        path='/signup-success'
-        element={
-            <Suspense fallback={<GlobalSmallLoader />}>
-                <SignUpSuccess />
-            </Suspense>
-        }
-    />,
-    <Route
-        key="legal"
-        data-layout="no-layout"
-        path='/legal'
-        element={
-            <Suspense fallback={<GlobalSmallLoader />}>
-                <Legal />
-            </Suspense>
-        }
-    />,
-    <Route
-        key={'reset-password'}
-        path='reset-password'
-        element={
-            <Suspense fallback={<GlobalSmallLoader />}>
-                {<RecoverPassword />}
-            </Suspense>
-        }
-    />,
-    <Route
-        key={'change-password'}
-        path='change-password'
-        element={
-            <Suspense fallback={<GlobalSmallLoader />}>
-                {<ChangePassword />}
-            </Suspense>
-        }
-    />,
-    <Route
-        key={'verify'}
-        path='verify'
-        element={
-            <Suspense fallback={<GlobalSmallLoader />}>
-                {<VerifyAccount />}
-            </Suspense>
-        }
-    />
 ]
 export const dashPrivateRoutes = () => [
     ...dashSharedRoutes(),
-    // Mall client session routes - for 'guest' ordering with session
-    // IMPORTANT: This more specific route MUST come before the generic /:mallSlug/* route
-    /*<Route
-        key={'mall-client-session'}
-        path='/:mallSlug/s/:sessionId/*'
-        element={<MallClientWrapper appPath={"/"} />}
-    />,
-    // Mall admin routes - require React-Admin context (authenticated users)
-    <Route
-        key={'mall-admin'}
-        path='/:mallSlug/*'
-        element={<MallAppWrapper appPath={"/"} />}
-    />,*/
+  
      <Route
         key="landing"
         data-layout="no-layout"

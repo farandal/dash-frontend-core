@@ -3,8 +3,8 @@ import { Route } from 'react-router-dom';
 import { NotFound } from 'dash-components';
 import DASHSimpleLogin from 'kt-pages/src/dash-pages/DASHSimpleLogin';
 
-// Lazy load MallQRGenerator from components chunk
-const MallQRGenerator = React.lazy(() => import('kt-mall/src/components').then(m => ({ default: m.MallQRGenerator })));
+// Direct import from specific file (avoid barrel exports for tree-shaking)
+import MallQRGenerator from '../../kt-mall/components/MallQRGenerator';
 
 export const mallPublicGlobalRoutes = () => [
     <Route 

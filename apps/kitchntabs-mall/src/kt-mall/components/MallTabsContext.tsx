@@ -1,6 +1,8 @@
 import { IDashAutoAdminResourceConfig } from "dash-auto-admin";
 import { useRecordContext } from "react-admin";
-import { TabManagerProvider, ITab } from "kt-tabs";
+// Direct imports from local kt-tabs (avoid barrel exports for tree-shaking)
+import { TabManagerProvider } from "../../kt-tabs/components/contexts/TabManagerContext";
+import type { ITab } from "../../kt-tabs/components/interfaces/ITab";
 import { MallClientTabsProvider } from "./MallClientTabsContext";
 
 export const MallTabsContext: IDashAutoAdminResourceConfig["contextComponent"] = (props) => {

@@ -1,7 +1,9 @@
 
 import { IDashAutoAdminAttribute } from "dash-auto-admin";
 import { lazy } from "react";
-import { TabStatus, ViewMarketplaceDetail } from "kt-tabs";
+// Direct imports from local kt-tabs (avoid barrel exports for tree-shaking)
+import TabStatus from "../../kt-tabs/components/TabStatus";
+import ViewMarketplaceDetail from "../../kt-tabs/components/Tab/ViewMarketplaceDetail";
 import MallOrderProductsField from "../components/MallOrderProductsField";
 import MallOrderProducts from "../components/MallOrderProducts";
 

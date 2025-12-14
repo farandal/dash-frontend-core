@@ -27,7 +27,7 @@ import {
 } from '@mui/icons-material';
 import React, { useCallback, useEffect, useState, useRef, useMemo } from 'react';
 import { useTranslate } from 'react-admin';
-import { useMallClientTabsContext, type IMallNotification } from 'kt-mall';
+import { useMallClientTabsContext, type IMallNotification } from '../../kt-mall';
 import { useMallSessionEcho } from '../../contexts/MallSessionEchoContext';
 
 interface ProcessedNotification {

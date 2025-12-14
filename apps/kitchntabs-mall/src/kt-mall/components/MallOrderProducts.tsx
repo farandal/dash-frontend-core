@@ -2,17 +2,15 @@ import { IDashAutoAdminCustomFieldComponent } from "dash-auto-admin";
 import { useRecordContext } from "react-admin";
 import { Box, Typography } from "@mui/material";
 
-import { 
-    ITab, 
-    OrderProductsView, 
-    OrderProductsEditRefactored, 
-    OrderProductsMallFilters, 
-    PaginationMode
-} from "kt-tabs";
-import MallSessionOrderProgress from "./MallSessionOrderProgress";
-import MallSessionOrderNotifications from "./MallSessionOrderNotifications";
+// Direct imports from local kt-tabs (avoid barrel exports for tree-shaking)
+import type { ITab } from "../../kt-tabs/components/interfaces/ITab";
+import OrderProductsView from "../../kt-tabs/components/Tab/OrderProductsView";
+import OrderProductsEditRefactored from "../../kt-tabs/components/Tab/OrderProductsEditRefactored";
+import OrderProductsMallFilters from "../../kt-tabs/components/Tab/OrderProductsMallFilters";
+import { PaginationMode } from "../../kt-tabs/components/contexts/TabManagerContext";
+
 import { useEffect, useState, useCallback, useMemo } from "react";
-import MallOrderSummaryDrawer from "./MallOrderSummaryDrawer";
+
 import { MallCartItemsList } from "./MallCartItemsList";
 import { IMallCartItem, IMallProduct, IMallCurrency } from "../contexts/MallOrderCreateContext";
 import { useFormContext } from "react-hook-form";

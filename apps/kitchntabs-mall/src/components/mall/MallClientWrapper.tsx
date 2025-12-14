@@ -22,8 +22,8 @@ import { dashStorage } from 'dash-utils';
 // Import mall session WebSocket context
 import { MallSessionEchoProvider, useMallSessionEcho } from '../../contexts/MallSessionEchoContext';
 
-// Import bridge provider from kt-mall package to pass WebSocket events to package components
-import { MallEchoBridgeProvider } from 'kt-mall';
+// Import bridge provider from local kt-mall to pass WebSocket events to components
+import { MallEchoBridgeProvider } from '../../kt-mall';
 
 interface ValidationState {
     isValidating: boolean;

@@ -20,25 +20,25 @@ export const KitchnTabsMallResources: ResourceManifest = {
     // SYSTEM RESOURCES (from dash-admin)
     // ========================================================================
     // Core system resources from dash-admin (users, roles, permissions, etc.)
-    systemResources: () => import('dash-admin/src/systemResources'),
+    //systemResources: () => import('dash-admin/src/systemResources'),
 
     // ========================================================================
     // USER & PROFILE RESOURCES (from kt-ecommerce)
     // ========================================================================
-    profileResource: () => import('kt-ecommerce/src/resources/user/profileResource'),
-    userResource: () => import('kt-ecommerce/src/resources/user/userResource'),
+    //profileResource: () => import('kt-ecommerce/src/resources/user/profileResource'),
+    //userResource: () => import('kt-ecommerce/src/resources/user/userResource'),
 
     // ========================================================================
-    // MALL RESOURCES (from kt-mall)
+    // MALL RESOURCES (from local kt-mall)
     // ========================================================================
     // Mall admin resources (system-level mall management)
-    mallResources: () => import('kt-mall/src/resources/MallResources'),
+    //mallResources: () => import('./kt-mall/resources/MallResources'),
     
     // Mall App Resources (admin-side mall features)
-    mallAppResources: () => import('kt-mall/src/MallAppResources'),
+    mallAppResources: () => import('./kt-mall/MallAppResources'),
     
     // Mall Client App Resources (public-facing mall features - ordering, etc.)
-    mallClientAppResources: () => import('kt-mall/src/MallClientAppResourcesV2'),
+    mallClientAppResources: () => import('./kt-mall/MallClientAppResourcesV2'),
 
 };
 

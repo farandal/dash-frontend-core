@@ -3,7 +3,8 @@ import { Box } from '@mui/material';
 import MallSessionOrderProgress from './MallSessionOrderProgress';
 import MallSessionOrderNotifications from './MallSessionOrderNotifications';
 import { useRecordContext } from 'react-admin';
-import { ITab } from 'kt-tabs';
+// Direct import from local kt-tabs (avoid barrel exports for tree-shaking)
+import type { ITab } from '../../kt-tabs/components/interfaces/ITab';
 
 /**
  * MallSessionOrderStatus - Combines progress and notifications for a mall order

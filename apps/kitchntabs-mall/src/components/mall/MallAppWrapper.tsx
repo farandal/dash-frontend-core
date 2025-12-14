@@ -18,10 +18,10 @@ import { mallPublicGlobalRoutes, mallPrivateGlobalRoutes } from '../../dash-exte
 import GlobalTenantWrapper from '../../dash-extensions/core/GlobalTenantWrapper';
 
 // Import mall resources config (lightweight - just config objects, heavy components are lazy inside)
-import MallAppResources from 'kt-mall/src/MallAppResources';
+import MallAppResources from '../../kt-mall/MallAppResources';
 
-// Lazy load heavy components
-const MallAppMediator = lazy(() => import('kt-mall/src/components/MallAppMediator'));
+// Direct import from specific file (avoid barrel exports for tree-shaking)
+import MallAppMediator from '../../kt-mall/components/MallAppMediator';
 
 // Lazy load the private app
 const KitchnTabsPrivateApp = lazy(() => import('../../core/KitchnTabsPrivateApp'));

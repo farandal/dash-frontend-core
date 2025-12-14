@@ -2,7 +2,8 @@ import React, { useEffect } from 'react';
 import { CircularProgress, Box } from '@mui/material';
 import { useGetOne } from 'react-admin';
 import { IDashAutoAdminCustomFieldComponent } from 'dash-auto-admin';
-import { ITab } from 'kt-tabs';
+// Direct import from local kt-tabs (avoid barrel exports for tree-shaking)
+//import type { ITab } from '../../kt-tabs/components/interfaces/ITab';
 import { useMallClientTabsContext } from './MallClientTabsContext';
 import StoreProgressBars from './StoreProgressBars';
 
@@ -97,7 +98,8 @@ const formatPrice = (price: number): string => {
 };
 
 const OrderProductsView: React.FC<IDashAutoAdminCustomFieldComponent> = ({ record, resourceConfig }) => {
-    const tab: ITab = record as ITab;
+    //const tab: ITab = record as ITab;
+    const tab: any = record as any;
 
     // Use MallClientTabsContext for WebSocket events
     // This context subscribes to the WebSocket channel and provides lastEvent

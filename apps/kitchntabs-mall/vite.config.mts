@@ -349,21 +349,20 @@ export default ({ mode }) => {
         return undefined; // Let Vite decide
       }
 
-      // ============================================
-      // NODE_MODULES - Handle external dependencies
-      // ============================================
-      
-      // Only handle node_modules from here on
+    
       if (!id.includes('node_modules')) {
         return undefined;
       }
 
-      // Day.js - small, isolated library
+      // ============================================
+      // VENDOR CHUNKS - Split node_modules for better caching
+      // ============================================
+
+      
       if (id.includes('node_modules/dayjs')) {
         return 'vendor-dayjs';
       }
 
-      // React core ecosystem - these must stay together
       if (
         id.includes('node_modules/react/') ||
         id.includes('node_modules/react-dom/') ||
@@ -406,43 +405,28 @@ export default ({ mode }) => {
         return 'vendor-mui-x-date-pickers';
       }
 
-      // MUI X Tree View - separate chunk
-      if (id.includes('node_modules/@mui/x-tree-view')) {
-        return 'vendor-mui-x-tree-view';
-      }
-
       // Emotion styling - separate chunk
       if (id.includes('node_modules/@emotion/')) {
-        return 'vendor-mui-emotion';
-      }
-
-      // MUI utilities and dependencies
-      if (
-        id.includes('node_modules/@popperjs/') ||
-        id.includes('node_modules/popper.js') ||
-        id.includes('node_modules/clsx') ||
-        id.includes('node_modules/prop-types')
-      ) {
-        return 'vendor-mui-utils';
+        return 'vendor-emotion';
       }
 
       // React Admin core
       if (id.includes('node_modules/react-admin')) {
-        return 'vendor-react-admin-core';
+        return 'vendor-react-admin';
       }
 
-      // React Admin UI components - separate from core
+      // React Admin UI components
       if (id.includes('node_modules/ra-ui-materialui')) {
-        return 'vendor-react-admin-ui';
+        return 'vendor-ra-ui';
       }
 
       // React Admin other modules
       if (id.includes('node_modules/ra-')) {
-        return 'vendor-react-admin-modules';
+        return 'vendor-ra-modules';
       }
 
       // TanStack Query - separate chunk
-      if (id.includes('node_modules/@tanstack/react-query')) {
+      if (id.includes('node_modules/@tanstack/')) {
         return 'vendor-tanstack';
       }
 
@@ -455,42 +439,12 @@ export default ({ mode }) => {
         return 'vendor-redux';
       }
 
-      // Utilities - commonly used standalone libraries
+      // Utilities
       if (
         id.includes('node_modules/lodash') ||
-        id.includes('node_modules/axios') ||
-        id.includes('node_modules/query-string') ||
-        id.includes('node_modules/qs')
+        id.includes('node_modules/axios')
       ) {
         return 'vendor-utils';
-      }
-
-      // Heavy visualization/interaction libraries
-      if (
-        id.includes('node_modules/framer-motion') ||
-        id.includes('node_modules/react-beautiful-dnd') ||
-        id.includes('node_modules/@hello-pangea/dnd') ||
-        id.includes('node_modules/chart.js') ||
-        id.includes('node_modules/react-chartjs')
-      ) {
-        return 'vendor-heavy';
-      }
-
-      // QR Code libraries - separate chunk (used for mall QR generation)
-      if (
-        id.includes('node_modules/qrcode') ||
-        id.includes('node_modules/react-qr-code') ||
-        id.includes('node_modules/qr-code-styling')
-      ) {
-        return 'vendor-qr';
-      }
-
-      // Toast/notification libraries
-      if (
-        id.includes('node_modules/react-toastify') ||
-        id.includes('node_modules/notistack')
-      ) {
-        return 'vendor-toast';
       }
 
       // Form libraries
@@ -508,6 +462,7 @@ export default ({ mode }) => {
       ) {
         return 'vendor-realtime';
       }
+        
     };
   };
 
@@ -924,18 +879,7 @@ export default ({ mode }) => {
   console.log("Is Desktop Build:", isDesktop);
   console.log("Is Capacitor Build:", isCapacitorBuild);
   console.log("External Modules:", externalModules);
-  console.log("Manual Chunks:", [
-    'vendor-dayjs',
-    'vendor-react',
-    'vendor-mui',
-    'vendor-react-admin',
-    'vendor-dash',
-    'vendor-utils',
-    'vendor-heavy',
-    'dash-notifications',
-    'dash-communications',
-    'dash-theme'
-  ]);
+  
   console.log("Platform Info:", platformInfo);
   console.log("Build Config Loaded:", !!buildConfig.buildId);
   console.log("Output Directory:", getOutputDir());

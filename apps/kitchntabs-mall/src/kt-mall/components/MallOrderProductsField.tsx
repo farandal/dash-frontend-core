@@ -2,7 +2,10 @@ import React from 'react';
 import { Box, Typography } from '@mui/material';
 import { useRecordContext } from 'react-admin';
 import { IDashAutoAdminCustomFieldComponent } from 'dash-auto-admin';
-import { ITab, OrderProductsList, OrderProductsView } from 'kt-tabs';
+// Direct imports from local kt-tabs (avoid barrel exports for tree-shaking)
+import type { ITab } from '../../kt-tabs/components/interfaces/ITab';
+import OrderProductsList from '../../kt-tabs/components/Tab/OrderProductsList';
+import OrderProductsView from '../../kt-tabs/components/Tab/OrderProductsView';
 import { NotFound } from 'dash-components';
 import MallSessionOrderProgress from './MallSessionOrderProgress';
 import MallSessionOrderNotifications from './MallSessionOrderNotifications';
