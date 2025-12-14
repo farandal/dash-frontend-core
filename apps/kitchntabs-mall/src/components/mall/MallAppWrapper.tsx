@@ -5,7 +5,7 @@
  * This component handles mall authentication and tenant data fetching,
  * then renders the private app with mall-specific configuration.
  */
-import React, { lazy, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Box, CircularProgress, Typography } from '@mui/material';
 import { NotFound } from 'dash-components';
@@ -17,8 +17,11 @@ import DASHMallAuthProvider from '../../dash-extensions/config/DASHMallAuthProvi
 import { mallPublicGlobalRoutes, mallPrivateGlobalRoutes } from '../../dash-extensions/config/DASHMallSharedRoutes';
 import GlobalTenantWrapper from '../../dash-extensions/core/GlobalTenantWrapper';
 
-// Import mall resources from kt-mall
-import { MallAppResources, MallAppMediator } from 'kt-mall';
+// Import mall resources config (lightweight - just config objects, heavy components are lazy inside)
+import MallAppResources from 'kt-mall/src/MallAppResources';
+
+// Lazy load heavy components
+const MallAppMediator = lazy(() => import('kt-mall/src/components/MallAppMediator'));
 
 // Lazy load the private app
 const KitchnTabsPrivateApp = lazy(() => import('../../core/KitchnTabsPrivateApp'));
@@ -223,7 +226,7 @@ const MallAppWrapper: React.FC<MallAppWrapperProps> = () => {
     // Handle success state - render the private app
     if (loadingState === LoadingState.SUCCESS && tenantData) {
         return (
-            <React.Suspense fallback={
+            <Suspense fallback={
                 <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
                     <CircularProgress />
                 </Box>
@@ -238,11 +241,13 @@ const MallAppWrapper: React.FC<MallAppWrapperProps> = () => {
                         <GlobalTenantWrapper tenantData={tenantData} />
                     )}
                 >
-                    <MallAppMediator />
+                    <Suspense fallback={null}>
+                        <MallAppMediator />
+                    </Suspense>
                 </KitchnTabsPrivateApp>
            
 
-            </React.Suspense>
+            </Suspense>
         );
     }
 

@@ -336,7 +336,123 @@ export default ({ mode }) => {
       // Skip if no id
       if (!id) return undefined;
 
-      // Only handle node_modules - let Rollup handle app code naturally
+      // ============================================
+      // WORKSPACE PACKAGES - Handle kt-* and dash-* packages first
+      // These are NOT in node_modules but in the workspace
+      // ============================================
+      
+      // kt-tabs - Order/Tab management (heavy, split by component type)
+      if (id.includes('/packages/kt-tabs/src/components/')) {
+        // Heavy visualization components - lazy load
+        if (id.includes('KitchenTabsList') || id.includes('TabsList') || id.includes('EditOrder')) {
+          return 'kt-tabs-lists';
+        }
+        // Tab context and hooks
+        if (id.includes('Context') || id.includes('hooks/')) {
+          return 'kt-tabs-core';
+        }
+        return 'kt-tabs-components';
+      }
+      if (id.includes('/packages/kt-tabs/')) {
+        return 'kt-tabs-core';
+      }
+      
+      // kt-mall - Mall-specific components (the main app package)
+      if (id.includes('/packages/kt-mall/src/components/')) {
+        // Heavy order views
+        if (id.includes('MallOrderProducts') || id.includes('MallProductGrid') || id.includes('MallCartSummary')) {
+          return 'kt-mall-order-ui';
+        }
+        // List components
+        if (id.includes('MallClientTabsList') || id.includes('StoresList')) {
+          return 'kt-mall-lists';
+        }
+        // Context providers
+        if (id.includes('Context')) {
+          return 'kt-mall-contexts';
+        }
+        return 'kt-mall-components';
+      }
+      if (id.includes('/packages/kt-mall/src/contexts/')) {
+        return 'kt-mall-contexts';
+      }
+      if (id.includes('/packages/kt-mall/src/schemas/')) {
+        return 'kt-mall-schemas';
+      }
+      if (id.includes('/packages/kt-mall/')) {
+        return 'kt-mall-core';
+      }
+      
+      // kt-ecommerce - E-commerce features (heavy)
+      if (id.includes('/packages/kt-ecommerce/src/components/Campaign/')) {
+        return 'kt-ecommerce-campaign';
+      }
+      if (id.includes('/packages/kt-ecommerce/src/components/Product/')) {
+        return 'kt-ecommerce-products';
+      }
+      if (id.includes('/packages/kt-ecommerce/')) {
+        return 'kt-ecommerce-core';
+      }
+      
+      // kt-pages - Page components (login, register, etc.)
+      if (id.includes('/packages/kt-pages/')) {
+        return 'kt-pages';
+      }
+      
+      // kt-utils - Utilities
+      if (id.includes('/packages/kt-utils/')) {
+        return 'kt-utils';
+      }
+      
+      // dash-auto-admin - Resource templates and auto-admin
+      if (id.includes('/packages/dash-auto-admin/src/toolbar/')) {
+        return 'dash-auto-admin-toolbar';
+      }
+      if (id.includes('/packages/dash-auto-admin/')) {
+        return 'dash-auto-admin';
+      }
+      
+      // dash-admin - Core admin functionality
+      if (id.includes('/packages/dash-admin/src/contexts/')) {
+        return 'dash-admin-contexts';
+      }
+      if (id.includes('/packages/dash-admin/src/components/')) {
+        return 'dash-admin-components';
+      }
+      if (id.includes('/packages/dash-admin/')) {
+        return 'dash-admin-core';
+      }
+      
+      // dash-components - Reusable UI components
+      if (id.includes('/packages/dash-components/')) {
+        return 'dash-components';
+      }
+      
+      // dash-admin-state - Redux state management
+      if (id.includes('/packages/dash-admin-state/')) {
+        return 'dash-admin-state';
+      }
+      
+      // dash-auth - Authentication
+      if (id.includes('/packages/dash-auth/')) {
+        return 'dash-auth';
+      }
+      
+      // dash-axios-hook - HTTP client
+      if (id.includes('/packages/dash-axios-hook/')) {
+        return 'dash-axios-hook';
+      }
+      
+      // dash-utils - Utilities
+      if (id.includes('/packages/dash-utils/')) {
+        return 'dash-utils';
+      }
+
+      // ============================================
+      // NODE_MODULES - Handle external dependencies
+      // ============================================
+      
+      // Only handle node_modules from here on
       if (!id.includes('node_modules')) {
         return undefined;
       }
@@ -452,32 +568,44 @@ export default ({ mode }) => {
       if (
         id.includes('node_modules/framer-motion') ||
         id.includes('node_modules/react-beautiful-dnd') ||
+        id.includes('node_modules/@hello-pangea/dnd') ||
         id.includes('node_modules/chart.js') ||
         id.includes('node_modules/react-chartjs')
       ) {
         return 'vendor-heavy';
       }
 
-      // kt-mall package chunks
-      if (id.includes('node_modules/kt-mall/src/components')) {
-        return 'kt-mall-components';
+      // QR Code libraries - separate chunk (used for mall QR generation)
+      if (
+        id.includes('node_modules/qrcode') ||
+        id.includes('node_modules/react-qr-code') ||
+        id.includes('node_modules/qr-code-styling')
+      ) {
+        return 'vendor-qr';
       }
 
-      if (id.includes('node_modules/kt-mall/src/contexts')) {
-        return 'kt-mall-contexts';
+      // Toast/notification libraries
+      if (
+        id.includes('node_modules/react-toastify') ||
+        id.includes('node_modules/notistack')
+      ) {
+        return 'vendor-toast';
       }
 
-      if (id.includes('node_modules/kt-mall/src/schemas')) {
-        return 'kt-mall-schemas';
+      // Form libraries
+      if (
+        id.includes('node_modules/react-hook-form') ||
+        id.includes('node_modules/@hookform/')
+      ) {
+        return 'vendor-forms';
       }
 
-      if (id.includes('node_modules/kt-mall/src/resources')) {
-        return 'kt-mall-resources';
-      }
-
-      // Other kt-* packages
-      if (id.includes('node_modules/kt-')) {
-        return 'kt-packages';
+      // Real-time/WebSocket libraries
+      if (
+        id.includes('node_modules/laravel-echo') ||
+        id.includes('node_modules/pusher-js')
+      ) {
+        return 'vendor-realtime';
       }
     };
   };

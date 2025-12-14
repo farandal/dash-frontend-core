@@ -6,7 +6,7 @@ import { useAxios } from 'dash-axios-hook';
 import { dashStorage } from 'dash-utils';
 import { useMediaQuery, useTheme } from '@mui/material';
 import { DASH_REDUX_ACTIONS, IDASHAppState } from 'dash-admin-state';
-import { formatCurrency, ICurrency } from 'kt-ecommerce';
+import { formatCurrency, IMallCurrency as ILocalCurrency } from '../utils/formatCurrency';
 import { IStore } from '../interfaces/IStore';
 
 /**
@@ -22,15 +22,14 @@ export interface IMallCurrency {
 }
 
 /**
- * Convert mall currency to kt-ecommerce ICurrency format
+ * Convert mall currency to local currency format for formatting
  */
-const toKtCurrency = (currency: IMallCurrency | undefined): ICurrency | undefined => {
+const toLocalCurrency = (currency: IMallCurrency | undefined): ILocalCurrency | undefined => {
     if (!currency) return undefined;
     return {
-        id: currency.id || 0,
         code: currency.code,
         symbol: currency.symbol,
-        decimals: currency.decimals ?? 0, // Default to 0 decimals if not provided
+        format: currency.format,
     };
 };
 
@@ -945,7 +944,7 @@ export const MallOrderCreateProvider: React.FC<MallOrderCreateProviderProps> = (
         return { id: 0, code: 'USD', symbol: '$', format: ',', decimals: 0 };
     }, [stores, allProducts, getProductCurrency]);
     
-    // Format price using kt-ecommerce formatCurrency (V1 pattern)
+    // Format price using local formatCurrency (lightweight, no kt-ecommerce dependency)
     const formatPrice = useCallback((amount: number | string | undefined | null, currency?: IMallCurrency): string => {
         const numAmount = typeof amount === 'string' ? parseFloat(amount) : (amount || 0);
         
@@ -954,9 +953,9 @@ export const MallOrderCreateProvider: React.FC<MallOrderCreateProviderProps> = (
             return `${fallbackCurrency?.symbol || '$'}0`;
         }
         
-        // Use kt-ecommerce formatCurrency for V1-compatible formatting
+        // Use local formatCurrency for lightweight formatting
         const currencyToUse = currency || getCurrency();
-        return formatCurrency(numAmount, toKtCurrency(currencyToUse || undefined));
+        return formatCurrency(numAmount, toLocalCurrency(currencyToUse || undefined));
     }, [getCurrency]);
     
     // Get product price (V1 getPrimaryPrice pattern)

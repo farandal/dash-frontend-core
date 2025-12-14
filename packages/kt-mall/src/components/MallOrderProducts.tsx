@@ -16,18 +16,17 @@ import MallOrderSummaryDrawer from "./MallOrderSummaryDrawer";
 import { MallCartItemsList } from "./MallCartItemsList";
 import { IMallCartItem, IMallProduct, IMallCurrency } from "../contexts/MallOrderCreateContext";
 import { useFormContext } from "react-hook-form";
-import { formatCurrency, ICurrency } from "kt-ecommerce";
+import { formatCurrency, IMallCurrency as ILocalCurrency } from "../utils/formatCurrency";
 
 /**
- * Convert kt-ecommerce currency format
+ * Convert mall currency format to local format for formatting
  */
-const toKtCurrency = (currency: IMallCurrency | undefined): ICurrency | undefined => {
+const toLocalCurrency = (currency: IMallCurrency | undefined): ILocalCurrency | undefined => {
     if (!currency) return undefined;
     return {
-        id: currency.id || 0,
         code: currency.code,
         symbol: currency.symbol,
-        decimals: currency.decimals ?? 0,
+        format: currency.format,
     };
 };
 
@@ -216,11 +215,11 @@ const MallOrderEditItems: React.FC<{ tab: ITab }> = ({ tab }) => {
         return { id: 0, code: 'CLP', symbol: '$', format: ',', decimals: 0 };
     }, [cartItems]);
 
-    // Format price function
+    // Format price function using local lightweight formatter
     const formatPrice = useCallback((amount: number | string | undefined | null, curr?: IMallCurrency): string => {
         const numAmount = typeof amount === 'string' ? parseFloat(amount) : (amount || 0);
         if (isNaN(numAmount)) return `${currency?.symbol || '$'}0`;
-        return formatCurrency(numAmount, toKtCurrency(curr || currency));
+        return formatCurrency(numAmount, toLocalCurrency(curr || currency));
     }, [currency]);
 
     // Get product price

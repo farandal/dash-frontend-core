@@ -1,5 +1,36 @@
+import React, { Suspense } from "react";
+import { CircularProgress, Box } from "@mui/material";
 import SystemMallTenantAssociator from "../components/SystemMallTenantAssociator";
-import SearchableSelectChipsControlRecordContext from "kt-ecommerce/src/components/RASearchableSelectChipsRecordContext";
+
+// Lazy load SearchableSelectChipsControlRecordContext to avoid loading kt-ecommerce in mall client
+const LazySearchableSelectChipsControlRecordContext = React.lazy(
+    () => import("kt-ecommerce/src/components/RASearchableSelectChipsRecordContext")
+);
+
+// Wrapper component for lazy-loaded SearchableSelectChipsControlRecordContext
+const LazyManagerTenantSelector: React.FC<any> = ({ method, attribute, resourceConfig }) => (
+    <Suspense fallback={<Box sx={{ p: 2, display: 'flex', justifyContent: 'center' }}><CircularProgress size={24} /></Box>}>
+        <LazySearchableSelectChipsControlRecordContext
+            method={method}
+            attribute={attribute}
+            resourceConfig={resourceConfig}
+            defaultValues={null}
+            resource={"system/tenant"}
+            selectLabel={"Manager Tenant"}
+            viewAttribute={'name'}
+            valueKeyId={'id'}
+            renderText={(option: any) => option && option.name ? `${option.name}` : ''}
+            transformData={(value: any) => value}
+            isOptionEqualToValue={(option: any, value: any) => {
+                if (!option || !value) return false;
+                return option.id === value.id;
+            }}
+            queryFilter={"q"}
+            filter={{ pagination: false }}
+            isMultiple={false}
+        />
+    </Suspense>
+);
 
 const MallSchema = [
     {
@@ -34,26 +65,7 @@ const MallSchema = [
         custom: true,
         pagination: false,
         multiple: false,
-        component: ({ method, attribute, resourceConfig }) => 
-            <SearchableSelectChipsControlRecordContext
-                method={method}
-                attribute={attribute}
-                resourceConfig={resourceConfig}
-                defaultValues={null}
-                resource={"system/tenant"}
-                selectLabel={"Manager Tenant"}
-                viewAttribute={'name'}
-                valueKeyId={'id'}
-                renderText={(option: any) => option && option.name ? `${option.name}` : ''}
-                transformData={(value: any) => value}
-                isOptionEqualToValue={(option: any, value: any) => {
-                    if (!option || !value) return false;
-                    return option.id === value.id;
-                }}
-                queryFilter={"q"}
-                filter={{ pagination: false }}
-                isMultiple={false}
-            />,
+        component: LazyManagerTenantSelector,
         inList: false,
         inEdit: true,
         inCreate: true,

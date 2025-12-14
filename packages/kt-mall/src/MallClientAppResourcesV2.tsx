@@ -1,9 +1,40 @@
+import React, { lazy, Suspense } from 'react';
 import { IDashAutoAdminResourceConfig } from 'dash-auto-admin';
 import ResourceTemplate from 'dash-admin/src/templates/ResourceTemplate';
 import { RestaurantMenu } from '@mui/icons-material';
 import { dashStorage } from 'dash-utils';
-import MallTabSchemaV2 from './schemas/MallTabSchemaV2';
-import { MallTabsContextV2, MallClientTabsList } from './components';
+import { Box, CircularProgress } from '@mui/material';
+
+// Lazy load heavy components for better chunking
+const MallTabSchemaV2 = lazy(() => import('./schemas/MallTabSchemaV2'));
+const MallTabsContextV2Component = lazy(() => import('./components/MallTabsContextV2').then(m => ({ default: m.MallTabsContextV2 })));
+const MallClientTabsListComponent = lazy(() => import('./components/MallClientTabsList'));
+
+// Sync imports for schema (needed for config)
+import MallTabSchemaV2Config from './schemas/MallTabSchemaV2';
+
+// Wrapper components with Suspense for lazy-loaded components
+const LazyMallTabsContextV2: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+    <Suspense fallback={
+        <Box display="flex" justifyContent="center" alignItems="center" minHeight={100}>
+            <CircularProgress size={24} />
+        </Box>
+    }>
+        <MallTabsContextV2Component>
+            {children}
+        </MallTabsContextV2Component>
+    </Suspense>
+);
+
+const LazyMallClientTabsList: React.FC<any> = (props) => (
+    <Suspense fallback={
+        <Box display="flex" justifyContent="center" alignItems="center" minHeight={200}>
+            <CircularProgress />
+        </Box>
+    }>
+        <MallClientTabsListComponent {...props} />
+    </Suspense>
+);
 
 /**
  * MallClientAppResourcesV2 - New kiosk-style resource configuration
@@ -95,18 +126,18 @@ const MallClientAppResourcesV2: IDashAutoAdminResourceConfig[] = [
         model: "tab",
         redirect: "create",
         label: "Haz tu orden aquí!",
-        schema: MallTabSchemaV2,
+        schema: MallTabSchemaV2Config,
         icon: <RestaurantMenu />,
         
         // Context provider - V2 uses MallTabsContextV2 which doesn't wrap
         // create mode with TabManagerProvider (MallOrderCreateView handles its own context)
-        contextComponent: MallTabsContextV2,
+        contextComponent: LazyMallTabsContextV2,
         
         // Hide create button in toolbar (we have menu actions)
         toolbarCreateButton: { enabled: false },
         
         // Custom list component with progress bars and notifications
-        dataGridComponent: MallClientTabsList,
+        dataGridComponent: LazyMallClientTabsList,
         
         // Menu configuration
         menu: [
