@@ -9,7 +9,7 @@
  */
 
 import { ResourceManifest } from 'dash-app-common';
-
+//import MallResources from './kt-mall/resources/MallResources';
 // ============================================================================
 // RESOURCE MANIFEST
 // ============================================================================
@@ -43,7 +43,7 @@ export const KitchnTabsResources: ResourceManifest = {
     // ========================================================================
     // MALL RESOURCES (from kt-mall)
     // ========================================================================
-    mallResources: () => import('kt-mall/src/resources/MallResources'),
+    mallResources: () => import('./kt-mall/resources/MallResources'),
 
     // ========================================================================
     // ECOMMERCE RESOURCES (from kt-ecommerce)
