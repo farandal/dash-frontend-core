@@ -184,6 +184,8 @@ interface MallOrderCreateContextValue {
     isLoadingStores: boolean;
     selectedStore: IStore | null;
     setSelectedStore: (store: IStore | null) => void;
+    showFeaturedOnly: boolean;
+    setShowFeaturedOnly: (show: boolean) => void;
     
     // Products
     products: IMallProduct[];
@@ -204,6 +206,7 @@ interface MallOrderCreateContextValue {
     resetCarouselPagination: () => void;
     carouselCurrentPage: number;
     carouselTotalPages: number;
+    carouselTotalCount: number;
     
     // Search
     searchQuery: string;
@@ -336,6 +339,7 @@ export const MallOrderCreateProvider: React.FC<MallOrderCreateProviderProps> = (
     const [stores, setStores] = useState<IStore[]>([]);
     const [isLoadingStores, setIsLoadingStores] = useState(true);
     const [selectedStore, setSelectedStore] = useState<IStore | null>(null);
+    const [showFeaturedOnly, setShowFeaturedOnly] = useState(false);
     
     // Products state
     const [allProducts, setAllProducts] = useState<IMallProduct[]>([]);
@@ -450,6 +454,11 @@ export const MallOrderCreateProvider: React.FC<MallOrderCreateProviderProps> = (
                 filter.tenant_ids = [selectedStore.id];
             }
             
+            // Add featured filter when showFeaturedOnly is true
+            if (showFeaturedOnly) {
+                filter.featured = true;
+            }
+            
             // Create a cache key based on filter
             const filterKey = JSON.stringify(filter);
             
@@ -500,7 +509,7 @@ export const MallOrderCreateProvider: React.FC<MallOrderCreateProviderProps> = (
         };
         
         loadProducts();
-    }, [dataProvider, productsPath, selectedStore, notify, isProductsCacheValid, cachedProducts, dispatch]);
+    }, [dataProvider, productsPath, selectedStore, notify, isProductsCacheValid, cachedProducts, dispatch, showFeaturedOnly]);
     
     // =====================================
     // CAROUSEL PAGINATION FUNCTIONS
@@ -526,7 +535,12 @@ export const MallOrderCreateProvider: React.FC<MallOrderCreateProviderProps> = (
             filter.tenant_ids = [selectedStore.id];
         }
         
-        console.log(`🔄 Loading carousel page ${page}...`);
+        // Add featured filter when showFeaturedOnly is true
+        if (showFeaturedOnly) {
+            filter.featured = true;
+        }
+        
+        console.log(`🔄 Loading carousel page ${page}...`, { showFeaturedOnly, filter });
         
         const response = await dataProvider.getList(productsPath, {
             pagination: { page, perPage: ITEMS_PER_PAGE },
@@ -556,7 +570,7 @@ export const MallOrderCreateProvider: React.FC<MallOrderCreateProviderProps> = (
         console.log(`✅ Carousel page ${page} loaded: ${sortedProducts.length} products (total: ${total})`);
         
         return sortedProducts;
-    }, [dataProvider, productsPath, selectedStore, carouselPages]);
+    }, [dataProvider, productsPath, selectedStore, carouselPages, showFeaturedOnly]);
     
     // Preload adjacent pages for smooth scrolling
     const preloadAdjacentPages = useCallback(async (currentPage: number) => {
@@ -630,8 +644,17 @@ export const MallOrderCreateProvider: React.FC<MallOrderCreateProviderProps> = (
             .sort((a, b) => a - b);
         
         const merged: IMallProduct[] = [];
+        const seenIds = new Set<number>();
+        
         for (const pageNum of pageNumbers) {
-            merged.push(...(carouselPages[pageNum] || []));
+            const pageProducts = carouselPages[pageNum] || [];
+            for (const product of pageProducts) {
+                // Deduplicate products by ID to prevent React key warnings
+                if (!seenIds.has(product.id)) {
+                    seenIds.add(product.id);
+                    merged.push(product);
+                }
+            }
         }
         
         // Apply search filter if needed
@@ -677,7 +700,12 @@ export const MallOrderCreateProvider: React.FC<MallOrderCreateProviderProps> = (
                     filter.tenant_ids = [selectedStore.id];
                 }
                 
-                console.log('🔄 Initializing carousel, loading page 1...');
+                // Add featured filter when showFeaturedOnly is true
+                if (showFeaturedOnly) {
+                    filter.featured = true;
+                }
+                
+                console.log('🔄 Initializing carousel, loading page 1...', { showFeaturedOnly, filter });
                 
                 const response = await dataProvider.getList(productsPath, {
                     pagination: { page: 1, perPage: ITEMS_PER_PAGE },
@@ -711,7 +739,7 @@ export const MallOrderCreateProvider: React.FC<MallOrderCreateProviderProps> = (
         };
         
         initCarousel();
-    }, [paginationMode, selectedStore, dataProvider, productsPath]);
+    }, [paginationMode, selectedStore, dataProvider, productsPath, showFeaturedOnly]);
     
     // Backend search effect - debounced search query triggers API call
     useEffect(() => {
@@ -731,6 +759,11 @@ export const MallOrderCreateProvider: React.FC<MallOrderCreateProviderProps> = (
                 
                 if (selectedStore) {
                     filter.tenant_ids = [selectedStore.id];
+                }
+                
+                // Add featured filter when showFeaturedOnly is true
+                if (showFeaturedOnly) {
+                    filter.featured = true;
                 }
                 
                 try {
@@ -785,6 +818,11 @@ export const MallOrderCreateProvider: React.FC<MallOrderCreateProviderProps> = (
                 filter.tenant_ids = [selectedStore.id];
             }
             
+            // Add featured filter when showFeaturedOnly is true
+            if (showFeaturedOnly) {
+                filter.featured = true;
+            }
+            
             try {
                 const response = await dataProvider.getList(productsPath, {
                     pagination: { page: 1, perPage: 200 },
@@ -825,19 +863,29 @@ export const MallOrderCreateProvider: React.FC<MallOrderCreateProviderProps> = (
             clearTimeout(searchTimer);
             setIsSearching(false);
         };
-    }, [searchQuery, selectedStore, dataProvider, productsPath, paginationMode]);
+    }, [searchQuery, selectedStore, dataProvider, productsPath, paginationMode, showFeaturedOnly]);
 
-    // Filter products by search query
+    // Filter products by search query and featured filter
     const filteredProducts = useMemo(() => {
-        if (!searchQuery.trim()) return allProducts;
+        let result = allProducts;
         
-        const query = searchQuery.toLowerCase();
-        return allProducts.filter(product => 
-            product.name.toLowerCase().includes(query) ||
-            product.description?.toLowerCase().includes(query) ||
-            product.sku?.toLowerCase().includes(query)
-        );
-    }, [allProducts, searchQuery]);
+        // Filter by featured only if enabled
+        if (showFeaturedOnly) {
+            result = result.filter(product => product.featured);
+        }
+        
+        // Filter by search query
+        if (searchQuery.trim()) {
+            const query = searchQuery.toLowerCase();
+            result = result.filter(product => 
+                product.name.toLowerCase().includes(query) ||
+                product.description?.toLowerCase().includes(query) ||
+                product.sku?.toLowerCase().includes(query)
+            );
+        }
+        
+        return result;
+    }, [allProducts, searchQuery, showFeaturedOnly]);
     
     // Get featured products
     const featuredProducts = useMemo(() => {
@@ -960,7 +1008,16 @@ export const MallOrderCreateProvider: React.FC<MallOrderCreateProviderProps> = (
         };
         
         setCartItems(prev => [...prev, newItem]);
-        notify(translate('mall.product_added'), { type: 'success' });
+        
+        // Show toast with product name if no modifiers were selected (direct add)
+        const hasModifiers = Object.keys(modifiers).length > 0 && 
+            Object.values(modifiers).some(arr => arr.length > 0);
+        
+        if (!hasModifiers) {
+            notify(translate('mall.product_added_with_name', { name: product.name }), { type: 'success' });
+        } else {
+            notify(translate('mall.product_added'), { type: 'success' });
+        }
     }, [getProductPrice, notify, translate]);
     
     const removeFromCart = useCallback((uniqueId: string) => {
@@ -1193,6 +1250,8 @@ export const MallOrderCreateProvider: React.FC<MallOrderCreateProviderProps> = (
         isLoadingStores,
         selectedStore,
         setSelectedStore,
+        showFeaturedOnly,
+        setShowFeaturedOnly,
         
         // Products
         products,
@@ -1213,6 +1272,7 @@ export const MallOrderCreateProvider: React.FC<MallOrderCreateProviderProps> = (
         resetCarouselPagination,
         carouselCurrentPage,
         carouselTotalPages,
+        carouselTotalCount,
         
         // Search
         searchQuery,
