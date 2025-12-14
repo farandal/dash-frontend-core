@@ -20,6 +20,8 @@ import {
     Chip,
     IconButton,
     TextField,
+    useMediaQuery,
+    useTheme,
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import AddIcon from '@mui/icons-material/Add';
@@ -39,6 +41,8 @@ import { useMallOrderCreate, IMallProduct, IMallCurrency } from '../contexts/Mal
  */
 export const MallProductModifiersModal: React.FC = () => {
     const translate = useTranslate();
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
     const {
         selectedProductForModifier: product,
         isModifierModalOpen,
@@ -210,11 +214,11 @@ export const MallProductModifiersModal: React.FC = () => {
             }}
         >
             {/* Header */}
-            <DialogTitle sx={{ m: 0, p: 2, display: 'flex', alignItems: 'center', gap: 2 }}>
+            <DialogTitle sx={{ m: 0, p: 2, display: 'flex', alignItems: 'flex-start', gap: 2 }}>
                 <Avatar
                     variant="rounded"
                     src={imageUrl || undefined}
-                    sx={{ width: 56, height: 56, backgroundColor: 'grey.200' }}
+                    sx={{ width: 56, height: 56, backgroundColor: 'grey.200', flexShrink: 0 }}
                 >
                     {!imageUrl && <RestaurantIcon sx={{ color: 'grey.400' }} />}
                 </Avatar>
@@ -225,6 +229,21 @@ export const MallProductModifiersModal: React.FC = () => {
                     <Typography variant="subtitle2" color="primary.main" fontWeight={600}>
                         {formatPrice(getProductPrice(product), currency)}
                     </Typography>
+                    {product.description && (
+                        <Typography 
+                            variant="body2" 
+                            color="text.secondary" 
+                            sx={{ 
+                                mt: 0.5,
+                                display: '-webkit-box',
+                                WebkitLineClamp: 3,
+                                WebkitBoxOrient: 'vertical',
+                                overflow: 'hidden',
+                            }}
+                        >
+                            {product.description}
+                        </Typography>
+                    )}
                 </Box>
                 <IconButton
                     aria-label="close"
@@ -381,17 +400,57 @@ export const MallProductModifiersModal: React.FC = () => {
                         {translate('mall.total')}: {formatPrice(totalPrice, currency)}
                     </Typography>
                 </Box>
-                <Button onClick={handleClose} color="inherit">
-                    {translate('ra.action.cancel')}
-                </Button>
-                <Button
-                    variant="contained"
-                    onClick={handleSubmit}
-                    disabled={!isValid}
-                    startIcon={isEditMode ? <EditIcon /> : <AddIcon />}
-                >
-                    {isEditMode ? translate('mall.update_item') : translate('mall.add_to_cart')}
-                </Button>
+                {isMobile ? (
+                    <>
+                        <IconButton
+                            onClick={handleClose}
+                            sx={{
+                                backgroundColor: 'error.main',
+                                color: 'error.contrastText',
+                                '&:hover': {
+                                    backgroundColor: 'error.dark',
+                                },
+                                width: 48,
+                                height: 48,
+                            }}
+                        >
+                            <CloseIcon />
+                        </IconButton>
+                        <IconButton
+                            onClick={handleSubmit}
+                            disabled={!isValid}
+                            sx={{
+                                backgroundColor: isValid ? 'success.main' : 'grey.400',
+                                color: isValid ? 'success.contrastText' : 'grey.600',
+                                '&:hover': {
+                                    backgroundColor: isValid ? 'success.dark' : 'grey.400',
+                                },
+                                '&.Mui-disabled': {
+                                    backgroundColor: 'grey.300',
+                                    color: 'grey.500',
+                                },
+                                width: 48,
+                                height: 48,
+                            }}
+                        >
+                            {isEditMode ? <EditIcon /> : <AddIcon />}
+                        </IconButton>
+                    </>
+                ) : (
+                    <>
+                        <Button onClick={handleClose} color="inherit">
+                            {translate('ra.action.cancel')}
+                        </Button>
+                        <Button
+                            variant="contained"
+                            onClick={handleSubmit}
+                            disabled={!isValid}
+                            startIcon={isEditMode ? <EditIcon /> : <AddIcon />}
+                        >
+                            {isEditMode ? translate('mall.update_item') : translate('mall.add_to_cart')}
+                        </Button>
+                    </>
+                )}
             </DialogActions>
         </Dialog>
     );
