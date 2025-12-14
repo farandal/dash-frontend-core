@@ -11,14 +11,19 @@ import {
 } from '@mui/material';
 import StorefrontIcon from '@mui/icons-material/Storefront';
 import AllInclusiveIcon from '@mui/icons-material/AllInclusive';
+import StarIcon from '@mui/icons-material/Star';
 import { useMallOrderCreate } from '../contexts/MallOrderCreateContext';
+
+// Special store ID for featured products filter
+export const FEATURED_STORE_ID = '__featured__';
 
 /**
  * MallStoreSelector - Vertical scrollable store selector
  * 
  * Features:
- * - "All Products" option as first element
+ * - "Featured" option as first element (star icon)
  * - Store logos in vertical scrollable list
+ * - "All Products" option as last element
  * - Touch/mouse drag support for vertical scrolling
  * - Optimized for sidebar layout
  */
@@ -28,7 +33,9 @@ export const MallStoreSelector: React.FC = () => {
         stores, 
         isLoadingStores, 
         selectedStore, 
-        setSelectedStore 
+        setSelectedStore,
+        showFeaturedOnly,
+        setShowFeaturedOnly,
     } = useMallOrderCreate();
     
     const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -81,7 +88,15 @@ export const MallStoreSelector: React.FC = () => {
 
     const handleStoreClick = (store: typeof stores[0] | null) => {
         if (!wasDraggingRef.current) {
+            setShowFeaturedOnly(false);
             setSelectedStore(store);
+        }
+    };
+    
+    const handleFeaturedClick = () => {
+        if (!wasDraggingRef.current) {
+            setSelectedStore(null);
+            setShowFeaturedOnly(true);
         }
     };
 
@@ -163,10 +178,10 @@ export const MallStoreSelector: React.FC = () => {
                     userSelect: 'none',
                 }}
             >
-                {/* All Products option */}
-                <Tooltip title={translate('mall.all_products')} placement="right">
+                {/* Featured Products option - FIRST */}
+                <Tooltip title={translate('mall.featured')} placement="right">
                     <Box
-                        onClick={() => handleStoreClick(null)}
+                        onClick={handleFeaturedClick}
                         sx={{
                             display: 'flex',
                             flexDirection: 'column',
@@ -187,22 +202,22 @@ export const MallStoreSelector: React.FC = () => {
                             sx={{
                                 width: { xs: 56, sm: 64 },
                                 height: { xs: 56, sm: 64 },
-                                bgcolor: selectedStore === null ? 'primary.main' : 'grey.200',
-                                color: selectedStore === null ? 'primary.contrastText' : 'text.secondary',
-                                border: selectedStore === null ? '3px solid' : '2px solid',
-                                borderColor: selectedStore === null ? 'primary.dark' : 'transparent',
-                                boxShadow: selectedStore === null ? 4 : 1,
+                                bgcolor: showFeaturedOnly ? 'warning.main' : 'grey.200',
+                                color: showFeaturedOnly ? 'warning.contrastText' : 'text.secondary',
+                                border: showFeaturedOnly ? '3px solid' : '2px solid',
+                                borderColor: showFeaturedOnly ? 'warning.dark' : 'transparent',
+                                boxShadow: showFeaturedOnly ? 4 : 1,
                                 transition: 'all 0.2s ease',
                             }}
                         >
-                            <AllInclusiveIcon sx={{ fontSize: { xs: 28, sm: 32 } }} />
+                            <StarIcon sx={{ fontSize: { xs: 28, sm: 32 } }} />
                         </Avatar>
                         <Typography
                             variant="caption"
                             sx={{
                                 fontSize: '0.65rem',
-                                fontWeight: selectedStore === null ? 700 : 500,
-                                color: selectedStore === null ? 'primary.main' : 'text.secondary',
+                                fontWeight: showFeaturedOnly ? 700 : 500,
+                                color: showFeaturedOnly ? 'warning.main' : 'text.secondary',
                                 textAlign: 'center',
                                 lineHeight: 1.2,
                                 maxWidth: '100%',
@@ -212,14 +227,14 @@ export const MallStoreSelector: React.FC = () => {
                                 px: 0.5,
                             }}
                         >
-                            {translate('mall.all')}
+                            {translate('mall.featured')}
                         </Typography>
                     </Box>
                 </Tooltip>
 
-                {/* Store items */}
+                {/* Store items - MIDDLE */}
                 {stores.map((store) => {
-                    const isSelected = selectedStore?.id === store.id;
+                    const isSelected = selectedStore?.id === store.id && !showFeaturedOnly;
                     const logoUrl = store.squared_logo_url || store.horizontal_logo_url;
                     
                     return (
@@ -277,6 +292,60 @@ export const MallStoreSelector: React.FC = () => {
                         </Tooltip>
                     );
                 })}
+
+                {/* All Products option - LAST */}
+                <Tooltip title={translate('mall.all_products')} placement="right">
+                    <Box
+                        onClick={() => handleStoreClick(null)}
+                        sx={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            gap: 0.5,
+                            width: '100%',
+                            cursor: 'pointer',
+                            transition: 'transform 0.15s ease',
+                            '&:hover': {
+                                transform: 'scale(1.05)',
+                            },
+                            '&:active': {
+                                transform: 'scale(0.95)',
+                            },
+                        }}
+                    >
+                        <Avatar
+                            sx={{
+                                width: { xs: 56, sm: 64 },
+                                height: { xs: 56, sm: 64 },
+                                bgcolor: selectedStore === null && !showFeaturedOnly ? 'primary.main' : 'grey.200',
+                                color: selectedStore === null && !showFeaturedOnly ? 'primary.contrastText' : 'text.secondary',
+                                border: selectedStore === null && !showFeaturedOnly ? '3px solid' : '2px solid',
+                                borderColor: selectedStore === null && !showFeaturedOnly ? 'primary.dark' : 'transparent',
+                                boxShadow: selectedStore === null && !showFeaturedOnly ? 4 : 1,
+                                transition: 'all 0.2s ease',
+                            }}
+                        >
+                            <AllInclusiveIcon sx={{ fontSize: { xs: 28, sm: 32 } }} />
+                        </Avatar>
+                        <Typography
+                            variant="caption"
+                            sx={{
+                                fontSize: '0.65rem',
+                                fontWeight: selectedStore === null && !showFeaturedOnly ? 700 : 500,
+                                color: selectedStore === null && !showFeaturedOnly ? 'primary.main' : 'text.secondary',
+                                textAlign: 'center',
+                                lineHeight: 1.2,
+                                maxWidth: '100%',
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis',
+                                whiteSpace: 'nowrap',
+                                px: 0.5,
+                            }}
+                        >
+                            {translate('mall.all')}
+                        </Typography>
+                    </Box>
+                </Tooltip>
             </Box>
         </Box>
     );
