@@ -368,6 +368,7 @@ const dashSpanish = {
 		submitting_order: 'Enviando...',
 		continue_shopping: 'Seguir Comprando',
 		product_added: 'Producto agregado al carrito',
+		product_added_with_name: '%{name} agregado al carrito',
 		product_updated: 'Producto actualizado',
 		
 		// Cart Item Actions
@@ -385,6 +386,7 @@ const dashSpanish = {
 		// Product Grid
 		all_products: 'Todos los Productos',
 		has_modifiers: 'Personalizable',
+		no_more_products: 'No hay más productos',
 	},
 };
 

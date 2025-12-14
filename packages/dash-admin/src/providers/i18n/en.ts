@@ -364,10 +364,12 @@ const dashEnglish = {
 		submitting_order: 'Submitting...',
 		continue_shopping: 'Continue Shopping',
 		product_added: 'Product added to cart',
+		product_added_with_name: '%{name} added to cart',
 		
 		// Product Grid
 		all_products: 'All Products',
 		has_modifiers: 'Customizable',
+		no_more_products: 'No more products',
 	},
 };
 
