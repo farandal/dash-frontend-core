@@ -68,7 +68,7 @@ return  <Toolbar {...props}>
 			</Toolbar>
 	
 
-		return <Portal /*container={document.querySelector("div.dash-app-layout")}*/>
+		/*return <Portal container={document.querySelector("div.dash-app-layout")}>
 			<Toolbar {...props}>
 				{evalActionPermission(
 					resourceConfig,
@@ -87,7 +87,7 @@ return  <Toolbar {...props}>
 					<></>
 				)}
 			</Toolbar>
-		</Portal>;
+		</Portal>;*/
         
 	};
     
