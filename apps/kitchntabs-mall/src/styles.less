@@ -1,4 +1,25 @@
+html {
+   background-color: var(--primary-contrast, @primary-contrast);
+   background: linear-gradient(
+    var(--angle),
+    var(--primary-color, @primary-color),
+    var(--primary-contrast, @primary-contrast)
+   );
+   
+   //animation: rotateGradient 8s linear infinite;
+}
+body {
+//  min-height: 100vh;
+  margin: 0;
+  font-family: "Montserrat";
+}
+
+
+
+/*
+
 @import './styles/root.less';
+
 @import './styles/mui-overrides.less';
 @import './styles/animations.less';
 @import './styles/custom.less';
@@ -10,8 +31,9 @@
 @import './styles/input.less';
 @import './styles/landing.less';
 @import './styles/pagination.less';
-@import './styles/react-admin-overrides.less';
-@import './styles/screen-sixze-overwrites.less';
+*/
+//@import './styles/react-admin-overrides.less';
+/*@import './styles/screen-sixze-overwrites.less';
 @import './styles/scroll.less';
 @import './styles/sidebar.less';
 @import './styles/tabs.less';
@@ -21,7 +43,10 @@
 @import './styles/devices/electron-base.less';
 @import './styles/devices/mac.less';
 @import './styles/voice/voice.less';
+*/
+@import './styles/kt-mall-resources.less';
 
+/*
 .RaCreateButton-floating {
     display: none !important;
 }
@@ -30,4 +55,71 @@
     .dash-header-container {
         padding-right: 120px; // windows controls
     }
+}
+*/
+
+
+.light .dash-app-layout {
+    background: rgba(255, 255, 255, 0.9);
+}
+
+input:-webkit-autofill {
+    -webkit-box-shadow: unset !important;
+    box-shadow: unset !important;
+}
+/* Optimize route transitions */
+.route-transition-enter {
+  opacity: 0;
+  transform: translateX(10px);
+}
+
+.route-transition-enter-active {
+  opacity: 1;
+  transform: translateX(0);
+  transition: opacity 0.15s ease-in, transform 0.15s ease-in;
+}
+
+.route-transition-exit {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.route-transition-exit-active {
+  opacity: 0;
+  transform: translateX(-10px);
+  transition: opacity 0.1s ease-out, transform 0.1s ease-out;
+}
+
+
+/* Dark theme optimizations */
+.dash-theme-dark {
+  color-scheme: dark;
+}
+
+.dash-theme-light {
+  color-scheme: light;
+}
+
+/* Loading state optimizations */
+.dash-app-loading {
+  contain: strict;
+  content-visibility: hidden;
+}
+
+.dash-app-loaded {
+  contain: layout;
+  content-visibility: visible;
+}
+
+
+@property --angle {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
+
+@keyframes rotateGradient {
+  to {
+    --angle: 360deg;
+  }
 }

@@ -8,13 +8,11 @@ import {
     useTheme,
 } from '@mui/material';
 import { IDashAutoAdminCustomFieldComponent } from 'dash-auto-admin';
-import { MallOrderCreateProvider } from '../contexts/MallOrderCreateContext';
 import { MallStoreSelector } from './MallStoreSelector';
 import { MallAssistanceButton } from './MallAssistanceButton';
 import { MallSearchBox } from './MallSearchBox';
 import { MallPaginationToggle } from './MallPaginationToggle';
 import { MallProductGrid } from './MallProductGrid';
-import { MallCartSummary } from './MallCartSummary';
 import { MallOrderSummaryDrawer } from './MallOrderSummaryDrawer';
 import { MallProductModifiersModal } from './MallProductModifiersModal';
 
@@ -26,13 +24,16 @@ interface MallOrderCreateViewProps extends IDashAutoAdminCustomFieldComponent {
  * MallOrderCreateView - Main composition component for mall order creation
  * 
  * This component assembles all the UI pieces for the mall ordering experience:
+ * - Left sidebar with vertical scrollable store selector
  * - Cart summary header
- * - Store selector (horizontal scrolling)
  * - Assistance button
- * - Search box
- * - Pagination toggle
- * - Product grid
+ * - Product grid (with integrated search and pagination toggle)
  * - Cart drawer
+ * - Product modifiers modal
+ * 
+ * Layout: Two-column design with stores on left, main content on right
+ * 
+ * Note: MallOrderCreateProvider is provided by MallTabsContextV2 at the context level.
  */
 export const MallOrderCreateView: React.FC<MallOrderCreateViewProps> = (props) => {
     const { attribute, productsField = 'products' } = props;
@@ -46,90 +47,47 @@ export const MallOrderCreateView: React.FC<MallOrderCreateViewProps> = (props) =
         : (attribute?.attribute || productsField);
 
     return (
-        <MallOrderCreateProvider productsField={effectiveProductsField}>
-            <Box
-                className="kt-mall-order-create-view"
-                sx={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    height: '100%',
-                    minHeight: '70vh',
-                    //backgroundColor: 'background.default',
-                }}
-            >
+        <Box className="kt-mall-client-tab-create-view">
+
+            
+            {/* Left Sidebar - Vertical Store Selector */}
+            <Box className="kt-mall-client-tab-sidebar">
+                {/* Store Selector - Now Vertical */}
+                <MallStoreSelector />
+            </Box>
+
+            {/* Main Content Area */}
+            <Box className="kt-mall-client-tab-main-content">
                 {/* Header Section */}
                 <Paper
                     elevation={0}
-                    sx={{
-                        p: 2,
-                        borderRadius: 0,
-                        //backgroundColor: 'background.paper',
-                        background: 'none',
-                        borderBottom: 1,
-                        borderColor: 'divider',
-                    }}
+                    className="kt-mall-client-tab-header"
                 >
-                    {/* Cart Summary */}
-                    <MallCartSummary />
-
-                    {/* Store Selector */}
-                    <Box sx={{ mb: 2, background: 'none' }}>
-                        <Typography 
-                            variant="subtitle2" 
-                            color="text.secondary"
-                            sx={{ mb: 1, fontWeight: 600 }}
-                        >
-                            {translate('mall.select_store')}
-                        </Typography>
-                        <MallStoreSelector />
-                    </Box>
+                    {/* Search Box */}
+                    
+                    {/*<Box display="flex" justifyContent="space-between" alignItems="center">
+                        <MallSearchBox />
+                        <MallPaginationToggle showLabel={false} />
+                    </Box>*/}
 
                     {/* Assistance Button - Own Row */}
-                    <Box sx={{ mb: 2 }}>
+                    <Box className="kt-mall-client-tab-assistance-container">
                         <MallAssistanceButton />
-                    </Box>
-
-                    {/* Search + Pagination Toggle Row */}
-                    <Box
-                        sx={{
-                            display: 'flex',
-                            flexDirection: { xs: 'column', sm: 'row' },
-                            alignItems: { xs: 'stretch', sm: 'center' },
-                            gap: 2,
-                            backgroundColor: 'transparent',
-                        }}
-                    >
-                        {/* Search Box */}
-                        <Box sx={{ flexGrow: 1 }}>
-                            <MallSearchBox />
-                        </Box>
-
-                        {/* Pagination Toggle - Hide label on mobile */}
-                        <Box sx={{ flexShrink: 0, display: 'flex', justifyContent: 'flex-end' }}>
-                            <MallPaginationToggle /*showLabel={!isMobile}*/ />
-                        </Box>
                     </Box>
                 </Paper>
 
                 {/* Products Section */}
-                <Box
-                    sx={{
-                        flexGrow: 1,
-                        overflow: 'hidden',
-                        display: 'flex',
-                        flexDirection: 'column',
-                    }}
-                >
+                <Box className="kt-mall-client-tab-products-section">
                     <MallProductGrid />
                 </Box>
-
-                {/* Cart Drawer */}
-                <MallOrderSummaryDrawer />
-                
-                {/* Product Modifiers Modal (V1 feature ported) */}
-                <MallProductModifiersModal />
             </Box>
-        </MallOrderCreateProvider>
+
+            {/* Cart Drawer */}
+            <MallOrderSummaryDrawer />
+            
+            {/* Product Modifiers Modal (V1 feature ported) */}
+            <MallProductModifiersModal />
+        </Box>
     );
 };
 

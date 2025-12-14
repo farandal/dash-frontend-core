@@ -15,8 +15,6 @@ interface IAutoForm {
  * It takes in a `schema` of `IDashAutoAdminAttribute` objects, a `resource` of `IDashAutoAdminResourceConfig`, and optional `options` of `IDashAutoAdminFormOptions`. 
  * The component handles different form modes ('create', 'edit', 'view') and renders the appropriate form tabs based on the provided schema and options. 
  * It also features a form data state management using Redux and handles changes to form inputs for Tabbed Forms.
- * 
- * If there is only one tab group, it renders the inputs directly without the FormTab wrapper.
  */
 
 const DashAutoFormTabs = ({
@@ -61,113 +59,102 @@ const DashAutoFormTabs = ({
 
     options = {...options, handleChange};
 
-    // Helper to render inputs for a group
-    const renderInputs = (mode: 'create' | 'edit' | 'view', grouppedAttributes: IDashAutoAdminAttribute[]) => {
-        return grouppedAttributes.map((attribute, i) => (
-            <div key={`input-${i}`}>
-                {AttributeToInput(mode, resourceConfig, attribute, i, options)}
-            </div>
-        ));
-    };
-
-    // Helper to filter attributes based on mode and drawer
-    const filterAttributes = (
-        groupOfAttributes: IDashAutoAdminAttribute[],
-        mode: 'create' | 'edit' | 'view'
-    ) => {
-        let filtered = groupOfAttributes.filter((attribute) => {
-            switch (mode) {
-                case 'create':
-                    return attribute?.inCreate !== false;
-                case 'edit':
-                    return attribute?.inEdit !== false;
-                case 'view':
-                    return attribute?.inShow !== false;
-                default:
-                    return true;
-            }
-        });
-
-        if (isDrawer) {
-            filtered = filtered.filter((attribute) => attribute?.inDrawer !== false);
-        }
-
-        return filtered;
-    };
-
-    // Get all tab groups
-    const tabGroups = groupByTabs(schema);
-
-    // Filter tab groups to only include those with visible attributes for current mode
-    const getFilteredTabGroups = (mode: 'create' | 'edit' | 'view') => {
-        return tabGroups
-            .map((group) => ({
-                original: group,
-                filtered: filterAttributes(group, mode),
-            }))
-            .filter((g) => g.filtered.length > 0);
-    };
-
     switch (options.mode) {
-        case 'create': {
-            const filteredGroups = getFilteredTabGroups('create');
-            
-            // If only one tab group, render inputs directly without FormTab wrapper
-            if (filteredGroups.length === 1) {
-                return <>{renderInputs('create', filteredGroups[0].filtered)}</>;
-            }
-            
-            // Multiple tabs - wrap each in FormTab
-            return filteredGroups.map((group, idx) => (
-                <FormTab
-                    key={`tab-${group.original[0].tab || idx}`}
-                    value={idx}
-                    label={group.original[0].tab || options?.label || resourceConfig?.label}
-                >
-                    {renderInputs('create', group.filtered)}
-                </FormTab>
-            ));
-        }
+        case 'create':
+            return groupByTabs(schema).map((groupOfAttributes, idx) => {
 
-        case 'edit': {
-            const filteredGroups = getFilteredTabGroups('edit');
-            
-            // If only one tab group, render inputs directly without FormTab wrapper
-            if (filteredGroups.length === 1) {
-                return <>{renderInputs('edit', filteredGroups[0].filtered)}</>;
-            }
-            
-            // Multiple tabs - wrap each in FormTab
-            return filteredGroups.map((group, idx) => (
-                <FormTab
-                    key={`tab-${group.original[0].tab || idx}`}
-                    value={idx}
-                    label={group.original[0].tab || options?.label || resourceConfig?.label}
-                >
-                    {renderInputs('edit', group.filtered)}
-                </FormTab>
-            ));
-        }
+                let grouppedAttributes = groupOfAttributes.filter(
+                    (attribute) => attribute?.inCreate !== false,
+                );
 
-        case 'view': {
-            const filteredGroups = getFilteredTabGroups('view');
-            
-            // If only one tab group, render inputs directly without FormTab wrapper
-            if (filteredGroups.length === 1) {
-                return <>{renderInputs('view', filteredGroups[0].filtered)}</>;
-            }
-            
-            // Multiple tabs - wrap each in FormTab
-            return filteredGroups.map((group, idx) => (
-                <FormTab
-                    key={`tab-${group.original[0].tab || idx}`}
-                    value={idx}
-                    label={group.original[0].tab || options?.label || resourceConfig?.label}
-                >
-                    {renderInputs('view', group.filtered)}
-                </FormTab>
-            ));
-        }
+                if (isDrawer) {
+                    grouppedAttributes = grouppedAttributes.filter(
+                        (attribute) => attribute?.inDrawer !== false,
+                    );
+                }
+                return (
+                    grouppedAttributes.length && (
+                        <FormTab
+                            key={`tab-${groupOfAttributes[0].tab || idx}`}
+                            value={idx}
+							/*icon={IconResolver(groupOfAttributes[0].tab)}*/ label={
+                                groupOfAttributes[0].tab || options?.label || resourceConfig?.label
+                            }
+                        >
+                            {grouppedAttributes.map((attribute, i) => (
+                                <div key={`input-${i}`}>
+                                    {AttributeToInput('create', resourceConfig, attribute, i, options)}
+                                </div>
+                            ))}
+
+                        </FormTab>
+                    )
+                );
+            });
+
+        case 'edit':
+        
+            return groupByTabs(schema).map((groupOfAttributes, idx) => {
+                let grouppedAttributes = groupOfAttributes.filter(
+                    (attribute) => attribute?.inEdit !== false,
+                );
+                if (isDrawer) {
+                    grouppedAttributes = grouppedAttributes.filter(
+                        (attribute) => attribute?.inDrawer !== false,
+                    );
+                }
+
+                return (
+                    grouppedAttributes.length && (
+                        <FormTab
+                            key={`tab-${groupOfAttributes[0].tab || idx}`}
+                            value={idx}
+							/*icon={IconResolver(groupOfAttributes[0].tab)}*/ label={
+                                groupOfAttributes[0].tab || options?.label || resourceConfig?.label
+                            }
+                        >
+                           
+                            {grouppedAttributes.map((attribute, i) => (
+                                <div key={`input-${i}`}>
+                                    {AttributeToInput('edit', resourceConfig, attribute, i, options)}
+                                </div>
+                            ))}
+
+
+                        </FormTab>
+                    )
+                );
+            });
+
+        case 'view':
+            return groupByTabs(schema).map((groupOfAttributes, idx) => {
+                let grouppedAttributes = groupOfAttributes.filter(
+                    (attribute) => attribute?.inShow !== false,
+                );
+                if (isDrawer) {
+                    grouppedAttributes = grouppedAttributes.filter(
+                        (attribute) => attribute?.inDrawer !== false,
+                    );
+                }
+                //console.log("groupOfAttributes, view",groupOfAttributes);
+                return (
+                    grouppedAttributes.length && (
+                        <FormTab
+                            key={`tab-${groupOfAttributes[0].tab || idx}`}
+                            value={idx}
+							/*key={idx} icon={IconResolver(groupOfAttributes[0].tab)}*/ label={
+                                groupOfAttributes[0].tab || options?.label || resourceConfig?.label
+                            }
+                        >
+                            {grouppedAttributes.map((attribute, i) => (
+                                <div key={`input-${i}`}>
+                                    {AttributeToInput('view', resourceConfig, attribute, i, options)}
+                                </div>
+                            ))}
+                        </FormTab>
+                    )
+                );
+            });
     }
 };
 

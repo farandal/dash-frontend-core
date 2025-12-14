@@ -2,13 +2,14 @@ import { IDashAutoAdminResourceConfig } from "dash-auto-admin";
 import { useRecordContext } from "react-admin";
 import { TabManagerProvider, ITab } from "kt-tabs";
 import { MallClientTabsProvider } from "./MallClientTabsContext";
+import { MallOrderCreateProvider } from "../contexts/MallOrderCreateContext";
 
 /**
  * MallTabsContextV2 - Context wrapper for V2 kiosk-style mall ordering
  * 
  * Key differences from MallTabsContext:
- * - For 'create' mode, only wraps with MallClientTabsProvider (notifications/status tracking)
- * - MallOrderProductsFieldV2 provides its own MallOrderCreateProvider for create mode
+ * - For 'create' mode, wraps with MallOrderCreateProvider for product selection and cart
+ * - MallOrderToolbarMediator and MallOrderProductsFieldV2 use MallOrderCreateProvider
  * - For 'edit'/'show' modes, still uses TabManagerProvider for existing functionality
  */
 export const MallTabsContextV2: IDashAutoAdminResourceConfig["contextComponent"] = (props) => {
@@ -24,13 +25,14 @@ export const MallTabsContextV2: IDashAutoAdminResourceConfig["contextComponent"]
         );
     }
 
-    // For create mode, only wrap with MallClientTabsProvider
-    // MallOrderProductsFieldV2 -> MallOrderCreateView -> MallOrderCreateProvider
-    // handles product selection and cart management internally
+    // For create mode, wrap with MallOrderCreateProvider for product/cart management
+    // MallOrderToolbarMediator and MallOrderProductsFieldV2 both use this context
     if (mode === "create") {
         return (
             <MallClientTabsProvider mode={mode} resourceConfig={resourceConfig}>
-                {children}
+                <MallOrderCreateProvider>
+                    {children}
+                </MallOrderCreateProvider>
             </MallClientTabsProvider>
         );
     }

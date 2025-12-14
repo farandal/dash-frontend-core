@@ -143,7 +143,7 @@ const DASHLightWeightLogin: React.FC<DASHLightWeightLoginProps> = (props) => {
                 <CardContent sx={{ p: 3 }}>
                     <form onSubmit={handleSubmit(onSubmit)} className='dash-app-login-form'>
                         {/* Title */}
-                        {/*<Box sx={{ mb: 1.5, textAlign: 'center' }}>
+                        <Box sx={{ mb: 1.5, textAlign: 'center' }}>
                             <h1 
                                 className='dash-app-login-form-title'
                                 style={{ 
@@ -155,7 +155,7 @@ const DASHLightWeightLogin: React.FC<DASHLightWeightLoginProps> = (props) => {
                             >
                                 Ingresar
                             </h1>
-                        </Box>*/}
+                        </Box>
 
                         {/* Email Field */}
                         <Box sx={{ mb: 1.5 }}>

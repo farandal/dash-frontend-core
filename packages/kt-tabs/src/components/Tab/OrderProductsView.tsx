@@ -125,9 +125,6 @@ export const OrderProductsView: React.FC<IDashAutoAdminCustomFieldComponent> = (
                                     )}
                                 </Grid>
                                 <Grid item xs={4}>
-                                    <Typography className="print_text" variant="caption" color="text.secondary" align="right" sx={{ display: 'block', fontSize: '0.7rem' }}>
-                                        {item.tenant?.name}
-                                    </Typography>
                                     <Typography className="print_text" variant="h6" align="right">
                                         {formatCurrencyWithTenant((parseFloat(item.unit_price || "0") + calculateModifierTotal(item.modifiers)) * item.quantity, tenantCurrency)}
                                     </Typography>

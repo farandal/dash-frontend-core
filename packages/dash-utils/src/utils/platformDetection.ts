@@ -75,21 +75,6 @@ export const applyPlatformBodyClasses = (): void => {
             document.body.classList.add('ios');
         }
     }
-
-    // Add sanitized user agent as body class
-    if (typeof navigator !== 'undefined' && navigator.userAgent) {
-        const userAgent = navigator.userAgent.toLowerCase();
-        // Sanitize user agent for use as CSS class
-        const sanitizedUA = userAgent
-            .replace(/[^a-z0-9]/g, '-') // Replace non-alphanumeric with hyphens
-            .replace(/-+/g, '-') // Replace multiple hyphens with single
-            .replace(/^-|-$/g, '') // Remove leading/trailing hyphens
-            .substring(0, 100); // Limit length
-
-        if (sanitizedUA) {
-            document.body.classList.add(`ua-${sanitizedUA}`);
-        }
-    }
 };
 
 export default {

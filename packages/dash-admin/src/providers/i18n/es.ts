@@ -364,7 +364,6 @@ const dashSpanish = {
 		clear_cart: 'Vaciar Carrito',
 		total: 'Total',
 		confirm_order: 'Confirmar Pedido',
-		submit_order: 'Enviar Pedido',
 		submitting_order: 'Enviando...',
 		continue_shopping: 'Seguir Comprando',
 		product_added: 'Producto agregado al carrito',

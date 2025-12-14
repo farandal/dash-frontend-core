@@ -4,6 +4,7 @@ import { useFormContext } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { useAxios } from 'dash-axios-hook';
 import { dashStorage } from 'dash-utils';
+import { useMediaQuery, useTheme } from '@mui/material';
 import { DASH_REDUX_ACTIONS, IDASHAppState } from 'dash-admin-state';
 import { formatCurrency, ICurrency } from 'kt-ecommerce';
 import { IStore } from '../interfaces/IStore';
@@ -60,14 +61,35 @@ export interface IMallProduct {
     tenant_id: number;
     sku: string;
     name: string;
-    description: string;
+    description: string | null;
+    keywords: string | null;
     category_id: number;
     brand_id: number;
+    gallery_id: number;
     is_pack: boolean;
     is_enabled: boolean;
     featured: boolean;
     mall_listed: boolean;
     infinite_stock: boolean;
+    tenant?: {
+        id: number;
+        name: string;
+        public_id: string | null;
+        public_name: string | null;
+        address: string | null;
+        phone: string | null;
+        mobile: string | null;
+        contact_name: string | null;
+        contact_email: string | null;
+        contact_phone: string | null;
+        settings: Record<string, any>;
+        currencies: Array<{
+            id: number;
+            code: string;
+            symbol: string;
+            format: string;
+        }>;
+    };
     prices: Array<{
         id: number;
         price: string;
@@ -91,29 +113,49 @@ export interface IMallProduct {
     gallery?: {
         id: number;
         title: string;
+        description: string | null;
         tenant_id: number;
+        created_at: string;
+        updated_at: string;
         images: Array<{
             id: number;
             url: string;
         }>;
+        primary_image_id: number;
         primary_image_url: string;
         images_count: number;
         has_images: boolean;
+    };
+    _gallery_debug?: {
+        gallery_id: number;
+        relation_loaded: boolean;
+        gallery_exists: boolean;
     };
     modifier_groups?: Array<{
         id: number;
         tenant_id: number;
         name: string;
         type: string;
+        description: string | null;
         is_required: boolean;
         min_selections: number;
         max_selections: number | null;
         options?: Array<{
             id: number;
+            modifier_group_id: number;
             name: string;
             price_adjustment: string;
+            description: string | null;
+            is_default: boolean;
+            display_order: number;
         }>;
     }>;
+    modifier_groups_ids?: number[];
+    primary_product_image_id: number | null;
+    images: Array<any>;
+    primary_product_image_url: string | null;
+    has_product_images: boolean;
+    primary_image: string | null;
 }
 
 /**
@@ -153,9 +195,20 @@ interface MallOrderCreateContextValue {
     setCurrentPage: (page: number) => void;
     ITEMS_PER_PAGE: number;
     
+    // Carousel pagination (horizontal infinite scroll)
+    carouselProducts: IMallProduct[]; // All loaded products for carousel (merged pages)
+    isLoadingCarouselPage: boolean;
+    hasMoreCarouselPages: boolean;
+    loadNextCarouselPage: () => Promise<void>;
+    loadPrevCarouselPage: () => Promise<void>;
+    resetCarouselPagination: () => void;
+    carouselCurrentPage: number;
+    carouselTotalPages: number;
+    
     // Search
     searchQuery: string;
     setSearchQuery: (query: string) => void;
+    isSearching: boolean;
     
     // Pagination mode
     paginationMode: PaginationMode;
@@ -205,7 +258,7 @@ interface MallOrderCreateContextValue {
 
 const MallOrderCreateContext = createContext<MallOrderCreateContextValue | null>(null);
 
-const ITEMS_PER_PAGE = 6;
+const ITEMS_PER_PAGE = 20;
 const STORES_PATH = 'public/mall/stores';
 const PRODUCTS_PATH = 'public/mall/products';
 
@@ -220,6 +273,14 @@ interface CachedProductsData {
     lastFetch: number;
     searchHistory: string[];
     filters: any;
+}
+
+// Paginated products cache (for horizontal infinite scroll)
+interface PaginatedProductsCache {
+    pages: Record<number, IMallProduct[]>; // page number -> products
+    totalCount: number;
+    totalPages: number;
+    lastFetch: Record<number, number>; // page number -> timestamp
 }
 
 interface CachedStoresData {
@@ -283,9 +344,45 @@ export const MallOrderCreateProvider: React.FC<MallOrderCreateProviderProps> = (
     
     // Search state
     const [searchQuery, setSearchQuery] = useState('');
+    const [isSearching, setIsSearching] = useState(false);
     
-    // Pagination mode state
-    const [paginationMode, setPaginationMode] = useState<PaginationMode>('infinite');
+    // Responsive breakpoint detection
+    const theme = useTheme();
+    const isLargeScreen = useMediaQuery(theme.breakpoints.up('lg'));
+    
+    // Pagination mode state - default based on screen size
+    // Small/medium screens: horizontal carousel, Large screens: infinite scroll
+    const [paginationMode, setPaginationMode] = useState<PaginationMode>(() => 
+        typeof window !== 'undefined' && window.innerWidth >= 1200 ? 'infinite' : 'horizontal'
+    );
+    
+    // Track if user has manually changed the mode
+    const userChangedModeRef = useRef(false);
+    
+    // Wrapper to track user-initiated mode changes
+    const handleSetPaginationMode = useCallback((mode: PaginationMode) => {
+        userChangedModeRef.current = true;
+        setPaginationMode(mode);
+    }, []);
+    
+    // Auto-switch pagination mode based on screen size (only if user hasn't manually changed it)
+    useEffect(() => {
+        if (!userChangedModeRef.current) {
+            const newMode = isLargeScreen ? 'infinite' : 'horizontal';
+            if (newMode !== paginationMode) {
+                console.log(`📱 Screen size changed, switching to ${newMode} mode`);
+                setPaginationMode(newMode);
+            }
+        }
+    }, [isLargeScreen]);
+    
+    // Carousel pagination state (for horizontal infinite scroll)
+    const [carouselPages, setCarouselPages] = useState<Record<number, IMallProduct[]>>({});
+    const [carouselCurrentPage, setCarouselCurrentPage] = useState(1);
+    const [carouselTotalPages, setCarouselTotalPages] = useState(1);
+    const [carouselTotalCount, setCarouselTotalCount] = useState(0);
+    const [isLoadingCarouselPage, setIsLoadingCarouselPage] = useState(false);
+    const carouselLoadedPagesRef = useRef<Set<number>>(new Set());
     
     // Cart state
     const [cartItems, setCartItems] = useState<IMallCartItem[]>([]);
@@ -405,6 +502,331 @@ export const MallOrderCreateProvider: React.FC<MallOrderCreateProviderProps> = (
         loadProducts();
     }, [dataProvider, productsPath, selectedStore, notify, isProductsCacheValid, cachedProducts, dispatch]);
     
+    // =====================================
+    // CAROUSEL PAGINATION FUNCTIONS
+    // =====================================
+    
+    // Load a specific carousel page from API
+    const loadCarouselPage = useCallback(async (page: number): Promise<IMallProduct[]> => {
+        // Check if already loaded
+        if (carouselPages[page] && carouselPages[page].length > 0) {
+            console.log(`📦 Using cached carousel page ${page}`);
+            return carouselPages[page];
+        }
+        
+        const filter: any = {
+            is_enabled: true,
+            mall_listed: true,
+            load_gallery: true,
+            load_modifier_groups: true,
+            load_prices: true,
+        };
+        
+        if (selectedStore) {
+            filter.tenant_ids = [selectedStore.id];
+        }
+        
+        console.log(`🔄 Loading carousel page ${page}...`);
+        
+        const response = await dataProvider.getList(productsPath, {
+            pagination: { page, perPage: ITEMS_PER_PAGE },
+            sort: { field: 'featured', order: 'DESC' },
+            filter,
+        });
+        
+        // Sort products: featured first, then by name
+        const sortedProducts = [...response.data].sort((a: any, b: any) => {
+            if (a.featured && !b.featured) return -1;
+            if (!a.featured && b.featured) return 1;
+            return a.name.localeCompare(b.name);
+        }) as IMallProduct[];
+        
+        // Update total count and pages from response
+        const total = response.total || response.data.length;
+        setCarouselTotalCount(total);
+        setCarouselTotalPages(Math.ceil(total / ITEMS_PER_PAGE));
+        
+        // Cache the page
+        setCarouselPages(prev => ({
+            ...prev,
+            [page]: sortedProducts,
+        }));
+        carouselLoadedPagesRef.current.add(page);
+        
+        console.log(`✅ Carousel page ${page} loaded: ${sortedProducts.length} products (total: ${total})`);
+        
+        return sortedProducts;
+    }, [dataProvider, productsPath, selectedStore, carouselPages]);
+    
+    // Preload adjacent pages for smooth scrolling
+    const preloadAdjacentPages = useCallback(async (currentPage: number) => {
+        const pagesToLoad = [currentPage - 1, currentPage + 1].filter(
+            p => p >= 1 && p <= carouselTotalPages && !carouselLoadedPagesRef.current.has(p)
+        );
+        
+        for (const page of pagesToLoad) {
+            try {
+                await loadCarouselPage(page);
+            } catch (error) {
+                console.warn(`Failed to preload carousel page ${page}:`, error);
+            }
+        }
+    }, [carouselTotalPages, loadCarouselPage]);
+    
+    // Load next carousel page
+    const loadNextCarouselPage = useCallback(async () => {
+        if (isLoadingCarouselPage || carouselCurrentPage >= carouselTotalPages) {
+            return;
+        }
+        
+        setIsLoadingCarouselPage(true);
+        try {
+            const nextPage = carouselCurrentPage + 1;
+            await loadCarouselPage(nextPage);
+            setCarouselCurrentPage(nextPage);
+            
+            // Preload next adjacent page
+            preloadAdjacentPages(nextPage);
+        } catch (error) {
+            console.error('Error loading next carousel page:', error);
+            notify('Error loading more products', { type: 'error' });
+        } finally {
+            setIsLoadingCarouselPage(false);
+        }
+    }, [isLoadingCarouselPage, carouselCurrentPage, carouselTotalPages, loadCarouselPage, preloadAdjacentPages, notify]);
+    
+    // Load previous carousel page (for prepending)
+    const loadPrevCarouselPage = useCallback(async () => {
+        if (isLoadingCarouselPage || carouselCurrentPage <= 1) {
+            return;
+        }
+        
+        const loadingPage = Math.min(...Array.from(carouselLoadedPagesRef.current));
+        if (loadingPage <= 1) return;
+        
+        setIsLoadingCarouselPage(true);
+        try {
+            await loadCarouselPage(loadingPage - 1);
+        } catch (error) {
+            console.error('Error loading previous carousel page:', error);
+        } finally {
+            setIsLoadingCarouselPage(false);
+        }
+    }, [isLoadingCarouselPage, carouselCurrentPage, loadCarouselPage]);
+    
+    // Reset carousel pagination (when store changes)
+    const resetCarouselPagination = useCallback(() => {
+        setCarouselPages({});
+        setCarouselCurrentPage(1);
+        setCarouselTotalPages(1);
+        setCarouselTotalCount(0);
+        carouselLoadedPagesRef.current.clear();
+    }, []);
+    
+    // Merged carousel products from all loaded pages
+    const carouselProducts = useMemo(() => {
+        const pageNumbers = Object.keys(carouselPages)
+            .map(Number)
+            .sort((a, b) => a - b);
+        
+        const merged: IMallProduct[] = [];
+        for (const pageNum of pageNumbers) {
+            merged.push(...(carouselPages[pageNum] || []));
+        }
+        
+        // Apply search filter if needed
+        if (!searchQuery.trim()) return merged;
+        
+        const query = searchQuery.toLowerCase();
+        return merged.filter(product => 
+            product.name.toLowerCase().includes(query) ||
+            product.description?.toLowerCase().includes(query) ||
+            product.sku?.toLowerCase().includes(query)
+        );
+    }, [carouselPages, searchQuery]);
+    
+    // Check if there are more pages to load
+    const hasMoreCarouselPages = useMemo(() => {
+        return carouselCurrentPage < carouselTotalPages;
+    }, [carouselCurrentPage, carouselTotalPages]);
+    
+    // Initialize carousel on mount or store change
+    useEffect(() => {
+        const initCarousel = async () => {
+            if (paginationMode !== 'horizontal') return;
+            
+            // Reset state
+            setCarouselPages({});
+            setCarouselCurrentPage(1);
+            setCarouselTotalPages(1);
+            setCarouselTotalCount(0);
+            carouselLoadedPagesRef.current.clear();
+            setIsLoadingCarouselPage(true);
+            
+            try {
+                // Build filter
+                const filter: any = {
+                    is_enabled: true,
+                    mall_listed: true,
+                    load_gallery: true,
+                    load_modifier_groups: true,
+                    load_prices: true,
+                };
+                
+                if (selectedStore) {
+                    filter.tenant_ids = [selectedStore.id];
+                }
+                
+                console.log('🔄 Initializing carousel, loading page 1...');
+                
+                const response = await dataProvider.getList(productsPath, {
+                    pagination: { page: 1, perPage: ITEMS_PER_PAGE },
+                    sort: { field: 'featured', order: 'DESC' },
+                    filter,
+                });
+                
+                // Sort products: featured first, then by name
+                const sortedProducts = [...response.data].sort((a: any, b: any) => {
+                    if (a.featured && !b.featured) return -1;
+                    if (!a.featured && b.featured) return 1;
+                    return a.name.localeCompare(b.name);
+                }) as IMallProduct[];
+                
+                // Update total count and pages from response
+                const total = response.total || response.data.length;
+                setCarouselTotalCount(total);
+                setCarouselTotalPages(Math.ceil(total / ITEMS_PER_PAGE));
+                
+                // Cache the page
+                setCarouselPages({ 1: sortedProducts });
+                carouselLoadedPagesRef.current.add(1);
+                
+                console.log(`✅ Carousel initialized: ${sortedProducts.length} products (total: ${total})`);
+                
+            } catch (error) {
+                console.error('Error initializing carousel:', error);
+            } finally {
+                setIsLoadingCarouselPage(false);
+            }
+        };
+        
+        initCarousel();
+    }, [paginationMode, selectedStore, dataProvider, productsPath]);
+    
+    // Backend search effect - debounced search query triggers API call
+    useEffect(() => {
+        // If search is cleared, reload original products
+        if (!searchQuery.trim()) {
+            // Trigger a reload of products without search filter
+            const reloadProducts = async () => {
+                console.log('🔄 Search cleared, reloading products...');
+                
+                const filter: any = {
+                    is_enabled: true,
+                    mall_listed: true,
+                    load_gallery: true,
+                    load_modifier_groups: true,
+                    load_prices: true,
+                };
+                
+                if (selectedStore) {
+                    filter.tenant_ids = [selectedStore.id];
+                }
+                
+                try {
+                    const response = await dataProvider.getList(productsPath, {
+                        pagination: { page: 1, perPage: 200 },
+                        sort: { field: 'featured', order: 'DESC' },
+                        filter,
+                    });
+                    
+                    const sortedProducts = [...response.data].sort((a: any, b: any) => {
+                        if (a.featured && !b.featured) return -1;
+                        if (!a.featured && b.featured) return 1;
+                        return a.name.localeCompare(b.name);
+                    }) as IMallProduct[];
+                    
+                    setAllProducts(sortedProducts);
+                    
+                    // Reset carousel if in horizontal mode
+                    if (paginationMode === 'horizontal') {
+                        setCarouselPages({ 1: sortedProducts.slice(0, ITEMS_PER_PAGE) });
+                        setCarouselCurrentPage(1);
+                        setCarouselTotalCount(sortedProducts.length);
+                        setCarouselTotalPages(Math.ceil(sortedProducts.length / ITEMS_PER_PAGE));
+                        carouselLoadedPagesRef.current.clear();
+                        carouselLoadedPagesRef.current.add(1);
+                    }
+                } catch (error) {
+                    console.error('Error reloading products:', error);
+                }
+            };
+            
+            // Small delay to avoid race conditions
+            const timer = setTimeout(reloadProducts, 100);
+            return () => clearTimeout(timer);
+        }
+        
+        // Debounce backend search (500ms after local filter already applied)
+        setIsSearching(true);
+        const searchTimer = setTimeout(async () => {
+            console.log('🔍 Backend search for:', searchQuery);
+            
+            const filter: any = {
+                is_enabled: true,
+                mall_listed: true,
+                load_gallery: true,
+                load_modifier_groups: true,
+                load_prices: true,
+                search: searchQuery.trim(), // Backend search parameter
+            };
+            
+            if (selectedStore) {
+                filter.tenant_ids = [selectedStore.id];
+            }
+            
+            try {
+                const response = await dataProvider.getList(productsPath, {
+                    pagination: { page: 1, perPage: 200 },
+                    sort: { field: 'featured', order: 'DESC' },
+                    filter,
+                });
+                
+                // Sort products: featured first, then by name
+                const sortedProducts = [...response.data].sort((a: any, b: any) => {
+                    if (a.featured && !b.featured) return -1;
+                    if (!a.featured && b.featured) return 1;
+                    return a.name.localeCompare(b.name);
+                }) as IMallProduct[];
+                
+                console.log(`✅ Backend search returned ${sortedProducts.length} products`);
+                
+                // Update allProducts with search results
+                setAllProducts(sortedProducts);
+                
+                // Also update carousel pages if in horizontal mode
+                if (paginationMode === 'horizontal') {
+                    setCarouselPages({ 1: sortedProducts.slice(0, ITEMS_PER_PAGE) });
+                    setCarouselCurrentPage(1);
+                    setCarouselTotalCount(sortedProducts.length);
+                    setCarouselTotalPages(Math.ceil(sortedProducts.length / ITEMS_PER_PAGE));
+                    carouselLoadedPagesRef.current.clear();
+                    carouselLoadedPagesRef.current.add(1);
+                }
+                
+            } catch (error) {
+                console.error('Error in backend search:', error);
+            } finally {
+                setIsSearching(false);
+            }
+        }, 500); // 500ms debounce for backend search
+        
+        return () => {
+            clearTimeout(searchTimer);
+            setIsSearching(false);
+        };
+    }, [searchQuery, selectedStore, dataProvider, productsPath, paginationMode]);
+
     // Filter products by search query
     const filteredProducts = useMemo(() => {
         if (!searchQuery.trim()) return allProducts;
@@ -782,13 +1204,24 @@ export const MallOrderCreateProvider: React.FC<MallOrderCreateProviderProps> = (
         setCurrentPage,
         ITEMS_PER_PAGE,
         
+        // Carousel pagination (horizontal infinite scroll)
+        carouselProducts,
+        isLoadingCarouselPage,
+        hasMoreCarouselPages,
+        loadNextCarouselPage,
+        loadPrevCarouselPage,
+        resetCarouselPagination,
+        carouselCurrentPage,
+        carouselTotalPages,
+        
         // Search
         searchQuery,
         setSearchQuery,
+        isSearching,
         
         // Pagination mode
         paginationMode,
-        setPaginationMode,
+        setPaginationMode: handleSetPaginationMode,
         
         // Cart
         cartItems,

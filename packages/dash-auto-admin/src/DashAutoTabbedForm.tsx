@@ -15,7 +15,7 @@ import { useDataProvider } from 'react-admin';
 import { IDashAutoAdminForm } from './DashAutoAdminForm';
 
 import { useSelector } from 'react-redux';
-//import { IDASHAppState } from 'dash-admin-state';
+
 import { Loading } from 'react-admin';
 import { useFormContext, useFormState } from 'react-hook-form';
 
@@ -53,7 +53,7 @@ const DashAutoTabbedForm: React.FC<IDashAutoTabbedForm> = ({
 		? resourceConfig.formGroupMode
 		: 'tabs';
 
-    // Calculate the number of visible tabs for the current mode
+    // Helper function to count visible tabs after filtering for current mode
     const getVisibleTabCount = () => {
         const tabGroups = groupByTabs(resourceConfig.schema);
         return tabGroups.filter((group) => {
@@ -63,7 +63,6 @@ const DashAutoTabbedForm: React.FC<IDashAutoTabbedForm> = ({
                 } else if (mode === 'edit') {
                     return attr?.inEdit !== false;
                 }
-                // For any other mode, include all
                 return true;
             });
             return filteredAttributes.length > 0;
@@ -78,8 +77,8 @@ const DashAutoTabbedForm: React.FC<IDashAutoTabbedForm> = ({
     }
     const formData = useSelector(
         (
-            //state: IDASHAppState<any, any, IDashAutoAdminResourceConfig>,
-            state: any
+            /*state: IDASHAppState<any, any, IDashAutoAdminResourceConfig>,*/
+            state: any,
         ) => {
             
             return state.formData || {};
@@ -212,7 +211,7 @@ const DashAutoTabbedForm: React.FC<IDashAutoTabbedForm> = ({
 		);
 	}
 
-	if (formGroupMode === 'tabs' && groupByTabs(resourceConfig.schema).length > 1) {
+	if (formGroupMode === 'tabs' && visibleTabCount > 1) {
         //console.log(record,formData, {...record,...formData});
        
 		return (

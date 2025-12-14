@@ -558,25 +558,62 @@ export default ({ mode }) => {
       port: ENV_VARS.VITE_DEV_PORT || 3000,
       host: ENV_VARS.VITE_DEV_HOST || "0.0.0.0",
       strictPort: true,
-      hmr: {
-        protocol: "wss",
-        port: ENV_VARS.VITE_HMR_PORT || 4431,
-        // No clientPort for ngrok (uses default HTTPS port 443)
-        clientHost: ENV_VARS.VITE_HMR_HOST || "pw-hmr.ngrok.dev", // Browser connects to ngrok domain
-        path: "/hmr/",
-      },
+      hmr: (() => {
+        const hmrHost = ENV_VARS.VITE_HMR_HOST || "localhost";
+        const isNgrok = hmrHost.includes('ngrok') || hmrHost.includes('pw-hmr');
+        
+        if (isNgrok) {
+          // Ngrok tunneling setup
+          return {
+            protocol: "wss",
+            port: ENV_VARS.VITE_HMR_PORT || 4431,
+            clientHost: hmrHost,
+            path: "/hmr/",
+          };
+        } else {
+          // Local development setup
+          return {
+            port: ENV_VARS.VITE_DEV_PORT || 3000,
+            host: hmrHost,
+            path: "/hmr/",
+          };
+        }
+      })(),
 
-      allowedHosts: [
-        "pw-hmr.ngrok.dev",
-        "pw.ngrok.dev",
-        "localhost",
-        "localhost:3000",
-        "0.0.0.0",
-        // Add dynamic ngrok host from build config
-        ...(buildConfig.customModeConfig?.apiBaseUrl
-          ? [new URL(buildConfig.customModeConfig.apiBaseUrl).hostname]
-          : []),
-      ],
+      allowedHosts: (() => {
+        const hmrHost = ENV_VARS.VITE_HMR_HOST || "localhost";
+        const isNgrok = hmrHost.includes('ngrok') || hmrHost.includes('pw-hmr');
+        
+        if (isNgrok) {
+          return [
+            hmrHost,
+            "pw-mall-dist.ngrok.dev",
+            "pw-dist.ngrok.dev",
+            "pw.ngrok.dev",
+            "localhost",
+            "localhost:3000",
+            "0.0.0.0",
+            // Add dynamic ngrok host from build config
+            ...(buildConfig.customModeConfig?.apiBaseUrl
+              ? [new URL(buildConfig.customModeConfig.apiBaseUrl).hostname]
+              : []),
+          ];
+        } else {
+          return [
+            "pw-mall-dist.ngrok.dev",
+            "pw-dist.ngrok.dev",
+            "pw.ngrok.dev",
+            "localhost",
+            "localhost:3000",
+            "localhost:3006",
+            "0.0.0.0",
+            // Add dynamic host from build config
+            ...(buildConfig.customModeConfig?.apiBaseUrl
+              ? [new URL(buildConfig.customModeConfig.apiBaseUrl).hostname]
+              : []),
+          ];
+        }
+      })(),
       fs: {
         strict: false,
       },
@@ -613,22 +650,29 @@ export default ({ mode }) => {
         name: "configure-hmr-client",
         transform(code, id) {
           if (id.includes("vite/dist/client/client.mjs")) {
-            const hmrHost = ENV_VARS.VITE_HMR_HOST || "pw-hmr.ngrok.dev";
+            const hmrHost = ENV_VARS.VITE_HMR_HOST || "localhost";
             const hmrPort = ENV_VARS.VITE_HMR_PORT || 4431;
+            const isNgrok = hmrHost.includes('ngrok') || hmrHost.includes('pw-hmr');
             
-            // Determine if we should include the port:
-            // - If host is localhost, 127.0.0.1, or an IP address, include port
-            // - If host is a domain name (like ngrok), don't include port (uses 443)
-            const isLocalhost = /^(localhost|127\.0\.0\.1|0\.0\.0\.0|\d+\.\d+\.\d+\.\d+)$/i.test(hmrHost);
-            const socketHost = isLocalhost ? `${hmrHost}:${hmrPort}` : hmrHost;
+            let socketHost: string;
+            let socketProtocol: string;
             
-            console.log(`🔧 Injecting HMR URL: wss://${socketHost}/hmr/`);
-            console.log(`   Host type: ${isLocalhost ? 'localhost/IP (with port)' : 'domain (no port)'}`);
+            if (isNgrok) {
+              // Ngrok: use domain without port (443), wss protocol
+              socketHost = hmrHost;
+              socketProtocol = 'wss';
+              console.log(`🔧 Injecting HMR URL: wss://${socketHost}/hmr/ (ngrok)`);
+            } else {
+              // Localhost: include port, ws protocol
+              socketHost = `${hmrHost}:${ENV_VARS.VITE_DEV_PORT || 3000}`;
+              socketProtocol = 'ws';
+              console.log(`🔧 Injecting HMR URL: ws://${socketHost}/hmr/ (localhost)`);
+            }
             
             // Override the WebSocket URL construction
             return code.replace(
               /const socketProtocol[^;]+;/,
-              `const socketProtocol = 'wss';`
+              `const socketProtocol = '${socketProtocol}';`
             ).replace(
               /const socketHost[^;]+;/,
               `const socketHost = '${socketHost}';`
@@ -648,13 +692,13 @@ export default ({ mode }) => {
       }),
       svgr(),
       // Remove console logs in production
-      ...(isProduction ? [{
+      /*...(isProduction ? [{
         name: 'remove-console',
         transform(code, id) {
           if (id.includes('node_modules')) return code;
           return code.replace(/console\.(log|warn|error|info|debug|trace)\([^)]*\);?/g, '');
         }
-      }] : []),
+      }] : []),*/
       /*{
         name: 'generate-netlify-redirects',
         closeBundle() {
@@ -832,7 +876,7 @@ export default ({ mode }) => {
 
     esbuild: {
       target: "es2020",
-      //drop: isProduction ? ['console', 'debugger'] : [],
+      drop: isProduction ? ['console', 'debugger'] : [],
       define: {
         global: "globalThis",
         "process.platform": JSON.stringify(process.platform),

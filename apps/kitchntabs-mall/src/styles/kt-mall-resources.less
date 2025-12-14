@@ -1,0 +1,881 @@
+// =============================================================================
+// KITCHNTABS MALL CLIENT TAB STYLES
+// Organized by component hierarchy with responsive media queries
+// =============================================================================
+
+// =============================================================================
+// VARIABLES & MIXINS
+// =============================================================================
+
+
+@mq-sm-up: ~"(min-width: 600px)";
+@mq-md-up: ~"(min-width: 960px)";
+@mq-md-down: ~"(max-width: 959px)";
+
+// =============================================================================
+// MALL ORDER CREATE VIEW - Main Layout Container
+// =============================================================================
+
+.kt-mall-client-tab-create-view {
+  display: flex;
+  flex-direction: row;
+  //height: 100%;
+  //min-height: 70vh;
+  height: 100vh;
+}
+
+// =============================================================================
+// SIDEBAR - Left Vertical Store Selector
+// =============================================================================
+
+.kt-mall-client-tab-sidebar {
+  width: 80px;
+  flex-shrink: 0;
+  border-right: 1px solid var(--divider-color);
+  display: flex;
+  flex-direction: column;
+  
+  @media @mq-sm-up {
+    width: 100px;
+  }
+}
+
+// =============================================================================
+// MAIN CONTENT AREA
+// =============================================================================
+
+.kt-mall-client-tab-main-content {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+// =============================================================================
+// HEADER SECTION
+// =============================================================================
+
+.kt-mall-client-tab-header {
+  border-radius: 0;
+  background: none;
+  border-bottom: 1px solid var(--divider-color);
+}
+
+.kt-mall-client-tab-assistance-container {
+  margin-bottom: 16px;
+}
+
+// =============================================================================
+// PRODUCTS SECTION
+// =============================================================================
+
+.kt-mall-client-tab-products-section {
+  flex-grow: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+// =============================================================================
+// TOOLBAR - Search and Pagination Controls
+// =============================================================================
+
+.kt-mall-client-tab-header {
+    background-color: transparent !important;
+}
+
+.kt-mall-client-tab-toolbar {
+  display: flex;
+  flex-direction: column;
+  //gap: 8px;
+  width: 100%;
+  //margin-bottom: 16px;
+  
+  @media @mq-sm-up {
+    //gap: 16px;
+  }
+}
+
+.kt-mall-client-tab-toolbar-controls {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px;
+  border-radius: 4px;
+  background-color: transparent;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  
+  @media @mq-sm-up {
+    //gap: 16px;
+  }
+}
+
+.kt-mall-client-tab-search-field {
+  flex: 1;
+  min-width: 120px;
+  max-width: 60%;
+  
+  @media @mq-sm-up {
+    min-width: 200px;
+    max-width: none;
+  }
+}
+
+// =============================================================================
+// CART SUMMARY - Header Block
+// =============================================================================
+
+.kt-mall-client-tab-cart-empty {
+  padding: 4px;
+  //margin-bottom: 4px;
+  border-radius: 8px;
+  background-color: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  //gap: 4px;
+  
+  @media @mq-sm-up {
+    padding: 16px;
+    //margin-bottom: 16px;
+    //gap: 16px;
+  }
+}
+
+.kt-mall-client-tab-cart-empty-icon {
+  opacity: 0.4;
+  color: var(--grey-500);
+}
+
+.kt-mall-client-tab-cart-summary {
+  padding: 4px;
+  //margin-bottom: 4px;
+  border-radius: 8px;
+  background-color: var(--primary-main);
+  color: var(--primary-contrast);
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  
+  @media @mq-sm-up {
+    padding: 16px;
+   // margin-bottom: 16px;
+  }
+  
+  &:hover {
+    transform: scale(1.01);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+  }
+  
+  &:active {
+    transform: scale(0.99);
+  }
+}
+
+.kt-mall-client-tab-cart-summary-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.kt-mall-client-tab-cart-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.kt-mall-client-tab-cart-badge {
+  .MuiBadge-badge {
+    font-weight: 700;
+    font-size: 0.75rem;
+  }
+}
+
+.kt-mall-client-tab-cart-icon {
+  font-size: 32px;
+}
+
+
+
+.kt-mall-client-tab-cart-caption {
+  opacity: 0.85;
+}
+
+.kt-mall-client-tab-cart-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.kt-mall-client-tab-cart-total {
+  text-align: right;
+}
+
+.kt-mall-client-tab-cart-arrow {
+  font-size: 28px;
+  transform: rotate(-90deg);
+  opacity: 0.7;
+}
+
+.kt-mall-client-tab-cart-stores {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+
+.kt-mall-client-tab-cart-store-chip {
+  background-color: rgba(255,255,255,0.2) !important;
+  color: var(--primary-contrast) !important;
+  font-weight: 600 !important;
+  font-size: 0.7rem !important;
+}
+
+// =============================================================================
+// CART FLOATING BUTTON - Mobile Fixed Button
+// =============================================================================
+
+.kt-mall-client-tab-cart-floating {
+  position: fixed;
+  bottom: 16px;
+  left: 16px;
+  right: 16px;
+  z-index: 1200;
+  display: block;
+  
+  @media @mq-md-up {
+    display: none;
+  }
+}
+
+.kt-mall-client-tab-cart-floating-btn {
+  padding-top: 16px !important;
+  padding-bottom: 16px !important;
+  border-radius: 12px !important;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3) !important;
+  display: flex !important;
+  justify-content: space-between !important;
+}
+
+.kt-mall-client-tab-cart-floating-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+// =============================================================================
+// PRODUCT CARD - Individual Product Display
+// =============================================================================
+
+.kt-mall-product-card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  
+  &:hover {
+    transform: scale(1.02);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+  }
+  
+  &:active {
+    transform: scale(0.98);
+  }
+}
+
+.kt-mall-product-card-badges {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 2;
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+}
+
+.kt-mall-product-card-featured-icon {
+  display: flex;
+  font-weight: 600;
+  font-size: 22px;
+  color: var(--warning-main, #ed6c02);
+}
+
+.kt-mall-product-card-modifier-icon {
+  display: flex;
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--primary-main);
+}
+
+.kt-mall-product-card-image-container {
+  position: relative;
+  padding-top: 75%; // 4:3 aspect ratio
+  background-color: var(--grey-200);
+}
+
+.kt-mall-product-card-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.kt-mall-product-card-image-placeholder {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.kt-mall-product-card-image-placeholder-icon {
+  font-size: 48px;
+  opacity: 0.3;
+  color: var(--grey-500);
+}
+
+.kt-mall-product-card-gradient {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 50%;
+  background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 100%);
+}
+
+.kt-mall-product-card-content {
+  flex-grow: 1;
+  padding-top: 8px !important;
+  padding-bottom: 8px !important;
+  padding-left: 12px !important;
+  padding-right: 12px !important;
+}
+
+.kt-mall-product-card-tenant {
+  font-size: 0.7rem;
+  line-height: 1.2;
+  display: block;
+  text-align: center;
+  margin-bottom: 4px;
+}
+
+.kt-mall-product-card-price {
+  font-weight: 600;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  font-size: 22px;
+}
+
+.kt-mall-product-card-name {
+  font-weight: 600;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.kt-mall-product-card-description {
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin-top: 4px;
+}
+
+.kt-mall-product-card-actions {
+  padding: 8px !important;
+  padding-top: 0 !important;
+}
+
+.kt-mall-product-card-add-button {
+  border-radius: 6px !important;
+  font-weight: 600 !important;
+  text-transform: none !important;
+}
+
+// =============================================================================
+// PRODUCT GRID - Horizontal Carousel & Infinite Scroll Layouts
+// =============================================================================
+
+.kt-mall-product-grid-container {
+  flex-grow: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.kt-mall-product-grid-horizontal {
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+.kt-mall-product-grid-horizontal-scroll {
+  height: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.kt-mall-product-grid-horizontal-content {
+  display: flex;
+  height: 100%;
+  gap: 16px;
+  padding: 16px;
+  
+  @media @mq-sm-up {
+    gap: 24px;
+    padding: 24px;
+  }
+}
+
+.kt-mall-product-grid-horizontal-item {
+  flex-shrink: 0;
+  width: 280px;
+  scroll-snap-align: start;
+  
+  @media @mq-sm {
+    width: 300px;
+  }
+  
+  @media @mq-md-up {
+    width: 320px;
+  }
+}
+
+.kt-mall-product-grid-horizontal-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  background-color: rgba(255,255,255,0.9);
+  border-radius: 50%;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  
+  &.kt-mall-product-grid-nav-left {
+    left: 8px;
+  }
+  
+  &.kt-mall-product-grid-nav-right {
+    right: 8px;
+  }
+  
+  @media @mq-sm-up {
+    &.kt-mall-product-grid-nav-left {
+      left: 16px;
+    }
+    
+    &.kt-mall-product-grid-nav-right {
+      right: 16px;
+    }
+  }
+}
+
+.kt-mall-product-grid-infinite {
+  flex-grow: 1;
+  overflow-y: auto;
+  padding: 16px;
+  
+  @media @mq-sm-up {
+    padding: 24px;
+  }
+}
+
+
+
+.kt-mall-product-grid-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 32px;
+}
+
+.kt-mall-product-grid-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px;
+  text-align: center;
+}
+
+.kt-mall-product-grid-empty-icon {
+  font-size: 64px;
+  opacity: 0.3;
+  color: var(--grey-500);
+  margin-bottom: 16px;
+}
+
+// =============================================================================
+// STORE SELECTOR - Vertical Left Sidebar
+// =============================================================================
+
+.kt-mall-store-selector-container {
+  height: 100%;
+  overflow-y: auto;
+  padding: 8px 0;
+  
+  &::-webkit-scrollbar {
+    width: 4px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: rgba(0,0,0,0.2);
+    border-radius: 2px;
+  }
+}
+
+.kt-mall-store-selector-button {
+  width: 100%;
+  padding: 12px 8px !important;
+  border-radius: 0 !important;
+  border-bottom: 1px solid var(--divider-color) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 4px !important;
+  transition: background-color 0.2s ease !important;
+  
+  &.kt-mall-store-selector-active {
+    background-color: var(--primary-main) !important;
+    color: var(--primary-contrast) !important;
+    border-left: 4px solid var(--primary-dark) !important;
+  }
+  
+  &:hover {
+    background-color: var(--grey-100) !important;
+  }
+  
+  &.kt-mall-store-selector-active:hover {
+    background-color: var(--primary-dark) !important;
+  }
+}
+
+.kt-mall-store-selector-avatar {
+  width: 48px !important;
+  height: 48px !important;
+  
+  @media @mq-sm-up {
+    width: 56px !important;
+    height: 56px !important;
+  }
+}
+
+.kt-mall-store-selector-name {
+  font-size: 0.7rem !important;
+  font-weight: 600 !important;
+  text-align: center !important;
+  line-height: 1.2 !important;
+  overflow: hidden !important;
+  display: -webkit-box !important;
+  -webkit-line-clamp: 2 !important;
+  line-clamp: 2 !important;
+  -webkit-box-orient: vertical !important;
+  
+  @media @mq-sm-up {
+    font-size: 0.75rem !important;
+  }
+}
+
+.kt-mall-store-selector-count-badge {
+  position: absolute !important;
+  top: 8px !important;
+  right: 8px !important;
+  
+  .MuiBadge-badge {
+    font-size: 0.65rem !important;
+    font-weight: 700 !important;
+    min-width: 18px !important;
+    height: 18px !important;
+  }
+}
+
+// =============================================================================
+// ORDER SUMMARY DRAWER - Cart Details Sidebar
+// =============================================================================
+
+.kt-mall-order-summary-drawer {
+  .MuiDrawer-paper {
+    width: 100%;
+    
+    @media @mq-sm-up {
+      width: 400px;
+    }
+    
+    @media @mq-md-up {
+      width: 480px;
+    }
+  }
+}
+
+.kt-mall-order-summary-header {
+  padding: 16px;
+  border-bottom: 1px solid var(--divider-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.kt-mall-order-summary-content {
+  flex-grow: 1;
+  overflow-y: auto;
+  padding: 16px;
+}
+
+.kt-mall-order-summary-footer {
+  padding: 16px;
+  border-top: 1px solid var(--divider-color);
+  background-color: var(--background-paper);
+}
+
+.kt-mall-order-summary-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.kt-mall-order-summary-submit {
+  width: 100% !important;
+  padding-top: 12px !important;
+  padding-bottom: 12px !important;
+  font-size: 1.1rem !important;
+  font-weight: 700 !important;
+}
+
+// =============================================================================
+// CART ITEMS LIST - Individual Cart Items Display
+// =============================================================================
+
+.kt-mall-cart-item {
+  padding: 12px;
+  margin-bottom: 12px;
+  border-radius: 8px;
+  border: 1px solid var(--divider-color);
+  transition: background-color 0.2s ease;
+  
+  &:hover {
+    background-color: var(--grey-50);
+  }
+}
+
+.kt-mall-cart-item-content {
+  display: flex;
+  gap: 12px;
+}
+
+.kt-mall-cart-item-image {
+  width: 80px;
+  height: 80px;
+  border-radius: 4px;
+  object-fit: cover;
+  
+  @media @mq-sm-up {
+    width: 96px;
+    height: 96px;
+  }
+}
+
+.kt-mall-cart-item-image-placeholder {
+  width: 80px;
+  height: 80px;
+  border-radius: 4px;
+  background-color: var(--grey-200);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  @media @mq-sm-up {
+    width: 96px;
+    height: 96px;
+  }
+}
+
+.kt-mall-cart-item-details {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.kt-mall-cart-item-name {
+  font-weight: 600 !important;
+  line-height: 1.3 !important;
+}
+
+.kt-mall-cart-item-tenant {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.kt-mall-cart-item-modifiers {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--divider-color);
+}
+
+.kt-mall-cart-item-modifier {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 2px;
+}
+
+.kt-mall-cart-item-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 8px;
+}
+
+.kt-mall-cart-item-quantity {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.kt-mall-cart-item-quantity-btn {
+  min-width: 32px !important;
+  padding: 4px !important;
+}
+
+.kt-mall-cart-item-price {
+  font-weight: 700 !important;
+  color: var(--primary-main) !important;
+}
+
+.kt-mall-cart-item-remove {
+  color: var(--error-main) !important;
+}
+
+// =============================================================================
+// MODIFIERS MODAL - Product Customization Dialog
+// =============================================================================
+
+.kt-mall-modifiers-modal {
+  .MuiDialog-paper {
+    max-width: 600px;
+    width: 100%;
+    margin: 16px;
+  }
+}
+
+.kt-mall-modifiers-header {
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--divider-color);
+}
+
+.kt-mall-modifiers-content {
+  padding: 24px;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.kt-mall-modifiers-group {
+  margin-bottom: 24px;
+  
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.kt-mall-modifiers-group-title {
+  font-weight: 600 !important;
+  margin-bottom: 12px !important;
+}
+
+.kt-mall-modifiers-group-required {
+  color: var(--error-main);
+  font-size: 0.75rem;
+  margin-left: 8px;
+}
+
+.kt-mall-modifiers-footer {
+  padding: 16px 24px;
+  border-top: 1px solid var(--divider-color);
+  display: flex;
+  gap: 12px;
+}
+
+.kt-mall-modifiers-footer-button {
+  flex: 1;
+}
+
+// =============================================================================
+// ASSISTANCE BUTTON - Help Request Button
+// =============================================================================
+
+.kt-mall-assistance-button {
+  width: 100%;
+  padding-top: 12px !important;
+  padding-bottom: 12px !important;
+  font-weight: 600 !important;
+  text-transform: none !important;
+}
+
+// =============================================================================
+// RESPONSIVE UTILITIES
+// =============================================================================
+
+// Hide on mobile
+.kt-mall-hide-xs {
+  @media @mq-xs {
+    display: none !important;
+  }
+}
+
+// Show only on mobile
+.kt-mall-show-xs {
+  display: none !important;
+  
+  @media @mq-xs {
+    display: block !important;
+  }
+}
+
+// Hide on tablet and below
+.kt-mall-hide-md-down {
+  @media @mq-md-down {
+    display: none !important;
+  }
+}
+
+// Show only on desktop
+.kt-mall-show-lg {
+  display: none !important;
+  
+  @media @mq-lg {
+    display: block !important;
+  }
+}
+
+

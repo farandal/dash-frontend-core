@@ -451,7 +451,7 @@ const DASHLightWeightLogin: React.FC<DASHLightWeightLoginProps> = (props) => {
                                 className='dash-app-login-form'
                             >
                                 {/* Compact Title - hide when keyboard is open on mobile */}
-                                {/*!(isMobile && isKeyboardOpen) && (
+                                {!(isMobile && isKeyboardOpen) && (
                                     <Box sx={{ mb: isMobile ? 0.5 : 1.5, textAlign: 'center' }}>
                                         <h1 
                                             className='dash-app-login-form-title'
@@ -465,7 +465,7 @@ const DASHLightWeightLogin: React.FC<DASHLightWeightLoginProps> = (props) => {
                                             Ingresar
                                         </h1>
                                     </Box>
-                                )*/}
+                                )}
 
                                 {/* Email Field */}
                                 <Box sx={{ mb: isMobile ? 1 : 1.5 }}>
