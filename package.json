@@ -13,10 +13,11 @@
     "config:web:kitchntabs:development": "MODE=development CUSTOM_MODE=kitchntabs.development TARGET_TYPE=web PLATFORM=web APP_PATH=apps/kitchntabs node build_config.js",
     "config:web:kitchntabs:local": "MODE=development CUSTOM_MODE=kitchntabs.local TARGET_TYPE=web PLATFORM=web APP_PATH=apps/kitchntabs node build_config.js",
   
-    "config:web:kitchntabs-mall:production": "MODE=production CUSTOM_MODE=kitchntabs.production TARGET_TYPE=web PLATFORM=web APP_PATH=apps/kitchntabs-mall node build_config.js",
+    "config:web:kitchntabs-mall:production": "MODE=production CUSTOM_MODE=kitchntabs.development TARGET_TYPE=web PLATFORM=web APP_PATH=apps/kitchntabs-mall node build_config.js",
     "config:web:kitchntabs-mall:development": "MODE=development CUSTOM_MODE=kitchntabs.development TARGET_TYPE=web PLATFORM=web APP_PATH=apps/kitchntabs-mall VITE_HMR_PORT=${VITE_HMR_PORT:-4438} node build_config.js",
     "config:web:kitchntabs-mall:local": "MODE=development CUSTOM_MODE=kitchntabs.local TARGET_TYPE=web PLATFORM=web APP_PATH=apps/kitchntabs-mall VITE_HMR_PORT=${VITE_HMR_PORT:-4438} node build_config.js",
-  
+    "config:web:kitchntabs-mall:ngrok": "MODE=production CUSTOM_MODE=kitchntabs.ngrok TARGET_TYPE=web PLATFORM=web APP_PATH=apps/kitchntabs-mall node build_config.js",
+    
   
     "config:electron:kitchntabs:production": "MODE=production CUSTOM_MODE=kitchntabs.production TARGET_TYPE=desktop PLATFORM=electron APP_PATH=apps/kitchntabs node build_config.js",
     "config:electron:kitchntabs:development": "MODE=development CUSTOM_MODE=kitchntabs.development TARGET_TYPE=desktop PLATFORM=electron APP_PATH=apps/kitchntabs node build_config.js",
@@ -36,9 +37,10 @@
     "_WEB": "BUILD",
     "dev:web:kitchntabs:local": "pnpm config:web:kitchntabs:local && pnpm dev-kt",
 
-    "dev:web:kt-mall:local": "pnpm config:web:kitchntabs-mall:local && pnpm dev-kt-mall",
-    "dev:web:kt-mall:development": "pnpm config:web:kitchntabs-mall:development && pnpm dev-kt-mall",
-    "dev:web:kt-mall:production": "pnpm config:web:kitchntabs-mall:production && pnpm dev-kt-mall",
+    "kt-mall:web:local": "pnpm config:web:kitchntabs-mall:local && pnpm dev-kt-mall",
+    "kt-mall:web:development": "pnpm config:web:kitchntabs-mall:development && pnpm dev-kt-mall",
+    "kt-mall:web:dist:production": "pnpm config:web:kitchntabs-mall:production && pnpm prod-kt-mall",
+    "kt-mall:web:dist:ngrok": "pnpm config:web:kitchntabs-mall:ngrok && pnpm prod-kt-mall",
 
     "dev:web:kt:local": "pnpm config:web:kitchntabs:local && pnpm dev",
     "dev:web:kitchntabs:development": "pnpm config:web:kitchntabs:development && pnpm dev",
