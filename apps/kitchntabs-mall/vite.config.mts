@@ -337,115 +337,16 @@ export default ({ mode }) => {
       if (!id) return undefined;
 
       // ============================================
-      // WORKSPACE PACKAGES - Handle kt-* and dash-* packages first
-      // These are NOT in node_modules but in the workspace
+      // WORKSPACE PACKAGES - Let Vite handle these automatically
+      // They contain React code and need proper dependency resolution
+      // Only chunk them if they're lazy-loaded (handled by dynamic imports)
       // ============================================
       
-      // kt-tabs - Order/Tab management (heavy, split by component type)
-      if (id.includes('/packages/kt-tabs/src/components/')) {
-        // Heavy visualization components - lazy load
-        if (id.includes('KitchenTabsList') || id.includes('TabsList') || id.includes('EditOrder')) {
-          return 'kt-tabs-lists';
-        }
-        // Tab context and hooks
-        if (id.includes('Context') || id.includes('hooks/')) {
-          return 'kt-tabs-core';
-        }
-        return 'kt-tabs-components';
-      }
-      if (id.includes('/packages/kt-tabs/')) {
-        return 'kt-tabs-core';
-      }
-      
-      // kt-mall - Mall-specific components (the main app package)
-      if (id.includes('/packages/kt-mall/src/components/')) {
-        // Heavy order views
-        if (id.includes('MallOrderProducts') || id.includes('MallProductGrid') || id.includes('MallCartSummary')) {
-          return 'kt-mall-order-ui';
-        }
-        // List components
-        if (id.includes('MallClientTabsList') || id.includes('StoresList')) {
-          return 'kt-mall-lists';
-        }
-        // Context providers
-        if (id.includes('Context')) {
-          return 'kt-mall-contexts';
-        }
-        return 'kt-mall-components';
-      }
-      if (id.includes('/packages/kt-mall/src/contexts/')) {
-        return 'kt-mall-contexts';
-      }
-      if (id.includes('/packages/kt-mall/src/schemas/')) {
-        return 'kt-mall-schemas';
-      }
-      if (id.includes('/packages/kt-mall/')) {
-        return 'kt-mall-core';
-      }
-      
-      // kt-ecommerce - E-commerce features (heavy)
-      if (id.includes('/packages/kt-ecommerce/src/components/Campaign/')) {
-        return 'kt-ecommerce-campaign';
-      }
-      if (id.includes('/packages/kt-ecommerce/src/components/Product/')) {
-        return 'kt-ecommerce-products';
-      }
-      if (id.includes('/packages/kt-ecommerce/')) {
-        return 'kt-ecommerce-core';
-      }
-      
-      // kt-pages - Page components (login, register, etc.)
-      if (id.includes('/packages/kt-pages/')) {
-        return 'kt-pages';
-      }
-      
-      // kt-utils - Utilities
-      if (id.includes('/packages/kt-utils/')) {
-        return 'kt-utils';
-      }
-      
-      // dash-auto-admin - Resource templates and auto-admin
-      if (id.includes('/packages/dash-auto-admin/src/toolbar/')) {
-        return 'dash-auto-admin-toolbar';
-      }
-      if (id.includes('/packages/dash-auto-admin/')) {
-        return 'dash-auto-admin';
-      }
-      
-      // dash-admin - Core admin functionality
-      if (id.includes('/packages/dash-admin/src/contexts/')) {
-        return 'dash-admin-contexts';
-      }
-      if (id.includes('/packages/dash-admin/src/components/')) {
-        return 'dash-admin-components';
-      }
-      if (id.includes('/packages/dash-admin/')) {
-        return 'dash-admin-core';
-      }
-      
-      // dash-components - Reusable UI components
-      if (id.includes('/packages/dash-components/')) {
-        return 'dash-components';
-      }
-      
-      // dash-admin-state - Redux state management
-      if (id.includes('/packages/dash-admin-state/')) {
-        return 'dash-admin-state';
-      }
-      
-      // dash-auth - Authentication
-      if (id.includes('/packages/dash-auth/')) {
-        return 'dash-auth';
-      }
-      
-      // dash-axios-hook - HTTP client
-      if (id.includes('/packages/dash-axios-hook/')) {
-        return 'dash-axios-hook';
-      }
-      
-      // dash-utils - Utilities
-      if (id.includes('/packages/dash-utils/')) {
-        return 'dash-utils';
+      // Don't manually chunk workspace packages - let Vite/Rollup handle
+      // dependency resolution automatically. This prevents issues where
+      // React-dependent code loads before React is available.
+      if (id.includes('/packages/')) {
+        return undefined; // Let Vite decide
       }
 
       // ============================================
