@@ -11,6 +11,9 @@ import {
     CardActions,
     Button,
     CircularProgress,
+    IconButton,
+    useMediaQuery,
+    useTheme,
 } from '@mui/material';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import AddIcon from '@mui/icons-material/Add';
@@ -28,6 +31,8 @@ interface MallProductCardProps {
 
 const MallProductCard: React.FC<MallProductCardProps> = ({ product }) => {
     const translate = useTranslate();
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
     const { addToCart, openModifierModal, formatPrice, getProductPrice } = useMallOrderCreate();
     
     const startPosRef = useRef({ x: 0, y: 0 });
@@ -90,15 +95,18 @@ const MallProductCard: React.FC<MallProductCardProps> = ({ product }) => {
             onTouchStart={handlePointerDown}
             onTouchMove={handlePointerMove}
         >
-            <Box className="kt-mall-product-card-badges">
-                {product.featured && (
-                    <StarIcon className="kt-mall-product-card-featured-icon" />
-                )}
-                
-                {hasModifiers && (
-                    <TuneIcon className="kt-mall-product-card-modifier-icon" />
-                )}
-            </Box>
+            {/* Badges - Show on image for desktop, hide for mobile (will show in title area) */}
+            {!isMobile && (
+                <Box className="kt-mall-product-card-badges">
+                    {product.featured && (
+                        <StarIcon className="kt-mall-product-card-featured-icon" />
+                    )}
+                    
+                    {hasModifiers && (
+                        <TuneIcon className="kt-mall-product-card-modifier-icon" />
+                    )}
+                </Box>
+            )}
 
             {/* Image Container */}
             <Box className="kt-mall-product-card-image-container">
@@ -124,13 +132,27 @@ const MallProductCard: React.FC<MallProductCardProps> = ({ product }) => {
             {/* Content */}
             <CardContent className="kt-mall-product-card-content">
                  {/* Tenant name */}
-                <Typography
-                    variant="caption"
-                    color="text.secondary"
-                    className="kt-mall-product-card-tenant"
-                >
-                    {product.tenant?.name}
-                </Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                    {product.featured && (
+                        <StarIcon sx={{ 
+                            fontSize: 14, 
+                            color: 'warning.main',
+                        }} />
+                    )}
+                    {hasModifiers && (
+                        <TuneIcon sx={{ 
+                            fontSize: 14, 
+                            color: 'info.main',
+                        }} />
+                    )}
+                    <Typography
+                        variant="caption"
+                        color="text.secondary"
+                        className="kt-mall-product-card-tenant"
+                    >
+                        {product.tenant?.name}
+                    </Typography>
+                </Box>
                 {/* Price */}
                 <Typography
                     variant="subtitle1"
@@ -138,12 +160,17 @@ const MallProductCard: React.FC<MallProductCardProps> = ({ product }) => {
                 >
                     {formatPrice(price)}
                 </Typography>
-                <Typography
-                    variant="subtitle2"
-                    className="kt-mall-product-card-name"
-                >
-                    {product.name}
-                </Typography>
+                {/* Product name with badges on mobile */}
+                <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 0.5 }}>
+                    {/* Mobile badges - show next to title */}
+                   
+                    <Typography
+                        variant="subtitle2"
+                        className="kt-mall-product-card-name"
+                    >
+                        {product.name}
+                    </Typography>
+                </Box>
                 {/* Description */}
                 {product.description && (
                     <Typography
@@ -158,16 +185,36 @@ const MallProductCard: React.FC<MallProductCardProps> = ({ product }) => {
 
             {/* Add button */}
             <CardActions className="kt-mall-product-card-actions">
-                <Button
-                    fullWidth
-                    variant="contained"
-                    color="primary"
-                    startIcon={<AddIcon />}
-                    onClick={handleButtonClick}
-                    className="kt-mall-product-card-add-button"
-                >
-                    {translate('mall.add')}
-                </Button>
+                {isMobile ? (
+                    <IconButton
+                        color="primary"
+                        onClick={handleButtonClick}
+                        className="kt-mall-product-card-add-button-mobile"
+                        sx={{
+                            backgroundColor: 'primary.main',
+                            color: 'primary.contrastText',
+                            '&:hover': {
+                                backgroundColor: 'primary.dark',
+                            },
+                            width: 40,
+                            height: 40,
+                            margin: '0 auto',
+                        }}
+                    >
+                        <AddIcon />
+                    </IconButton>
+                ) : (
+                    <Button
+                        fullWidth
+                        variant="contained"
+                        color="primary"
+                        startIcon={<AddIcon />}
+                        onClick={handleButtonClick}
+                        className="kt-mall-product-card-add-button"
+                    >
+                        {translate('mall.add')}
+                    </Button>
+                )}
             </CardActions>
         </Card>
     );
@@ -191,14 +238,22 @@ export const MallProductGrid: React.FC = () => {
         loadNextCarouselPage,
         carouselCurrentPage,
         carouselTotalPages,
+        carouselTotalCount,
     } = useMallOrderCreate();
 
     // Horizontal scroll container ref
     const scrollContainerRef = useRef<HTMLDivElement>(null);
     const loadMoreTriggerRef = useRef<HTMLDivElement>(null);
     const [isNearEnd, setIsNearEnd] = useState(false);
+    
+    // Vertical scroll container ref (for infinite mode)
+    const verticalScrollContainerRef = useRef<HTMLDivElement>(null);
+    
+    // Debounce ref to prevent multiple requests
+    const isLoadingRef = useRef(false);
+    const lastLoadTimeRef = useRef<number>(0);
 
-    // Detect when scrolling near the end to load more
+    // Detect when scrolling near the end to load more (with debounce)
     const handleScroll = useCallback(() => {
         const container = scrollContainerRef.current;
         if (!container) return;
@@ -210,12 +265,29 @@ export const MallProductGrid: React.FC = () => {
         const nearEnd = scrollLeft >= scrollEnd - threshold;
         setIsNearEnd(nearEnd);
         
-        // Trigger load when near end
-        if (nearEnd && hasMoreCarouselPages && !isLoadingCarouselPage) {
+        // Debounce: prevent multiple requests within 500ms
+        const now = Date.now();
+        const timeSinceLastLoad = now - lastLoadTimeRef.current;
+        
+        // Trigger load when near end, with debounce protection
+        if (nearEnd && hasMoreCarouselPages && !isLoadingCarouselPage && !isLoadingRef.current && timeSinceLastLoad > 500) {
             console.log('🔄 Near end of scroll, loading next page...');
+            isLoadingRef.current = true;
+            lastLoadTimeRef.current = now;
             loadNextCarouselPage();
         }
     }, [hasMoreCarouselPages, isLoadingCarouselPage, loadNextCarouselPage]);
+    
+    // Reset the loading ref when isLoadingCarouselPage changes to false
+    useEffect(() => {
+        if (!isLoadingCarouselPage) {
+            // Add a small delay before allowing next load
+            const timer = setTimeout(() => {
+                isLoadingRef.current = false;
+            }, 100);
+            return () => clearTimeout(timer);
+        }
+    }, [isLoadingCarouselPage]);
 
     // Attach scroll listener
     useEffect(() => {
@@ -225,6 +297,40 @@ export const MallProductGrid: React.FC = () => {
         container.addEventListener('scroll', handleScroll, { passive: true });
         return () => container.removeEventListener('scroll', handleScroll);
     }, [handleScroll]);
+
+    // Detect when scrolling near the bottom to load more (for vertical/infinite mode)
+    const handleVerticalScroll = useCallback(() => {
+        const container = verticalScrollContainerRef.current;
+        if (!container) return;
+        
+        const { scrollTop, scrollHeight, clientHeight } = container;
+        const threshold = 300; // Load more when within 300px of bottom
+        
+        const nearBottom = scrollTop + clientHeight >= scrollHeight - threshold;
+        
+        // Debounce: prevent multiple requests within 500ms
+        const now = Date.now();
+        const timeSinceLastLoad = now - lastLoadTimeRef.current;
+        
+        // Trigger load when near bottom, with debounce protection
+        if (nearBottom && hasMoreCarouselPages && !isLoadingCarouselPage && !isLoadingRef.current && timeSinceLastLoad > 500) {
+            console.log('🔄 Near bottom of scroll, loading next page...');
+            isLoadingRef.current = true;
+            lastLoadTimeRef.current = now;
+            loadNextCarouselPage();
+        }
+    }, [hasMoreCarouselPages, isLoadingCarouselPage, loadNextCarouselPage]);
+    
+    // Attach vertical scroll listener for infinite mode
+    useEffect(() => {
+        if (paginationMode !== 'infinite') return;
+        
+        const container = verticalScrollContainerRef.current;
+        if (!container) return;
+        
+        container.addEventListener('scroll', handleVerticalScroll, { passive: true });
+        return () => container.removeEventListener('scroll', handleVerticalScroll);
+    }, [paginationMode, handleVerticalScroll]);
 
     // Loading state (initial load)
     if (isLoadingProducts && carouselProducts.length === 0) {
@@ -278,6 +384,7 @@ export const MallProductGrid: React.FC = () => {
     // Horizontal pagination mode
     // Horizontal infinite scroll carousel mode
     if (paginationMode === 'horizontal') {
+       
         return (
             <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column', position: 'relative' }}>
                 {/* Page indicator */}
@@ -294,11 +401,11 @@ export const MallProductGrid: React.FC = () => {
                     }}
                 >
                     <Typography variant="caption" color="text.secondary">
-                        {carouselProducts.length} productos
+                        {carouselProducts.length} / {carouselTotalCount} {translate('mall.products')}
                     </Typography>
                     {hasMoreCarouselPages && (
                         <Typography variant="caption" color="primary">
-                            Desliza →
+                            {translate('mall.swipe_for_more')} →
                         </Typography>
                     )}
                 </Box>
@@ -339,9 +446,9 @@ export const MallProductGrid: React.FC = () => {
                         }}
                     >
                         {/* Product cards */}
-                        {carouselProducts.map((product) => (
+                        {carouselProducts.map((product, index) => (
                             <Box
-                                key={product.id}
+                                key={`carousel-product-${product.id}-${index}`}
                                 sx={{
                                     // Show ~3 cards on mobile (xs), more on larger screens
                                     width: { 
@@ -395,23 +502,83 @@ export const MallProductGrid: React.FC = () => {
         );
     }
 
-    // Infinite scroll mode (vertical) - shows all products with scrolling
+    // Infinite scroll mode (vertical) - shows all products with vertical scrolling
+    // Uses the same carousel pagination but displayed vertically
     return (
         <Box
-            className="kt-mall-product-grid"
+            ref={verticalScrollContainerRef}
+            className="kt-mall-product-grid kt-mall-product-grid-infinite"
             sx={{
                 flexGrow: 1,
                 overflow: 'auto',
-                p: { xs: 0.5, sm: 0 },
+                display: 'flex',
+                flexDirection: 'column',
             }}
         >
-            <Grid container spacing={{ xs: 1, sm: 2 }}>
-                {allProducts.map((product) => (
-                    <Grid size={{ xs: 4, sm: 4, md: 4, lg: 3 }} key={product.id}>
-                        <MallProductCard product={product} />
-                    </Grid>
-                ))}
-            </Grid>
+            {/* Products counter header */}
+            <Box
+                sx={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    px: 1,
+                    py: 0.5,
+                    borderBottom: 1,
+                    borderColor: 'divider',
+                    backgroundColor: 'transparent',
+                    flexShrink: 0,
+                }}
+            >
+                <Typography variant="caption" color="text.secondary">
+                    {carouselProducts.length} / {carouselTotalCount} {translate('mall.products')}
+                </Typography>
+                {hasMoreCarouselPages && (
+                    <Typography variant="caption" color="primary">
+                        {translate('mall.scroll_for_more')} ↓
+                    </Typography>
+                )}
+            </Box>
+            
+            {/* Products grid */}
+            <Box sx={{ flexGrow: 1, p: { xs: 0.5, sm: 1 } }}>
+                <Grid container spacing={{ xs: 1, sm: 2 }}>
+                    {carouselProducts.map((product, index) => (
+                        <Grid size={{ xs: 6, sm: 4, md: 4, lg: 3 }} key={`grid-product-${product.id}-${index}`}>
+                            <MallProductCard product={product} />
+                        </Grid>
+                    ))}
+                </Grid>
+            </Box>
+            
+            {/* Loading indicator at bottom */}
+            {isLoadingCarouselPage && (
+                <Box
+                    sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        py: 3,
+                    }}
+                >
+                    <CircularProgress size={32} />
+                </Box>
+            )}
+            
+            {/* No more products indicator */}
+            {!hasMoreCarouselPages && carouselProducts.length > 0 && (
+                <Box
+                    sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        py: 2,
+                    }}
+                >
+                    <Typography variant="body2" color="text.secondary">
+                        {translate('mall.no_more_products')}
+                    </Typography>
+                </Box>
+            )}
         </Box>
     );
 };
