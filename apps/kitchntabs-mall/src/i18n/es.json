@@ -255,5 +255,7 @@
     "mall.welcome.subtitle": "Ingresa tus datos para comenzar tu orden",
     "mall.welcome.name_label": "Tu Nombre",
     "mall.welcome.table_label": "Mesa",
-    "mall.welcome.explore_button": "Explora nuestro menú y haz tu orden aquí!"
+    "mall.welcome.explore_button": "Explora nuestro menú y haz tu orden aquí!",
+    "mall.products": "productos",
+    "mall.swipe_for_more": "Desliza para más"
 }

@@ -96,7 +96,7 @@ const MallProductCard: React.FC<MallProductCardProps> = ({ product }) => {
             onTouchMove={handlePointerMove}
         >
             {/* Badges - Show on image for desktop, hide for mobile (will show in title area) */}
-            {!isMobile && (
+            {/*!isMobile && */(
                 <Box className="kt-mall-product-card-badges">
                     {product.featured && (
                         <StarIcon className="kt-mall-product-card-featured-icon" />
@@ -132,7 +132,7 @@ const MallProductCard: React.FC<MallProductCardProps> = ({ product }) => {
             {/* Content */}
             <CardContent className="kt-mall-product-card-content">
                  {/* Tenant name */}
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                {/*<Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                     {product.featured && (
                         <StarIcon sx={{ 
                             fontSize: 14, 
@@ -152,7 +152,7 @@ const MallProductCard: React.FC<MallProductCardProps> = ({ product }) => {
                     >
                         {product.tenant?.name}
                     </Typography>
-                </Box>
+                </Box>*/}
                 {/* Price */}
                 <Typography
                     variant="subtitle1"
