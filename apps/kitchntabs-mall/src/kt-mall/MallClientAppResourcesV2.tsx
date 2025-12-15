@@ -166,17 +166,26 @@ const MallClientAppResourcesV2: IDashAutoAdminResourceConfig[] = [
          */
         beforeSubmit(values) {
          
+            // Note: dashStorage.getItem already handles JSON.parse internally
             const orderData = dashStorage.getItem('orderData');
-            const { name, tableNumber } = orderData 
-                ? JSON.parse(orderData) 
-                : { name: null, tableNumber: null };
+            const name = orderData?.name ?? null;
+            const tableNumber = orderData?.tableNumber ?? null;
+            const deliveryMethod = orderData?.deliveryMethod ?? null;
             
-            if (!name || !tableNumber) {
+            // Name is always required
+            if (!name) {
+                throw new Error("MISSING_SESSION_DATA");
+            }
+
+            // Table number is only required for TABLE delivery method
+            const effectiveDeliveryMethod = deliveryMethod || 'TABLE';
+            if (effectiveDeliveryMethod === 'TABLE' && !tableNumber) {
                 throw new Error("MISSING_SESSION_DATA");
             }
 
             values["customer_name"] = name;
-            values["table_number"] = tableNumber;
+            values["table_number"] = effectiveDeliveryMethod === 'TABLE' ? tableNumber : null;
+            values["delivery_method"] = effectiveDeliveryMethod;
 
             return values;
         },

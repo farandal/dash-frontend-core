@@ -147,24 +147,36 @@ const MallClientAppResources: IDashAutoAdminResourceConfig[] = [
         /* HACK TO INTERCEPT MISSING SESSION DATA : check MallAppMediator component */
         beforeSubmit(values) {
 
-              
-               
-                
+            // Note: dashStorage.getItem already handles JSON.parse internally
+            const orderData = dashStorage.getItem('orderData');
+        
+            // orderData is already an object (dashStorage handles parsing)
+            const name = orderData?.name ?? null;
+            const tableNumber = orderData?.tableNumber ?? null;
+            const deliveryMethod = orderData?.deliveryMethod ?? null;
             
-                const orderData = dashStorage.getItem('orderData');
+            console.log('[MallClientAppResources] beforeSubmit - orderData:', orderData);
+            console.log('[MallClientAppResources] beforeSubmit - parsed values:', { name, tableNumber, deliveryMethod });
             
-                const { name, tableNumber } = orderData ? JSON.parse(orderData) : { name: null, tableNumber: null };
-                
-                if (!name || !tableNumber) {
-                    throw new Error("MISSING_SESSION_DATA");
-                }
+            // Name is always required
+            if (!name) {
+                console.log('[MallClientAppResources] Missing name, throwing MISSING_SESSION_DATA');
+                throw new Error("MISSING_SESSION_DATA");
+            }
 
-                
+            // Table number is only required for TABLE delivery method
+            const effectiveDeliveryMethod = deliveryMethod || 'TABLE';
+            if (effectiveDeliveryMethod === 'TABLE' && !tableNumber) {
+                console.log('[MallClientAppResources] Missing tableNumber for TABLE delivery, throwing MISSING_SESSION_DATA');
+                throw new Error("MISSING_SESSION_DATA");
+            }
 
-                values["customer_name"] = name;
-                values["table_number"] = tableNumber;
+            values["customer_name"] = name;
+            values["table_number"] = effectiveDeliveryMethod === 'TABLE' ? tableNumber : null;
+            values["delivery_method"] = effectiveDeliveryMethod;
 
-                return values;
+            console.log('[MallClientAppResources] beforeSubmit - final values:', values);
+            return values;
         },
 
         onError(mode, error) {
