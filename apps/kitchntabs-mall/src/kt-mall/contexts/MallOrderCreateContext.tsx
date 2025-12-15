@@ -1,13 +1,12 @@
 import React, { createContext, useContext, useState, useCallback, useMemo, useEffect, PropsWithChildren, useRef } from 'react';
 import { useDataProvider, useNotify, useTranslate } from 'react-admin';
 import { useFormContext } from 'react-hook-form';
-import { useDispatch, useSelector } from 'react-redux';
 import { useAxios } from 'dash-axios-hook';
 import { dashStorage } from 'dash-utils';
 import { useMediaQuery, useTheme } from '@mui/material';
-import { DASH_REDUX_ACTIONS, IDASHAppState } from 'dash-admin-state';
 import { formatCurrency, IMallCurrency as ILocalCurrency } from '../utils/formatCurrency';
 import { IStore } from '../interfaces/IStore';
+import { useMallStores, useMallProducts, MALL_CACHE_CONFIG } from '../hooks/useMallDataQueries';
 
 /**
  * Local currency interface compatible with API response
@@ -200,8 +199,8 @@ interface MallOrderCreateContextValue {
     carouselProducts: IMallProduct[]; // All loaded products for carousel (merged pages)
     isLoadingCarouselPage: boolean;
     hasMoreCarouselPages: boolean;
-    loadNextCarouselPage: () => Promise<void>;
-    loadPrevCarouselPage: () => Promise<void>;
+    loadNextCarouselPage: () => void;
+    loadPrevCarouselPage: () => void;
     resetCarouselPagination: () => void;
     carouselCurrentPage: number;
     carouselTotalPages: number;
@@ -250,12 +249,12 @@ interface MallOrderCreateContextValue {
     getProductPrice: (product: IMallProduct) => number;
     getProductCurrency: (product: IMallProduct) => IMallCurrency | undefined;
     
-    // Cache info (V1 pattern)
+    // Cache info - now using React Query
     isShowingCached: boolean;
     cacheAge: number | null;
-    clearProductsCache: () => void;
-    clearStoresCache: () => void;
-    clearAllCaches: () => void;
+    invalidateProductsCache: () => void;
+    invalidateStoresCache: () => void;
+    invalidateAllCaches: () => void;
 }
 
 const MallOrderCreateContext = createContext<MallOrderCreateContextValue | null>(null);
@@ -264,31 +263,8 @@ const ITEMS_PER_PAGE = 20;
 const STORES_PATH = 'public/mall/stores';
 const PRODUCTS_PATH = 'public/mall/products';
 
-// Cache configuration (matching V1 useProductsCache)
-const CACHE_DURATION = 10 * 60 * 1000; // 10 minutes
-const PRODUCTS_CACHE_KEY = 'mall.products.cache';
-const STORES_CACHE_KEY = 'mall.stores.cache';
-
-// Cached data interface
-interface CachedProductsData {
-    products: IMallProduct[];
-    lastFetch: number;
-    searchHistory: string[];
-    filters: any;
-}
-
-// Paginated products cache (for horizontal infinite scroll)
-interface PaginatedProductsCache {
-    pages: Record<number, IMallProduct[]>; // page number -> products
-    totalCount: number;
-    totalPages: number;
-    lastFetch: Record<number, number>; // page number -> timestamp
-}
-
-interface CachedStoresData {
-    stores: IStore[];
-    lastFetch: number;
-}
+// Note: Caching is now handled by React Query via useMallDataQueries hooks.
+// See MALL_CACHE_CONFIG in ../hooks/useMallDataQueries.ts for cache settings.
 
 interface MallOrderCreateProviderProps extends PropsWithChildren {
     storesPath?: string;
@@ -303,24 +279,9 @@ export const MallOrderCreateProvider: React.FC<MallOrderCreateProviderProps> = (
     productsField = 'products',
 }) => {
     const dataProvider = useDataProvider();
-    const dispatch = useDispatch();
     const axios = useAxios();
     const notify = useNotify();
     const translate = useTranslate();
-    
-    // Redux cached data selectors (V1 caching pattern)
-    const cachedProducts = useSelector((state: IDASHAppState<any, any, any>) =>
-        state.componentData?.[PRODUCTS_CACHE_KEY] as CachedProductsData | undefined
-    );
-    const cachedStores = useSelector((state: IDASHAppState<any, any, any>) =>
-        state.componentData?.[STORES_CACHE_KEY] as CachedStoresData | undefined
-    );
-    
-    // Check if caches are valid
-    const isProductsCacheValid = cachedProducts?.lastFetch && 
-        (Date.now() - cachedProducts.lastFetch) < CACHE_DURATION;
-    const isStoresCacheValid = cachedStores?.lastFetch && 
-        (Date.now() - cachedStores.lastFetch) < CACHE_DURATION;
     
     // Get form context for syncing cart with form
     let formContext: ReturnType<typeof useFormContext> | null = null;
@@ -334,18 +295,66 @@ export const MallOrderCreateProvider: React.FC<MallOrderCreateProviderProps> = (
     // Ref to track if we're updating form to prevent infinite loops
     const isUpdatingFormRef = useRef(false);
     
-    // Store state
-    const [stores, setStores] = useState<IStore[]>([]);
-    const [isLoadingStores, setIsLoadingStores] = useState(true);
+    // Store state - using React Query hook for caching and deduplication
     const [selectedStore, setSelectedStore] = useState<IStore | null>(null);
     const [showFeaturedOnly, setShowFeaturedOnly] = useState(false);
     
-    // Products state
+    // =====================================
+    // REACT QUERY HOOKS FOR DATA FETCHING
+    // =====================================
+    
+    // Stores - fetched once and cached via React Query
+    const { 
+        stores, 
+        isLoading: isLoadingStores,
+        refetch: refetchStores,
+    } = useMallStores(storesPath, {
+        enabled: true,
+        staleTime: MALL_CACHE_CONFIG.staleTime,
+        gcTime: MALL_CACHE_CONFIG.gcTime,
+    });
+    
+    // Products - fetched based on selected store and filters, cached via React Query
+    // Note: searchQuery is handled separately to allow debouncing
+    const { 
+        products: queriedProducts, 
+        isLoading: isLoadingProducts,
+        isFetching: isFetchingProducts,
+        refetch: refetchProducts,
+    } = useMallProducts(productsPath, {
+        enabled: true,
+        selectedStoreId: selectedStore?.id ?? null,
+        showFeaturedOnly,
+        staleTime: MALL_CACHE_CONFIG.staleTime,
+        gcTime: MALL_CACHE_CONFIG.gcTime,
+    });
+    
+    // Sync queried products to local state for filtering/pagination
     const [allProducts, setAllProducts] = useState<IMallProduct[]>([]);
-    const [isLoadingProducts, setIsLoadingProducts] = useState(false);
+    const lastProductsSyncHashRef = useRef<string>('');
+    
+    // Update allProducts when queriedProducts changes
+    useEffect(() => {
+        if (queriedProducts && queriedProducts.length > 0) {
+            // Generate a quick hash to detect actual product changes
+            const newHash = `${queriedProducts.slice(0, 5).map(p => p.id).join(',')}-${queriedProducts.length}`;
+            
+            if (lastProductsSyncHashRef.current !== newHash) {
+                console.log('📦 React Query products synced to allProducts:', {
+                    count: queriedProducts.length,
+                    previousHash: lastProductsSyncHashRef.current,
+                    newHash
+                });
+                lastProductsSyncHashRef.current = newHash;
+                setAllProducts(queriedProducts);
+            }
+        }
+    }, [queriedProducts]);
+    
+    // Products state for local pagination
     const [currentPage, setCurrentPage] = useState(1);
     
-    // Search state
+    // Search state - separate from main products query for debouncing
     const [searchQuery, setSearchQuery] = useState('');
     const [isSearching, setIsSearching] = useState(false);
     
@@ -401,231 +410,98 @@ export const MallOrderCreateProvider: React.FC<MallOrderCreateProviderProps> = (
     // Assistance state
     const [isAssistanceLoading, setIsAssistanceLoading] = useState(false);
     
-    // Load stores on mount - with caching
-    useEffect(() => {
-        const loadStores = async () => {
-            // Check cache first
-            if (isStoresCacheValid && cachedStores?.stores?.length) {
-                console.log('📦 Using cached stores:', cachedStores.stores.length);
-                setStores(cachedStores.stores);
-                setIsLoadingStores(false);
-                return;
-            }
-            
-            try {
-                const response = await dataProvider.getList(storesPath, {
-                    pagination: { page: 1, perPage: 100 },
-                    sort: { field: 'name', order: 'ASC' },
-                    filter: {},
-                });
-                const storesData = response.data as IStore[];
-                setStores(storesData);
-                
-                // Update cache
-                dispatch(DASH_REDUX_ACTIONS.setComponentData(STORES_CACHE_KEY, {
-                    stores: storesData,
-                    lastFetch: Date.now(),
-                } as CachedStoresData));
-                console.log('💾 Stores cached:', storesData.length);
-            } catch (error) {
-                console.error('Error loading stores:', error);
-                notify('Error loading stores', { type: 'error' });
-            } finally {
-                setIsLoadingStores(false);
-            }
-        };
-        
-        loadStores();
-    }, [dataProvider, storesPath, notify, isStoresCacheValid, cachedStores, dispatch]);
-    
-    // Load products when store selection changes - with caching (V1 pattern)
-    useEffect(() => {
-        const loadProducts = async () => {
-            const filter: any = {
-                is_enabled: true,
-                mall_listed: true,
-                load_gallery: true,
-                load_modifier_groups: true,
-                load_prices: true,
-            };
-            
-            if (selectedStore) {
-                filter.tenant_ids = [selectedStore.id];
-            }
-            
-            // Add featured filter when showFeaturedOnly is true
-            if (showFeaturedOnly) {
-                filter.featured = true;
-            }
-            
-            // Create a cache key based on filter
-            const filterKey = JSON.stringify(filter);
-            
-            // Check if we have valid cached data for this filter
-            const isSameFilter = cachedProducts?.filters && 
-                JSON.stringify(cachedProducts.filters) === filterKey;
-            
-            if (isProductsCacheValid && cachedProducts?.products?.length && isSameFilter) {
-                console.log('📦 Using cached products:', cachedProducts.products.length);
-                setAllProducts(cachedProducts.products);
-                setIsLoadingProducts(false);
-                return;
-            }
-            
-            setIsLoadingProducts(true);
-            setCurrentPage(1);
-            
-            try {
-                const response = await dataProvider.getList(productsPath, {
-                    pagination: { page: 1, perPage: 200 },
-                    sort: { field: 'featured', order: 'DESC' },
-                    filter,
-                });
-                
-                // Sort products: featured first, then by name
-                const sortedProducts = [...response.data].sort((a: any, b: any) => {
-                    if (a.featured && !b.featured) return -1;
-                    if (!a.featured && b.featured) return 1;
-                    return a.name.localeCompare(b.name);
-                });
-                
-                setAllProducts(sortedProducts as IMallProduct[]);
-                
-                // Update cache (V1 pattern)
-                dispatch(DASH_REDUX_ACTIONS.setComponentData(PRODUCTS_CACHE_KEY, {
-                    products: sortedProducts,
-                    lastFetch: Date.now(),
-                    searchHistory: cachedProducts?.searchHistory || [],
-                    filters: filter,
-                } as CachedProductsData));
-                console.log('💾 Products cached:', sortedProducts.length);
-            } catch (error) {
-                console.error('Error loading products:', error);
-                notify('Error loading products', { type: 'error' });
-            } finally {
-                setIsLoadingProducts(false);
-            }
-        };
-        
-        loadProducts();
-    }, [dataProvider, productsPath, selectedStore, notify, isProductsCacheValid, cachedProducts, dispatch, showFeaturedOnly]);
+    // =====================================
+    // DATA FETCHING - Now handled by React Query hooks
+    // See useMallStores and useMallProducts hooks above.
+    // React Query provides:
+    // - Request deduplication (no duplicate requests while one is in-flight)
+    // - Caching with configurable staleTime and gcTime
+    // - Automatic refetch when dependencies change
+    // =====================================
     
     // =====================================
     // CAROUSEL PAGINATION FUNCTIONS
     // =====================================
     
-    // Load a specific carousel page from API
-    const loadCarouselPage = useCallback(async (page: number): Promise<IMallProduct[]> => {
-        // Check if already loaded
+    // Load a specific carousel page from cached products (no API call)
+    const loadCarouselPage = useCallback((page: number): IMallProduct[] => {
+        // Check if already cached in carousel state
         if (carouselPages[page] && carouselPages[page].length > 0) {
             console.log(`📦 Using cached carousel page ${page}`);
             return carouselPages[page];
         }
         
-        const filter: any = {
-            is_enabled: true,
-            mall_listed: true,
-            load_gallery: true,
-            load_modifier_groups: true,
-            load_prices: true,
-        };
-        
-        if (selectedStore) {
-            filter.tenant_ids = [selectedStore.id];
+        // If we don't have products from React Query yet, return empty
+        if (!queriedProducts || queriedProducts.length === 0) {
+            console.log(`⏳ Waiting for products to load for page ${page}...`);
+            return [];
         }
-        
-        // Add featured filter when showFeaturedOnly is true
-        if (showFeaturedOnly) {
-            filter.featured = true;
-        }
-        
-        console.log(`🔄 Loading carousel page ${page}...`, { showFeaturedOnly, filter });
-        
-        const response = await dataProvider.getList(productsPath, {
-            pagination: { page, perPage: ITEMS_PER_PAGE },
-            sort: { field: 'featured', order: 'DESC' },
-            filter,
-        });
         
         // Sort products: featured first, then by name
-        const sortedProducts = [...response.data].sort((a: any, b: any) => {
+        const sortedProducts = [...queriedProducts].sort((a: any, b: any) => {
             if (a.featured && !b.featured) return -1;
             if (!a.featured && b.featured) return 1;
             return a.name.localeCompare(b.name);
         }) as IMallProduct[];
         
-        // Update total count and pages from response
-        const total = response.total || response.data.length;
+        // Calculate page slice
+        const startIndex = (page - 1) * ITEMS_PER_PAGE;
+        const endIndex = startIndex + ITEMS_PER_PAGE;
+        const pageProducts = sortedProducts.slice(startIndex, endIndex);
+        
+        // Update total count and pages
+        const total = sortedProducts.length;
         setCarouselTotalCount(total);
         setCarouselTotalPages(Math.ceil(total / ITEMS_PER_PAGE));
         
         // Cache the page
         setCarouselPages(prev => ({
             ...prev,
-            [page]: sortedProducts,
+            [page]: pageProducts,
         }));
         carouselLoadedPagesRef.current.add(page);
         
-        console.log(`✅ Carousel page ${page} loaded: ${sortedProducts.length} products (total: ${total})`);
+        console.log(`✅ Carousel page ${page} loaded from cache: ${pageProducts.length} products (total: ${total})`);
         
-        return sortedProducts;
-    }, [dataProvider, productsPath, selectedStore, carouselPages, showFeaturedOnly]);
+        return pageProducts;
+    }, [queriedProducts, carouselPages]);
     
-    // Preload adjacent pages for smooth scrolling
-    const preloadAdjacentPages = useCallback(async (currentPage: number) => {
+    // Preload adjacent pages for smooth scrolling (now synchronous since we use cached data)
+    const preloadAdjacentPages = useCallback((currentPage: number) => {
         const pagesToLoad = [currentPage - 1, currentPage + 1].filter(
             p => p >= 1 && p <= carouselTotalPages && !carouselLoadedPagesRef.current.has(p)
         );
         
         for (const page of pagesToLoad) {
-            try {
-                await loadCarouselPage(page);
-            } catch (error) {
-                console.warn(`Failed to preload carousel page ${page}:`, error);
-            }
+            loadCarouselPage(page);
         }
     }, [carouselTotalPages, loadCarouselPage]);
     
-    // Load next carousel page
-    const loadNextCarouselPage = useCallback(async () => {
-        if (isLoadingCarouselPage || carouselCurrentPage >= carouselTotalPages) {
+    // Load next carousel page (now synchronous)
+    const loadNextCarouselPage = useCallback(() => {
+        if (carouselCurrentPage >= carouselTotalPages) {
             return;
         }
         
-        setIsLoadingCarouselPage(true);
-        try {
-            const nextPage = carouselCurrentPage + 1;
-            await loadCarouselPage(nextPage);
-            setCarouselCurrentPage(nextPage);
-            
-            // Preload next adjacent page
-            preloadAdjacentPages(nextPage);
-        } catch (error) {
-            console.error('Error loading next carousel page:', error);
-            notify('Error loading more products', { type: 'error' });
-        } finally {
-            setIsLoadingCarouselPage(false);
-        }
-    }, [isLoadingCarouselPage, carouselCurrentPage, carouselTotalPages, loadCarouselPage, preloadAdjacentPages, notify]);
+        const nextPage = carouselCurrentPage + 1;
+        loadCarouselPage(nextPage);
+        setCarouselCurrentPage(nextPage);
+        
+        // Preload next adjacent page
+        preloadAdjacentPages(nextPage);
+    }, [carouselCurrentPage, carouselTotalPages, loadCarouselPage, preloadAdjacentPages]);
     
-    // Load previous carousel page (for prepending)
-    const loadPrevCarouselPage = useCallback(async () => {
-        if (isLoadingCarouselPage || carouselCurrentPage <= 1) {
+    // Load previous carousel page (now synchronous)
+    const loadPrevCarouselPage = useCallback(() => {
+        if (carouselCurrentPage <= 1) {
             return;
         }
         
         const loadingPage = Math.min(...Array.from(carouselLoadedPagesRef.current));
         if (loadingPage <= 1) return;
         
-        setIsLoadingCarouselPage(true);
-        try {
-            await loadCarouselPage(loadingPage - 1);
-        } catch (error) {
-            console.error('Error loading previous carousel page:', error);
-        } finally {
-            setIsLoadingCarouselPage(false);
-        }
-    }, [isLoadingCarouselPage, carouselCurrentPage, loadCarouselPage]);
+        loadCarouselPage(loadingPage - 1);
+    }, [carouselCurrentPage, loadCarouselPage]);
     
     // Reset carousel pagination (when store changes)
     const resetCarouselPagination = useCallback(() => {
@@ -634,6 +510,7 @@ export const MallOrderCreateProvider: React.FC<MallOrderCreateProviderProps> = (
         setCarouselTotalPages(1);
         setCarouselTotalCount(0);
         carouselLoadedPagesRef.current.clear();
+        lastProductsHashRef.current = ''; // Reset hash to allow re-initialization
     }, []);
     
     // Merged carousel products from all loaded pages
@@ -672,116 +549,101 @@ export const MallOrderCreateProvider: React.FC<MallOrderCreateProviderProps> = (
         return carouselCurrentPage < carouselTotalPages;
     }, [carouselCurrentPage, carouselTotalPages]);
     
-    // Initialize carousel on mount or store change
+    // Ref to track the last products hash to detect actual content changes
+    const lastProductsHashRef = useRef<string>('');
+    
+    // Generate a simple hash from product IDs to detect content changes
+    const getProductsHash = useCallback((products: IMallProduct[]): string => {
+        if (!products || products.length === 0) return '';
+        // Use first 10 product IDs + count as a quick hash
+        const ids = products.slice(0, 10).map(p => p.id).join(',');
+        return `${ids}-${products.length}`;
+    }, []);
+    
+    // Initialize carousel/grid from React Query products (no API call needed)
+    // This runs for both horizontal and infinite modes to keep carouselProducts in sync
     useEffect(() => {
-        const initCarousel = async () => {
-            if (paginationMode !== 'horizontal') return;
-            
-            // Reset state
-            setCarouselPages({});
-            setCarouselCurrentPage(1);
-            setCarouselTotalPages(1);
-            setCarouselTotalCount(0);
-            carouselLoadedPagesRef.current.clear();
-            setIsLoadingCarouselPage(true);
-            
-            try {
-                // Build filter
-                const filter: any = {
-                    is_enabled: true,
-                    mall_listed: true,
-                    load_gallery: true,
-                    load_modifier_groups: true,
-                    load_prices: true,
-                };
-                
-                if (selectedStore) {
-                    filter.tenant_ids = [selectedStore.id];
-                }
-                
-                // Add featured filter when showFeaturedOnly is true
-                if (showFeaturedOnly) {
-                    filter.featured = true;
-                }
-                
-                console.log('🔄 Initializing carousel, loading page 1...', { showFeaturedOnly, filter });
-                
-                const response = await dataProvider.getList(productsPath, {
-                    pagination: { page: 1, perPage: ITEMS_PER_PAGE },
-                    sort: { field: 'featured', order: 'DESC' },
-                    filter,
-                });
-                
-                // Sort products: featured first, then by name
-                const sortedProducts = [...response.data].sort((a: any, b: any) => {
-                    if (a.featured && !b.featured) return -1;
-                    if (!a.featured && b.featured) return 1;
-                    return a.name.localeCompare(b.name);
-                }) as IMallProduct[];
-                
-                // Update total count and pages from response
-                const total = response.total || response.data.length;
-                setCarouselTotalCount(total);
-                setCarouselTotalPages(Math.ceil(total / ITEMS_PER_PAGE));
-                
-                // Cache the page
-                setCarouselPages({ 1: sortedProducts });
-                carouselLoadedPagesRef.current.add(1);
-                
-                console.log(`✅ Carousel initialized: ${sortedProducts.length} products (total: ${total})`);
-                
-            } catch (error) {
-                console.error('Error initializing carousel:', error);
-            } finally {
-                setIsLoadingCarouselPage(false);
-            }
-        };
+        if (!queriedProducts || queriedProducts.length === 0) return;
         
-        initCarousel();
-    }, [paginationMode, selectedStore, dataProvider, productsPath, showFeaturedOnly]);
+        // Generate hash of current products
+        const currentHash = getProductsHash(queriedProducts);
+        
+        // Skip if products haven't actually changed
+        if (lastProductsHashRef.current === currentHash) {
+            console.log('📦 Products: unchanged, skipping update');
+            return;
+        }
+        
+        console.log(`🔄 Initializing products for ${paginationMode} mode...`, { 
+            productsCount: queriedProducts.length,
+            showFeaturedOnly,
+            previousHash: lastProductsHashRef.current,
+            newHash: currentHash,
+            paginationMode
+        });
+        
+        // Sort products: featured first, then by name
+        const sortedProducts = [...queriedProducts].sort((a: any, b: any) => {
+            if (a.featured && !b.featured) return -1;
+            if (!a.featured && b.featured) return 1;
+            return a.name.localeCompare(b.name);
+        }) as IMallProduct[];
+        
+        const total = sortedProducts.length;
+        
+        // For infinite mode, load all products; for horizontal mode, paginate
+        if (paginationMode === 'infinite') {
+            // Load all products at once for infinite scroll
+            setCarouselPages({ 1: sortedProducts });
+            setCarouselCurrentPage(1);
+            setCarouselTotalCount(total);
+            setCarouselTotalPages(1); // All on one "page"
+            carouselLoadedPagesRef.current.clear();
+            carouselLoadedPagesRef.current.add(1);
+            
+            console.log(`✅ Infinite grid initialized: ${sortedProducts.length} products`);
+        } else {
+            // Horizontal carousel: paginate
+            const firstPageProducts = sortedProducts.slice(0, ITEMS_PER_PAGE);
+            
+            setCarouselPages({ 1: firstPageProducts });
+            setCarouselCurrentPage(1);
+            setCarouselTotalCount(total);
+            setCarouselTotalPages(Math.ceil(total / ITEMS_PER_PAGE));
+            carouselLoadedPagesRef.current.clear();
+            carouselLoadedPagesRef.current.add(1);
+            
+            console.log(`✅ Carousel initialized: ${firstPageProducts.length} products (total: ${total})`);
+        }
+        
+        // Update hash to track this set of products
+        lastProductsHashRef.current = currentHash;
+        
+    }, [paginationMode, queriedProducts, showFeaturedOnly, getProductsHash]);
+    
+    // Ref to track last search query to avoid duplicate processing
+    const lastProcessedSearchRef = useRef<string>('');
     
     // Backend search effect - debounced search query triggers API call
+    // Only makes API call for actual searches, not for clearing
     useEffect(() => {
-        // If search is cleared, reload original products
+        // If search is cleared, use cached products from React Query
         if (!searchQuery.trim()) {
-            // Trigger a reload of products without search filter
-            const reloadProducts = async () => {
-                console.log('🔄 Search cleared, reloading products...');
+            if (lastProcessedSearchRef.current !== '') {
+                console.log('🔄 Search cleared, using cached products...');
+                lastProcessedSearchRef.current = '';
                 
-                const filter: any = {
-                    is_enabled: true,
-                    mall_listed: true,
-                    load_gallery: true,
-                    load_modifier_groups: true,
-                    load_prices: true,
-                };
-                
-                if (selectedStore) {
-                    filter.tenant_ids = [selectedStore.id];
-                }
-                
-                // Add featured filter when showFeaturedOnly is true
-                if (showFeaturedOnly) {
-                    filter.featured = true;
-                }
-                
-                try {
-                    const response = await dataProvider.getList(productsPath, {
-                        pagination: { page: 1, perPage: 200 },
-                        sort: { field: 'featured', order: 'DESC' },
-                        filter,
-                    });
-                    
-                    const sortedProducts = [...response.data].sort((a: any, b: any) => {
-                        if (a.featured && !b.featured) return -1;
-                        if (!a.featured && b.featured) return 1;
-                        return a.name.localeCompare(b.name);
-                    }) as IMallProduct[];
-                    
-                    setAllProducts(sortedProducts);
+                // Reset to React Query products (already cached)
+                if (queriedProducts && queriedProducts.length > 0) {
+                    setAllProducts(queriedProducts);
                     
                     // Reset carousel if in horizontal mode
                     if (paginationMode === 'horizontal') {
+                        const sortedProducts = [...queriedProducts].sort((a: any, b: any) => {
+                            if (a.featured && !b.featured) return -1;
+                            if (!a.featured && b.featured) return 1;
+                            return a.name.localeCompare(b.name);
+                        });
                         setCarouselPages({ 1: sortedProducts.slice(0, ITEMS_PER_PAGE) });
                         setCarouselCurrentPage(1);
                         setCarouselTotalCount(sortedProducts.length);
@@ -789,20 +651,21 @@ export const MallOrderCreateProvider: React.FC<MallOrderCreateProviderProps> = (
                         carouselLoadedPagesRef.current.clear();
                         carouselLoadedPagesRef.current.add(1);
                     }
-                } catch (error) {
-                    console.error('Error reloading products:', error);
                 }
-            };
-            
-            // Small delay to avoid race conditions
-            const timer = setTimeout(reloadProducts, 100);
-            return () => clearTimeout(timer);
+            }
+            return;
+        }
+        
+        // Avoid duplicate processing of same search
+        if (lastProcessedSearchRef.current === searchQuery.trim()) {
+            return;
         }
         
         // Debounce backend search (500ms after local filter already applied)
         setIsSearching(true);
         const searchTimer = setTimeout(async () => {
             console.log('🔍 Backend search for:', searchQuery);
+            lastProcessedSearchRef.current = searchQuery.trim();
             
             const filter: any = {
                 is_enabled: true,
@@ -862,7 +725,7 @@ export const MallOrderCreateProvider: React.FC<MallOrderCreateProviderProps> = (
             clearTimeout(searchTimer);
             setIsSearching(false);
         };
-    }, [searchQuery, selectedStore, dataProvider, productsPath, paginationMode, showFeaturedOnly]);
+    }, [searchQuery, selectedStore, dataProvider, productsPath, paginationMode, showFeaturedOnly, queriedProducts]);
 
     // Filter products by search query and featured filter
     const filteredProducts = useMemo(() => {
@@ -1317,14 +1180,15 @@ export const MallOrderCreateProvider: React.FC<MallOrderCreateProviderProps> = (
         getProductPrice,
         getProductCurrency,
         
-        // Cache info (V1 pattern)
-        isShowingCached: isProductsCacheValid && !isLoadingProducts,
-        cacheAge: cachedProducts?.lastFetch ? Date.now() - cachedProducts.lastFetch : null,
-        clearProductsCache: () => dispatch(DASH_REDUX_ACTIONS.setComponentData(PRODUCTS_CACHE_KEY, undefined)),
-        clearStoresCache: () => dispatch(DASH_REDUX_ACTIONS.setComponentData(STORES_CACHE_KEY, undefined)),
-        clearAllCaches: () => {
-            dispatch(DASH_REDUX_ACTIONS.setComponentData(PRODUCTS_CACHE_KEY, undefined));
-            dispatch(DASH_REDUX_ACTIONS.setComponentData(STORES_CACHE_KEY, undefined));
+        // Cache info - now using React Query
+        // React Query handles caching automatically based on staleTime/gcTime
+        isShowingCached: !isFetchingProducts && queriedProducts.length > 0,
+        cacheAge: null, // React Query manages cache age internally
+        invalidateProductsCache: () => refetchProducts(),
+        invalidateStoresCache: () => refetchStores(),
+        invalidateAllCaches: () => {
+            refetchStores();
+            refetchProducts();
         },
     };
     
