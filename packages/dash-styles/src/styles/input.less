@@ -1,107 +1,219 @@
-@input-color: @primary-color;
+// Input Component Styles
+// Supports theme switching with data-theme="light" or data-theme="dark"
 
+// Autofill styles for webkit browsers
 input:-webkit-autofill,
 input:-webkit-autofill:hover,
 input:-webkit-autofill:focus,
 input:-webkit-autofill:active {
-    transition: background-color 5000s ease-in-out 0s;
+  transition: background-color 5000s ease-in-out 0s;
+  -webkit-text-fill-color: var(--text-color, @text-color) !important;
+  -webkit-box-shadow: 0 0 0px 1000px var(--component-bg, @component-bg) inset !important;
+  background-color: var(--component-bg, @component-bg) !important;
+  border-color: var(--component-border, @component-border) !important;
 }
 
 .MuiAutocomplete-inputRoot {
-    flex-wrap: nowrap !important;
+  flex-wrap: nowrap !important;
 }
 
-.MuiInputBase-colorPrimary{
-    //background-color: var(--component-bg, @component-bg);
-    //border-color: var(--component-border, @component-border);
-    //color: var(--component-text, @component-text);
-    fieldset{
-        border-radius: 6px;
-        border-color: var(--component-border, @component-border) !important;
-        border-width: 1px !important;
-        box-shadow: 2px 2px var(--component-shadow, @component-shadow);
-        transition: all 0.4s;
+// Material-UI Input Base styling
+.MuiInputBase-colorPrimary {
+  color: var(--text-color, @text-color) !important;
+
+  fieldset {
+    border-radius: 6px;
+    border-color: var(--component-border, @component-border) !important;
+    border-width: 1px !important;
+    box-shadow: 2px 2px var(--component-shadow, @component-shadow);
+    transition: all 0.4s;
+  }
+
+  input, .MuiSelect-select {
+    width: 100%;
+    min-width: 0;
+    border-radius: 6px;
+    font-family: 'Montserrat';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 24px;
+    color: var(--text-color, @text-color) !important;
+
+    // Placeholder styling for all browsers
+    &::placeholder,
+    &::-webkit-input-placeholder,
+    &::-moz-placeholder,
+    &:-ms-input-placeholder,
+    &::-ms-input-placeholder {
+      color: var(--text-light, @text-light) !important;
+      opacity: 0.7 !important;
     }
-    input, .MuiSelect-select{
-        width: 100%;
-        min-width: 0;
-        border-radius: 6px;
-        font-family: 'Montserrat';
-        font-style: normal;
-        font-weight: 400;
-        font-size: 16px;
-        line-height: 24px;
-        //color: var(--text-light, @text-light);
+
+    // Focus state
+    &:focus {
+      color: var(--text-color, @text-color) !important;
     }
-    &:hover{
-        fieldset{
-            box-shadow: 2px 2px var(--component-hover-bg, @component-hover-bg);
-        }
+
+    // Disabled state
+    &:disabled {
+      color: var(--disabled-color, @disabled-color) !important;
+      background-color: var(--disabled-bg, @disabled-bg) !important;
     }
+  }
+
+  &:hover {
+    fieldset {
+      box-shadow: 2px 2px var(--component-hover-bg, @component-hover-bg);
+    }
+  }
+
+  // Focus state
+  &.Mui-focused {
+    fieldset {
+      border-color: var(--primary-color, @primary-color) !important;
+      border-width: 2px !important;
+    }
+  }
+
+  // Error state
+  &.Mui-error {
+    fieldset {
+      border-color: var(--error-color, @error-color) !important;
+    }
+  }
+
+  // Disabled state
+  &.Mui-disabled {
+    fieldset {
+      border-color: var(--disabled-border, @disabled-border) !important;
+    }
+  }
 }
 
-.MuiFormLabel-colorPrimary{
-    //color: var(--text-light, @text-light);
-    &.Mui-focused{
-        //color: var(--primary-color, @primary-color) !important;
-    }
+// Form label styling
+.MuiFormLabel-root {
+  color: var(--text-color, @text-color) !important;
+
+  &.Mui-focused {
+    color: var(--primary-color, @primary-color) !important;
+  }
+
+  &.Mui-disabled {
+    color: var(--disabled-color, @disabled-color) !important;
+  }
+
+  &.Mui-error {
+    color: var(--error-color, @error-color) !important;
+  }
 }
 
-.input-label-top{
-    > .MuiFormLabel-root{
-        position: static;
-        transform: unset;
-        font-family: 'Montserrat';
-        font-style: normal;
-        font-weight: 400;
-        font-size: 14px;
-        line-height: 22px;
-        color: var(--text-color, @text-color);
-    }
-    > .MuiInputBase-root{
-        fieldset{
-            top: 0;
-            legend{
-                display: none;
-            }
-        }
-    }
+.MuiFormLabel-colorPrimary {
+  &.Mui-focused {
+    color: var(--primary-color, @primary-color) !important;
+  }
 }
 
-.select-label{
+// Input label positioning
+.input-label-top {
+  > .MuiFormLabel-root {
     position: static;
     transform: unset;
-    font-family: 'Montserrat' !important;
-    font-style: normal !important;
-    font-weight: 400 !important;
-    font-size: 14px !important;
-    line-height: 22px !important;
-}
-
-.MuiList-root{
-    .MuiMenuItem-root{
-        font-family: 'Montserrat';
-        font-style: normal;
-        font-weight: 400;
-        font-size: 16px;
-        line-height: 24px;
-        color: var(--text-light, @text-light);
-    }
-}
-
-.MuiCheckbox-root{
-    color: var(--primary-color, @primary-color) !important;
-}
-
-.MuiFormLabel-asterisk{
-    color: var(--alert-error-color, @alert-error-color) !important;
-}
-
-.MuiFormControlLabel-label{
     font-family: 'Montserrat';
     font-style: normal;
     font-weight: 400;
     font-size: 14px;
     line-height: 22px;
     color: var(--text-color, @text-color);
+  }
+
+  > .MuiInputBase-root {
+    fieldset {
+      top: 0;
+      legend {
+        display: none;
+      }
+    }
+  }
+}
+
+.select-label {
+  position: static;
+  transform: unset;
+  font-family: 'Montserrat' !important;
+  font-style: normal !important;
+  font-weight: 400 !important;
+  font-size: 14px !important;
+  line-height: 22px !important;
+}
+
+// Menu item styling
+.MuiList-root {
+  .MuiMenuItem-root {
+    font-family: 'Montserrat';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 24px;
+    color: var(--text-light, @text-light);
+  }
+}
+
+// Checkbox styling
+.MuiCheckbox-root {
+  color: var(--primary-color, @primary-color) !important;
+
+  &.Mui-checked {
+    color: var(--primary-color, @primary-color) !important;
+  }
+
+  &.Mui-disabled {
+    color: var(--disabled-color, @disabled-color) !important;
+  }
+}
+
+// Form label asterisk (required field indicator)
+.MuiFormLabel-asterisk {
+  color: var(--error-color, @error-color) !important;
+}
+
+// Form control label text
+.MuiFormControlLabel-label {
+  font-family: 'Montserrat';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 22px;
+  color: var(--text-color, @text-color);
+}
+
+// Theme-specific overrides for placeholder colors
+[data-theme="dark"] {
+  .MuiInputBase-colorPrimary {
+    input, .MuiSelect-select {
+      &::placeholder,
+      &::-webkit-input-placeholder,
+      &::-moz-placeholder,
+      &:-ms-input-placeholder,
+      &::-ms-input-placeholder {
+        //color: var(--text-color--dark, @text-color) !important;
+        opacity: 0.6 !important;
+      }
+    }
+  }
+}
+
+[data-theme="light"] {
+  .MuiInputBase-colorPrimary {
+    input, .MuiSelect-select {
+      &::placeholder,
+      &::-webkit-input-placeholder,
+      &::-moz-placeholder,
+      &:-ms-input-placeholder,
+      &::-ms-input-placeholder {
+        //color: var(--text-color--light, @text--light) !important;
+        opacity: 0.7 !important;
+      }
+    }
+  }
 }
