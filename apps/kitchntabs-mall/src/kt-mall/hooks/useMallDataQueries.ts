@@ -2,19 +2,24 @@
  * useMallDataQueries.ts
  * 
  * Custom React Query hooks for mall data fetching with caching and deduplication.
- * These hooks leverage React Query (integrated in React-Admin) for:
+ * These hooks leverage React-Admin's useGetList hook which internally uses React Query.
+ * 
+ * IMPORTANT: We use useGetList from 'react-admin' instead of useQuery from '@tanstack/react-query'
+ * to ensure we use the same QueryClient instance that React-Admin creates. This prevents
+ * "No QueryClient set" errors in production builds where code splitting may cause
+ * module resolution issues.
+ * 
+ * Features:
  * - Request deduplication (prevents duplicate requests while one is in-flight)
- * - Configurable caching with staleTime and gcTime
+ * - Configurable caching with staleTime
  * - Automatic refetching when dependencies change
  * 
  * Cache Configuration:
  * - staleTime: How long data is considered fresh (no refetch)
- * - gcTime: How long to keep data in cache after unused (garbage collection)
  */
 
-import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { useDataProvider } from 'react-admin';
-import { useCallback, useMemo } from 'react';
+import { useGetList } from 'react-admin';
+import { useCallback, useMemo, useState, useEffect } from 'react';
 import { IMallProduct } from '../contexts/MallOrderCreateContext';
 import { IStore } from '../interfaces/IStore';
 
@@ -55,7 +60,6 @@ export const MALL_CACHE_CONFIG = {
 export interface UseMallStoresOptions {
     enabled?: boolean;
     staleTime?: number;
-    gcTime?: number;
 }
 
 export interface UseMallStoresResult {
@@ -68,10 +72,11 @@ export interface UseMallStoresResult {
 }
 
 /**
- * Hook to fetch mall stores with React Query caching and deduplication.
+ * Hook to fetch mall stores with React-Admin's useGetList hook.
+ * Uses React-Admin's internal QueryClient for proper context management.
  * 
  * @example
- * const { stores, isLoading } = useMallStores({
+ * const { stores, isLoading } = useMallStores('stores', {
  *   enabled: !!mallId,
  *   staleTime: 5 * 60 * 1000, // 5 minutes override
  * });
@@ -80,44 +85,40 @@ export function useMallStores(
     storesPath: string,
     options: UseMallStoresOptions = {}
 ): UseMallStoresResult {
-    const dataProvider = useDataProvider();
-    
     const {
         enabled = true,
         staleTime = MALL_CACHE_CONFIG.staleTime,
-        gcTime = MALL_CACHE_CONFIG.gcTime,
     } = options;
     
-    // Stable query key based on the stores path
-    const queryKey = useMemo(() => 
-        ['mall', 'stores', storesPath],
-        [storesPath]
+    // Use React-Admin's useGetList hook which internally uses React Query
+    // This ensures we use the same QueryClient instance that React-Admin creates
+    const query = useGetList<IStore>(
+        storesPath,
+        {
+            pagination: { page: 1, perPage: 100 },
+            sort: { field: 'name', order: 'ASC' },
+            filter: {},
+        },
+        {
+            enabled,
+            staleTime,
+            refetchOnWindowFocus: MALL_CACHE_CONFIG.refetchOnWindowFocus,
+            refetchOnMount: MALL_CACHE_CONFIG.refetchOnMount,
+            retry: MALL_CACHE_CONFIG.retry,
+            retryDelay: MALL_CACHE_CONFIG.retryDelay,
+        }
     );
     
-    const query = useQuery({
-        queryKey,
-        queryFn: async () => {
-            console.log('🔄 [useMallStores] Fetching stores from API...');
-            const response = await dataProvider.getList(storesPath, {
-                pagination: { page: 1, perPage: 100 },
-                sort: { field: 'name', order: 'ASC' },
-                filter: {},
-            });
-            console.log(`✅ [useMallStores] Loaded ${response.data.length} stores`);
-            return response.data as IStore[];
-        },
-        enabled,
-        staleTime,
-        gcTime,
-        refetchOnWindowFocus: MALL_CACHE_CONFIG.refetchOnWindowFocus,
-        refetchOnMount: MALL_CACHE_CONFIG.refetchOnMount,
-        retry: MALL_CACHE_CONFIG.retry,
-        retryDelay: MALL_CACHE_CONFIG.retryDelay,
-    });
+    // Log when data is fetched (for debugging)
+    useEffect(() => {
+        if (query.data && !query.isPending) {
+            console.log(`✅ [useMallStores] Loaded ${query.data.length} stores`);
+        }
+    }, [query.data, query.isPending]);
     
     return {
         stores: query.data ?? [],
-        isLoading: query.isLoading,
+        isLoading: query.isPending,
         isError: query.isError,
         error: query.error,
         refetch: query.refetch,
@@ -178,8 +179,6 @@ export function useMallProducts(
     productsPath: string,
     options: UseMallProductsOptions = {}
 ): UseMallProductsResult {
-    const dataProvider = useDataProvider();
-    
     const {
         enabled = true,
         staleTime = MALL_CACHE_CONFIG.staleTime,
@@ -214,50 +213,44 @@ export function useMallProducts(
         return f;
     }, [selectedStoreId, showFeaturedOnly, searchQuery]);
     
-    // Stable query key based on path and filter
-    // This ensures different filters get different cache entries
-    const queryKey = useMemo(() => 
-        ['mall', 'products', productsPath, filter],
-        [productsPath, filter]
+    // Use React Admin's useGetList which properly accesses the QueryClient context
+    const query = useGetList<IMallProduct>(
+        productsPath,
+        {
+            pagination: { page: 1, perPage: 200 },
+            sort: { field: 'featured', order: 'DESC' },
+            filter,
+        },
+        {
+            enabled,
+            staleTime,
+            refetchOnWindowFocus: MALL_CACHE_CONFIG.refetchOnWindowFocus,
+            refetchOnMount: MALL_CACHE_CONFIG.refetchOnMount,
+            retry: MALL_CACHE_CONFIG.retry,
+            retryDelay: MALL_CACHE_CONFIG.retryDelay,
+        }
     );
     
-    const query = useQuery({
-        queryKey,
-        queryFn: async () => {
-            console.log('🔄 [useMallProducts] Fetching products from API...', { filter });
-            const response = await dataProvider.getList(productsPath, {
-                pagination: { page: 1, perPage: 200 },
-                sort: { field: 'featured', order: 'DESC' },
-                filter,
-            });
-            
-            // Sort products: featured first, then by name
-            const sortedProducts = [...response.data].sort((a: any, b: any) => {
-                if (a.featured && !b.featured) return -1;
-                if (!a.featured && b.featured) return 1;
-                return a.name.localeCompare(b.name);
-            }) as IMallProduct[];
-            
-            console.log(`✅ [useMallProducts] Loaded ${sortedProducts.length} products`);
-            
-            return {
-                products: sortedProducts,
-                total: response.total ?? sortedProducts.length,
-            };
-        },
-        enabled,
-        staleTime,
-        gcTime,
-        refetchOnWindowFocus: MALL_CACHE_CONFIG.refetchOnWindowFocus,
-        refetchOnMount: MALL_CACHE_CONFIG.refetchOnMount,
-        retry: MALL_CACHE_CONFIG.retry,
-        retryDelay: MALL_CACHE_CONFIG.retryDelay,
-    });
+    // Sort products: featured first, then by name (post-processing)
+    const sortedProducts = useMemo(() => {
+        if (!query.data) return [];
+        
+        console.log('🔄 [useMallProducts] Sorting products...', { count: query.data.length });
+        
+        const sorted = [...query.data].sort((a: IMallProduct, b: IMallProduct) => {
+            if (a.featured && !b.featured) return -1;
+            if (!a.featured && b.featured) return 1;
+            return (a.name || '').localeCompare(b.name || '');
+        });
+        
+        console.log(`✅ [useMallProducts] Loaded ${sorted.length} products`);
+        return sorted;
+    }, [query.data]);
     
     return {
-        products: query.data?.products ?? [],
-        total: query.data?.total ?? 0,
-        isLoading: query.isLoading,
+        products: sortedProducts,
+        total: query.total ?? sortedProducts.length,
+        isLoading: query.isPending,
         isError: query.isError,
         error: query.error,
         refetch: query.refetch,
@@ -295,8 +288,6 @@ export function useMallProductsPage(
     productsPath: string,
     options: UseMallProductsPageOptions
 ): UseMallProductsPageResult {
-    const dataProvider = useDataProvider();
-    
     const {
         enabled = true,
         staleTime = MALL_CACHE_CONFIG.staleTime,
@@ -333,58 +324,50 @@ export function useMallProductsPage(
         return f;
     }, [selectedStoreId, showFeaturedOnly, searchQuery]);
     
-    // Query key includes page number
-    const queryKey = useMemo(() => 
-        ['mall', 'products', 'page', productsPath, filter, page, perPage],
-        [productsPath, filter, page, perPage]
+    // Use React Admin's useGetList which properly accesses the QueryClient context
+    const query = useGetList<IMallProduct>(
+        productsPath,
+        {
+            pagination: { page, perPage },
+            sort: { field: 'featured', order: 'DESC' },
+            filter,
+        },
+        {
+            enabled,
+            staleTime,
+            refetchOnWindowFocus: MALL_CACHE_CONFIG.refetchOnWindowFocus,
+            refetchOnMount: MALL_CACHE_CONFIG.refetchOnMount,
+            retry: MALL_CACHE_CONFIG.retry,
+            retryDelay: MALL_CACHE_CONFIG.retryDelay,
+        }
     );
     
-    const query = useQuery({
-        queryKey,
-        queryFn: async () => {
-            console.log(`🔄 [useMallProductsPage] Fetching page ${page}...`, { filter });
-            const response = await dataProvider.getList(productsPath, {
-                pagination: { page, perPage },
-                sort: { field: 'featured', order: 'DESC' },
-                filter,
-            });
-            
-            // Sort products: featured first, then by name
-            const sortedProducts = [...response.data].sort((a: any, b: any) => {
-                if (a.featured && !b.featured) return -1;
-                if (!a.featured && b.featured) return 1;
-                return a.name.localeCompare(b.name);
-            }) as IMallProduct[];
-            
-            const total = response.total ?? sortedProducts.length;
-            const totalPages = Math.ceil(total / perPage);
-            
-            console.log(`✅ [useMallProductsPage] Page ${page}: ${sortedProducts.length} products (total: ${total})`);
-            
-            return {
-                products: sortedProducts,
-                total,
-                totalPages,
-            };
-        },
-        enabled,
-        staleTime,
-        gcTime,
-        refetchOnWindowFocus: MALL_CACHE_CONFIG.refetchOnWindowFocus,
-        refetchOnMount: MALL_CACHE_CONFIG.refetchOnMount,
-        retry: MALL_CACHE_CONFIG.retry,
-        retryDelay: MALL_CACHE_CONFIG.retryDelay,
-    });
+    // Sort products: featured first, then by name (post-processing)
+    const sortedProducts = useMemo(() => {
+        if (!query.data) return [];
+        
+        console.log(`🔄 [useMallProductsPage] Sorting page ${page}...`, { count: query.data.length });
+        
+        const sorted = [...query.data].sort((a: IMallProduct, b: IMallProduct) => {
+            if (a.featured && !b.featured) return -1;
+            if (!a.featured && b.featured) return 1;
+            return (a.name || '').localeCompare(b.name || '');
+        });
+        
+        console.log(`✅ [useMallProductsPage] Page ${page}: ${sorted.length} products (total: ${query.total})`);
+        return sorted;
+    }, [query.data, page, query.total]);
     
-    const totalPages = query.data?.totalPages ?? 1;
+    const total = query.total ?? sortedProducts.length;
+    const totalPages = Math.ceil(total / perPage);
     
     return {
-        products: query.data?.products ?? [],
-        total: query.data?.total ?? 0,
+        products: sortedProducts,
+        total,
         totalPages,
         hasNextPage: page < totalPages,
         hasPrevPage: page > 1,
-        isLoading: query.isLoading,
+        isLoading: query.isPending,
         isError: query.isError,
         error: query.error,
         refetch: query.refetch,
@@ -398,96 +381,35 @@ export function useMallProductsPage(
 
 /**
  * Hook to get prefetch functions for mall data.
- * Use this to prefetch data before navigation.
  * 
- * @example
- * const { prefetchStores, prefetchProducts } = useMallPrefetch();
+ * NOTE: Prefetching is currently disabled to ensure compatibility with React Admin's
+ * QueryClient management. The useGetList hook already handles caching effectively.
  * 
- * // Prefetch on hover
- * onMouseEnter={() => prefetchProducts(productsPath, { selectedStoreId: store.id })}
+ * If prefetching is needed in the future, consider using React Admin's
+ * <fetchRelated> or implementing via data provider hooks.
+ * 
+ * @deprecated Prefetching disabled - use useGetList caching instead
  */
 export function useMallPrefetch() {
-    const queryClient = useQueryClient();
-    const dataProvider = useDataProvider();
-    
-    const prefetchStores = useCallback(async (storesPath: string) => {
-        const queryKey = ['mall', 'stores', storesPath];
-        
-        await queryClient.prefetchQuery({
-            queryKey,
-            queryFn: async () => {
-                console.log('🔄 [prefetch] Prefetching stores...');
-                const response = await dataProvider.getList(storesPath, {
-                    pagination: { page: 1, perPage: 100 },
-                    sort: { field: 'name', order: 'ASC' },
-                    filter: {},
-                });
-                return response.data as IStore[];
-            },
-            staleTime: MALL_CACHE_CONFIG.staleTime,
-            gcTime: MALL_CACHE_CONFIG.gcTime,
-        });
-    }, [queryClient, dataProvider]);
+    // Return no-op functions to maintain API compatibility
+    const prefetchStores = useCallback(async (_storesPath: string) => {
+        console.log('[useMallPrefetch] Prefetching disabled - using useGetList caching');
+    }, []);
     
     const prefetchProducts = useCallback(async (
-        productsPath: string,
-        options: { selectedStoreId?: number; showFeaturedOnly?: boolean } = {}
+        _productsPath: string,
+        _options: { selectedStoreId?: number; showFeaturedOnly?: boolean } = {}
     ) => {
-        const filter: ProductsFilter = {
-            is_enabled: true,
-            mall_listed: true,
-            load_gallery: true,
-            load_modifier_groups: true,
-            load_prices: true,
-        };
-        
-        if (options.selectedStoreId) {
-            filter.tenant_ids = [options.selectedStoreId];
-        }
-        
-        if (options.showFeaturedOnly) {
-            filter.featured = true;
-        }
-        
-        const queryKey = ['mall', 'products', productsPath, filter];
-        
-        await queryClient.prefetchQuery({
-            queryKey,
-            queryFn: async () => {
-                console.log('🔄 [prefetch] Prefetching products...');
-                const response = await dataProvider.getList(productsPath, {
-                    pagination: { page: 1, perPage: 200 },
-                    sort: { field: 'featured', order: 'DESC' },
-                    filter,
-                });
-                
-                const sortedProducts = [...response.data].sort((a: any, b: any) => {
-                    if (a.featured && !b.featured) return -1;
-                    if (!a.featured && b.featured) return 1;
-                    return a.name.localeCompare(b.name);
-                }) as IMallProduct[];
-                
-                return {
-                    products: sortedProducts,
-                    total: response.total ?? sortedProducts.length,
-                };
-            },
-            staleTime: MALL_CACHE_CONFIG.staleTime,
-            gcTime: MALL_CACHE_CONFIG.gcTime,
-        });
-    }, [queryClient, dataProvider]);
+        console.log('[useMallPrefetch] Prefetching disabled - using useGetList caching');
+    }, []);
     
-    const invalidateStores = useCallback((storesPath: string) => {
-        queryClient.invalidateQueries({ queryKey: ['mall', 'stores', storesPath] });
-    }, [queryClient]);
+    const invalidateStores = useCallback((_storesPath: string) => {
+        console.log('[useMallPrefetch] Cache invalidation disabled - will refresh on next fetch');
+    }, []);
     
-    const invalidateProducts = useCallback((productsPath?: string) => {
-        if (productsPath) {
-            queryClient.invalidateQueries({ queryKey: ['mall', 'products', productsPath] });
-        } else {
-            queryClient.invalidateQueries({ queryKey: ['mall', 'products'] });
-        }
-    }, [queryClient]);
+    const invalidateProducts = useCallback((_productsPath?: string) => {
+        console.log('[useMallPrefetch] Cache invalidation disabled - will refresh on next fetch');
+    }, []);
     
     return {
         prefetchStores,

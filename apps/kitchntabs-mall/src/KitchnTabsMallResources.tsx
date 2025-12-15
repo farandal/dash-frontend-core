@@ -35,7 +35,7 @@ export const KitchnTabsMallResources: ResourceManifest = {
     //mallResources: () => import('./kt-mall/resources/MallResources'),
     
     // Mall App Resources (admin-side mall features)
-    mallAppResources: () => import('./kt-mall/MallAppResources'),
+    //mallAppResources: () => import('./kt-mall/MallAppResources'),
     
     // Mall Client App Resources (public-facing mall features - ordering, etc.)
     mallClientAppResources: () => import('./kt-mall/MallClientAppResourcesV2'),

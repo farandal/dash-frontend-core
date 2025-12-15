@@ -174,12 +174,19 @@ export default ({ mode }) => {
     process.argv.filter((arg) => arg.includes("platform"))
   );
 
-  const isProduction =
+  let isProduction =
     configMode === "production" ||
     mode.includes("production") ||
     process.env.NODE_ENV === "production";
 
-  const isDevelopment = !isProduction;
+  // Overwrite temp
+  isProduction = false;
+
+  let isDevelopment = !isProduction;
+
+
+
+
 
   console.log("Is Production Build:", isProduction);
   console.log("Is Development Build:", isDevelopment);
