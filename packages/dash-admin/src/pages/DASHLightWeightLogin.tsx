@@ -444,6 +444,7 @@ const DASHLightWeightLogin: React.FC<DASHLightWeightLoginProps> = (props) => {
                         //p: isMobile ? 0.5 : 1.5
                     }}
                 >
+                   
                     {!loggedIn ? (
                         <Box>
                             <form
@@ -573,7 +574,7 @@ const DASHLightWeightLogin: React.FC<DASHLightWeightLoginProps> = (props) => {
                                         onClick={() => navigate('/reset-password')}
                                         sx={{ fontSize: isMobile ? '0.75rem' : '0.875rem' }}
                                     >
-                                        Resetear contraseña
+                                        Resetear contraseña A
                                     </Link>
                                 </Box>
                             )}

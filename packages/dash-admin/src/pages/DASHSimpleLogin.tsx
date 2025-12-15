@@ -232,7 +232,7 @@ const DASHLightWeightLogin: React.FC<DASHLightWeightLoginProps> = (props) => {
                                 href='/reset-password'
                                 sx={{ fontSize: '0.875rem' }}
                             >
-                                Resetear contraseña
+                                Resetear contraseña B
                             </Link>
                         </Box>
 
