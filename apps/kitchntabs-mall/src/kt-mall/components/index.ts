@@ -31,6 +31,8 @@ export type {
 // New Mall Order Create Components (Kiosk-style UI)
 export { MallStoreSelector } from './MallStoreSelector';
 export { MallAssistanceButton } from './MallAssistanceButton';
+export { MallAssistanceSuccessDialog } from './MallAssistanceSuccessDialog';
+export type { AssistanceDialogData } from './MallAssistanceSuccessDialog';
 export { MallSearchBox } from './MallSearchBox';
 export { MallProductGrid } from './MallProductGrid';
 export { MallCartSummary, MallCartFloatingButton } from './MallCartSummary';

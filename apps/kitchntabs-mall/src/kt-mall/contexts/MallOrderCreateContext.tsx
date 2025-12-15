@@ -242,6 +242,20 @@ interface MallOrderCreateContextValue {
     // Assistance
     isAssistanceLoading: boolean;
     requestAssistance: () => Promise<void>;
+    // Assistance dialog state
+    isAssistanceDialogOpen: boolean;
+    assistanceDialogData: {
+        store_name: string;
+        customer_name: string;
+        table_number: string;
+        estimated_response_time: string;
+        assistance_available: boolean;
+        remaining_requests?: number;
+    } | null;
+    closeAssistanceDialog: () => void;
+    // Cooldown (key: storeId, value: cooldown end timestamp)
+    assistanceCooldowns: Record<number, number>;
+    getAssistanceCooldownRemaining: (storeId: number) => number;
     
     // Utils (V1-compatible pricing)
     formatPrice: (amount: number | string | undefined | null, currency?: IMallCurrency) => string;
@@ -409,6 +423,30 @@ export const MallOrderCreateProvider: React.FC<MallOrderCreateProviderProps> = (
     
     // Assistance state
     const [isAssistanceLoading, setIsAssistanceLoading] = useState(false);
+    const [isAssistanceDialogOpen, setIsAssistanceDialogOpen] = useState(false);
+    const [assistanceDialogData, setAssistanceDialogData] = useState<{
+        store_name: string;
+        customer_name: string;
+        table_number: string;
+        estimated_response_time: string;
+        assistance_available: boolean;
+        remaining_requests?: number;
+    } | null>(null);
+    // Cooldown: key = storeId, value = timestamp when cooldown ends
+    const [assistanceCooldowns, setAssistanceCooldowns] = useState<Record<number, number>>(() => {
+        // Load from storage on init
+        const stored = dashStorage.getItem('assistance-cooldowns');
+        if (stored) {
+            try {
+                return JSON.parse(stored);
+            } catch {
+                return {};
+            }
+        }
+        return {};
+    });
+    // Default cooldown interval: 5 minutes (configurable)
+    const ASSISTANCE_COOLDOWN_MINUTES = 5;
     
     // =====================================
     // DATA FETCHING - Now handled by React Query hooks
@@ -1052,6 +1090,27 @@ export const MallOrderCreateProvider: React.FC<MallOrderCreateProviderProps> = (
         setIsModifierModalOpen(false);
     }, []);
     
+    // Close assistance dialog
+    const closeAssistanceDialog = useCallback(() => {
+        setIsAssistanceDialogOpen(false);
+        setAssistanceDialogData(null);
+    }, []);
+    
+    // Get remaining cooldown time in seconds for a store
+    const getAssistanceCooldownRemaining = useCallback((storeId: number): number => {
+        const cooldownEnd = assistanceCooldowns[storeId];
+        if (!cooldownEnd) return 0;
+        const remaining = Math.max(0, cooldownEnd - Date.now());
+        return Math.ceil(remaining / 1000);
+    }, [assistanceCooldowns]);
+    
+    // Format remaining time as MM:SS
+    const formatCooldownTime = useCallback((seconds: number): string => {
+        const mins = Math.floor(seconds / 60);
+        const secs = seconds % 60;
+        return `${mins}:${secs.toString().padStart(2, '0')}`;
+    }, []);
+    
     // Request assistance
     const requestAssistance = useCallback(async () => {
         if (!selectedStore) {
@@ -1059,11 +1118,25 @@ export const MallOrderCreateProvider: React.FC<MallOrderCreateProviderProps> = (
             return;
         }
         
+        // Check cooldown
+        const cooldownRemaining = getAssistanceCooldownRemaining(selectedStore.id);
+        if (cooldownRemaining > 0) {
+            notify(
+                translate('tab.assistance.cooldown_remaining', { 
+                    time: formatCooldownTime(cooldownRemaining) 
+                }), 
+                { type: 'warning' }
+            );
+            return;
+        }
+        
         setIsAssistanceLoading(true);
         
         try {
+            // Note: dashStorage.getItem already handles JSON.parse internally
             const orderData = dashStorage.getItem('orderData');
-            const { name, tableNumber } = orderData ? JSON.parse(orderData) : { name: null, tableNumber: null };
+            const name = orderData?.name ?? null;
+            const tableNumber = orderData?.tableNumber ?? null;
             
             if (!name || !tableNumber) {
                 window.dispatchEvent(new CustomEvent('enter-public-order-data', {
@@ -1088,10 +1161,33 @@ export const MallOrderCreateProvider: React.FC<MallOrderCreateProviderProps> = (
                 }
             );
             
-            notify(data.message || translate('mall.assistance_requested'), { type: 'success' });
+            // Set cooldown for this store
+            const cooldownEnd = Date.now() + (ASSISTANCE_COOLDOWN_MINUTES * 60 * 1000);
+            const newCooldowns = {
+                ...assistanceCooldowns,
+                [selectedStore.id]: cooldownEnd,
+            };
+            setAssistanceCooldowns(newCooldowns);
+            // Persist to storage
+            dashStorage.setItem('assistance-cooldowns', JSON.stringify(newCooldowns));
+            
+            // Calculate remaining requests (max 2 per session per store)
+            const remainingRequests = data.data?.assistance_available ? 1 : 0;
+            
+            // Show success dialog with response data
+            setAssistanceDialogData({
+                store_name: data.data?.store_name || selectedStore.name,
+                customer_name: data.data?.customer_name || name,
+                table_number: data.data?.table_number || tableNumber,
+                estimated_response_time: data.data?.estimated_response_time || '2-5 minutos',
+                assistance_available: data.data?.assistance_available ?? true,
+                remaining_requests: remainingRequests,
+            });
+            setIsAssistanceDialogOpen(true);
+            
         } catch (error: any) {
             if (error?.status === 429) {
-                notify(translate('mall.assistance_rate_limit'), { type: 'warning' });
+                notify(translate('tab.assistance.rate_limit'), { type: 'warning' });
             } else if (error?.status === 422) {
                 window.dispatchEvent(new CustomEvent('enter-public-order-data', {
                     detail: {
@@ -1099,12 +1195,12 @@ export const MallOrderCreateProvider: React.FC<MallOrderCreateProviderProps> = (
                     }
                 }));
             } else {
-                notify(error?.message || translate('mall.assistance_error'), { type: 'error' });
+                notify(error?.message || translate('tab.assistance.error_message'), { type: 'error' });
             }
         } finally {
             setIsAssistanceLoading(false);
         }
-    }, [selectedStore, storesPath, axios, notify, translate]);
+    }, [selectedStore, storesPath, axios, notify, translate, assistanceCooldowns, getAssistanceCooldownRemaining, formatCooldownTime]);
     
     const contextValue: MallOrderCreateContextValue = {
         // Stores
@@ -1173,6 +1269,11 @@ export const MallOrderCreateProvider: React.FC<MallOrderCreateProviderProps> = (
         // Assistance
         isAssistanceLoading,
         requestAssistance,
+        isAssistanceDialogOpen,
+        assistanceDialogData,
+        closeAssistanceDialog,
+        assistanceCooldowns,
+        getAssistanceCooldownRemaining,
         
         // Utils (V1-compatible pricing)
         formatPrice,
