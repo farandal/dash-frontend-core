@@ -110,6 +110,7 @@ const MallClientAppResourcesV2: IDashAutoAdminResourceConfig[] = [
         
         // Hide create button in toolbar (we have menu actions)
         toolbarCreateButton: { enabled: false },
+        toolbarSaveButton: { props: { label: "Ordenar >", alwaysEnable:false, /*mutationMode:"optimistic"*/ } },
         
         // Custom list component with progress bars and notifications
         dataGridComponent: MallClientTabsList,
@@ -135,8 +136,9 @@ const MallClientAppResourcesV2: IDashAutoAdminResourceConfig[] = [
         },
         
         // Form configuration
+        //mutationMode: "pessimistic",
         mutationMode: "pessimistic",
-        saveButtonAlwaysEnabled: true,
+        //saveButtonAlwaysEnabled: true,
         processErrors: true,
         exporter: false,
         formGroupMode: "tabs",
@@ -163,6 +165,7 @@ const MallClientAppResourcesV2: IDashAutoAdminResourceConfig[] = [
          * This hook retrieves the stored customer data and adds it to the form values.
          */
         beforeSubmit(values) {
+         
             const orderData = dashStorage.getItem('orderData');
             const { name, tableNumber } = orderData 
                 ? JSON.parse(orderData) 

@@ -9,6 +9,9 @@ import OrderProductsEditRefactored from "../../kt-tabs/components/Tab/OrderProdu
 import OrderProductsMallFilters from "../../kt-tabs/components/Tab/OrderProductsMallFilters";
 import { PaginationMode } from "../../kt-tabs/components/contexts/TabManagerContext";
 
+// Local components for better mall integration
+import LocalOrderProductsView from "./OrderProductsView";
+
 import { useEffect, useState, useCallback, useMemo } from "react";
 
 import { MallCartItemsList } from "./MallCartItemsList";
@@ -31,10 +34,7 @@ const toLocalCurrency = (currency: IMallCurrency | undefined): ILocalCurrency | 
 const ListComponent: React.FC<IDashAutoAdminCustomFieldComponent> = ({ method, attribute, resourceConfig }) => {
     const tab = useRecordContext<ITab>();
 
-    useEffect(() => {
-        debugger;
-    }, []);
-
+  
     return <>{tab.order?.items?.reduce((acc, item) => acc + (item.quantity || 0), 0) || 0}</>
 }
 
@@ -361,9 +361,6 @@ const MallOrderProducts = ({ method, attribute, resourceConfig }: IDashAutoAdmin
                     
                     {/* Cart items list with inline editing */}
                     <Box sx={{ mt: 2, backgroundColor: 'transparent' }} className="kt-mall-order-products-edit-items">
-                        <Typography variant="h6" sx={{ mb: 1, fontWeight: 600 }}>
-                            Order Items
-                        </Typography>
                         <MallOrderEditItems tab={tab} />
                     </Box>
                 </Box>
@@ -371,7 +368,7 @@ const MallOrderProducts = ({ method, attribute, resourceConfig }: IDashAutoAdmin
         case "create":
             return <MallOrderProductsEdit pagination={PaginationMode.INFINITE_SCROLL} method={method} attribute={attribute} resourceConfig={resourceConfig} />
         case "view":
-            return <OrderProductsView useInfiniteScroll={true} showPrice={true} tabsResource="public/mall/tab" productsResource="public/mall/products" attribute={attribute} method={method} resourceConfig={resourceConfig} record={tab} />
+            return <LocalOrderProductsView record={tab} resourceConfig={resourceConfig} attribute={undefined} method={"view"}  />
         case "list":
             return <div className="kt-mall-order-products-list"><ListComponent productsResource="public/mall/products" attribute={attribute} method={method} resourceConfig={resourceConfig} record={tab} /></div>
         default:

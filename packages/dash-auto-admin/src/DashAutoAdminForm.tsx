@@ -13,6 +13,7 @@ import React from 'react';
 import validate from './utils/validate';
 import { ToolbarCreateButton, ToolbarDeleteButton, ToolbarSaveButton } from './toolbar/buttons/ToolbarButtons';
 import { useDataProvider } from 'react-admin';
+import { DashAutoAdminFormProvider } from './context/DashAutoAdminFormContext';
 
 export interface IDashAutoAdminForm {
 	resourceConfig: IDashAutoAdminResourceConfig;
@@ -121,6 +122,7 @@ const DashAutoAdminForm: React.FC<IDashAutoAdminForm> = ({
 			onSave = onUpdateSave;
 			break;
 		case 'create':
+            
 			onSave = onCreateSave;
 			break;
 	}
@@ -134,16 +136,18 @@ const DashAutoAdminForm: React.FC<IDashAutoAdminForm> = ({
 	);
 
 	return (
-		<Box>
-			<SimpleForm
-				toolbar={toolbar || defaultToolbar()}
-				onSubmit={onSave}
-				validate={validate(resourceConfig.schema)}
-                reValidateMode="onBlur"
-			>
-				{children}
-			</SimpleForm>
-		</Box>
+		<DashAutoAdminFormProvider value={{ onSave, mode }}>
+			<Box>
+				<SimpleForm
+					toolbar={toolbar || defaultToolbar()}
+					onSubmit={onSave}
+					validate={validate(resourceConfig.schema)}
+					reValidateMode="onBlur"
+				>
+					{children}
+				</SimpleForm>
+			</Box>
+		</DashAutoAdminFormProvider>
 	);
 };
 

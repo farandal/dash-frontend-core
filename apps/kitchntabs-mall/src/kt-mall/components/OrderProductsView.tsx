@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { CircularProgress, Box } from '@mui/material';
+import { CircularProgress, Box, useTheme, useMediaQuery } from '@mui/material';
 import { useGetOne } from 'react-admin';
 import { IDashAutoAdminCustomFieldComponent } from 'dash-auto-admin';
 // Direct import from local kt-tabs (avoid barrel exports for tree-shaking)
@@ -100,6 +100,8 @@ const formatPrice = (price: number): string => {
 const OrderProductsView: React.FC<IDashAutoAdminCustomFieldComponent> = ({ record, resourceConfig }) => {
     //const tab: ITab = record as ITab;
     const tab: any = record as any;
+    const theme = useTheme();
+    const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
     // Use MallClientTabsContext for WebSocket events
     // This context subscribes to the WebSocket channel and provides lastEvent
@@ -143,48 +145,88 @@ const OrderProductsView: React.FC<IDashAutoAdminCustomFieldComponent> = ({ recor
         <div style={{ backgroundColor: 'transparent' }} className="kt-mall-order-products-view">
             <StoreProgressBars masterTabId={tabData.id} record={tabData} />
 
-            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                <tbody>
-                    {tabData?.order?.items?.map((item) => {
-                        const itemTotal = calculateItemTotal(item);
-                        const unitPrice = parsePrice(item.unit_price || item.price || item.product?.price);
-                        
-                        return (
-                            <tr key={item.id}>
-                                <td style={{ padding: '8px', borderBottom: '1px solid #eee' }}>
-                                    <div style={{ display: 'flex', alignItems: 'center' }}>
-                                        <img
-                                            src={item.product?.image_url || placeholder}
-                                            alt={item.product_name}
-                                            style={{
-                                                width: '40px',
-                                                height: '40px',
-                                                objectFit: 'cover',
-                                                borderRadius: '4px',
-                                                marginRight: '12px'
-                                            }}
-                                        />
-                                        <div>
-                                            <div style={{ fontWeight: 'bold' }}>{item.product_name}</div>
-                                            <div style={{ fontSize: '0.9em', color: '#666' }}>
-                                                {item.quantity > 1 
-                                                    ? `${item.quantity} x ${formatPrice(unitPrice)}`
-                                                    : `Cantidad: ${item.quantity}`
-                                                }
-                                            </div>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td style={{ padding: '8px', borderBottom: '1px solid #eee', textAlign: 'right' }}>
-                                    <div style={{ fontWeight: 'bold' }}>
-                                        {formatPrice(itemTotal)}
-                                    </div>
-                                </td>
-                            </tr>
-                        );
-                    })}
-                </tbody>
-            </table>
+            <Box sx={{ 
+                display: 'flex', 
+                flexDirection: 'column', 
+                gap: isSmallScreen ? 0.25 : 1,
+                mt: isSmallScreen ? 0.5 : 2
+            }}>
+                {tabData?.order?.items?.map((item) => {
+                    const itemTotal = calculateItemTotal(item);
+                    const unitPrice = parsePrice(item.unit_price || item.price || item.product?.price);
+                    
+                    return (
+                        <Box
+                            key={item.id}
+                            sx={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: isSmallScreen ? 0.75 : 1.5,
+                                p: isSmallScreen ? 0.5 : 1.5,
+                                border: '1px solid',
+                                borderColor: 'divider',
+                                borderRadius: 1,
+                                backgroundColor: 'background.paper',
+                                minHeight: isSmallScreen ? 'auto' : 70,
+                            }}
+                        >
+                            {/* Product Image */}
+                            <Box
+                                component="img"
+                                src={item.product?.image_url || item.product?.gallery?.primary_image_url || placeholder}
+                                alt={item.product_name}
+                                sx={{
+                                    width: isSmallScreen ? 32 : 50,
+                                    height: isSmallScreen ? 32 : 50,
+                                    objectFit: 'cover',
+                                    borderRadius: 0.5,
+                                    flexShrink: 0,
+                                }}
+                                onError={(e: any) => {
+                                    e.target.src = placeholder;
+                                }}
+                            />
+                            
+                            {/* Product Details */}
+                            <Box sx={{ flex: 1, minWidth: 0 }}>
+                                <Box sx={{ 
+                                    fontWeight: 'bold',
+                                    fontSize: isSmallScreen ? '0.8rem' : '1rem',
+                                    lineHeight: isSmallScreen ? 1.2 : 1.5,
+                                    overflow: 'hidden',
+                                    textOverflow: 'ellipsis',
+                                    whiteSpace: 'nowrap'
+                                }}>
+                                    {item.product_name}
+                                </Box>
+                                <Box sx={{ 
+                                    fontSize: isSmallScreen ? '0.7rem' : '0.9rem',
+                                    color: 'text.secondary',
+                                    lineHeight: 1.2,
+                                }}>
+                                    <span>x{item.quantity}</span>
+                                    {item.quantity > 1 && (
+                                        <span style={{ marginLeft: 4 }}>
+                                            ({formatPrice(unitPrice)} c/u)
+                                        </span>
+                                    )}
+                                </Box>
+                            </Box>
+                            
+                            {/* Price */}
+                            <Box sx={{ 
+                                fontWeight: 'bold',
+                                fontSize: isSmallScreen ? '0.8rem' : '1rem',
+                                color: 'primary.main',
+                                flexShrink: 0,
+                                textAlign: 'right'
+                            }}>
+                                {formatPrice(itemTotal)}
+                            </Box>
+                        </Box>
+                    );
+                })}
+            </Box>
         </div>
     );
 };

@@ -48,6 +48,10 @@ const MallAppMediator = () => {
       }));
     
       handleClose();
+      
+      // Dispatch event to notify that order data has been saved
+      // This allows components like MallOrderSummaryDrawer to retry form submission
+      window.dispatchEvent(new CustomEvent('order-data-saved'));
     };
 
      const handleEnterPublicOrderData = (event: CustomEvent<CustomEventData>) => {

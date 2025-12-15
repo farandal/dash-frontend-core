@@ -85,7 +85,7 @@ const getDefaultAppCommon = () => {
     const settings =  {
         ...defaultCommon,
         appPath: '/',
-        navExpanded: dashStorage.getItem('dashNavExpanded') ? dashStorage.getItem('dashNavExpanded') === 'true' : true,
+        navExpanded: dashStorage.getItem('dashNavExpanded') ? dashStorage.getItem('dashNavExpanded') === 'true' : false,
         navSize: dashStorage.getItem('dashNavSize') || 'small',       
         width: window.innerWidth,
         height: window.innerHeight,

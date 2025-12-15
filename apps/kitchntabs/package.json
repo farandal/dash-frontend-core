@@ -78,7 +78,7 @@
     "kt-utils": "workspace:*",
     "kt-ecommerce": "workspace:*",
     "kt-tabs": "workspace:*",
-    "kt-mall": "workspace:*",
+
     "kt-cashcount": "workspace:*",
     "kt-kiosk": "workspace:*",
     "kt-pages": "workspace:*"

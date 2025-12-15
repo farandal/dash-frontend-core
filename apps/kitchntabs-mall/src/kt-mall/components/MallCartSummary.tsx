@@ -33,7 +33,8 @@ export const MallCartSummary: React.FC = () => {
     // Get store names for the chips
     const getStoreName = (tenantId: number) => {
         const store = stores.find(s => s.id === tenantId);
-        return store?.name || `Store ${tenantId}`;
+        return store?.name || `🏪 ${tenantId}`;
+    
     };
 
     const handleOpenCart = () => {

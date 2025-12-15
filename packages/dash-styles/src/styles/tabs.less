@@ -1,50 +1,3 @@
-// .ant-tabs{
-//     .ant-tabs-nav-wrap{
-//         padding: 16px 16px 0;
-//         .ant-tabs-nav-list{
-//             .ant-tabs-tab{
-//                 padding: 8px 16px;
-//                 margin: 0 2px 0 0;
-//                 height: 40px;
-//                 background: var(--component-bg, @component-bg);
-//                 border: 1px solid var(--component-border-base, @component-border-base);
-//                 border-radius: 2px 2px 0px 0px;
-//                 font-style: normal;
-//                 font-weight: 400;
-//                 font-size: 16px;
-//                 line-height: 24px;
-//                 color: var(--text-color, @text-color);
-//                 &.ant-tabs-tab-active{
-//                     background: var(--component-active-bg, @component-active-bg);
-//                     border: 1px solid var(--component-border-base, @component-border-base);
-//                     border-radius: 2px 2px 0px 0px;
-//                     color: var(--primary-color, @primary-color);
-//                 }
-//             }
-
-//             .ant-tabs-ink-bar{
-//                 display: none;
-//             }
-//         }
-//     }
-//     .ant-tabs-content{
-//         padding: 8px 16px;
-//     }
-// }
-
-// .tabs-toolbar{
-//     padding: 0 15px 15px;
-//     > div{
-//         display: flex;
-//         align-items: center;
-//         .ant-btn{
-//             margin-right: 10px;
-//         }
-//     }
-// }
-
-//TABS
-
 .dash-module{
     &-box-header{
         background-color: transparent;
@@ -146,6 +99,30 @@
   //margin-bottom: -40px;
 }
 
+
+.dash-auto-admin-tabbed-form {
+  .MuiTabs-scroller{
+      overflow-x: auto !important;
+      overflow-y: hidden;
+  }
+  .MuiTabs-root{
+      .MuiTab-root{
+          display: -moz-box;
+          display: -webkit-box;
+          align-items: center;
+          svg{
+              width: 18px;
+              height: 18px;
+              margin: -3px 5px 0 0 ;
+          }
+      }
+  }
+}
+
+.MuiTabs-root {
+    min-height: auto !important;
+}
+
 @media (max-width: @mq-sm){
     .dash-module{
         &-box-header{
@@ -166,5 +143,16 @@
       }
     }
 
-
+    // MUI Tabs responsive styles for .tabbed-form
+    .tabbed-form {
+        .MuiTabs-root {
+            .MuiTab-root {
+                min-height: 24px;
+                height: 24px;
+                padding: 2px 8px;
+                font-size: 0.75rem;
+                font-weight: 500;
+            }
+        }
+    }
 }

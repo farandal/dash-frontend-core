@@ -40,6 +40,11 @@ const MallClientTabsList: React.FC<IDashAutoAdminDataGrid> = ({ resourceConfig }
             closeOnClick: true,
             pauseOnHover: true,
             draggable: false,
+            style: {
+                fontSize: '0.85rem',
+                padding: '8px 12px',
+                minHeight: 'auto',
+            },
         });
     };
 

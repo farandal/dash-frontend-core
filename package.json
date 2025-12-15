@@ -52,11 +52,13 @@
     "dev:android:kitchntabs:production": "pnpm resources:android && cross-env MODE=production CUSTOM_MODE=kitchntabs.production TARGET_TYPE=mobile PLATFORM=android APP_PATH=apps/kitchntabs NODE_OPTIONS=--max-old-space-size=4048 node build_config.js && turbo build --no-cache && cap run android",
     "release:android:kitchntabs:development": "pnpm config:android:kitchntabs:development && turbo build --filter=kitchntabs-app --no-cache && cap run android",
     "release:android:kitchntabs:production": "pnpm config:android:kitchntabs:production && turbo build --filter=kitchntabs-app --no-cache && cap sync android && cd ./android && ./gradlew bundleRelease",
+    
     "release:android:kitchntabs-mall:development": "pnpm config:android:kitchntabs-mall:development && turbo build --filter=kitchntabs-mall --no-cache && cap run android",
     "release:android:kitchntabs-mall:production": "pnpm config:android:kitchntabs-mall:production && turbo build --filter=kitchntabs-mall --no-cache && cap sync android && cd ./android && ./gradlew bundleRelease",
    
     "release:electron:kitchntabs:production": "pnpm config:electron:kitchntabs:production && node build-python-service.js && electron-icon-builder --input=./assets/logo-squared.png --output=./ && vite build -c electron.vite.config.mts && turbo build --filter=kitchntabs-app --no-cache && cross-env NODE_OPTIONS=--max-old-space-size=8096 node build-electron.js --config electron-builder.config.js",
     "release:electron:kitchntabs:production:force": "pnpm config:electron:kitchntabs:production && cross-env FORCE_PYTHON_REBUILD=true node build-python-service.js --force && electron-icon-builder --input=./assets/logo-squared.png --output=./ && vite build -c electron.vite.config.mts && turbo build --no-cache && cross-env NODE_OPTIONS=--max-old-space-size=8096 node build-electron.js --config electron-builder.config.js",
+    
     "release:electron:kitchntabs:development": "pnpm config:electron:kitchntabs:development && turbo build  --filter=kitchntabs-app  --no-cache &&  node build-python-service.js && electron-icon-builder --input=./assets/logo-squared.png --output=./ && vite build -c electron.vite.config.mts && cross-env NODE_OPTIONS=--max-old-space-size=8096 node build-electron.js --config electron-builder.config.js",
     "release:electron:kitchntabs:development:force": "pnpm config:electron:kitchntabs:development && turbo build --no-cache && cross-env FORCE_PYTHON_REBUILD=true node build-python-service.js --force && electron-icon-builder --input=./assets/logo-squared.png --output=./ && vite build -c electron.vite.config.mts && cross-env NODE_OPTIONS=--max-old-space-size=8096 node build-electron.js --config electron-builder.config.js",
     

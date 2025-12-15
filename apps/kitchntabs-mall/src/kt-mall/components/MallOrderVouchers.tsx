@@ -15,6 +15,8 @@ import {
     DialogTitle,
     DialogContent,
     DialogActions,
+    useMediaQuery,
+    useTheme,
 } from '@mui/material';
 import {
     Download as DownloadIcon,
@@ -29,6 +31,7 @@ import { useAxios } from 'dash-axios-hook';
 import { saveAs } from 'file-saver';
 import { dashStorage } from 'dash-utils';
 import { IDashAutoAdminCustomFieldComponent } from 'dash-auto-admin';
+import PDFViewer from '../../components/misc/PDFViewer';
 
 /**
  * Interface for tenant tab data from the record
@@ -76,7 +79,6 @@ interface VoucherData {
     pdfUrl: string | null;
     loading: boolean;
     error: string | null;
-    isMaster: boolean;
     isViewing: boolean;
 }
 
@@ -93,6 +95,8 @@ interface VoucherData {
 const MallOrderVouchers: React.FC<IDashAutoAdminCustomFieldComponent> = ({ method }) => {
     const record = useRecordContext<MallTabRecord>();
     const axios = useAxios();
+    const theme = useTheme();
+    const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
     
     const [vouchers, setVouchers] = useState<VoucherData[]>([]);
     const [viewDialogOpen, setViewDialogOpen] = useState(false);
@@ -110,7 +114,7 @@ const MallOrderVouchers: React.FC<IDashAutoAdminCustomFieldComponent> = ({ metho
      */
     const buildDownloadUrl = useCallback((tabId: number) => {
         const mallSessionHash = getMallSessionHash();
-        return `public/mall/tab/${tabId}/download-sale-note?mall_session=${mallSessionHash}`;
+        return `public/mall/tab/${tabId}/download-sale-note?mall_session=${mallSessionHash}&regenerate=true`;
     }, [getMallSessionHash]);
 
     /**
@@ -121,22 +125,7 @@ const MallOrderVouchers: React.FC<IDashAutoAdminCustomFieldComponent> = ({ metho
 
         const vouchersList: VoucherData[] = [];
 
-        // Add master tab voucher if available
-        if (record.is_master_tab && record.sale_note_path) {
-            vouchersList.push({
-                tabId: record.id,
-                tenantId: record.tenant_id,
-                tenantName: record.tenant?.name || 'Mall',
-                saleNotePath: record.sale_note_path,
-                pdfUrl: null,
-                loading: false,
-                error: null,
-                isMaster: true,
-                isViewing: false,
-            });
-        }
-
-        // Add tenant tabs vouchers
+        // Add tenant tabs vouchers only (no master voucher)
         if (record.tenant_tabs && Array.isArray(record.tenant_tabs)) {
             record.tenant_tabs.forEach((tenantTab) => {
                 vouchersList.push({
@@ -147,7 +136,6 @@ const MallOrderVouchers: React.FC<IDashAutoAdminCustomFieldComponent> = ({ metho
                     pdfUrl: null,
                     loading: false,
                     error: null,
-                    isMaster: false,
                     isViewing: false,
                 });
             });
@@ -298,19 +286,30 @@ const MallOrderVouchers: React.FC<IDashAutoAdminCustomFieldComponent> = ({ metho
             <Stack spacing={2}>
                 {vouchers.map((voucher, index) => (
                     <Card sx={{backgroundColor:'none'}} key={voucher.tabId} >
-                        <CardContent sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', py: 2 }}>
+                        <CardContent 
+                            sx={{ 
+                                display: 'flex', 
+                                justifyContent: 'space-between', 
+                                py: 2,
+                                flexDirection: isSmallScreen ? 'column' : 'row',
+                                gap: isSmallScreen ? 2 : 0,
+                                alignItems: isSmallScreen ? 'stretch' : 'center',
+                            }}
+                        >
                             {/* Left side - PDF icon and restaurant info */}
                             <Stack direction="row" spacing={2} alignItems="center">
-                                <PdfIcon sx={{ fontSize: 48, color: 'error.main' }} />
+                                <PdfIcon 
+                                    sx={{ 
+                                        fontSize: isSmallScreen ? 32 : 48, 
+                                        color: 'error.main' 
+                                    }} 
+                                />
                                 <Box>
                                     <Stack direction="row" spacing={1} alignItems="center">
                                         <StoreIcon fontSize="small" color="action" />
                                         <Typography variant="subtitle1" fontWeight="bold">
                                             {voucher.tenantName}
                                         </Typography>
-                                        {voucher.isMaster && (
-                                            <Chip label="Principal" size="small" color="primary" />
-                                        )}
                                     </Stack>
                                     <Typography variant="body2" color="text.secondary">
                                         Voucher #{voucher.tabId}
@@ -319,24 +318,77 @@ const MallOrderVouchers: React.FC<IDashAutoAdminCustomFieldComponent> = ({ metho
                             </Stack>
 
                             {/* Right side - Action buttons */}
-                            <Stack direction="row" spacing={1}>
-                                <Button
-                                    variant="outlined"
-                                    size="small"
-                                    startIcon={voucher.loading && viewingVoucherIndex === index ? <CircularProgress size={16} /> : <ViewIcon />}
-                                    onClick={() => viewVoucher(index)}
-                                    disabled={voucher.loading && viewingVoucherIndex === index}
-                                >
-                                    Ver
-                                </Button>
-                                <Button
-                                    variant="contained"
-                                    size="small"
-                                    startIcon={<DownloadIcon />}
-                                    onClick={() => downloadVoucher(voucher)}
-                                >
-                                    Descargar
-                                </Button>
+                            <Stack 
+                                direction="row" 
+                                spacing={1}
+                                sx={{
+                                    width: isSmallScreen ? '100%' : 'auto',
+                                    justifyContent: isSmallScreen ? 'center' : 'flex-end',
+                                }}
+                            >
+                                {isSmallScreen ? (
+                                    // Small screens: Circular icon buttons
+                                    <>
+                                        <IconButton
+                                            color="primary"
+                                            size="small"
+                                            onClick={() => viewVoucher(index)}
+                                            disabled={voucher.loading && viewingVoucherIndex === index}
+                                            sx={{
+                                                bgcolor: 'primary.main',
+                                                color: 'white',
+                                                '&:hover': {
+                                                    bgcolor: 'primary.dark',
+                                                },
+                                                width: 36,
+                                                height: 36,
+                                            }}
+                                        >
+                                            {voucher.loading && viewingVoucherIndex === index ? (
+                                                <CircularProgress size={16} color="inherit" />
+                                            ) : (
+                                                <ViewIcon fontSize="small" />
+                                            )}
+                                        </IconButton>
+                                        <IconButton
+                                            color="primary"
+                                            size="small"
+                                            onClick={() => downloadVoucher(voucher)}
+                                            sx={{
+                                                bgcolor: 'success.main',
+                                                color: 'white',
+                                                '&:hover': {
+                                                    bgcolor: 'success.dark',
+                                                },
+                                                width: 36,
+                                                height: 36,
+                                            }}
+                                        >
+                                            <DownloadIcon fontSize="small" />
+                                        </IconButton>
+                                    </>
+                                ) : (
+                                    // Large screens: Full buttons with text
+                                    <>
+                                        <Button
+                                            variant="outlined"
+                                            size="small"
+                                            startIcon={voucher.loading && viewingVoucherIndex === index ? <CircularProgress size={16} /> : <ViewIcon />}
+                                            onClick={() => viewVoucher(index)}
+                                            disabled={voucher.loading && viewingVoucherIndex === index}
+                                        >
+                                            Ver
+                                        </Button>
+                                        <Button
+                                            variant="contained"
+                                            size="small"
+                                            startIcon={<DownloadIcon />}
+                                            onClick={() => downloadVoucher(voucher)}
+                                        >
+                                            Descargar
+                                        </Button>
+                                    </>
+                                )}
                             </Stack>
                         </CardContent>
                     </Card>
@@ -346,17 +398,41 @@ const MallOrderVouchers: React.FC<IDashAutoAdminCustomFieldComponent> = ({ metho
             {/* Download all button when multiple vouchers */}
             {vouchers.length > 1 && (
                 <Box sx={{ mt: 2, display: 'flex', justifyContent: 'center' }}>
-                    <Button
-                        variant="outlined"
-                        startIcon={<DownloadIcon />}
-                        onClick={() => {
-                            vouchers.forEach((v) => {
-                                downloadVoucher(v);
-                            });
-                        }}
-                    >
-                        Descargar Todos los Vouchers
-                    </Button>
+                    {isSmallScreen ? (
+                        <IconButton
+                            color="primary"
+                            size="large"
+                            onClick={() => {
+                                vouchers.forEach((v) => {
+                                    downloadVoucher(v);
+                                });
+                            }}
+                            sx={{
+                                bgcolor: 'primary.main',
+                                color: 'white',
+                                '&:hover': {
+                                    bgcolor: 'primary.dark',
+                                },
+                                width: 48,
+                                height: 48,
+                            }}
+                            title="Descargar todos los vouchers"
+                        >
+                            <DownloadIcon />
+                        </IconButton>
+                    ) : (
+                        <Button
+                            variant="outlined"
+                            startIcon={<DownloadIcon />}
+                            onClick={() => {
+                                vouchers.forEach((v) => {
+                                    downloadVoucher(v);
+                                });
+                            }}
+                        >
+                            Descargar Todos los Vouchers
+                        </Button>
+                    )}
                 </Box>
             )}
 
@@ -406,30 +482,8 @@ const MallOrderVouchers: React.FC<IDashAutoAdminCustomFieldComponent> = ({ metho
                                     {vouchers[viewingVoucherIndex].error}
                                 </Alert>
                             ) : vouchers[viewingVoucherIndex].pdfUrl ? (
-                                <Box sx={{ flex: 1, minHeight: '60vh' }}>
-                                    <object
-                                        data={vouchers[viewingVoucherIndex].pdfUrl!}
-                                        type="application/pdf"
-                                        style={{
-                                            width: '100%',
-                                            height: '60vh',
-                                            border: 'none',
-                                        }}
-                                    >
-                                        <embed
-                                            src={vouchers[viewingVoucherIndex].pdfUrl!}
-                                            type="application/pdf"
-                                            style={{
-                                                width: '100%',
-                                                height: '60vh',
-                                            }}
-                                        />
-                                        <Box sx={{ p: 2, textAlign: 'center' }}>
-                                            <Typography color="text.secondary">
-                                                Tu navegador no soporta la visualización de PDFs.
-                                            </Typography>
-                                        </Box>
-                                    </object>
+                                <Box sx={{ flex: 1, minHeight: '60vh', overflow: 'auto' }}>
+                                    <PDFViewer file={vouchers[viewingVoucherIndex].pdfUrl!} />
                                 </Box>
                             ) : (
                                 <Alert severity="info" sx={{ m: 2 }}>

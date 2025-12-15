@@ -2,7 +2,7 @@ import { IDashAutoAdminAttribute } from "dash-auto-admin";
 
 
 // Direct imports for lightweight components (avoid barrel exports for tree-shaking)
-import MallSessionOrderNotifications from "../components/MallSessionOrderNotifications";
+//import MallSessionOrderNotifications from "../components/MallSessionOrderNotifications";
 import MallSessionOrderProgress from "../components/MallSessionOrderProgress";
 import MallOrderVouchers from "../components/MallOrderVouchers";
 import MallOrderToolbarMediator from "../components/MallOrderToolbarMediator";
@@ -120,6 +120,18 @@ const MallTabSchemaV2: IDashAutoAdminAttribute[] = [
         inEdit: false,
         inShow: false,
     },
+        {
+        attribute: 'products',
+        tab: 'Vouchers',
+        label: 'Vouchers',
+        type: Object,
+        inCreate: false,
+        inEdit: true,
+        inShow: true,
+        inList: false,
+        custom: true,
+        component: MallOrderVouchers,
+    },
     // Order progress - displays progress bars for each tenant/store in a mall order
     {
         attribute: 'progress',
@@ -134,7 +146,7 @@ const MallTabSchemaV2: IDashAutoAdminAttribute[] = [
         component: MallSessionOrderProgress,
     },
     // Order notifications - displays notification history for the tab
-    {
+    /*{
         attribute: 'notifications',
         tab: 'Actualizaciones',
         label: 'Notificaciones',
@@ -145,19 +157,8 @@ const MallTabSchemaV2: IDashAutoAdminAttribute[] = [
         inList: false,
         custom: true,
         component: MallSessionOrderNotifications,
-    },
-    {
-        attribute: 'products',
-        tab: 'Vouchers',
-        label: 'Vouchers',
-        type: Object,
-        inCreate: false,
-        inEdit: true,
-        inShow: true,
-        inList: false,
-        custom: true,
-        component: MallOrderVouchers,
-    },
+    },*/
+
 ];
 
 

@@ -13,6 +13,8 @@ import {
     TextField,
     Select,
     MenuItem,
+    useTheme,
+    useMediaQuery,
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
@@ -20,7 +22,9 @@ import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import RestaurantIcon from '@mui/icons-material/Restaurant';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
-import MallOrderCreateContext, { IMallCartItem, IMallCurrency } from '../contexts/MallOrderCreateContext';
+import MallOrderCreateContext, { IMallCartItem, IMallCurrency, IMallProduct } from '../contexts/MallOrderCreateContext';
+
+const placeholder = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=";
 import { IStore } from '../interfaces/IStore';
 
 /**
@@ -62,6 +66,8 @@ export const InlineModifiers: React.FC<InlineModifiersProps> = ({
     currency: currencyProp,
 }) => {
     const context = useMallOrderCreateOptional();
+    const theme = useTheme();
+    const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
     
     // Use props if provided, otherwise fall back to context, then defaults
     const formatPrice = formatPriceFn || context?.formatPrice || defaultFormatPrice;
@@ -88,7 +94,7 @@ export const InlineModifiers: React.FC<InlineModifiersProps> = ({
     return (
         <Box
             className="kt-mall-inline-modifiers"
-            sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}
+            sx={{ display: 'flex', flexDirection: 'column', gap: isSmallScreen ? 1 : 1.5 }}
         >
             {modifierGroups.map((group) => {
                 const selectedOptions = item.selectedModifiers[group.id] || [];
@@ -112,14 +118,14 @@ export const InlineModifiers: React.FC<InlineModifiersProps> = ({
                         </Typography>
                         <Select
                             fullWidth
-                            size="small"
+                            size={isSmallScreen ? "small" : "medium"}
                             multiple={isMultiple}
                             value={value}
                             onChange={(e) => handleGroupChange(group.id, e.target.value as any, isMultiple)}
                             displayEmpty
                             sx={{ 
-                                fontSize: '0.85rem',
-                                '& .MuiSelect-select': { py: 0.75 }
+                                fontSize: isSmallScreen ? '0.8rem' : '0.85rem',
+                                '& .MuiSelect-select': { py: isSmallScreen ? 0.5 : 0.75 }
                             }}
                         >
                             {!group.is_required && !isMultiple && (
@@ -185,6 +191,8 @@ export const CartItem: React.FC<CartItemProps> = ({
     currency: currencyProp,
 }) => {
     const translate = useTranslate();
+    const theme = useTheme();
+    const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
     const context = useMallOrderCreateOptional();
     
     // Use props if provided, otherwise fall back to context
@@ -203,11 +211,24 @@ export const CartItem: React.FC<CartItemProps> = ({
         setLocalNote(item.note || '');
     }, [item.note]);
 
-    // Get image URL from various possible locations
-    const imageUrl = item.product.gallery?.primary_image_url || 
-                     (item.product.gallery?.images?.[0]?.url) ||
-                     (item.product as any).image_url || 
+    // Get image URL from various possible locations (comprehensive fallback chain)
+    const gallery = item.product.gallery as any;
+    const imageUrl = (item.product as any).image_url ||
+                     (item.product as any).primary_image_url ||
+                     gallery?.primary_image_url || 
+                     gallery?.images?.[0]?.url ||
+                     gallery?.images?.[0]?.original_url ||
+                     (item.product as any).thumbnail_url ||
+                     (item.product as any).image ||
                      null;
+
+    // Get store/tenant name from stores list or fallback
+    const getStoreName = () => {
+        if (storeName) return storeName;
+        if ((item as IMallCartItem).product.tenant?.name) return (item as IMallCartItem).product.tenant.name;
+        return null;
+    };
+    const tenantName = getStoreName();
 
     // Format modifiers for display
     const modifierDetails = Object.entries(item.selectedModifiers || {})
@@ -246,84 +267,147 @@ export const CartItem: React.FC<CartItemProps> = ({
         <Card
             className="kt-mall-cart-item"
             sx={{ 
-                m: 1,
+                m: isSmallScreen ? 0.25 : 1,
                 border: '1px solid',
                 borderColor: 'divider',
             }}
         >
-            <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
-                {/* Header with name and controls */}
-                <Box sx={{ display: 'flex', alignItems: 'center', mb: 1.5 }}>
-                    <Typography variant="subtitle1" sx={{ flex: 1, fontWeight: 'bold' }}>
-                        {item.product.name}
-                    </Typography>
-                    <IconButton
-                        size="small"
-                        onClick={onToggleExpand}
-                        sx={{ mr: 0.5 }}
-                    >
-                        {isExpanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-                    </IconButton>
-                    {removeFromCart && (
-                        <Tooltip title={translate('mall.remove_item')}>
-                            <IconButton
-                                size="small"
-                                onClick={() => removeFromCart(item.uniqueId)}
-                                color="error"
-                            >
-                                <DeleteOutlineIcon />
-                            </IconButton>
-                        </Tooltip>
-                    )}
-                </Box>
-
-                <Box sx={{ display: 'flex', gap: 2 }}>
+            <CardContent sx={{ 
+                p: isSmallScreen ? 0.75 : 2, 
+                '&:last-child': { pb: isSmallScreen ? 0.75 : 2 } 
+            }}>
+                {/* Compact layout: image + name + controls in one row on small screens */}
+                <Box sx={{ 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    gap: isSmallScreen ? 0.75 : 2 
+                }}>
                     {/* Product Image */}
+                    {imageUrl ? (
+                        <Box
+                            component="img"
+                            src={imageUrl}
+                            alt={item.product.name}
+                            sx={{ 
+                                width: isSmallScreen ? 36 : 80, 
+                                height: isSmallScreen ? 36 : 80, 
+                                objectFit: 'cover',
+                                borderRadius: 0.5,
+                                flexShrink: 0,
+                                //backgroundColor: 'grey.200',
+                            }}
+                            onError={(e: any) => {
+                                e.target.style.display = 'none';
+                                e.target.nextSibling && (e.target.nextSibling.style.display = 'flex');
+                            }}
+                        />
+                    ) : null}
+                    {/* Fallback avatar when no image or image fails */}
                     <Avatar
                         variant="rounded"
-                        src={imageUrl || undefined}
                         sx={{ 
-                            width: 80, 
-                            height: 80, 
-                            border: '2px solid', 
-                            borderColor: 'divider',
-                            backgroundColor: 'grey.200',
+                            width: isSmallScreen ? 36 : 80, 
+                            height: isSmallScreen ? 36 : 80, 
+                            flexShrink: 0,
+                            //backgroundColor: 'grey.200',
+                            display: imageUrl ? 'none' : 'flex',
                         }}
                     >
-                        {!imageUrl && <RestaurantIcon sx={{ color: 'grey.400' }} />}
+                        <RestaurantIcon sx={{ color: 'grey.400', fontSize: isSmallScreen ? 20 : 40 }} />
                     </Avatar>
 
                     {/* Content Column */}
-                    <Box sx={{ flex: 1 }}>
-                        {/* Quantity and Price Controls */}
-                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                    <Box sx={{ flex: 1, minWidth: 0 }}>
+                        {/* Product name */}
+                        <Typography 
+                            variant={isSmallScreen ? "body2" : "subtitle1"} 
+                            sx={{ 
+                                fontWeight: 'bold',
+                                fontSize: isSmallScreen ? '0.8rem' : undefined,
+                                lineHeight: isSmallScreen ? 1.2 : 1.5,
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis',
+                                whiteSpace: 'nowrap'
+                            }}
+                        >
+                            {item.product.name}
+                        </Typography>
+                        
+                        {/* Tenant/Store name */}
+                        {tenantName && (
+                            <Typography 
+                                variant="caption" 
+                                color="text.secondary"
+                                sx={{ 
+                                    display: 'block',
+                                    fontSize: isSmallScreen ? '0.65rem' : '0.75rem',
+                                    lineHeight: 1.2,
+                                    overflow: 'hidden',
+                                    textOverflow: 'ellipsis',
+                                    whiteSpace: 'nowrap'
+                                }}
+                            >
+                                {tenantName}
+                            </Typography>
+                        )}
+                        
+                        {/* Quantity and Price Controls - inline on small screens */}
+                        <Box sx={{ 
+                            display: 'flex', 
+                            justifyContent: 'space-between', 
+                            alignItems: 'center',
+                            mt: isSmallScreen ? 0.25 : 0.5
+                        }}>
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0 }}>
                                 <IconButton 
                                     onClick={() => updateQuantity && updateQuantity(item.uniqueId, item.quantity - 1)}
                                     disabled={!updateQuantity || item.quantity <= 1}
                                     size="small"
+                                    sx={{ p: isSmallScreen ? 0.25 : 0.5 }}
                                 >
-                                    <RemoveIcon />
+                                    <RemoveIcon fontSize={isSmallScreen ? "small" : "medium"} />
                                 </IconButton>
-                                <Typography variant="h6" sx={{ minWidth: 30, textAlign: 'center' }}>
+                                <Typography 
+                                    variant="body2" 
+                                    sx={{ 
+                                        minWidth: isSmallScreen ? 20 : 30, 
+                                        textAlign: 'center',
+                                        fontSize: isSmallScreen ? '0.8rem' : '1rem',
+                                        fontWeight: 600
+                                    }}
+                                >
                                     {item.quantity}
                                 </Typography>
                                 <IconButton 
                                     onClick={() => updateQuantity && updateQuantity(item.uniqueId, item.quantity + 1)}
                                     disabled={!updateQuantity}
                                     size="small"
+                                    sx={{ p: isSmallScreen ? 0.25 : 0.5 }}
                                 >
-                                    <AddIcon />
+                                    <AddIcon fontSize={isSmallScreen ? "small" : "medium"} />
                                 </IconButton>
                             </Box>
-                            <Typography variant="h6" color="primary" fontWeight={700}>
+                            <Typography 
+                                variant="body2" 
+                                color="primary" 
+                                fontWeight={700}
+                                sx={{ fontSize: isSmallScreen ? '0.8rem' : '1rem' }}
+                            >
                                 {formatPrice(item.lineTotal, currency)}
                             </Typography>
                         </Box>
 
                         {/* Collapsed view: show modifier summary */}
                         {!isExpanded && modifierDetails.length > 0 && (
-                            <Typography variant="caption" color="text.secondary" sx={{ display: 'block' }}>
+                            <Typography 
+                                variant="caption" 
+                                color="text.secondary" 
+                                sx={{ 
+                                    display: 'block',
+                                    fontSize: isSmallScreen ? '0.65rem' : '0.75rem',
+                                    lineHeight: 1.2
+                                }}
+                            >
                                 {modifierDetails.map(m => m?.name).join(', ')}
                             </Typography>
                         )}
@@ -331,27 +415,56 @@ export const CartItem: React.FC<CartItemProps> = ({
                             <Typography 
                                 variant="caption" 
                                 color="text.secondary" 
-                                sx={{ display: 'block', fontStyle: 'italic' }}
+                                sx={{ 
+                                    display: 'block', 
+                                    fontStyle: 'italic',
+                                    fontSize: isSmallScreen ? '0.65rem' : '0.75rem',
+                                    lineHeight: 1.2
+                                }}
                             >
                                 {item.note}
                             </Typography>
                         )}
+                    </Box>
 
-                        {/* Expandable Content: Inline editing */}
-                        <Collapse in={isExpanded}>
-                            <Box sx={{ mt: 2 }}>
+                    {/* Action buttons - expand/delete */}
+                    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 0 }}>
+                        <IconButton
+                            size="small"
+                            onClick={onToggleExpand}
+                            sx={{ p: isSmallScreen ? 0.25 : 0.5 }}
+                        >
+                            {isExpanded ? <ExpandLessIcon fontSize="small" /> : <ExpandMoreIcon fontSize="small" />}
+                        </IconButton>
+                        {/* TODO: Remove from cart only when order is in confirmed state */}
+                        {/*removeFromCart && (
+                            <IconButton
+                                size="small"
+                                onClick={() => removeFromCart(item.uniqueId)}
+                                color="error"
+                                sx={{ p: isSmallScreen ? 0.25 : 0.5 }}
+                            >
+                                <DeleteOutlineIcon fontSize="small" />
+                            </IconButton>
+                        )*/}
+                    </Box>
+                </Box>
+
+                {/* Expandable Content: Inline editing */}
+                <Collapse in={isExpanded}>
+                    <Box sx={{ mt: isSmallScreen ? 1 : 2, pl: isSmallScreen ? 5 : 12 }}>
                                 {/* Note Section */}
                                 <TextField
                                     fullWidth
-                                    size="small"
+                                    size={isSmallScreen ? "small" : "medium"}
                                     placeholder={translate('mall.special_instructions_placeholder')}
                                     label={translate('mall.special_instructions')}
                                     value={localNote}
                                     onChange={(e) => setLocalNote(e.target.value)}
                                     onBlur={handleNoteBlur}
                                     multiline
-                                    rows={2}
-                                    sx={{ mb: 2 }}
+                                    rows={isSmallScreen ? 2 : 3}
+                                    sx={{ mb: isSmallScreen ? 1.5 : 2 }}
                                 />
 
                                 {/* Modifiers Section - Inline Select dropdowns */}
@@ -361,7 +474,7 @@ export const CartItem: React.FC<CartItemProps> = ({
                                             variant="body2" 
                                             color="text.secondary" 
                                             fontWeight={600}
-                                            sx={{ mb: 1 }}
+                                            sx={{ mb: isSmallScreen ? 0.5 : 1 }}
                                         >
                                             {translate('mall.modifiers')}
                                         </Typography>
@@ -373,8 +486,6 @@ export const CartItem: React.FC<CartItemProps> = ({
                                 )}
                             </Box>
                         </Collapse>
-                    </Box>
-                </Box>
             </CardContent>
         </Card>
     );
@@ -416,6 +527,8 @@ export const MallCartItemsList: React.FC<MallCartItemsListProps> = ({
     formatPriceFn,
 }) => {
     const translate = useTranslate();
+    const theme = useTheme();
+    const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
     const context = useMallOrderCreateOptional();
     
     // Use props if provided, otherwise fall back to context
@@ -438,26 +551,6 @@ export const MallCartItemsList: React.FC<MallCartItemsListProps> = ({
         const store = stores.find(s => s.id === tenantId);
         return store?.name || `Store ${tenantId}`;
     };
-
-    // Group items by tenant
-    interface StoreGroup {
-        tenantId: number;
-        storeName: string;
-        items: IMallCartItem[];
-    }
-
-    const itemsByStore = cartItems.reduce<Record<number, StoreGroup>>((acc, item) => {
-        const tenantId = item.product.tenant_id;
-        if (!acc[tenantId]) {
-            acc[tenantId] = {
-                tenantId,
-                storeName: getStoreName(tenantId),
-                items: [],
-            };
-        }
-        acc[tenantId].items.push(item);
-        return acc;
-    }, {});
 
     if (cartItems.length === 0 && showEmptyState) {
         return (
@@ -487,52 +580,31 @@ export const MallCartItemsList: React.FC<MallCartItemsListProps> = ({
 
     return (
         <Box className="kt-mall-cart-items-list">
-            {/* Items grouped by store */}
-            {Object.values(itemsByStore).map((storeGroup) => (
-                <Box key={storeGroup.tenantId}>
-                    {/* Store header */}
-                    {showStoreHeaders && (
-                        <Box
-                            sx={{
-                                px: 2,
-                                py: 1,
-                                //backgroundColor: 'grey.100',
-                                borderBottom: 1,
-                                borderColor: 'divider',
-                            }}
-                        >
-                            <Typography variant="subtitle2" fontWeight={600}>
-                                {storeGroup.storeName}
-                            </Typography>
-                        </Box>
-                    )}
-                    
-                    <List disablePadding>
-                        {storeGroup.items.map((item) => (
-                            <CartItem 
-                                key={item.uniqueId}
-                                item={item} 
-                                storeName={storeGroup.storeName} 
-                                isExpanded={!!expandedItems[item.uniqueId]}
-                                onToggleExpand={() => toggleItemExpansion(item.uniqueId)}
-                                onUpdateQuantity={onUpdateQuantity}
-                                onRemoveFromCart={onRemoveFromCart}
-                                onUpdateCartItem={onUpdateCartItem}
-                                formatPriceFn={formatPriceFn}
-                            />
-                        ))}
-                    </List>
-                </Box>
-            ))}
+            {/* Items in flat list */}
+            <List disablePadding>
+                {cartItems.map((item) => (
+                    <CartItem 
+                        key={item.uniqueId}
+                        item={item} 
+                        storeName={item.product.tenant?.name} 
+                        isExpanded={!!expandedItems[item.uniqueId]}
+                        onToggleExpand={() => toggleItemExpansion(item.uniqueId)}
+                        onUpdateQuantity={onUpdateQuantity}
+                        onRemoveFromCart={onRemoveFromCart}
+                        onUpdateCartItem={onUpdateCartItem}
+                        formatPriceFn={formatPriceFn}
+                    />
+                ))}
+            </List>
 
             {/* Clear cart button */}
             {showClearButton && clearCart && (
-                <Box sx={{ p: 2, pt: 0 }}>
+                <Box sx={{ p: isSmallScreen ? 1.5 : 2, pt: 0 }}>
                     <button
                         onClick={clearCart}
                         style={{
                             width: '100%',
-                            padding: '8px 16px',
+                            padding: isSmallScreen ? '6px 12px' : '8px 16px',
                             border: '1px solid #d32f2f',
                             borderRadius: '8px',
                             backgroundColor: 'transparent',
@@ -542,9 +614,10 @@ export const MallCartItemsList: React.FC<MallCartItemsListProps> = ({
                             alignItems: 'center',
                             justifyContent: 'center',
                             gap: '8px',
+                            fontSize: isSmallScreen ? '0.875rem' : '1rem',
                         }}
                     >
-                        <DeleteOutlineIcon fontSize="small" />
+                        <DeleteOutlineIcon fontSize={isSmallScreen ? "small" : "medium"} />
                         {translate('mall.clear_cart')}
                     </button>
                 </Box>

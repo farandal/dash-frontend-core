@@ -11,6 +11,15 @@ export { default as DashAutoFormMuiTabs } from './DashAutoFormMuiTabs';
 export { default as DashAutoReferenceTab } from './DashAutoReferenceTab';
 export { default as DashAutoTabs } from './DashAutoTabs';
 export { default as DashAutoLayout } from './DashAutoLayout';
+export { default as DashAutoAdminSaveButton } from './DashAutoAdminSaveButton';
+export type { IDashAutoAdminSaveButton } from './DashAutoAdminSaveButton';
+
+/** Context */
+export { 
+	DashAutoAdminFormProvider, 
+	useDashAutoAdminForm 
+} from './context/DashAutoAdminFormContext';
+export type { IDashAutoAdminFormContext } from './context/DashAutoAdminFormContext';
 
 export { default as DashAutoTitle } from './common/DashAutoTitle';
 

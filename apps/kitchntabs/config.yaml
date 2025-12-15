@@ -18,6 +18,7 @@ PRINT_SERVICE_PATH_PROD: "./python-service/print_service"
 SPEECH_SERVICE_PATH_DEV: "../../../dash-python-service/src/tts_service.py"
 SPEECH_SERVICE_PATH_PROD: "./python-service/tts_service"
 
+
 # Poppler path for PDF conversion
 # Windows: C:\poppler-24.08.0\Library\bin
 # Linux/Mac: Leave empty (uses system poppler-utils)

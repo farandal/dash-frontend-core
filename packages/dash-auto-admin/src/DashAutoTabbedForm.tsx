@@ -13,6 +13,7 @@ import { DashAutoFormLayout } from '.';
 import { useDataProvider } from 'react-admin';
 
 import { IDashAutoAdminForm } from './DashAutoAdminForm';
+import { DashAutoAdminFormProvider } from './context/DashAutoAdminFormContext';
 
 import { useSelector } from 'react-redux';
 //import { IDASHAppState } from 'dash-admin-state';
@@ -163,6 +164,19 @@ const DashAutoTabbedForm: React.FC<IDashAutoTabbedForm> = ({
     const ContextComponent = resourceConfig.contextComponent ? resourceConfig.contextComponent:  ({children}) => {
         return children;
     };
+
+    /**
+     * FormContextWrapper - Wraps children with DashAutoAdminFormProvider
+     * This provides the onSave function to child components (like MallOrderSummaryDrawer)
+     * so they can trigger form submission programmatically.
+     */
+    const FormContextWrapper: React.FC<{children: ReactNode}> = ({ children }) => (
+        <DashAutoAdminFormProvider value={{ onSave, mode }}>
+            <ContextComponent mode={mode} resourceConfig={resourceConfig}>
+                {children}
+            </ContextComponent>
+        </DashAutoAdminFormProvider>
+    );
   
 
     if(!formData) return <Loading/>
@@ -183,9 +197,9 @@ const DashAutoTabbedForm: React.FC<IDashAutoTabbedForm> = ({
 				className={'auto-admin-grouped-form'}
              
 			>
-                <ContextComponent mode={mode} resourceConfig={resourceConfig}>
+                <FormContextWrapper>
                     {resourceConfig.createComponent(resourceConfig)}
-                </ContextComponent>
+                </FormContextWrapper>
 				
 			</SimpleForm>
 		);
@@ -204,9 +218,9 @@ const DashAutoTabbedForm: React.FC<IDashAutoTabbedForm> = ({
 				className={'auto-admin-grouped-form'}
                
 			>
-                <ContextComponent mode={mode} resourceConfig={resourceConfig}>
+                <FormContextWrapper>
                     {resourceConfig.editComponent(resourceConfig)}
-                </ContextComponent>
+                </FormContextWrapper>
 				
 			</SimpleForm>
 		);
@@ -228,7 +242,7 @@ const DashAutoTabbedForm: React.FC<IDashAutoTabbedForm> = ({
                 syncWithLocation={resourceConfig.syncTabsWithLocation || false}
                 
                 defaultValues={mode === "create" ? formData : {...record,...formData}}
-                component={(props)=> <ContextComponent mode={mode} resourceConfig={resourceConfig}>{props.children} </ContextComponent>}
+                component={(props)=> <FormContextWrapper>{props.children}</FormContextWrapper>}
                 //component={(props) => props.children}
 			>
               
@@ -258,12 +272,12 @@ const DashAutoTabbedForm: React.FC<IDashAutoTabbedForm> = ({
 				className={'auto-admin-grouped-form'}
             
 			>
-                 <ContextComponent mode={mode} resourceConfig={resourceConfig}>
+                <FormContextWrapper>
 				{DashAutoFormGroups({schema:resourceConfig.schema, resourceConfig, options:{
 					mode: mode,
 					isDrawer: isDrawer,
 				}})}
-                </ContextComponent>
+                </FormContextWrapper>
 			</SimpleForm>
 		);
 	}
@@ -280,12 +294,12 @@ const DashAutoTabbedForm: React.FC<IDashAutoTabbedForm> = ({
 				className={'auto-admin-grouped-form'}
                 
 			>
-                <ContextComponent mode={mode} resourceConfig={resourceConfig}>
+                <FormContextWrapper>
 				{DashAutoFormLayout({schema:resourceConfig.schema, resourceConfig:resourceConfig, options:{
 					mode: mode,
 					isDrawer: isDrawer,
 				}})}
-                </ContextComponent>
+                </FormContextWrapper>
 			</SimpleForm>
 		);
 	}

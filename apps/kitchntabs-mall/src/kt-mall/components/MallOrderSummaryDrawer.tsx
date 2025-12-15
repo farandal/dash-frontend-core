@@ -1,6 +1,7 @@
-import React, { useCallback } from 'react';
-import { useTranslate, useSaveContext } from 'react-admin';
+import React, { useCallback, useEffect, useRef } from 'react';
+import { useTranslate } from 'react-admin';
 import { useFormContext } from 'react-hook-form';
+import { useDashAutoAdminForm } from 'dash-auto-admin';
 import { 
     Box, 
     Drawer, 
@@ -20,7 +21,12 @@ import { MallCartItemsList } from './MallCartItemsList';
  * MallOrderSummaryDrawer - Drawer showing full cart details
  * Uses reusable MallCartItemsList component for DRY code
  * 
- * Now includes direct form submission via React-Admin's useSaveContext
+ * Now includes direct form submission through DashAutoAdminForm's onSave
+ * This ensures the form goes through the full React-Admin pipeline:
+ * - Form validation via react-hook-form
+ * - beforeSubmit hooks (customer data injection)
+ * - Data provider mutations
+ * - Error handling via onError hooks
  */
 export const MallOrderSummaryDrawer: React.FC = () => {
     const translate = useTranslate();
@@ -34,13 +40,16 @@ export const MallOrderSummaryDrawer: React.FC = () => {
         formatPrice,
     } = useMallOrderCreate();
 
-    // Get React-Admin save context for form submission
-    const saveContext = useSaveContext();
+    // Get DashAutoAdminForm context for accessing the form's save handler
+    const { onSave } = useDashAutoAdminForm();
     
-    // Get form context for getting current form values
-    const formContext = useFormContext();
+    // Get form context for validation and getting form values
+    const { handleSubmit, formState } = useFormContext();
 
     const [isSubmitting, setIsSubmitting] = React.useState(false);
+
+    // Use a ref to track the latest handleSubmitOrder function
+    const handleSubmitOrderRef = useRef<(() => Promise<void>) | null>(null);
 
     const handleClose = () => {
         setIsCartDrawerOpen(false);
@@ -48,34 +57,69 @@ export const MallOrderSummaryDrawer: React.FC = () => {
 
     /**
      * Handle order submission directly from the drawer
-     * Uses React-Admin's save function from useSaveContext
+     * 
+     * This function:
+     * 1. Uses react-hook-form's handleSubmit to validate the form
+     * 2. If validation passes, calls DashAutoAdminForm's onSave function
+     * 3. The onSave function goes through the full pipeline:
+     *    - beforeSubmit (injects customer_name and table_number)
+     *    - dataProvider.create (API call)
+     *    - onSubmit callback
+     *    - onError if error (e.g., MISSING_SESSION_DATA triggers modal)
      */
     const handleSubmitOrder = useCallback(async () => {
-        if (!saveContext?.save || !formContext) {
-            console.warn('Save context or form context not available');
+        if (!onSave) {
+            console.warn('Form save handler not available');
             return;
         }
 
-        // Disable button while submitting
         setIsSubmitting(true);
 
         try {
-            // Get current form values
-            const formValues = formContext.getValues();
-            
-            // Trigger form submission through React-Admin's save
-            // The save function will handle beforeSubmit hooks and validation
-            await saveContext.save(formValues);
+            // Use handleSubmit to validate form and call onSave with validated values
+            // This ensures we go through the full React-Admin + DashAutoAdminForm pipeline
+            await handleSubmit(async (values) => {
+                if (onSave) {
+                    await onSave(values);
+                }
+            })();
             
             // Close drawer after successful submission
             setIsCartDrawerOpen(false);
         } catch (error) {
             console.error('Error submitting order:', error);
-            // Error handling is done by React-Admin and resource config
+            // Error handling is done by DashAutoAdminForm's onError hook
+            // which will trigger the customer data modal if needed
         } finally {
             setIsSubmitting(false);
         }
-    }, [saveContext, formContext, setIsCartDrawerOpen]);
+    }, [handleSubmit, onSave, setIsCartDrawerOpen]);
+
+    // Keep the ref updated with the latest handleSubmitOrder
+    useEffect(() => {
+        handleSubmitOrderRef.current = handleSubmitOrder;
+    }, [handleSubmitOrder]);
+
+    /**
+     * Listen for 'order-data-saved' event dispatched by MallAppMediator
+     * When customer data is saved, automatically retry the form submission
+     * This provides a seamless UX: enter data → modal closes → order submits automatically
+     */
+    useEffect(() => {
+        const handleOrderDataSaved = () => {
+            console.log('Order data saved, retrying form submission...');
+            // Use the ref to get the latest handleSubmitOrder function
+            if (handleSubmitOrderRef.current) {
+                handleSubmitOrderRef.current();
+            }
+        };
+
+        window.addEventListener('order-data-saved', handleOrderDataSaved);
+
+        return () => {
+            window.removeEventListener('order-data-saved', handleOrderDataSaved);
+        };
+    }, []);
 
     return (
         <Drawer
@@ -180,8 +224,8 @@ export const MallOrderSummaryDrawer: React.FC = () => {
                         color="primary"
                         size="large"
                         onClick={handleSubmitOrder}
-                        disabled={isSubmitting || cartItemCount === 0}
-                        startIcon={isSubmitting ? <CircularProgress size={20} color="inherit" /> : <ShoppingCartCheckoutIcon />}
+                        disabled={isSubmitting || formState.isSubmitting || cartItemCount === 0}
+                        startIcon={isSubmitting || formState.isSubmitting ? <CircularProgress size={20} color="inherit" /> : <ShoppingCartCheckoutIcon />}
                         sx={{
                             py: 1.5,
                             borderRadius: 2,
@@ -190,7 +234,7 @@ export const MallOrderSummaryDrawer: React.FC = () => {
                             mb: 1.5,
                         }}
                     >
-                        {isSubmitting 
+                        {isSubmitting || formState.isSubmitting
                             ? translate('mall.submitting_order') 
                             : translate('mall.submit_order')
                         }

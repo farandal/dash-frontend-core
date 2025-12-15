@@ -624,80 +624,6 @@ const KitchenTabsList: React.FC<IDashAutoAdminDataGrid> = ({ resourceConfig }) =
                     {/* Add the Queue Status Indicator component */}
                     <QueueStatusIndicator queueSize={queueSize} isProcessing={isProcessing} />
 
-                    {/* Navigation Header */}
-                    <Paper
-                        elevation={0}
-                        sx={{
-                            display: 'flex',
-                            justifyContent: 'space-between',
-                            alignItems: 'center',
-                            px: 2,
-                            py: 1,
-                            borderBottom: 1,
-                            borderColor: 'divider',
-                            backgroundColor: 'background.default',
-                        }}
-                    >
-                        <Button
-                            onClick={carousel.scrollPrev}
-                            disabled={!carousel.canScrollPrev || carousel.isAnimating}
-                            variant="outlined"
-                            startIcon={<ChevronLeftIcon />}
-                            sx={{
-                                borderRadius: 5,
-                                px: 2,
-                                borderWidth: 2,
-                                borderColor: carousel.canScrollPrev ? 'primary.main' : 'divider',
-                                color: carousel.canScrollPrev ? 'primary.main' : 'text.disabled',
-                                fontWeight: 700,
-                                '&:hover': {
-                                    borderWidth: 2,
-                                    backgroundColor: carousel.canScrollPrev ? 'primary.main' : 'transparent',
-                                    color: carousel.canScrollPrev ? 'primary.contrastText' : 'text.disabled',
-                                },
-                                '&.Mui-disabled': { borderColor: 'divider', color: 'text.disabled' },
-                            }}
-                        >
-                            {translate('kiosk.prev')}
-                        </Button>
-
-                        <Box sx={{ textAlign: 'center' }}>
-                            <Typography variant="h6" sx={{ fontWeight: 700 }}>
-                                {translate('tab.tabs')}
-                            </Typography>
-                            <Typography variant="caption" color="text.secondary">
-                                {translate('kiosk.page_of', { 
-                                    current: carousel.currentPage + 1, 
-                                    total: carousel.totalPages, 
-                                    items: listData?.length || 0 
-                                })}
-                            </Typography>
-                        </Box>
-
-                        <Button
-                            onClick={carousel.scrollNext}
-                            disabled={!carousel.canScrollNext || carousel.isAnimating}
-                            variant="outlined"
-                            endIcon={<ChevronRightIcon />}
-                            sx={{
-                                borderRadius: 5,
-                                px: 2,
-                                borderWidth: 2,
-                                borderColor: carousel.canScrollNext ? 'primary.main' : 'divider',
-                                color: carousel.canScrollNext ? 'primary.main' : 'text.disabled',
-                                fontWeight: 700,
-                                '&:hover': {
-                                    borderWidth: 2,
-                                    backgroundColor: carousel.canScrollNext ? 'primary.main' : 'transparent',
-                                    color: carousel.canScrollNext ? 'primary.contrastText' : 'text.disabled',
-                                },
-                                '&.Mui-disabled': { borderColor: 'divider', color: 'text.disabled' },
-                            }}
-                        >
-                            {translate('kiosk.next')}
-                        </Button>
-                    </Paper>
-
                     {/* Swipeable Container */}
                     <Box
                         ref={carousel.containerRef}
@@ -823,43 +749,19 @@ const KitchenTabsList: React.FC<IDashAutoAdminDataGrid> = ({ resourceConfig }) =
                         <ChevronRightIcon sx={{ fontSize: 32 }} />
                     </IconButton>
 
-                    {/* Bottom Dots Navigation */}
+                    {/* Bottom Centered Pagination */}
                     {carousel.totalPages > 1 && (
                         <Box
                             sx={{
                                 display: 'flex',
-                                justifyContent: 'space-between',
+                                justifyContent: 'center',
                                 alignItems: 'center',
-                                px: 2,
                                 py: 1.5,
                                 borderTop: 1,
                                 borderColor: 'divider',
                                 backgroundColor: 'background.paper',
                             }}
                         >
-                            <Button
-                                onClick={carousel.scrollPrev}
-                                disabled={!carousel.canScrollPrev || carousel.isAnimating}
-                                variant="outlined"
-                                startIcon={<ChevronLeftIcon />}
-                                sx={{
-                                    borderRadius: 5,
-                                    px: 2,
-                                    borderWidth: 2,
-                                    borderColor: carousel.canScrollPrev ? 'primary.main' : 'divider',
-                                    color: carousel.canScrollPrev ? 'primary.main' : 'text.disabled',
-                                    fontWeight: 700,
-                                    '&:hover': {
-                                        borderWidth: 2,
-                                        backgroundColor: carousel.canScrollPrev ? 'primary.main' : 'transparent',
-                                        color: carousel.canScrollPrev ? 'primary.contrastText' : 'text.disabled',
-                                    },
-                                    '&.Mui-disabled': { borderColor: 'divider', color: 'text.disabled' },
-                                }}
-                            >
-                                {translate('kiosk.prev')}
-                            </Button>
-
                             <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
                                 {carousel.pages.map((_, index) => (
                                     <Box
@@ -879,29 +781,6 @@ const KitchenTabsList: React.FC<IDashAutoAdminDataGrid> = ({ resourceConfig }) =
                                     />
                                 ))}
                             </Box>
-
-                            <Button
-                                onClick={carousel.scrollNext}
-                                disabled={!carousel.canScrollNext || carousel.isAnimating}
-                                variant="outlined"
-                                endIcon={<ChevronRightIcon />}
-                                sx={{
-                                    borderRadius: 5,
-                                    px: 2,
-                                    borderWidth: 2,
-                                    borderColor: carousel.canScrollNext ? 'primary.main' : 'divider',
-                                    color: carousel.canScrollNext ? 'primary.main' : 'text.disabled',
-                                    fontWeight: 700,
-                                    '&:hover': {
-                                        borderWidth: 2,
-                                        backgroundColor: carousel.canScrollNext ? 'primary.main' : 'transparent',
-                                        color: carousel.canScrollNext ? 'primary.contrastText' : 'text.disabled',
-                                    },
-                                    '&.Mui-disabled': { borderColor: 'divider', color: 'text.disabled' },
-                                }}
-                            >
-                                {translate('kiosk.next')}
-                            </Button>
                         </Box>
                     )}
                 </Box>

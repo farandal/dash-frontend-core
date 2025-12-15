@@ -1,30 +1,26 @@
-import { 
-    Button, 
-    Badge, 
-    Menu, 
-    MenuItem, 
-    Typography, 
-    Divider, 
-    Box, 
-    IconButton,
-    Chip,
-    Snackbar,
-    Alert,
-    Stack,
-    Paper,
-    Portal,
-    CircularProgress
-} from '@mui/material';
-import { 
-    NotificationsNone, 
-    NotificationsActive, 
-    Close as CloseIcon,
-    Clear as ClearIcon,
-    Person as PersonIcon,
-    Store as StoreIcon,
-    DragIndicator as DragIcon,
-    Refresh as RefreshIcon
-} from '@mui/icons-material';
+import Button from '@mui/material/Button';
+import Badge from '@mui/material/Badge';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import Typography from '@mui/material/Typography';
+import Divider from '@mui/material/Divider';
+import Box from '@mui/material/Box';
+import IconButton from '@mui/material/IconButton';
+import Chip from '@mui/material/Chip';
+import Snackbar from '@mui/material/Snackbar';
+import Alert from '@mui/material/Alert';
+import Stack from '@mui/material/Stack';
+import Paper from '@mui/material/Paper';
+import Portal from '@mui/material/Portal';
+import CircularProgress from '@mui/material/CircularProgress';
+import NotificationsNone from '@mui/icons-material/NotificationsNone';
+import NotificationsActive from '@mui/icons-material/NotificationsActive';
+import CloseIcon from '@mui/icons-material/Close';
+import DragIcon from '@mui/icons-material/DragIndicator';
+import ClearIcon from '@mui/icons-material/Clear';
+import PersonIcon from '@mui/icons-material/Person';
+import StoreIcon from '@mui/icons-material/Store';
+import RefreshIcon from '@mui/icons-material/Refresh';
 import React, { useCallback, useEffect, useState, useRef, useMemo } from 'react';
 import { useTranslate } from 'react-admin';
 import { useMallClientTabsContext, type IMallNotification } from '../../kt-mall';
@@ -579,7 +575,7 @@ const NotificationsCenter: React.FC = () => {
                     <Snackbar
                         key={toast.id}
                         open={true}
-                        autoHideDuration={8000}
+                        //autoHideDuration={8000}
                         onClose={() => handleToastClose(toast.id)}
                         anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
                         sx={{ position: 'relative', zIndex: 100000 }}

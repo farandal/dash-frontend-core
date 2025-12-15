@@ -443,34 +443,41 @@
   }
 
   .auto-admin-grouped-form {
-    margin-bottom: calc(40px + 15px);
+    
+     margin-bottom: 15px;
    }
 
-   .android .auto-admin-grouped-form {
+  /* .android .auto-admin-grouped-form {
     margin-bottom: calc(80px + 15px);
-   }
-
-  /*.RaToolbar-mobileToolbar {
-    bottom: -40px !important;
-        }
-   */
-
-   /*.RaToolbar-desktopToolbar {
-       bottom: -40px !important;
    }*/
 
-  /*
-   .android  {
+    body[class*="android"] {
+
+        .auto-admin-grouped-form {
+            margin-bottom: calc(80px + 15px);
+         }
+
+        .RaToolbar-mobileToolbar {
+        bottom: calc(80px + 15px) !important;
+        }
+    }
+   
+   /*.RaToolbar-desktopToolbar {
+       bottom: calc(15px) !important;
+   }*/
+
+  
+  /* .android  {
     .RaToolbar-mobileToolbar {
-    bottom: -80px !important;
+    bottom: calc(80px + 15px) !important;
         }
 
         .RaToolbar-desktopToolbar {
-            bottom: -80px !important;
+            bottom: calc(15px) !important;
         }
 
-    }
-    */
+    }*/
+    
 
 }
 
