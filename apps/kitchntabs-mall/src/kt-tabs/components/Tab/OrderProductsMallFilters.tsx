@@ -330,8 +330,10 @@ const OrderProductsMallFilters: React.FC<IOrderProductsMallFilters> = (props) =>
         
         try {
             // Extract customer data from localStorage
+            // Note: dashStorage.getItem already handles JSON.parse internally
             const orderData = dashStorage.getItem('orderData');
-            const { name, tableNumber } = orderData ? JSON.parse(orderData) : { name: null, tableNumber: null };
+            const name = orderData?.name ?? null;
+            const tableNumber = orderData?.tableNumber ?? null;
                 
             if (!name || !tableNumber) {
                 window.dispatchEvent(new CustomEvent('enter-public-order-data', {
