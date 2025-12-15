@@ -7,10 +7,39 @@ import GlobalSmallLoader from './dash-extensions/components/GlobalSmallLoader';
 // Lazy load shared components
 
 // Direct import from specific file (avoid barrel exports for tree-shaking)
-import MallClientWelcome from './kt-mall/components/MallClientWelcome';
+//import MallClientWelcome from './kt-mall/components/MallClientWelcome';
+import Alert from '@mui/material/Alert';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import Box from '@mui/system/Box';
+import { CardHeader } from '@mui/material';
+import { MallClientWelcome } from './kt-mall';
 // Shared routes factory function
 
 export const dashSharedRoutes = () => [
+      <Route
+        key="reset-password"
+        path="/reset-password"
+        element={
+            <Box
+                display="flex"
+                justifyContent="center"
+                alignItems="center"
+                minHeight="100vh"
+            >
+                <Card>
+                    <CardHeader title="No habilitado" />
+                        
+                  
+                    <CardContent>
+                       
+                            Lo sentimos, desde esta aplicación no es posible resetear la contraseña
+                       
+                    </CardContent>
+                </Card>
+            </Box>
+        }
+    />
    
 ]
 export const dashPrivateRoutes = () => [
@@ -22,7 +51,7 @@ export const dashPrivateRoutes = () => [
         path='/'
         element={
             <Suspense fallback={<GlobalSmallLoader />}>
-                <MallClientWelcome />
+                <MallClientWelcome/>
             </Suspense>
         }
     />,
@@ -33,12 +62,14 @@ export const dashPrivateRoutes = () => [
             <></> //Welcome - authenticated users don't need login
         }
     />,
+   
     // Catch-all route - must be last
     <Route
         key="private-not-found" 
         path="*"
         element={<NotFound disableCountdown={true} time={5} redirect="/" />}
-    />
+    />,
+    
 ]
 
 export const dashPublicRoutes = () => [

@@ -180,7 +180,7 @@ export default ({ mode }) => {
     process.env.NODE_ENV === "production";
 
   // Overwrite temp
-  isProduction = false;
+  //isProduction = false;
 
   let isDevelopment = !isProduction;
 

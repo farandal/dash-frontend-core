@@ -182,7 +182,7 @@ const AppComponent = React.lazy<React.FC>(() => {
                             height: '100vh',
                             color: 'red'
                         }}>
-                            Failed to load application
+                            Error
                         </div>
                     )
                 });

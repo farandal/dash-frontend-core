@@ -21,11 +21,11 @@ const LazyMallQRGenerator = () => (
 const MallAppResources: IDashAutoAdminResourceConfig[] = [
     {
         group: "Mall",
-        roles: ["*"],
+        roles: ["Mall"],
         component: ResourceTemplate,
         model: "qr",
         redirect: "/qr",
-        label: "Ordena Aquí!",
+        label: "Ingresar",
         schema: [],
         icon: <QrCode />,
         listComponent: LazyMallQRGenerator,
