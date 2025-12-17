@@ -130,7 +130,7 @@ const CampaignProductsBatchOperations: React.FC<any> = ({
       status
     )}`;
     const payload = {
-      tenant_id: Number(tenant_id),
+      tenant_id: string(tenant_id),
       product_ids: processedProductsIds,
       campaign_marketplace_ids: processedMarketplacesIds,
     };

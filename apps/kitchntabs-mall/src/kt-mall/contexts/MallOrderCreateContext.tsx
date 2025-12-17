@@ -37,7 +37,7 @@ const toLocalCurrency = (currency: IMallCurrency | undefined): ILocalCurrency | 
  */
 export interface IMallProductItem {
     id?: number;
-    order_id?: number | null;
+    order_id?: string | null;
     product_id: number;
     quantity: number;
     unit_price: string;
@@ -56,7 +56,7 @@ export interface IMallProductItem {
  */
 export interface IMallProduct {
     id: number;
-    tenant_id: number;
+    tenant_id: string;
     sku: string;
     name: string;
     description: string | null;
@@ -95,7 +95,7 @@ export interface IMallProduct {
         pricelist_id: number;
         pricelist: {
             id: number;
-            tenant_id: number;
+            tenant_id: string;
             currency_id: number;
             name: string;
             is_primary: boolean;
@@ -112,7 +112,7 @@ export interface IMallProduct {
         id: number;
         title: string;
         description: string | null;
-        tenant_id: number;
+        tenant_id: string;
         created_at: string;
         updated_at: string;
         images: Array<{
@@ -131,7 +131,7 @@ export interface IMallProduct {
     };
     modifier_groups?: Array<{
         id: number;
-        tenant_id: number;
+        tenant_id: string;
         name: string;
         type: string;
         description: string | null;

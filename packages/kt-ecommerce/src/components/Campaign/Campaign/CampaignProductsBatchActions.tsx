@@ -41,7 +41,7 @@ const CampaignProductsBatchActions = ({ batchSelectedCampaignProducts, campaign 
             let url = `/ecommerce/campaign/${id}/products/${status}`;
 
             const payload = {
-                tenant_id: Number(tenant_id),
+                tenant_id: string(tenant_id),
                 product_ids: productIds,
                 campaign_marketplace_ids: Array.from(new Set(
                     batchSelectedCampaignProducts.flatMap(product =>

@@ -17,12 +17,12 @@ export interface IMallNotification {
     message: string;
     data: {
         event: string;
-        child_order_id?: number;
+        child_order_id?: string;
         child_status?: string;
-        parent_order_id?: number;
+        parent_order_id?: string;
         parent_status?: string;
-        master_tab_id?: number;
-        tenant_tab_id?: number;
+        master_tab_id?: string;
+        tenant_tab_id?: string;
         tenant_tab_status?: string;
         tenant_id?: number;
         tenant_name?: string;
@@ -44,7 +44,7 @@ export interface IMallNotification {
         priority?: string;
         type?: string;
     };
-    tenant_id: number | null;
+    tenant_id: string | null;
     tenant_name: string | null;
     status: string | null;
     is_read: boolean;
@@ -56,8 +56,8 @@ export interface IMallNotification {
 
 // Tenant tab status extracted from notifications
 export interface ITenantTabStatus {
-    tenant_tab_id: number;
-    tenant_id: number;
+    tenant_tab_id: string;
+    tenant_id: string;
     tenant_name: string;
     status: string;
     progress: number;
@@ -75,14 +75,14 @@ export interface ITenantTabStatus {
 export interface IMallClientTabsContextValue {
     sessionHash: string | null;
     notifications: IMallNotification[];
-    tenantStatusesByTab: Record<number, ITenantTabStatus[]>; // Indexed by master_tab_id
+    tenantStatusesByTab: Record<string, ITenantTabStatus[]>; // Indexed by master_tab_id
     loading: boolean;
     error: string | null;
     unreadCount: number;
     totalCount: number;
     lastEvent: any | null; // Last WebSocket event received
     refreshNotifications: (force?: boolean) => Promise<void>;
-    getTenantStatusesForTab: (masterTabId: number) => ITenantTabStatus[];
+    getTenantStatusesForTab: (masterTabId: string) => ITenantTabStatus[];
     markAsRead: (notificationId: number) => Promise<void>;
     markAllAsRead: () => Promise<void>;
 }
@@ -127,7 +127,7 @@ export const MallClientTabsProvider: React.FC<MallClientTabsProviderProps> = ({
 }) => {
     const [sessionHash, setSessionHash] = useState<string | null>(null);
     const [notifications, setNotifications] = useState<IMallNotification[]>([]);
-    const [tenantStatusesByTab, setTenantStatusesByTab] = useState<Record<number, ITenantTabStatus[]>>({});
+    const [tenantStatusesByTab, setTenantStatusesByTab] = useState<Record<string, ITenantTabStatus[]>>({});
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [unreadCount, setUnreadCount] = useState(0);
@@ -159,7 +159,7 @@ export const MallClientTabsProvider: React.FC<MallClientTabsProviderProps> = ({
 
     // Process notifications to extract tenant statuses grouped by master_tab_id
     const processNotifications = useCallback((notificationList: IMallNotification[]) => {
-        const statusesByTab: Record<number, Map<number, ITenantTabStatus>> = {};
+        const statusesByTab: Record<string, Map<number, ITenantTabStatus>> = {};
 
         // Sort by timestamp descending (newest first) to get latest status per tenant
         const sortedNotifications = [...notificationList].sort(
@@ -214,9 +214,9 @@ export const MallClientTabsProvider: React.FC<MallClientTabsProviderProps> = ({
         });
 
         // Convert Maps to arrays
-        const result: Record<number, ITenantTabStatus[]> = {};
+        const result: Record<string, ITenantTabStatus[]> = {};
         Object.entries(statusesByTab).forEach(([tabId, tenantMap]) => {
-            result[parseInt(tabId)] = Array.from(tenantMap.values());
+            result[tabId] = Array.from(tenantMap.values());
         });
 
         setTenantStatusesByTab(result);
@@ -307,7 +307,7 @@ export const MallClientTabsProvider: React.FC<MallClientTabsProviderProps> = ({
     }, [sessionHash, axios]);
 
     // Get tenant statuses for a specific master tab
-    const getTenantStatusesForTab = useCallback((masterTabId: number): ITenantTabStatus[] => {
+    const getTenantStatusesForTab = useCallback((masterTabId: string): ITenantTabStatus[] => {
         return tenantStatusesByTab[masterTabId] || [];
     }, [tenantStatusesByTab]);
 
@@ -380,7 +380,7 @@ export const MallClientTabsProvider: React.FC<MallClientTabsProviderProps> = ({
                     const existingIndex = existingStatuses.findIndex(s => s.tenant_id === tenantId);
                     
                     const newStatus: ITenantTabStatus = {
-                        tenant_tab_id: tenantTabId || 0,
+                        tenant_tab_id: String(tenantTabId || ''),
                         tenant_id: tenantId,
                         tenant_name: tenantName || `Tienda #${tenantId}`,
                         status: status,

@@ -62,7 +62,7 @@ import { Loading } from 'react-admin';
 
 interface IValueForOutputCategoryMapping {
     id: number;
-    tenant_id: number;
+    tenant_id: string;
     category_id?: any;
     name: string;
     is_primary: boolean;
@@ -74,7 +74,7 @@ interface IValueForOutputCategoryMapping {
 
   interface IOptionForOutputCategoryMapping {
     id: number;
-    tenant_id: number;
+    tenant_id: string;
     category_id?: any;
     name: string;
     is_primary: boolean;

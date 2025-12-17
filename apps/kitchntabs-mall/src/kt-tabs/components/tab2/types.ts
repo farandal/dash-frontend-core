@@ -129,7 +129,7 @@ export interface UseVoiceProcessingReturn {
 
 // Tab Related Types
 export interface ITab {
-    id: number;
+    id: string;
     status: string;
     delivery_method: string;
     note?: string;
@@ -140,13 +140,13 @@ export interface ITab {
     date_delivered?: string;
     date_closed?: string;
     order?: {
-        id: number;
+        id: string;
         total_amount: number;
         currency_id: number;
         pricelist_id: number;
         items: ProductItem[];
     };
-    tenant_id: number;
+    tenant_id: string;
 }
 
 // Action Result Types

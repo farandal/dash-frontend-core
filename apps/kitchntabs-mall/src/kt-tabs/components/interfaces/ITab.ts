@@ -13,7 +13,7 @@ export interface IModifierOption {
 
 export interface IModifierGroup {
     id: number;
-    tenant_id: number;
+    tenant_id: string;
     name: string;
     type: 'SINGLE' | 'MULTIPLE';
     description: string;
@@ -24,15 +24,15 @@ export interface IModifierGroup {
 }
 
 export interface ITab {
-  id: number;
-  tenant_id: number;
+  id: string;
+  tenant_id: string;
   status: string;
   status_localized: string;
   delivery_method: string;
   delivery_method_localized: string;
   note: string | null;
   sale_note_path: string | null;
-  order_id: number;
+  order_id: string;
   order_type: string;
   date_created: string;
   date_confirmed: string | null;
@@ -68,7 +68,7 @@ export interface ITab {
   };
   order?: {
     id: number;
-    tenant_id: number;
+    tenant_id: string;
     currency_id: number;
     status: string;
     source_id: string;
@@ -112,7 +112,7 @@ export interface ITab {
     };
     items: Array<{
       id: number;
-      order_id: number;
+      order_id: string;
       product_id: number;
       product_name: string;
       quantity: number;
@@ -127,7 +127,7 @@ export interface ITab {
       product: Product & {
         modifier_groups?: Array<{
           id: number;
-          tenant_id: number;
+          tenant_id: string;
           name: string;
           type: string;
           description: string;

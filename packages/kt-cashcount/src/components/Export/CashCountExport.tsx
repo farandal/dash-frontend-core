@@ -86,6 +86,11 @@ const CashCountExport: React.FC = () => {
 
   // Helper function to ensure HTTPS protocol
   const ensureHttps = (url: string): string => {
+    // Force HTTPS for ngrok domains to avoid redirect issues with preflight requests
+    if (url.includes('ngrok') && url.startsWith('http://')) {
+      return url.replace('http://', 'https://');
+    }
+
     if (window.location.protocol === 'https:' && url.startsWith('http://')) {
       return url.replace('http://', 'https://');
     }

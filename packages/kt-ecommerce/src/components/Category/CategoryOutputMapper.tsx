@@ -26,7 +26,7 @@ import { Category, Tenant } from "../../interfaces";
 
 export interface IValueForOutputCategoryMapping {
   id: number;
-  tenant_id: number;
+  tenant_id: string;
   category_id?: any;
   name: string;
   is_primary: boolean;
@@ -38,7 +38,7 @@ export interface IValueForOutputCategoryMapping {
 
 export interface IOptionForOutputCategoryMapping {
   id: number;
-  tenant_id: number;
+  tenant_id: string;
   category_id?: any;
   name: string;
   is_primary: boolean;

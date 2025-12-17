@@ -329,7 +329,7 @@ const MallClientAppResources = [
 ```typescript
 interface ITab {
     id: number;
-    tenant_id: number;
+    tenant_id: string;
     status: 'CREATED' | 'CONFIRMED' | 'IN_PREPARATION' | 'PREPARED' | 'DELIVERED' | 'CLOSED' | 'CANCELLED';
     delivery_method: string;
     note?: string;
@@ -352,7 +352,7 @@ interface ITab {
 ```typescript
 interface ITenantTab {
     id: number;
-    tenant_id: number;
+    tenant_id: string;
     tenant_name: string;
     status: string;
     progress: number;

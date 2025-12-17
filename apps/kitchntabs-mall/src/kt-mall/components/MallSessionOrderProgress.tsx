@@ -48,7 +48,7 @@ const MallSessionOrderProgress: React.FC<MallSessionOrderProgressProps> = (props
     const tabId = propTabId ?? record?.id;
 
     // Get tenant statuses from context - this updates automatically when WebSocket events arrive
-    const tenantTabs = getTenantStatusesForTab(Number(tabId));
+    const tenantTabs = getTenantStatusesForTab(String(tabId));
 
     const getStatusColor = (status: string) => {
         switch (status.toUpperCase()) {

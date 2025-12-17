@@ -40,7 +40,7 @@ export interface IMallOrderResponse {
     mall: {
         id: number;
         name: string;
-        manager_tenant_id: number;
+        manager_tenant_id: string;
     };
     customer_info: {
         name: string;

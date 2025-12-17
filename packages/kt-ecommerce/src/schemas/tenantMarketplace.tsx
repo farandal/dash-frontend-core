@@ -18,7 +18,7 @@ export interface ITenantMarketplace {
     tenantSystemMarketplace: {
         id: number
         system_marketplace_id: number
-        tenant_id: number
+        tenant_id: string
     }
 
 

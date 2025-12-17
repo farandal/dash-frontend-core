@@ -14,7 +14,7 @@ export interface IPointOfsale {
     tenantSystemPointOfSale: {
         id: number
         system_point_of_sale_id: number
-        tenant_id: number
+        tenant_id: string
     }
 }
 

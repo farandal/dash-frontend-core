@@ -36,8 +36,9 @@ const MallSessionOrderNotifications: React.FC<MallSessionOrderNotificationsProps
     // Filter notifications for this specific tab
     const tabNotifications = notifications.filter((n: IMallNotification) => {
         const data = n.data;
-        return data?.master_tab_id === Number(tabId) || 
-               data?.tenant_tab_id === Number(tabId) ||
+        // Compare as strings since IDs are now UUIDs
+        return String(data?.master_tab_id) === String(tabId) || 
+               String(data?.tenant_tab_id) === String(tabId) ||
                n.reference_id === String(tabId);
     });
 

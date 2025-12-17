@@ -52,7 +52,7 @@ export interface ICampaignFormMarketplaces {
 }
 
 export interface ICampaignForm {
-    tenant_id: number,
+    tenant_id: string,
     name: string,
     description: string
     start_date: string //"2022-08-10 00:00:00",

@@ -78,7 +78,7 @@ export interface ICategoryTree {
 
 export interface IMarketplaceMetadata {
   id: number
-  tenant_id: number
+  tenant_id: string
   metadata_format_id: number
   system_marketplace_metadata_format_id: number
   systemMarketplaceMetadataFormat: ISystemMarketplaceMetadataFormat

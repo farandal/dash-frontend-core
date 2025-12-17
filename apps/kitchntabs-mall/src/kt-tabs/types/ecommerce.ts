@@ -41,7 +41,7 @@ export interface IGalleryImage {
 export interface IGallery {
     id: number;
     title: string;
-    tenant_id: number;
+    tenant_id: string;
     primary_image_id: number;
     images?: IGalleryImage[];
     product_ids: any[];
@@ -53,7 +53,7 @@ export interface IGallery {
 
 export interface IPriceList {
     id: number;
-    tenant_id: number;
+    tenant_id: string;
     name: string;
     currency_id: number;
     currency?: ICurrency;
@@ -73,7 +73,7 @@ export interface IPrice {
 
 export interface IStockType {
     id: number;
-    tenant_id: number;
+    tenant_id: string;
     name: string;
 }
 
@@ -96,7 +96,7 @@ export interface IProductURL {
 
 export interface ICategory {
     id: number;
-    tenant_id: number;
+    tenant_id: string;
     category_id: number;
     name: string;
     breadcrumbed_name: string;
@@ -118,7 +118,7 @@ export interface IProductMetadata {
 export interface Product {
     id: number;
     product_name: string;
-    tenant_id: number;
+    tenant_id: string;
     sku: string;
     name: string;
     description: string;

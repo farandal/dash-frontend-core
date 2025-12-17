@@ -60,7 +60,7 @@ export interface IUser {
     deleted_at: string;
     email_verified_at: string;
     roles: any[];
-    tenant_id: number;
+    tenant_id: string;
 }
 
 /**
@@ -118,7 +118,7 @@ export interface ITenant {
  */
 export interface ICashCount {
     id: number;
-    tenant_id: number;
+    tenant_id: string;
     user_id: number;
     status: 'open' | 'closed' | 'pending_review';
     opening_amount: number;

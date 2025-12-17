@@ -39,7 +39,7 @@ const USE_MOCK_DATA = false;
 // Store Item Interface based on API response structure
 interface Product {
     id: number;
-    tenant_id: number;
+    tenant_id: string;
     sku: string;
     name: string;
     description: string;
@@ -57,7 +57,7 @@ interface Product {
         pricelist_id: number;
         pricelist: {
             id: number;
-            tenant_id: number;
+            tenant_id: string;
             currency_id: number;
             name: string;
             is_primary: boolean;
@@ -73,7 +73,7 @@ interface Product {
     gallery: {
         id: number;
         title: string;
-        tenant_id: number;
+        tenant_id: string;
         images: Array<{
             id: number;
             url: string;
@@ -84,7 +84,7 @@ interface Product {
     };
     modifier_groups: Array<{
         id: number;
-        tenant_id: number;
+        tenant_id: string;
         name: string;
         type: string;
         is_required: boolean;

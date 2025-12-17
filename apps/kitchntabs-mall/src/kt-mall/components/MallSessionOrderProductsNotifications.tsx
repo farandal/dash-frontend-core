@@ -12,7 +12,7 @@ interface MallSessionNotification {
     message: string;
     data: {
         event: string;
-        tenant_tab_id?: number;
+        tenant_tab_id?: string;
         tenant_id?: number;
         tenant_name?: string;
         status: string;
@@ -58,7 +58,7 @@ interface WebSocketNotification {
         message: string;
         notificationPayload: {
             event: string;
-            tenant_tab_id?: number;
+            tenant_tab_id?: string;
             tenant_id?: number;
             tenant_name?: string;
             status: string;

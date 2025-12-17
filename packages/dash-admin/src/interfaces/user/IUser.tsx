@@ -8,7 +8,7 @@ export default interface IUser {
 	deleted_at: string;
 	email_verified_at: string;
 	roles: any[];
-	tenant_id: number;
+	tenant_id: string;
 }
 export interface IRole {
 	id: number

@@ -181,7 +181,7 @@ export const ActionStatusCell = (props: GridRenderCellParams) => {
           _selectedStatus
         )}`;
         const payload = {
-          tenant_id: Number(tenant_id),
+          tenant_id: string(tenant_id),
           product_ids: [idProd],
           campaign_marketplace_ids: processedSelectedMarketplaces,
         };
@@ -226,7 +226,7 @@ export const ActionStatusCell = (props: GridRenderCellParams) => {
      */
 
       const payload = {
-        tenant_id: Number(tenant_id),
+        tenant_id: string(tenant_id),
         product_ids: [idProd],
         campaign_marketplace_ids: product.campaign_marketplaces.map(
           (marketplace) => marketplace.id

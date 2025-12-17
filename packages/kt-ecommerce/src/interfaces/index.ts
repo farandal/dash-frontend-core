@@ -33,7 +33,7 @@ export interface ICurrency {
 
 export interface ICategory {
     id: number;
-    tenant_id: number;
+    tenant_id: string;
     category_id: number;
     name: string;
     tenant?: ITenant;
@@ -68,7 +68,7 @@ export interface IGalleryImage {
 export interface IGallery {
     id: number;
     title: string;
-    tenant_id: number;
+    tenant_id: string;
     primary_image_id: number;
     images?: IGalleryImage[];
     product_ids: any[];
@@ -86,7 +86,7 @@ export interface IProductURL {
 export interface IProduct {
     id: number;
     product_name: string;
-    tenant_id: number;
+    tenant_id: string;
     sku: string;
     name: string;
     description: string;
@@ -132,7 +132,7 @@ export interface IProductTemplate {
 
 export interface IPriceList {
     id: number;
-    tenant_id: number;
+    tenant_id: string;
     name: string;
     currency_id: number;
     tenant?: ITenant;
@@ -154,7 +154,7 @@ export interface IPrice {
 
 export interface IStockType {
     id: number;
-    tenant_id: number;
+    tenant_id: string;
     name: string;
     tenant?: ITenant;
 }
@@ -209,7 +209,7 @@ export interface IConnectionParams {
 
 export interface ITenantSystemMarketplace {
     id: number;
-    tenant_id: number;
+    tenant_id: string;
     system_marketplace_id: number;
     systemMarketplace: ISystemMarketplace;
 }
@@ -265,7 +265,7 @@ export interface ICampaignLogJson {
 
 export interface ICampaignLog {
     id: number;
-    tenant_id: number;
+    tenant_id: string;
     loggeable_type: string;
     loggeable_id: number;
     type: string;
@@ -324,7 +324,7 @@ export interface ICampaign {
     start_date?: any;
     end_date?: any;
     status: string;
-    tenant_id: number;
+    tenant_id: string;
     tenant: ITenant;
     campaign_marketplaces: ICampaignMarketplace[];
     products_count: number;
@@ -357,10 +357,10 @@ export interface ISocketCampaignTrackerNotificationData {
 // ============================================================================
 
 export interface IOrder {
-    id: number;
+    id: string;
     system_marketplace_id: number;
     marketplace_id: number;
-    tenant_id: number;
+    tenant_id: string;
     source_id: string;
     status: string;
     currency_id: number;
@@ -381,9 +381,9 @@ export interface IOrder {
 
 export interface ILog {
     id: number;
-    tenant_id: number;
+    tenant_id: string;
     loggeable_type: string;
-    loggeable_id: number;
+    loggeable_id: string | number;
     type: string;
     date: string;
     name: string;
@@ -462,7 +462,7 @@ export interface MetadataMappingResource {
 
 export interface Metadata {
     id: number,
-    tenant_id: number,
+    tenant_id: string,
     name: string,
     slug: string,
     group: string,

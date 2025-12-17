@@ -37,8 +37,8 @@ import PDFViewer from '../../components/misc/PDFViewer';
  * Interface for tenant tab data from the record
  */
 interface TenantTab {
-    id: number;
-    tenant_id: number;
+    id: string;
+    tenant_id: string;
     tenant_name: string;
     status: string;
     status_localized: string;
@@ -56,8 +56,8 @@ interface TenantTab {
  * Interface for the main tab record
  */
 interface MallTabRecord {
-    id: number;
-    tenant_id: number;
+    id: string;
+    tenant_id: string;
     status: string;
     sale_note_path?: string;
     is_master_tab: boolean;
@@ -72,7 +72,7 @@ interface MallTabRecord {
  * Interface for voucher data
  */
 interface VoucherData {
-    tabId: number;
+    tabId: string;
     tenantId: number;
     tenantName: string;
     saleNotePath: string | null;
@@ -112,7 +112,7 @@ const MallOrderVouchers: React.FC<IDashAutoAdminCustomFieldComponent> = ({ metho
     /**
      * Build the API endpoint for downloading a sale note
      */
-    const buildDownloadUrl = useCallback((tabId: number) => {
+    const buildDownloadUrl = useCallback((tabId: string) => {
         const mallSessionHash = getMallSessionHash();
         return `public/mall/tab/${tabId}/download-sale-note?mall_session=${mallSessionHash}&regenerate=true`;
     }, [getMallSessionHash]);
@@ -147,7 +147,7 @@ const MallOrderVouchers: React.FC<IDashAutoAdminCustomFieldComponent> = ({ metho
     /**
      * Load PDF for a specific voucher using the tab ID
      */
-    const loadPdf = useCallback(async (index: number, tabId: number) => {
+    const loadPdf = useCallback(async (index: number, tabId: string) => {
         try {
             const downloadUrl = buildDownloadUrl(tabId);
             const response = await axios.get(downloadUrl, {

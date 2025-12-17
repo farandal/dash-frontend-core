@@ -6,14 +6,14 @@ export interface IOrderStatusUpdateNotification {
     tenant_id?: number;
     tenant_name?: string;
     mall_session_hash?: string;
-    master_tab_id?: number;
-    tenant_tab_id?: number;
+    master_tab_id?: string;
+    tenant_tab_id?: string;
     products?: any[];
     timestamp?: string;
     type: string;
 }
 
 export interface StoreProgressBarsProps {
-    masterTabId: number;
+    masterTabId: string;
     record?: any; // API record with progress data
 }

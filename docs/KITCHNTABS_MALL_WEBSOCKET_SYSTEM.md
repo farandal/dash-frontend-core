@@ -345,7 +345,7 @@ interface MallOrderStatusUpdateEvent {
     data: {
         master_tab_id: number;
         tenant_tab_id: number;
-        tenant_id: number;
+        tenant_id: string;
         tenant_name: string;
         status: 'CREATED' | 'CONFIRMED' | 'IN_PREPARATION' | 'PREPARED' | 'DELIVERED' | 'CLOSED' | 'CANCELLED';
         products: Array<{
@@ -380,7 +380,7 @@ interface MallTabCreationEvent {
         master_tab_id: number;
         tenant_tabs: Array<{
             tenant_tab_id: number;
-            tenant_id: number;
+            tenant_id: string;
             tenant_name: string;
         }>;
         customer_info: {

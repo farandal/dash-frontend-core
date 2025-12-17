@@ -4,7 +4,7 @@ export interface ILog {
 	id: number;
 	json: any;
 	name: string;
-	tenant_id: number;
+	tenant_id: string;
 	type: string;
 }
 export interface ILogTxtFileComponent {
