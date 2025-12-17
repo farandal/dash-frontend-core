@@ -39,7 +39,8 @@ const marketplaceResource: IDashAutoAdminResourceConfig =
     listViewButton: { enabled: false },
     listEditButton: { enabled: true },
     //listEditButton: { enabled: true, component: QuickEditButton, props: { icon: <Icons.Bolt />, label: "", resource: "marketplace/inline", navigation:"virtualhash", navigate: (id) => id, size: "small", color: "secondary" }},
-    listDeleteButton: { enabled: false },
+    listDeleteButton: { enabled: true },
+    BulkActions: false,
     formGroupMode: "layout", // groups or tabs
     /*
     editLayout: (render) => {

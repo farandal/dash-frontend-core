@@ -84,7 +84,7 @@ export const KitchnTabsResources: ResourceManifest = {
     // ========================================================================
     // KIOSK RESOURCES (from kt-kiosk)
     // ========================================================================
-    kioskResource: () => import('kt-kiosk/src/resources/kioskResource'),
+    //kioskResource: () => import('kt-kiosk/src/resources/kioskResource'),
     
     // ========================================================================
     // CASH COUNT RESOURCES (from kt-cashcount)

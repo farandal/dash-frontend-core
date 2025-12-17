@@ -94,10 +94,13 @@ const BreadcrumbItem: React.FC<BreadcrumbItemProps> = ({ item, isLast }) => {
         return content;
     }
 
+    // Ensure path starts with / to avoid relative navigation issues
+    const path = !item.path.startsWith('/') ? `/${item.path}` : item.path;
+
     // Use React Router's Link for client-side navigation
     return (
         <Link
-            to={item.path}
+            to={path}
             className="dash-breadcrumb-link"
             style={{
                 textDecoration: 'none',

@@ -168,8 +168,11 @@ const resources: IDashAutoAdminResourceConfig[] = [
          showLayout(render) {
            return (
                <Grid container spacing={2} >
-                  <Grid size={12}>
-                       {render("Resumen")}
+                      <Grid size={{ xs: 12}}>
+                       {render("Productos")}
+                   </Grid>
+                     <Grid size={{ xs: 12}}>
+                       {render("Comanda")}
                    </Grid>
                </Grid>
            )

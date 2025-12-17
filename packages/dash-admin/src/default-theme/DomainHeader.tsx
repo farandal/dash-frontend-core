@@ -80,11 +80,11 @@ const DomainHeader = <U, A>({
                         {pageSettings.subTitle}
                     </span>
                     {/* Breadcrumb Navigation - inline with title */}
-                    {showBreadcrumbs && pageSettings.breadcrumbs && pageSettings.breadcrumbs.length > 0 && (
+                    {/*showBreadcrumbs && pageSettings.breadcrumbs && pageSettings.breadcrumbs.length > 0 && (
                         <Box className='dash-header-breadcrumbs'>
                             <Breadcrumbs />
                         </Box>
-                    )}
+                    )*/}
                 </Box>
             ) : null}
 

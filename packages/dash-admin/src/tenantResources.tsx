@@ -44,7 +44,7 @@ const tenantResources: IAppResourceConfig[] = [
     roles: [DASHAppConstants.system.SYSTEM_ROLE, DASHAppConstants.system.TENANT_ROLE],
     component: ResourceTemplate,
     trash: true,
-    isFormData: true,
+  
     model: 'system/user',
     group: 'Recursos del tenant',
     label: 'Usuarios',

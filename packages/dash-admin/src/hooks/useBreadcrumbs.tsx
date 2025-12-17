@@ -157,6 +157,12 @@ const generateBreadcrumbsFromPath = (
     }
     
     let currentPath = URL_PREFIX;
+    
+    // Ensure path starts with slash if prefix doesn't have one
+    if (currentPath && !currentPath.startsWith('/')) {
+        currentPath = `/${currentPath}`;
+    }
+
     let lastIdIndex = -1;
     
     segments.forEach((segment, index) => {
