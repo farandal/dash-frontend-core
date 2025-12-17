@@ -76,10 +76,10 @@ import { useDraggableCarousel, UseDraggableCarouselOptions } from "./hooks/useDr
 /** Carousel configuration for TabsList - can be customized */
 const TABS_CAROUSEL_CONFIG: UseDraggableCarouselOptions = {
     itemsPerPageXs: 2,
-    itemsPerPageSm: 4,
-    itemsPerPageMd: 4,
-    itemsPerPageLg: 6,
-    itemsPerPageXl: 8,
+    itemsPerPageSm: 2,
+    itemsPerPageMd: 3,
+    itemsPerPageLg: 4,
+    itemsPerPageXl: 6,
     gap: 8,
 };
 
@@ -192,7 +192,7 @@ const KitchenTabsList: React.FC<IDashAutoAdminDataGrid> = ({ resourceConfig }) =
 
     // Handle the actual close with selected status
     const handleConfirmSimpleClose = useCallback((status: 'CLOSED' | 'CANCELLED') => {
-        debugger;
+      
         if (tabToClose) {
             closeTabWithStatus(tabToClose.id, status);
         }
@@ -679,6 +679,7 @@ const KitchenTabsList: React.FC<IDashAutoAdminDataGrid> = ({ resourceConfig }) =
                                                     height: '100%',
                                                 }}
                                             >
+                                                
                                                 <TabListItem
                                                     record={record}
                                                     resourceConfig={resourceConfig}

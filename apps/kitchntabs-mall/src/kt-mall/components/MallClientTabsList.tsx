@@ -120,7 +120,7 @@ const MallClientTabsList: React.FC<IDashAutoAdminDataGrid> = ({ resourceConfig }
                                         sx={{ p: 0 }}
                                         title={
                                             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
-                                                <Typography variant="h5">{`Orden #${record.id}`}</Typography>
+                                                <Typography variant="h5">{`Orden #${String(record.id).slice(-6)}`}</Typography>
                                                 <ButtonGroup style={{ alignItems: "center" }} orientation="horizontal" variant="text" size="small">
                                                     {/*<TabTimerClock createdAt={(record as ITab).date_confirmed} />*/}
 

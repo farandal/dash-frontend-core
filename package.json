@@ -44,12 +44,18 @@
 
     "dev:web:kt:local": "pnpm config:web:kitchntabs:local && pnpm dev",
     "dev:web:kitchntabs:development": "pnpm config:web:kitchntabs:development && pnpm dev",
-    "dev:web:kitchntabs:production": "pnpm config:web:kitchntabs:production && pnpm dev",
+    "dev:web:kitchntabs:production": "MODE=production CUSTOM_MODE=kitchntabs.production TARGET_TYPE=web PLATFORM=web APP_PATH=apps/kitchntabs VITE_DEV_PORT=3003  VITE_HMR_PORT=4438  node build_config.js && vite build -c electron.vite.config.mts && cross-env NODE_ENV=production BUILD_ENV=prod CUSTOM_MODE=kitchntabs.production PORT=3003 concurrently \"cd apps/kitchntabs && pnpm dev\"",
+    
+    "build:web:kitchntabs:production": "MODE=production CUSTOM_MODE=kitchntabs.production TARGET_TYPE=web PLATFORM=web APP_PATH=apps/kitchntabs node build_config.js && vite build -c electron.vite.config.mts && cross-env NODE_ENV=production BUILD_ENV=prod CUSTOM_MODE=kitchntabs.production concurrently \"cd apps/kitchntabs && pnpm build\"",
+   
+
     "_ELECTRON": "BUILD",
+
     "dev:electron:kitchntabs:development": "MODE=production CUSTOM_MODE=kitchntabs.development TARGET_TYPE=web PLATFORM=web APP_PATH=apps/kitchntabs VITE_DEV_PORT=3003  VITE_HMR_PORT=4438  node build_config.js && vite build -c electron.vite.config.mts && cross-env NODE_ENV=development BUILD_ENV=dev CUSTOM_MODE=kitchntabs.development PORT=3003 concurrently \"cd apps/kitchntabs && pnpm dev\" \"wait-on http://127.0.0.1:3003 && electron .\"",
     "dev:electron:kitchntabs:production": "pnpm config:electron:kitchntabs:production && vite build -c electron.vite.config.mts && cross-env NODE_ENV=development BUILD_ENV=dev CUSTOM_MODE=kitchntabs.production concurrently \"pnpm dev\" \"wait-on http://127.0.0.1:3006 && electron .\"",
     "dev:android:kitchntabs:development": "pnpm resources:android && cross-env MODE=development CUSTOM_MODE=kitchntabs.development TARGET_TYPE=mobile PLATFORM=android APP_PATH=apps/kitchntabs NODE_OPTIONS=--max-old-space-size=4048 node build_config.js && turbo build --filter=kitchntabs-app --no-cache && cap run android",
     "dev:android:kitchntabs:production": "pnpm resources:android && cross-env MODE=production CUSTOM_MODE=kitchntabs.production TARGET_TYPE=mobile PLATFORM=android APP_PATH=apps/kitchntabs NODE_OPTIONS=--max-old-space-size=4048 node build_config.js && turbo build --no-cache && cap run android",
+   
     "release:android:kitchntabs:development": "pnpm config:android:kitchntabs:development && turbo build --filter=kitchntabs-app --no-cache && cap run android",
     "release:android:kitchntabs:production": "pnpm config:android:kitchntabs:production && turbo build --filter=kitchntabs-app --no-cache && cap sync android && cd ./android && ./gradlew bundleRelease",
     

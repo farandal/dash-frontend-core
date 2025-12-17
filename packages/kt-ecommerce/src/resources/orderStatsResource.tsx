@@ -34,7 +34,7 @@ const orderStatsResource: IDashAutoAdminResourceConfig =
     listDeleteButton: { enabled: false },
     formGroupMode: "groups", // groups or tabs
     saveButtonAlwaysEnabled: true,
-processErrors: false,
+    processErrors: false,
     mutationMode: "pessimistic",
     edit:false,
     drawer: true

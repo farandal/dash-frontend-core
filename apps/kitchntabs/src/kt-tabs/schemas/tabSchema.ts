@@ -8,6 +8,7 @@ import TabActionButtonsField from "../components/tab2/components/TabActionButton
 import TabOrderProductsSelector from "../components/Tab/TabOrderProductsSelector";
 import TabAgentToolbar from "../components/Tab/TabAgentToolbar";
 import ViewOrder from "../components/Tab/ViewOrder";
+import TabTotalAmountField from "../components/Tab/TabTotalAmountField";
 
 const tabSchema: IDashAutoAdminAttribute[] = [
     // Show view - Tab summary
@@ -139,7 +140,9 @@ const tabSchema: IDashAutoAdminAttribute[] = [
         type: String,
         inCreate: false,
         inEdit: false,
-        inShow: false,
+        inShow: true,
+        custom: true,
+        component: TabTotalAmountField,
     },
     {
         attribute: 'order.is_paid',

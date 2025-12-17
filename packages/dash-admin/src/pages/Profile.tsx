@@ -80,7 +80,9 @@ const Profile: FC = (_props) => {
 			password_confirmation: values.password_confirmation,
 		};
 
+		// Append all user info fields to formData
 		if (values.name) { formData.append('name', values.name); }
+		if (values.lastname) { formData.append('lastname', values.lastname); }
 		if (values.email) { formData.append('email', values.email); }
 		if (avatar.rawFile) { formData.append('avatar', avatar.rawFile); }
 		formData.append('_method', 'put');

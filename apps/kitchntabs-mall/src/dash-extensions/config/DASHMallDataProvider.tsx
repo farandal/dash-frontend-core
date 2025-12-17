@@ -56,7 +56,8 @@ const dataProvider = {
     const axios = useAxios();
 
     try {
-      const url = `${resource}/${params.id}?mall_id=${mall_id}`;
+      const resourcePath = /\/[\w-]+$/.test(resource) ? resource : `${resource}/${params.id}`;
+      const url = `${resourcePath}?mall_id=${mall_id}`;
       const response = await axios.get(url, params.meta ? { params: params.meta } : {});
 
       return {
@@ -94,7 +95,7 @@ const dataProvider = {
         params.data?.isFormData === true ||
         params.meta?.isFormData === true;
 
-    const resourcePath = /\/\d+$/.test(resource) ? resource : (params.id ? `${resource}/${params.id}` : resource);
+    const resourcePath = (params.id && resource.includes(params.id.toString())) ? resource : (params.id ? `${resource}/${params.id}` : resource);
 
     const method: 'POST' | 'PUT' = params.meta?.method
         ? params.meta.method

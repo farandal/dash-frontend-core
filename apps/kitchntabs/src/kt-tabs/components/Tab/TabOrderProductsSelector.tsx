@@ -538,16 +538,25 @@ const TabOrderProductsSelector: React.FC<ITabOrderProductsSelector> = (props) =>
     const tabManager = useTabManagerOptional();
     
     // If we're not in a TabManagerProvider (e.g., Show mode), render a read-only message
+    // If we're not in a TabManagerProvider (e.g., Show mode), render the ordered products as chips
     if (!tabManager) {
-        return (
-            <Box sx={{ p: 2, textAlign: 'center', color: 'text.secondary' }}>
-                <Typography variant="body2">
-                    {translate('resources.tab.product_selector_not_available', { 
-                        _: 'Product selector is only available in edit mode' 
-                    })}
-                </Typography>
-            </Box>
-        );
+        const items = tab?.order?.items || [];
+        
+       
+            return (
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, p: 2 }}>
+                    {items.length > 0 && items.map((item, index) => (
+                        <Chip
+                            key={item.id || index}
+                            label={`${item.product_name} (${item.quantity})`}
+                            size="small"
+                            variant="outlined"
+                        />
+                    ))}
+                </Box>
+            );
+      
+
     }
 
     // Destructure from context - use 'products' (all products) instead of 'displayProductsList' (paginated)

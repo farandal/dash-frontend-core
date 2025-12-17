@@ -287,12 +287,13 @@ const KitchenTabsList: React.FC<IDashAutoAdminDataGrid> = ({ resourceConfig }) =
                                                         transition: 'opacity 0.3s ease',
                                                     }}
                                                 >
+                                                    
                                                     <Box sx={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
                                                         <CardHeader
                                                             sx={{ p: 0 }}
                                                             title={
                                                                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
-                                                                    <Typography variant="h5">{`#${record.id}`}</Typography>
+                                                                    <Typography variant="h5">{`#${String(record.id).slice(-6)}`}</Typography>
                                                                     <ButtonGroup style={{ alignItems: "center" }} orientation="horizontal" variant="text" size="small">
                                                                         <TabTimerClock createdAt={(record as ITab).date_confirmed} />
                                                                         <DashResourceButton resource={resourceConfig.model} record={record} resourceConfig={resourceConfig} mode={"show"} />

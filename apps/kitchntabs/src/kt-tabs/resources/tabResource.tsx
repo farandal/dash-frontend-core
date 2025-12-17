@@ -47,11 +47,11 @@ const resources: IDashAutoAdminResourceConfig[] = [
         listProps: {
             storeKey: false,
             empty:false,
-            perPage: 100,
+            perPage: 20,
             sort: { field: 'id', order: 'DESC' },    
         }, 
         paginationProps: {
-            rowsPerPageOptions: [100, 200, 500, 1000],
+            rowsPerPageOptions: [20, 40, 60, 100],
         },
         saveButtonAlwaysEnabled: true,
         processErrors: true,
@@ -59,6 +59,7 @@ const resources: IDashAutoAdminResourceConfig[] = [
        
         dataGridProps: {
             bulkActionButtons: false,
+            rowClick:false,
         },
         resetSelectedIdsOnLoad: true,
         closeDrawerAfterSave: true,

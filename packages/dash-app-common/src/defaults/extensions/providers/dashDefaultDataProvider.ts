@@ -318,7 +318,7 @@ export const dashDefaultDataProviderOverrides: DashDataProviderOverrides = {
             params.data?.isFormData === true ||
             params.meta?.isFormData === true;
 
-        const resourcePath = /\/\d+$/.test(resource) ? resource : ((params.meta as any)?.id ? `${resource}/${(params.meta as any).id}` : resource);
+        const resourcePath =  /\/[\w-]+$/.test(resource) ? resource : ((params.meta as any)?.id ? `${resource}/${(params.meta as any).id}` : resource);
 
         let tenant_id = params.data?.tenant_id;
 

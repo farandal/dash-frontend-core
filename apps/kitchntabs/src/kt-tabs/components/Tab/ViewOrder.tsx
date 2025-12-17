@@ -133,7 +133,7 @@ const ViewOrder: React.FC<IDashAutoAdminCustomFieldComponent> = ({ method, attri
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 2 }}>
                     <Box>
                         <Typography variant="h5" gutterBottom>
-                            Tab #{tab.id}
+                            Tab #{String(tab.id).slice(-6)}
                         </Typography>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
                             <AccessTimeIcon fontSize="small" color="action" />

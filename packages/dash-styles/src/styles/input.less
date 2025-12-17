@@ -8,10 +8,11 @@ input:-webkit-autofill:focus,
 input:-webkit-autofill:active {
   transition: background-color 5000s ease-in-out 0s;
   -webkit-text-fill-color: var(--text-color, @text-color) !important;
-  -webkit-box-shadow: 0 0 0px 1000px var(--component-bg, @component-bg) inset !important;
+  //-webkit-box-shadow: 0 0 0px 1px var(--component-bg, @component-bg) inset !important;
   background-color: var(--component-bg, @component-bg) !important;
   border-color: var(--component-border, @component-border) !important;
 }
+
 
 .MuiAutocomplete-inputRoot {
   flex-wrap: nowrap !important;

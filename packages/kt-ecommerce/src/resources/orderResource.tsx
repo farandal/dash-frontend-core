@@ -25,9 +25,12 @@ const orderResource: IDashAutoAdminResourceConfig =
         },
         {
             title: "Reportes",
-            redirect: "/ecommerce/stats",
+            redirect: "/ecommerce/order/stats",
         },
     ],
+    dataGridProps: {
+        rowClick: false
+    },
     listViewButton: { enabled: true },
     listEditButton: { enabled: false },
     listDeleteButton: { enabled: false },

@@ -13,7 +13,11 @@ import { IDashAutoAdminAttribute, IDashAutoAdminResourceConfig } from 'dash-auto
  */
 export const getResourceConfig = (model: string): IDashAutoAdminResourceConfig | undefined => {
     const resources = DASHStorageClass.resources;
-    const normalizedModel = model.replace(/\/\d+$/, '');
+    // Try exact match first
+    const exactMatch = resources.find((resource: IDashAutoAdminResourceConfig) => resource.model === model);
+    if (exactMatch) return exactMatch;
+
+    const normalizedModel = model.replace( /\/[\w-]+$/, '');
     return resources.find((resource: IDashAutoAdminResourceConfig) => resource.model === normalizedModel);
 };
 
@@ -52,7 +56,7 @@ export const processFormData = (resource: string, params: any): FormData => {
                     });
                     return;
                 }
-            } else if (!!value && typeof value === "object" && !(value instanceof File)) {
+            } else if (!!value && typeof value === "object" && !(value instanceof File) && !value.rawFile) {
                 if (debug) console.log(`Field ${key} is a nested object`);
                 const _objKeys = Object.keys(value);
                 _objKeys.forEach((objKey) => {
@@ -108,7 +112,11 @@ export const processFormData = (resource: string, params: any): FormData => {
 
                 if (fieldConfig?.processor === 'File') {
                     if (debug) console.log(`Adding File for ${key}`);
-                    form.append(key, value as File);
+                    if (value.rawFile) {
+                        form.append(key, value.rawFile);
+                    } else {
+                        form.append(key, value as File);
+                    }
                     return;
                 }
 

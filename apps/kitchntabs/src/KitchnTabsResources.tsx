@@ -31,7 +31,7 @@ export const KitchnTabsResources: ResourceManifest = {
     // ========================================================================
     // DASHBOARD RESOURCES (from kt-ecommerce)
     // ========================================================================
-    dashboardResources: () => import('kt-ecommerce/src/resources/dashboard/dashboardResources'),
+    //dashboardResources: () => import('kt-ecommerce/src/resources/dashboard/dashboardResources'),
 
     // ========================================================================
     // GEOHIERARCHY RESOURCES (from kt-ecommerce)
@@ -72,14 +72,14 @@ export const KitchnTabsResources: ResourceManifest = {
     campaignResource: () => import('kt-ecommerce/src/resources/campaignResource'),
 
     // Order resources
-    orderResource: () => import('kt-ecommerce/src/resources/orderResource'),
+    //orderResource: () => import('kt-ecommerce/src/resources/orderResource'),
     //deliveryDriverResource: () => import('kt-ecommerce/src/resources/delivery/deliveryDriverResource'),
     //deliveryRouteResource: () => import('kt-ecommerce/src/resources/delivery/deliveryRouteResource'),
 
     // ========================================================================
     // TABS RESOURCES (from kt-tabs)
     // ========================================================================
-    tabResources: () => import('kt-tabs/src/resources/tabResource'),
+    tabResources: () => import('./kt-tabs/resources/tabResource'),
 
     // ========================================================================
     // KIOSK RESOURCES (from kt-kiosk)

@@ -326,6 +326,7 @@ const KitchnTabsMallBootstrap: React.FC = () => {
         customResources: KitchnTabsMallResources,
         customPublicRoutes: dependencies.routes.public,
         customPrivateRoutes: dependencies.routes.private,
+        
         AdminHook: () => <><PublicSessionAppHookComponent/><MallAppMediator/></>,  
     };
 

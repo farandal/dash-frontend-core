@@ -3,6 +3,7 @@ import React, { useMemo, memo, useEffect } from 'react';
 import {
     TextField,
     Datagrid,
+    FunctionField,
 } from 'react-admin';
 
 import IDashAutoAdminAttribute from '../interfaces/IDashAutoAdminAttribute';
@@ -92,10 +93,18 @@ const AutoDataGrid: React.FC<IAutoDataGrid> = ({
     return <DataGridWrapper className={resourceConfig?.dataGridProps?.stickyHeader ? 'dash-sticky-header' : ''}>
             <DataGridRootComponent {...processedDataGridProps}>
                 {!schemaIncludesId && !(resourceConfig.hideSchemaId === true) && (
-                    <TextField
+                    <FunctionField
                         key={'default_id_field_0'}
                         source='id'
                         sortable={true}
+                        render={(record: any) => {
+                            const val = record?.id;
+                            // If not numeric, slice last 6 chars
+                            if (val && isNaN(Number(val))) {
+                                return String(val).slice(-6);
+                            }
+                            return val;
+                        }}
                     />
                 )}
                 {filteredSchema.map((attribute, idx) => 

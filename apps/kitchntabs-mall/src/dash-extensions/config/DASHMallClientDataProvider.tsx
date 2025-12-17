@@ -150,7 +150,7 @@ const dataProvider = {
         params.data?.isFormData === true ||
         params.meta?.isFormData === true;
 
-    const resourcePath = /\/\d+$/.test(apiResource) ? apiResource : (params.id ? `${apiResource}/${params.id}` : apiResource);
+    const resourcePath =  /\/[\w-]+$/.test(apiResource) ? apiResource : (params.id ? `${apiResource}/${params.id}` : apiResource);
 
     const method: 'POST' | 'PUT' = params.meta?.method
         ? params.meta.method

@@ -309,7 +309,7 @@ const dataProvider = {
             params.meta?.isFormData === true;
 
 
-        const resourcePath = /\/\d+$/.test(resource) ? resource : (params.id ? `${resource}/${params.id}` : resource);
+        const resourcePath =  /\/[\w-]+$/.test(resource) ? resource : (params.id ? `${resource}/${params.id}` : resource);
 
         // Only add tenant_id from cookie if it's not already in the data and the user is not a system admin
         let tenant_id = params.data?.tenant_id;

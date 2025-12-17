@@ -27,7 +27,7 @@ export const useTabOperations = (delayMs = 1000) => {
 
   // Update tab status with queuing
   const updateTabStatus = useCallback((id: number, status: string) => {
-    showMessage(`Tab #${id} queued for status update to ${status}`, 'info');
+    showMessage(`Tab #${String(id).slice(-6)} queued for status update to ${status}`, 'info');
     
     return operationQueue.add(() => 
       dataProvider.update(`tab/tab`, {
@@ -35,11 +35,11 @@ export const useTabOperations = (delayMs = 1000) => {
         data: { status },
         previousData: undefined
       }).then(() => {
-        showMessage(`Tab #${id} updated to ${status}`, 'success');
+        showMessage(`Tab #${String(id).slice(-6)} updated to ${status}`, 'success');
         refresh();
         return Promise.resolve();
       }).catch((error: any) => {
-        showMessage(`Error updating Tab #${id}: ${error?.message || 'Unknown error'}`, 'error');
+        showMessage(`Error updating Tab #${String(id).slice(-6)}: ${error?.message || 'Unknown error'}`, 'error');
         return Promise.reject(error);
       })
     );

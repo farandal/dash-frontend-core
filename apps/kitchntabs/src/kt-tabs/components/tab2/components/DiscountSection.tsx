@@ -41,7 +41,7 @@ const DiscountSection: React.FC<DiscountSectionProps> = ({
     const { totalAmount } = useTabManager();
     const [tenantCurrency, setTenantCurrency] = useState<any>(null);
     const [expanded, setExpanded] = useState(false);
-    const initializedRef = useRef(false);
+    const initializedRef = useRef<string | number | null>(null);
     
     // Try to get tab data from edit context (only available in edit mode)
     let tabRecord: ITab | null = null;
@@ -60,16 +60,28 @@ const DiscountSection: React.FC<DiscountSectionProps> = ({
 
     // Initialize form with existing discount values (only once per record)
     useEffect(() => {
-        if (!formContext || initializedRef.current) return;
+        if (!formContext) return;
         
+        // If we already initialized for this record, don't do it again
+        if (recordId && initializedRef.current === recordId) return;
+
         if (recordId && recordDiscountType && recordDiscountValue) {
             const numValue = parseFloat(String(recordDiscountValue));
             if (numValue > 0) {
-                formContext.setValue('discount_type', recordDiscountType);
-                formContext.setValue('discount_value', numValue);
-                formContext.setValue('discount_reason', recordDiscountReason || '');
-                setExpanded(true);
-                initializedRef.current = true;
+                const currentType = formContext.getValues('discount_type');
+                const currentValue = formContext.getValues('discount_value');
+                
+                // Check if values are already set to avoid infinite loop
+                if (currentType !== recordDiscountType || parseFloat(String(currentValue)) !== numValue) {
+                    // Use options to avoid triggering unnecessary re-renders/validation if possible
+                    const options = { shouldValidate: true, shouldDirty: true, shouldTouch: true };
+                    formContext.setValue('discount_type', recordDiscountType, options);
+                    formContext.setValue('discount_value', numValue, options);
+                    formContext.setValue('discount_reason', recordDiscountReason || '', options);
+                    setExpanded(true);
+                }
+                // Mark as initialized for this record
+                initializedRef.current = recordId;
             }
         }
     }, [recordId, recordDiscountType, recordDiscountValue, recordDiscountReason, formContext]);
@@ -184,7 +196,6 @@ const DiscountSection: React.FC<DiscountSectionProps> = ({
                             <Controller
                                 name="discount_type"
                                 control={formContext.control}
-                                defaultValue={recordDiscountType || ''}
                                 render={({ field }) => (
                                     <Select
                                         {...field}
@@ -218,7 +229,6 @@ const DiscountSection: React.FC<DiscountSectionProps> = ({
                         <Controller
                             name="discount_value"
                             control={formContext.control}
-                            defaultValue={recordDiscountValue ? parseFloat(String(recordDiscountValue)) : ''}
                             render={({ field }) => (
                                 <TextField
                                     {...field}
@@ -265,7 +275,6 @@ const DiscountSection: React.FC<DiscountSectionProps> = ({
                     <Controller
                         name="discount_reason"
                         control={formContext.control}
-                        defaultValue={recordDiscountReason || ''}
                         render={({ field }) => (
                             <TextField
                                 {...field}

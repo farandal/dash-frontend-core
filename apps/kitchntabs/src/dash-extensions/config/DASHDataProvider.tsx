@@ -261,7 +261,7 @@ const dataProvider = {
                 : dashStorage.getItem('tenant_id');
 
 
-        const resourcePath = /\/\d+(?:\/[^\/]*)?$/.test(resource) ? resource : (params.id ? `${resource}/${params.id}` : resource);
+        const resourcePath = (params.id && resource.includes(params.id.toString())) ? resource : (params.id ? `${resource}/${params.id}` : resource);
 
         const postData = processPostData(
             resourcePath,
@@ -309,7 +309,7 @@ const dataProvider = {
             params.meta?.isFormData === true;
 
 
-        const resourcePath = /\/\d+$/.test(resource) ? resource : (params.id ? `${resource}/${params.id}` : resource);
+        const resourcePath = (params.id && resource.includes(params.id.toString())) ? resource : (params.id ? `${resource}/${params.id}` : resource);
 
         // Only add tenant_id from cookie if it's not already in the data and the user is not a system admin
         let tenant_id = params.data?.tenant_id;
@@ -417,8 +417,10 @@ const dataProvider = {
         const tenant_id = dashStorage.getItem('tenant_id');
         const axios = useAxios();
 
+        const resourcePath = (params.id && resource.includes(params.id.toString())) ? resource : `${resource}/${params.id}`;
+
         // try {
-        const { data } = await axios.delete(`${resource}/${params.id}`, {
+        const { data } = await axios.delete(resourcePath, {
             ...params.data,
             tenant_id: tenant_id,
         });

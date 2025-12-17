@@ -367,7 +367,7 @@ export const createDashDataProvider = (
                 params.data?.isFormData === true ||
                 params.meta?.isFormData === true;
 
-            const resourcePath = /\/\d+$/.test(resource) 
+            const resourcePath =  /\/[\w-]+$/.test(resource) 
                 ? resource 
                 : ((params.meta as any)?.id ? `${resource}/${(params.meta as any).id}` : resource);
 

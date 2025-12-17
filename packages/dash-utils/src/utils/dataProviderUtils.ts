@@ -149,9 +149,13 @@ export const processFormData = (
                 }
             });
         } else if (typeof value === 'object' && !(value instanceof Date)) {
-            Object.keys(value).forEach(objKey => {
-                appendToFormData(objKey, value[objKey], fieldName);
-            });
+            if (value.rawFile && value.rawFile instanceof File) {
+                formData.append(fieldName, value.rawFile);
+            } else {
+                Object.keys(value).forEach(objKey => {
+                    appendToFormData(objKey, value[objKey], fieldName);
+                });
+            }
         } else if (typeof value === 'boolean') {
             formData.append(fieldName, value ? '1' : '0');
         } else {

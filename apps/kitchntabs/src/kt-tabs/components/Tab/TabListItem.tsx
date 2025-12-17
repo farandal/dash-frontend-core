@@ -95,6 +95,7 @@ const TabListItem = memo<TabListItemProps>(({
 
     // Memoize card style - includes opacity when updating status
     const cardStyle = useMemo(() => ({ 
+        padding: '0px',
         position: 'relative' as const, 
         overflow: 'visible' as const,
         backgroundColor: isBlinking ? '#90EE90' : 'inherit',
@@ -172,7 +173,8 @@ const TabListItem = memo<TabListItemProps>(({
 
     return (
         <Card sx={cardStyle} className="dash-tab-staff">
-            <Chip label={`#${record.id}`} sx={{ position: 'absolute', top: 4, left: 4}} />                    
+      
+            <Chip label={`#${String(record.id).slice(-6)}`} sx={{ position: 'absolute', top: 4, left: 4}} />                    
 
             {/* Timer in top right corner */}
             <Box sx={{ position: 'absolute', top: 4, right: 4, alignItems: 'center' }}>

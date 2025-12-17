@@ -463,6 +463,7 @@ const systemResources: IAppResourceConfig[] = [
         roles: [DASHAppConstants.system.SYSTEM_ROLE],
         component: ResourceTemplate,
         trash: true,
+        isFormData: true,
         model: 'system/user',
         group: 'Recursos de sistema',
         label: 'Usuarios',

@@ -20,7 +20,11 @@ Object.defineProperty(Boolean.prototype, 'toInt', {
  */
 export const getResourceConfig = (model: string) => {
     const resources = DASHStorageClass.resources;
-    const normalizedModel = model.replace(/\/\d+$/, '');
+    // Try exact match first
+    const exactMatch = resources.find((resource) => resource.model === model);
+    if (exactMatch) return exactMatch;
+
+    const normalizedModel = model.replace(/\/[\w-]+$/, '');
     return resources.find((resource) => resource.model === normalizedModel);
 };
 
@@ -78,7 +82,7 @@ export const processFormData = (resource: string, params: any): FormData => {
                     });
                     return;
                 }
-            } else if (!!value && typeof value === "object" && !(value instanceof File)) {
+            } else if (!!value && typeof value === "object" && !(value instanceof File) && !value.rawFile) {
                 // In certain cases for example, the attribute is called client.name; 
                 // when the form is submitted, the attribute comes with the name client, and the value is an object with a key { name: 'xxx' }
                 const _objKeys = Object.keys(value)
@@ -112,8 +116,11 @@ export const processFormData = (resource: string, params: any): FormData => {
                 }
 
                 if (fieldConfig?.processor === 'File') {
-
-                    form.append(key, value as File);
+                    if (value.rawFile) {
+                        form.append(key, value.rawFile);
+                    } else {
+                        form.append(key, value as File);
+                    }
                     return;
                 }
 
@@ -470,7 +477,7 @@ const dataProvider = {
                 : getCookie('tenant_id');
     
 
-        const resourcePath = /\/\d+$/.test(resource) ? resource : (params.id ? `${resource}/${params.id}` : resource);        
+        const resourcePath = (params.id && resource.includes(params.id.toString())) ? resource : (params.id ? `${resource}/${params.id}` : resource);
 
         const postData = processPostData(
             resourcePath,
@@ -549,8 +556,7 @@ const dataProvider = {
     
 
         
-        const resourcePath = /\/\d+$/.test(resource) ? resource : (params.id ? `${resource}/${params.id}` : resource);    
-        
+        const resourcePath = (params.id && resource.includes(params.id.toString())) ? resource : (params.id ? `${resource}/${params.id}` : resource);
 
         const tenant_id =
             params && params.data && params.data.tenant_id
@@ -589,9 +595,11 @@ const dataProvider = {
 	delete: async (resource, params) => {
         const tenant_id = getCookie('tenant_id');
         const axios = useAxios();
+        
+        const resourcePath = (params.id && resource.includes(params.id.toString())) ? resource : `${resource}/${params.id}`;
 
        // try {
-            const { data } = await axios.delete(`${resource}/${params.id}`, {
+            const { data } = await axios.delete(resourcePath, {
                 ...params.data,
                 tenant_id: tenant_id,
             });
