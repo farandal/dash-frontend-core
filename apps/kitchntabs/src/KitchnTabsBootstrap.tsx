@@ -246,3 +246,5 @@ const KitchnTabsBootstrap: React.FC = () => {
 };
 
 export default KitchnTabsBootstrap;
+// End of file
+

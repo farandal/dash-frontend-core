@@ -251,7 +251,7 @@ const resources: IDashAutoAdminResourceConfig[] = [
         closeDrawerAfterSave: true,
         showNotifyAfterSubmit: false,
         showDialogAfterSubmit: true,
-        redirectAfterCreate: "list",
+        redirectAfterCreate: "edit",
         redirectAfterUpdate: false,
         
         refreshAfter: true,

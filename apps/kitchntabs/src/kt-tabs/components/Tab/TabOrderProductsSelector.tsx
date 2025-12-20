@@ -499,6 +499,24 @@ const TabOrderProductsSelector: React.FC<ITabOrderProductsSelector> = (props) =>
     const { record, method, config: userConfig } = props;
     const tab: ITab = record as ITab;
     
+    // 🐛 DEBUG: Track component mounting
+    const componentMountCountRef = React.useRef(0);
+    React.useEffect(() => {
+        componentMountCountRef.current += 1;
+        console.log(`🟠 [ISSUE01] [TabOrderProductsSelector] MOUNTED (count: ${componentMountCountRef.current})`, {
+            method,
+            tabId: tab?.id,
+            hasRecord: !!record,
+            timestamp: new Date().toISOString()
+        });
+        return () => {
+            console.log(`🔴 [ISSUE01] [TabOrderProductsSelector] UNMOUNTING (count: ${componentMountCountRef.current})`, {
+                method,
+                tabId: tab?.id
+            });
+        };
+    }, []);
+    
     // Theme and breakpoints
     const theme = useTheme();
     const isXs = useMediaQuery(theme.breakpoints.only('xs'));
@@ -748,16 +766,32 @@ const TabOrderProductsSelector: React.FC<ITabOrderProductsSelector> = (props) =>
     }, [allProducts, filteredProducts, totalItems, hasMorePages, pages, isLoadingProducts]);
 
     // Auto-load more products if available (with debounce to avoid multiple calls)
+    const autoLoadCallCountRef = useRef(0);
     useEffect(() => {
+        autoLoadCallCountRef.current += 1;
+        const callNumber = autoLoadCallCountRef.current;
+        
+        console.log(`🔶 [ISSUE01] [TabOrderProductsSelector] Auto-load effect triggered (call #${callNumber})`, {
+            hasMorePages,
+            isLoadingProducts,
+            allProductsCount: allProducts?.length || 0,
+            totalItems,
+            shouldAutoLoad: hasMorePages && loadMore && !isLoadingProducts && (allProducts?.length || 0) < totalItems
+        });
+        
         if (hasMorePages && loadMore && !isLoadingProducts) {
             const currentCount = allProducts?.length || 0;
             if (currentCount < totalItems) {
-                console.log(`📦 Auto-loading more products... (${currentCount}/${totalItems})`);
+                console.log(`📦 [ISSUE01] [TabOrderProductsSelector] Auto-loading more products... (${currentCount}/${totalItems}) - call #${callNumber}`);
                 // Add a small delay to avoid rapid fire calls
                 const timer = setTimeout(() => {
+                    console.log(`⏰ [ISSUE01] [TabOrderProductsSelector] Timer fired, calling loadMore() - call #${callNumber}`);
                     loadMore();
                 }, 200);
-                return () => clearTimeout(timer);
+                return () => {
+                    console.log(`🚫 [ISSUE01] [TabOrderProductsSelector] Timer cancelled - call #${callNumber}`);
+                    clearTimeout(timer);
+                };
             }
         }
     }, [hasMorePages, loadMore, allProducts?.length, totalItems, isLoadingProducts]);
@@ -1027,6 +1061,7 @@ const TabOrderProductsSelector: React.FC<ITabOrderProductsSelector> = (props) =>
 
     return (
         <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column', position: 'relative' }}>
+           
             {/* Search Box */}
             <Box sx={{ px: 2, py: 1, borderBottom: 1, borderColor: 'divider', backgroundColor: 'background.paper' }}>
                 <TextField

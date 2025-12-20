@@ -252,6 +252,35 @@ export const TabManagerProvider: React.FC<TabManagerProviderProps> = ({
 }) => {
     const translate = useTranslate();
     
+    // 🐛 DEBUG: Track mounting and key props changes
+    const mountCountRef = useRef(0);
+    useEffect(() => {
+        mountCountRef.current += 1;
+        console.log(`🔵 [ISSUE01] [TabManagerProvider] MOUNTED (count: ${mountCountRef.current})`, {
+            tabId: tab?.id,
+            method,
+            productsResource,
+            enableInfiniteScroll,
+            timestamp: new Date().toISOString()
+        });
+        return () => {
+            console.log(`🔴 [ISSUE01] [TabManagerProvider] UNMOUNTING (count: ${mountCountRef.current})`, {
+                tabId: tab?.id,
+                method
+            });
+        };
+    }, []);
+    
+    // 🐛 DEBUG: Track tab changes
+    useEffect(() => {
+        console.log(`🟡 [ISSUE01] [TabManagerProvider] Tab changed`, {
+            tabId: tab?.id,
+            hasOrder: !!tab?.order,
+            orderItemsCount: tab?.order?.items?.length || 0,
+            method
+        });
+    }, [tab?.id, method]);
+    
     // Get form context and field array hooks internally
     const { control, setValue, getValues } = useFormContext();
     const { append } = useFieldArray({
@@ -343,12 +372,22 @@ export const TabManagerProvider: React.FC<TabManagerProviderProps> = ({
     
     // Initialize order products only from tab data
     useEffect(() => {
+        console.log(`🔷 [ISSUE01] [TabManagerProvider] Initialize effect triggered`, {
+            isInitializing: isInitializingRef.current,
+            hasOrderItems: !!tab?.order?.items,
+            orderItemsCount: tab?.order?.items?.length || 0,
+            currentOrderProductsCount: orderProducts.length,
+            tabId: tab?.id,
+            method
+        });
+        
         const shouldInitialize = !isInitializingRef.current && 
                            tab?.order?.items && 
                            tab.order.items.length > 0 && 
                            orderProducts.length === 0;
 
         if (shouldInitialize) {
+            console.log(`✅ [ISSUE01] [TabManagerProvider] Will initialize order products from tab`);
             isInitializingRef.current = true;
             const initialProducts: ProductItem[] = tab.order.items.map(item => {
                 // Process modifiers to include all required fields

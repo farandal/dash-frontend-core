@@ -702,7 +702,7 @@ const systemResources: IAppResourceConfig[] = [
             redirect: '/system/user/create',
         },
         mutationMode: 'pessimistic',
-        isFormData: true,
+       // isFormData: true,
         dataGridProps: { stickyHeader: true },
         dataGridWrapper: (props: any) => (
             <TableContainer sx={{ maxHeight: 800 }}>{props.children}</TableContainer>

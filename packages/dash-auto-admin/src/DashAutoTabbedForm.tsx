@@ -1,5 +1,5 @@
 /* TODO: commented code note - handling of axios error response to parse the error to the appropiate format the react-hook-form was disabled without further testing.  */
-import { ReactNode, useCallback, useEffect, useState } from 'react';
+import { ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 import {
 	useResourceContext,
 	useRecordContext,
@@ -161,22 +161,16 @@ const DashAutoTabbedForm: React.FC<IDashAutoTabbedForm> = ({
 			break;
 	}
 
-    const ContextComponent = resourceConfig.contextComponent ? resourceConfig.contextComponent:  ({children}) => {
-        return children;
-    };
+    // 🔧 FIX: Memoize ContextComponent to prevent unstable reference on each render
+    // Previously this was creating a new component reference on each render,
+    // causing React to unmount and remount the entire component tree
+    const ContextComponent = useMemo(() => {
+        return resourceConfig.contextComponent || (({children}: {children: ReactNode}) => <>{children}</>);
+    }, [resourceConfig.contextComponent]);
 
-    /**
-     * FormContextWrapper - Wraps children with DashAutoAdminFormProvider
-     * This provides the onSave function to child components (like MallOrderSummaryDrawer)
-     * so they can trigger form submission programmatically.
-     */
-    const FormContextWrapper: React.FC<{children: ReactNode}> = ({ children }) => (
-        <DashAutoAdminFormProvider value={{ onSave, mode }}>
-            <ContextComponent mode={mode} resourceConfig={resourceConfig}>
-                {children}
-            </ContextComponent>
-        </DashAutoAdminFormProvider>
-    );
+    // 🔧 FIX: Memoize the context value to prevent unnecessary re-renders
+    // The onSave and mode values only change when their dependencies change
+    const formContextValue = useMemo(() => ({ onSave, mode }), [onSave, mode]);
   
 
     if(!formData) return <Loading/>
@@ -197,9 +191,11 @@ const DashAutoTabbedForm: React.FC<IDashAutoTabbedForm> = ({
 				className={'auto-admin-grouped-form'}
              
 			>
-                <FormContextWrapper>
-                    {resourceConfig.createComponent(resourceConfig)}
-                </FormContextWrapper>
+                <DashAutoAdminFormProvider value={formContextValue}>
+                    <ContextComponent mode={mode} resourceConfig={resourceConfig}>
+                        {resourceConfig.createComponent(resourceConfig)}
+                    </ContextComponent>
+                </DashAutoAdminFormProvider>
 				
 			</SimpleForm>
 		);
@@ -218,13 +214,28 @@ const DashAutoTabbedForm: React.FC<IDashAutoTabbedForm> = ({
 				className={'auto-admin-grouped-form'}
                
 			>
-                <FormContextWrapper>
-                    {resourceConfig.editComponent(resourceConfig)}
-                </FormContextWrapper>
+                <DashAutoAdminFormProvider value={formContextValue}>
+                    <ContextComponent mode={mode} resourceConfig={resourceConfig}>
+                        {resourceConfig.editComponent(resourceConfig)}
+                    </ContextComponent>
+                </DashAutoAdminFormProvider>
 				
 			</SimpleForm>
 		);
 	}
+
+    // 🔧 FIX: Create a memoized wrapper component for TabbedForm
+    // This prevents React from treating it as a new component on each render
+    const TabbedFormWrapper = useMemo(() => {
+        const Wrapper = ({ children }: { children: ReactNode }) => (
+            <DashAutoAdminFormProvider value={formContextValue}>
+                <ContextComponent mode={mode} resourceConfig={resourceConfig}>
+                    {children}
+                </ContextComponent>
+            </DashAutoAdminFormProvider>
+        );
+        return Wrapper;
+    }, [formContextValue, ContextComponent, mode, resourceConfig]);
 
 	if (formGroupMode === 'tabs' && groupByTabs(resourceConfig.schema).length > 1) {
         //console.log(record,formData, {...record,...formData});
@@ -242,7 +253,7 @@ const DashAutoTabbedForm: React.FC<IDashAutoTabbedForm> = ({
                 syncWithLocation={resourceConfig.syncTabsWithLocation || false}
                 
                 defaultValues={mode === "create" ? formData : {...record,...formData}}
-                component={(props)=> <FormContextWrapper>{props.children}</FormContextWrapper>}
+                component={TabbedFormWrapper}
                 //component={(props) => props.children}
 			>
               
@@ -272,12 +283,14 @@ const DashAutoTabbedForm: React.FC<IDashAutoTabbedForm> = ({
 				className={'auto-admin-grouped-form'}
             
 			>
-                <FormContextWrapper>
-				{DashAutoFormGroups({schema:resourceConfig.schema, resourceConfig, options:{
-					mode: mode,
-					isDrawer: isDrawer,
-				}})}
-                </FormContextWrapper>
+                <DashAutoAdminFormProvider value={formContextValue}>
+                    <ContextComponent mode={mode} resourceConfig={resourceConfig}>
+                        {DashAutoFormGroups({schema:resourceConfig.schema, resourceConfig, options:{
+                            mode: mode,
+                            isDrawer: isDrawer,
+                        }})}
+                    </ContextComponent>
+                </DashAutoAdminFormProvider>
 			</SimpleForm>
 		);
 	}
@@ -294,12 +307,14 @@ const DashAutoTabbedForm: React.FC<IDashAutoTabbedForm> = ({
 				className={'auto-admin-grouped-form'}
                 
 			>
-                <FormContextWrapper>
-				{DashAutoFormLayout({schema:resourceConfig.schema, resourceConfig:resourceConfig, options:{
-					mode: mode,
-					isDrawer: isDrawer,
-				}})}
-                </FormContextWrapper>
+                <DashAutoAdminFormProvider value={formContextValue}>
+                    <ContextComponent mode={mode} resourceConfig={resourceConfig}>
+                        {DashAutoFormLayout({schema:resourceConfig.schema, resourceConfig:resourceConfig, options:{
+                            mode: mode,
+                            isDrawer: isDrawer,
+                        }})}
+                    </ContextComponent>
+                </DashAutoAdminFormProvider>
 			</SimpleForm>
 		);
 	}

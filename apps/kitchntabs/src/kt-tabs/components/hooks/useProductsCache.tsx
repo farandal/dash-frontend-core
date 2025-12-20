@@ -33,6 +33,26 @@ export const useProductsCache = (
 ) => {
   const dispatch = useDispatch();
   const hookId = useRef(`hook_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`);
+  const mountCountRef = useRef(0);
+  
+  // 🐛 DEBUG: Track mounting
+  useEffect(() => {
+    mountCountRef.current += 1;
+    console.log(`🟢 [ISSUE01] [useProductsCache] MOUNTED (count: ${mountCountRef.current})`, {
+      hookId: hookId.current,
+      tabId,
+      productsResource,
+      enableInfiniteScroll,
+      searchFilter: searchFilter || '(empty)',
+      filtersKeys: Object.keys(filters)
+    });
+    return () => {
+      console.log(`🔴 [ISSUE01] [useProductsCache] UNMOUNTING (count: ${mountCountRef.current})`, {
+        hookId: hookId.current,
+        tabId
+      });
+    };
+  }, []);
   
   // Local state for pagination
   const [page, setPage] = useState(1);
@@ -51,19 +71,33 @@ export const useProductsCache = (
     (Date.now() - cachedData.lastFetch) < CACHE_DURATION;
   
   // 🌐 Fetch from API with pagination and filters
+  // 🐛 DEBUG: Log the query params being sent to API
+  const queryParams = useMemo(() => ({
+    pagination: { page, perPage },
+    sort: { field: 'name', order: 'ASC' },
+    filter: { 
+      ...filters,
+      name: searchFilter, 
+      load_gallery: true, 
+      load_modifier_groups: true, 
+      load_prices: true 
+    }
+  }), [page, perPage, filters, searchFilter]);
+  
+  useEffect(() => {
+    console.log(`🌐 [ISSUE01] [useProductsCache] useGetList query params`, {
+      hookId: hookId.current,
+      resource: productsResource,
+      page,
+      perPage,
+      searchFilter: searchFilter || '(empty)',
+      filtersKeys: Object.keys(filters)
+    });
+  }, [queryParams, productsResource]);
+  
   const { data: apiProducts, total: apiTotal, isLoading, error } = useGetList(
     productsResource,
-    {
-      pagination: { page, perPage },
-      sort: { field: 'name', order: 'ASC' },
-      filter: { 
-        ...filters,
-        name: searchFilter, 
-        load_gallery: true, 
-        load_modifier_groups: true, 
-        load_prices: true 
-      }
-    }
+    queryParams
   );
 
   // Debug logging
@@ -189,8 +223,24 @@ export const useProductsCache = (
   }, [apiProducts, apiTotal, isLoading, error, enableInfiniteScroll, page, perPage, isLoadingAllPages]);
 
   // Reset on filter change - IMPROVED to prevent unnecessary resets
+  const prevDepsRef = useRef({ searchFilter, filters: JSON.stringify(filters), productsResource, perPage, enableInfiniteScroll });
   useEffect(() => {
-    console.log(`🔄 Filter/config changed, resetting pagination`);
+    const currentDeps = { searchFilter, filters: JSON.stringify(filters), productsResource, perPage, enableInfiniteScroll };
+    const changedKeys = Object.keys(currentDeps).filter(
+      key => prevDepsRef.current[key as keyof typeof currentDeps] !== currentDeps[key as keyof typeof currentDeps]
+    );
+    
+    console.log(`🔄 [ISSUE01] [useProductsCache] Filter/config changed, resetting pagination`, {
+      hookId: hookId.current,
+      changedKeys,
+      searchFilter: searchFilter || '(empty)',
+      filtersJSON: JSON.stringify(filters),
+      productsResource,
+      currentPage: page,
+      currentProductsCount: allProducts.length
+    });
+    
+    prevDepsRef.current = currentDeps;
     setPage(1);
     setAllProducts([]);
     setIsLoadingMore(false);

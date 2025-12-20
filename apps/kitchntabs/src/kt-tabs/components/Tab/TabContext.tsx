@@ -84,6 +84,14 @@ const TabsEditProvider: React.FC<{ children: React.ReactNode }> = ({ children })
 export const TabsContext: IDashAutoAdminResourceConfig["contextComponent"] = (props) => {
     const { children, mode } = props;
     const tab: ITab = useRecordContext();
+    
+    // 🐛 DEBUG: Track context rendering
+    console.log(`🟣 [ISSUE01] [TabsContext] Rendering`, {
+        mode,
+        tabId: tab?.id,
+        hasTab: !!tab,
+        hasOrder: !!tab?.order
+    });
 
     // Only wrap in TabManagerProvider for create/edit, not for list
     if (mode === "list") {
