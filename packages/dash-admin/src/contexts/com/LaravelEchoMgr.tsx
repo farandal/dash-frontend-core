@@ -76,7 +76,7 @@ const LaravelEchoMgr = (): ILaravelEchoManager => {
   }, []);
 
   console.log('🔍 LaravelEchoMgr: Setting up public channel listener...');
-  useLaravelEcho({
+  const publicHook = useLaravelEcho({
     type: 'public',
     channel: 'public',
     events: {
@@ -96,9 +96,9 @@ const LaravelEchoMgr = (): ILaravelEchoManager => {
   });
 
   console.log('🔍 LaravelEchoMgr: Setting up private channel listener...');
-  useLaravelEcho({
+  const privateHook = useLaravelEcho({
     type: 'private',
-    channel: `user.${authContext.user.id}`,
+    channel: `user.${authContext.user?.id}`,
     events: {
       // Try all these variations to see which one works
       'notification': (notification: IDashNotificationPayloadBase) => {
@@ -108,11 +108,35 @@ const LaravelEchoMgr = (): ILaravelEchoManager => {
         popPrivateMessage(notification);
       }
     },
-    userId: authContext.user.id,
+    userId: authContext.user?.id,
     enabled: !!authContext?.user?.id, // Enable only when user is authenticated
   });
 
+  // Capture lastEvent from the private hook's global event handler
+  // This picks up ALL events including import.progress, import.started, etc.
+  useEffect(() => {
+    if (privateHook?.lastEvent) {
+      console.log('📡 LaravelEchoMgr: Global event captured from private channel:', privateHook.lastEvent);
+      // Convert the hook's event format to the expected notification format
+      const eventData = privateHook.lastEvent.data;
+      if (eventData) {
+        setLastEvent(eventData as IDashNotificationPayloadBase);
+        setEvents(prev => [...prev, eventData as IDashNotificationPayloadBase]);
+      }
+    }
+  }, [privateHook?.lastEvent]);
 
+  // Also capture from public hook
+  useEffect(() => {
+    if (publicHook?.lastEvent) {
+      console.log('📡 LaravelEchoMgr: Global event captured from public channel:', publicHook.lastEvent);
+      const eventData = publicHook.lastEvent.data;
+      if (eventData) {
+        setLastEvent(eventData as IDashNotificationPayloadBase);
+        setEvents(prev => [...prev, eventData as IDashNotificationPayloadBase]);
+      }
+    }
+  }, [publicHook?.lastEvent]);
 
   return { events, lastEvent, clear };
 };
