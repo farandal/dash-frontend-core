@@ -1,8 +1,8 @@
 APP_NAME: "kitchntabs"
-WS_HOST: "pw-ws.ngrok.dev"
+WS_HOST: "ws.kitchntabs.com"
 WS_PORT: ""
 WS_SCHEME: "https"
-API_HOST: "pw-api.ngrok.dev"
+API_HOST: "api.kitchntabs.com"
 API_PORT: ""
 API_SCHEME: "https"
 APP: "dash"
@@ -17,7 +17,6 @@ PYTHON_SERVICE_PATH_PROD: "./python-service/kt_service"
 PRINT_SERVICE_PATH_PROD: "./python-service/print_service"
 SPEECH_SERVICE_PATH_DEV: "../../../dash-python-service/src/tts_service.py"
 SPEECH_SERVICE_PATH_PROD: "./python-service/tts_service"
-
 
 # Poppler path for PDF conversion
 # Windows: C:\poppler-24.08.0\Library\bin

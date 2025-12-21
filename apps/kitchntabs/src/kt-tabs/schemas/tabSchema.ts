@@ -9,8 +9,10 @@ import TabOrderProductsSelector from "../components/Tab/TabOrderProductsSelector
 import TabAgentToolbar from "../components/Tab/TabAgentToolbar";
 import ViewOrder from "../components/Tab/ViewOrder";
 import TabTotalAmountField from "../components/Tab/TabTotalAmountField";
+import { DeliveryMethodField, TableNumberField } from "../../dash-extensions/components";
 
 const tabSchema: IDashAutoAdminAttribute[] = [
+   
     // Show view - Tab summary
    
     {
@@ -107,6 +109,33 @@ const tabSchema: IDashAutoAdminAttribute[] = [
         custom: true,
         // This is the actual tab view - using carousel selector
         component: OrderProductsField,
+    },
+
+
+
+     {
+        tab: 'Comanda',
+        attribute: 'delivery_method',
+        label: 'Método de Entrega',
+        type: String,
+        custom: true,
+        inCreate: true,
+        inEdit: true,
+        inList: true,
+        inShow: true,
+        component: DeliveryMethodField,
+    },
+    {
+        tab: 'Comanda',
+        attribute: 'table_number',
+        label: 'Número de Mesa',
+        type: String,
+        custom: true,
+        inCreate: true,
+        inEdit: true,
+        inList: true,
+        inShow: true,
+        component: TableNumberField,
     },
 
 

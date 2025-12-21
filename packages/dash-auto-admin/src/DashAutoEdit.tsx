@@ -80,7 +80,7 @@ const DashAutoEdit: React.FC<IAutoForm> = ({
    
    
 	return <Edit
-            
+            component="div"
 			{...(id && { id })}
 			actions={actions || <EditActions />}
 			mutationMode={resourceConfig.mutationMode}

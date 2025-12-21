@@ -94,6 +94,7 @@ return  <Toolbar {...props}>
 
 	return (
 		<Create
+            component="div"
 			actions={actions || <CreateActions />}
 			mutationMode={resourceConfig.mutationMode}
 			title={<AutoTitle resourceConfig={resourceConfig} />}

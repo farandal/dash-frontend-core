@@ -595,15 +595,7 @@ const TabAgentToolbar: React.FC<ITabAgentToolbar> = (props) => {
 
     return (
         <>
-        <Card
-            variant="outlined"
-            sx={{
-                //borderRadius: 2,
-                overflow: 'hidden',
-                //bgcolor: alpha(theme.palette.primary.main, 0.02),
-                //borderColor: alpha(theme.palette.primary.main, 0.2),
-            }}
-        >
+       
             {/* Main Toolbar Row */}
             <Box
                 sx={{
@@ -820,7 +812,7 @@ const TabAgentToolbar: React.FC<ITabAgentToolbar> = (props) => {
                     )}
                 </Box>
             </Collapse>
-        </Card>
+       
 
         {/* Camera Countdown Dialog */}
         {renderCameraCountdownDialog()}

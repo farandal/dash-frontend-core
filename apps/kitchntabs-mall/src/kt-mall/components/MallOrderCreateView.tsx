@@ -59,8 +59,8 @@ export const MallOrderCreateView: React.FC<MallOrderCreateViewProps> = (props) =
             {/* Main Content Area */}
             <Box className="kt-mall-client-tab-main-content">
                 {/* Header Section */}
-                <Paper
-                    elevation={0}
+                <div
+                    //elevation={0}
                     className="kt-mall-client-tab-header"
                 >
                     {/* Search Box */}
@@ -74,7 +74,7 @@ export const MallOrderCreateView: React.FC<MallOrderCreateViewProps> = (props) =
                     <Box className="kt-mall-client-tab-assistance-container">
                         <MallAssistanceButton />
                     </Box>
-                </Paper>
+                </div>
 
                 {/* Products Section */}
                 <Box className="kt-mall-client-tab-products-section">

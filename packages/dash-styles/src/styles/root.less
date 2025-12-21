@@ -8,10 +8,25 @@ html {
   //height: -webkit-fill-available;
 
 }
+
 body {
   //background-color: var(--bg-color, @background-color);
   margin: 0;
   padding: 0;
    //height: -webkit-fill-available;
 
+  background: linear-gradient(
+    var(--bgangle),
+    var(--bodybg-primary, @bodybg-primary),
+    var(--bodybg-secondary, @bodybg-secondary)
+);
+
 }
+
+@property --bgangle {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
+
+

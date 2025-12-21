@@ -286,7 +286,7 @@ const TabListItem = memo<TabListItemProps>(({
                         left: 0,
                         right: 0,
                         //bgcolor: 'background.paper',
-                        borderTop: '1px solid #ddd',
+                        //borderTop: '1px solid #ddd',
                         p: 2
                     }}>
                         <Box sx={{ 

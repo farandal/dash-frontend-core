@@ -166,6 +166,11 @@
 }
 */
 
+// This is to override RA's display flex that breaks our layouts
+.RaEdit-main, .RaCreate-main { 
+    display: block !important;
+}
+
 .RaSingleFieldList-root {
   .RaSingleFieldList-link > * {
     color: var(--text-color, @text-color);

@@ -50,6 +50,7 @@ const DashAutoShow: React.FC<IAutoShow> = ({
 	) {
 		return (
 			<Show
+             component="div"
 				{...(id && { id })}
 				title={<AutoTitle resourceConfig={resourceConfig} />}
 				{...props}
@@ -76,6 +77,7 @@ const DashAutoShow: React.FC<IAutoShow> = ({
 	if (resourceConfig.formGroupMode === 'tabs') {
 		return (
 			<Show
+            component="div"
 				{...(id && { id })}
 				title={<AutoTitle resourceConfig={resourceConfig} />}
 				{...props}
@@ -102,6 +104,7 @@ const DashAutoShow: React.FC<IAutoShow> = ({
 	if (resourceConfig.formGroupMode === 'groups') {
 		return (
 			<Show
+             component="div"
 				{...(id && { id })}
 				title={<AutoTitle resourceConfig={resourceConfig} />}
 				{...props}
@@ -128,6 +131,7 @@ const DashAutoShow: React.FC<IAutoShow> = ({
 	if (resourceConfig.formGroupMode === 'layout') {
 		return (
 			<Show
+             component="div"
 				{...(id && { id })}
 				title={<AutoTitle resourceConfig={resourceConfig} />}
 				{...props}
@@ -153,6 +157,7 @@ const DashAutoShow: React.FC<IAutoShow> = ({
 
 	return (
 		<Show
+         component="div"
 			{...(id && { id })}
 			title={<AutoTitle resourceConfig={resourceConfig} />}
 			{...props}

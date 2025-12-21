@@ -210,7 +210,10 @@ const DashAutoList: React.FC<IDashAutoList> = ({
 	return resourceConfig.listComponent ? (
 		resourceConfig.listComponent(resourceConfig, onSubmit, onError)
 	) : (
-		<List {...finalListProps} >
+		<List 
+        component="div"
+        {...finalListProps} 
+        >
                <ContextComponent mode={"list"} resourceConfig={resourceConfig}>
 			{resourceConfig.dataGridComponent ? (
 				<resourceConfig.dataGridComponent

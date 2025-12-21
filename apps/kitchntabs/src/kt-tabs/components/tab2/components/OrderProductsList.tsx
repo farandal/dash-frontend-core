@@ -48,7 +48,7 @@ const OrderProductsList: React.FC<OrderProductsListProps> = ({
 
     if (orderProducts.length === 0) {
         return (
-            <Paper elevation={1} sx={{ p: 4, textAlign: 'center' }}>
+            <Box  sx={{ p: 4, textAlign: 'center' }}>
                 <CartIcon sx={{ fontSize: 48,  mb: 2 }} />
                 <Typography variant="h6"  gutterBottom>
                     {translate('tab.order.no_products')}
@@ -56,7 +56,7 @@ const OrderProductsList: React.FC<OrderProductsListProps> = ({
                 <Typography variant="body2" >
                     {translate('tab.order.add_products_hint')}
                 </Typography>
-            </Paper>
+            </Box>
         );
     }
 

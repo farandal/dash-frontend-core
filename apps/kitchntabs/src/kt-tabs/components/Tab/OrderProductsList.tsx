@@ -61,14 +61,14 @@ const OrderProductsList: React.FC = () => {
 
     if (orderProducts.length === 0) {
         return (
-            <Paper sx={{ p: 3, textAlign: 'center',}}>
+            <Box sx={{ p: 3, textAlign: 'center',}}>
                 <Typography variant="body1" >
                     {translate('tab.order.no_products')}
                 </Typography>
                 <Typography variant="caption" >
                     {translate('tab.order.add_products_hint')}
                 </Typography>
-            </Paper>
+            </Box>
         );
     }
 

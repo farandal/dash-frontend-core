@@ -1063,7 +1063,8 @@ const TabOrderProductsSelector: React.FC<ITabOrderProductsSelector> = (props) =>
         <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column', position: 'relative' }}>
            
             {/* Search Box */}
-            <Box sx={{ px: 2, py: 1, borderBottom: 1, borderColor: 'divider', backgroundColor: 'background.paper' }}>
+            {/*<Box sx={{ px: 2, py: 1, borderBottom: 1, borderColor: 'divider', backgroundColor: 'background.paper' }}>*/}
+            <div>
                 <TextField
                     fullWidth
                     size="small"
@@ -1095,16 +1096,16 @@ const TabOrderProductsSelector: React.FC<ITabOrderProductsSelector> = (props) =>
                         },
                     }}
                 />
-            </Box>
+           </div>
 
             {/* Category Navigation */}
             <Box
                 sx={{
                     display: 'flex',
                     alignItems: 'center',
-                    borderBottom: 1,
+                    //borderBottom: 1,
                     borderColor: 'divider',
-                    backgroundColor: 'background.paper',
+                    //backgroundColor: 'background.paper',
                     position: 'sticky',
                     top: 0,
                     zIndex: 10,
@@ -1370,9 +1371,9 @@ const TabOrderProductsSelector: React.FC<ITabOrderProductsSelector> = (props) =>
                                 gap: 1,
                                 px: 2,
                                 py: 1.5,
-                                borderTop: 1,
-                                borderColor: 'divider',
-                                backgroundColor: 'background.paper',
+                                //borderTop: 1,
+                                //borderColor: 'divider',
+                               // backgroundColor: 'background.paper',
                             }}
                         >
                             <IconButton
