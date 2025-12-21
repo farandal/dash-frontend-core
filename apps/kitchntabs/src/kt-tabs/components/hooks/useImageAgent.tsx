@@ -6,16 +6,26 @@
  * 
  * This is the image counterpart to the voice agent functionality.
  * 
+ * Images are automatically resized before sending to the API to optimize
+ * bandwidth and API costs. Configure resize settings in imageResizeUtils.ts
+ * 
  * Usage:
  * ```tsx
  * const { processImage, isProcessing, result, error } = useImageAgent();
  * 
- * // Process an image
+ * // Process an image (automatically resized to max 800px width)
  * await processImage({
  *   image: imageBase64DataUrl,
  *   analysisType: 'order',
  *   tabId: '123',
  *   context: JSON.stringify({ table_number: '5' })
+ * });
+ * 
+ * // Skip resize for specific call
+ * await processImage({
+ *   image: imageBase64DataUrl,
+ *   analysisType: 'order',
+ *   skipResize: true
  * });
  * ```
  */
@@ -24,6 +34,7 @@ import { useState, useCallback } from 'react';
 import { useNotify } from 'react-admin';
 import { useAxios } from 'dash-axios-hook';
 import { dashStorage } from 'dash-utils';
+import { resizeImageForApi, IMAGE_RESIZE_CONFIG } from './imageResizeUtils';
 
 // Helper to check if we're on a native Capacitor platform
 const isNativePlatform = (): boolean => {
@@ -127,6 +138,12 @@ export interface ProcessImageOptions {
   maxProductsPerAction?: number;
   quickMode?: boolean;
   context?: string;
+  /** Skip image resizing (default: false - images are resized to max 800px width) */
+  skipResize?: boolean;
+  /** Custom max width for resize (overrides default 800px) */
+  maxWidth?: number;
+  /** Custom max height for resize */
+  maxHeight?: number;
 }
 
 export interface UseImageAgentReturn {
@@ -312,6 +329,7 @@ export const useImageAgent = (): UseImageAgentReturn => {
 
   /**
    * Process image and extract actions for tab manipulation
+   * Images are automatically resized before sending to optimize API usage
    */
   const processImage = useCallback(async (
     options: ProcessImageOptions
@@ -320,21 +338,57 @@ export const useImageAgent = (): UseImageAgentReturn => {
     setError(null);
 
     try {
+      // Resize image before sending (unless skipResize is true)
+      let processedImage = options.image;
+      
+      if (!options.skipResize && options.image) {
+        try {
+          console.log('[useImageAgent] Resizing image before API call...', {
+            originalLength: options.image.length,
+            maxWidth: options.maxWidth || IMAGE_RESIZE_CONFIG.MAX_WIDTH,
+            maxHeight: options.maxHeight || IMAGE_RESIZE_CONFIG.MAX_HEIGHT,
+          });
+
+          processedImage = await resizeImageForApi(options.image, {
+            maxWidth: options.maxWidth,
+            maxHeight: options.maxHeight,
+            enabled: true,
+            debug: true,
+          });
+
+          console.log('[useImageAgent] Image resized:', {
+            originalLength: options.image.length,
+            resizedLength: processedImage.length,
+            reduction: `${Math.round((1 - processedImage.length / options.image.length) * 100)}%`,
+          });
+        } catch (resizeErr) {
+          console.warn('[useImageAgent] Image resize failed, using original:', resizeErr);
+          processedImage = options.image;
+        }
+      }
+
       console.log('[useImageAgent] Sending image to API...', {
-        hasImage: !!options.image,
-        imageLength: options.image?.length || 0,
+        hasImage: !!processedImage,
+        imageLength: processedImage?.length || 0,
         analysisType: options.analysisType,
         quickMode: options.quickMode,
-        isNative: isNativePlatform()
+        isNative: isNativePlatform(),
+        wasResized: processedImage !== options.image,
       });
+
+      // Create options with processed (resized) image
+      const processedOptions = {
+        ...options,
+        image: processedImage,
+      };
 
       let result: ImageAgentResult | null;
 
       // Use native fetch for Capacitor (axios has XMLHttpRequest issues)
       if (isNativePlatform()) {
-        result = await processImageNative(options);
+        result = await processImageNative(processedOptions);
       } else {
-        result = await processImageWeb(options);
+        result = await processImageWeb(processedOptions);
       }
 
       console.log('[useImageAgent] API Response:', result);
@@ -367,15 +421,33 @@ export const useImageAgent = (): UseImageAgentReturn => {
 
   /**
    * Analyze image without extracting actions (simpler analysis)
+   * Images are automatically resized before sending
    */
   const analyzeImage = useCallback(async (
     imageData: string,
-    analysisType: string = 'general'
+    analysisType: string = 'general',
+    skipResize: boolean = false
   ): Promise<string | null> => {
     setIsProcessing(true);
     setError(null);
 
     try {
+      // Resize image before sending (unless skipResize is true)
+      let processedImage = imageData;
+      
+      if (!skipResize && imageData) {
+        try {
+          processedImage = await resizeImageForApi(imageData, { debug: true });
+          console.log('[useImageAgent] analyzeImage - Image resized:', {
+            originalLength: imageData.length,
+            resizedLength: processedImage.length,
+          });
+        } catch (resizeErr) {
+          console.warn('[useImageAgent] analyzeImage - Image resize failed, using original:', resizeErr);
+          processedImage = imageData;
+        }
+      }
+
       const token = getAuthToken();
       if (!token) {
         throw new Error('Authentication required');
@@ -383,7 +455,7 @@ export const useImageAgent = (): UseImageAgentReturn => {
 
       const baseUrl = getBaseUrl();
       const formData = new FormData();
-      formData.append('image_base64', imageData);
+      formData.append('image_base64', processedImage);
       formData.append('analysis_type', analysisType);
 
       console.log('[useImageAgent] Analyzing image...', { analysisType, isNative: isNativePlatform() });
