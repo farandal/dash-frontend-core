@@ -254,37 +254,51 @@ const ProductImportComponentView: React.FC<IDashAutoAdminCustomFieldComponent> =
   const [lastNormalizedNotification, setLastNormalizedNotification] = useState(null);
 
   useEffect(() => {
-    // This use effect handles the template notification
+    // Unified notification handler - works for both template and normalized imports
+    // Priority: Check for type-based notifications first (unified approach)
+    if (!lastEvent) return;
+    
     const storedEvent = dashStorage.getItem('lastImportEvent');
     const currentEvent = JSON.stringify(lastEvent);
-    if (lastEvent && storedEvent !== currentEvent) {
-
-      switch (lastEvent.notificationPayload.class) {
-        case "ValidateProductImportNotification":
-        case "ProductImportNotification":
-        case "ProductImportProgressNotification":
-        case "ProductImportErrorNotification":
-          setLastNotification(lastEvent);
-          dashStorage.setItem('lastImportEvent', currentEvent);
-          break;
-      }
-    }
-  }, [lastEvent]);
-
-   useEffect(() => {
-    // This use effect handles the normalized import notifications
-    const storedEvent = dashStorage.getItem('lastNormalizedImportEvent');
-    const currentEvent = JSON.stringify(lastEvent);
-    if (lastEvent && storedEvent !== currentEvent) {
- 
-      switch (lastEvent.type) {
+    
+    if (storedEvent === currentEvent) return;
+    
+    // Check if this is a type-based notification (works for both template and normalized)
+    const eventType = lastEvent.type || lastEvent.notificationPayload?.type;
+    
+    console.log('[ProductImport] Received event:', { 
+      type: lastEvent.type, 
+      payloadType: lastEvent.notificationPayload?.type,
+      payloadClass: lastEvent.notificationPayload?.class,
+      eventType,
+      data: lastEvent.data
+    });
+    
+    if (eventType) {
+      switch (eventType) {
         case "import.started":
         case "import.progress":
         case "import.failed":
         case "import.completed":
-        case "import.already_completed": // Add this new case
+        case "import.already_completed":
+          console.log('[ProductImport] Routing to normalized handler with type:', eventType);
           setLastNormalizedNotification(lastEvent);
-          dashStorage.setItem('lastNormalizedImportEvent', currentEvent);
+          dashStorage.setItem('lastImportEvent', currentEvent);
+          return;
+      }
+    }
+    
+    // Fallback: class-based routing for legacy template notifications without type
+    const notificationClass = lastEvent.notificationPayload?.class;
+    if (notificationClass) {
+      switch (notificationClass) {
+        case "ValidateProductImportNotification":
+        case "ProductImportNotification":
+        case "ProductImportProgressNotification":
+        case "ProductImportErrorNotification":
+          console.log('[ProductImport] Routing to legacy handler with class:', notificationClass);
+          setLastNotification(lastEvent);
+          dashStorage.setItem('lastImportEvent', currentEvent);
           break;
       }
     }
@@ -369,9 +383,17 @@ const ProductImportComponentView: React.FC<IDashAutoAdminCustomFieldComponent> =
   useEffect(() => {
     if (!lastNormalizedNotification) return
     
+    // Extract notification data - works for both template and normalized imports
+    // Template: data is in lastNormalizedNotification.data (includes progress object)
+    // Normalized: data is in lastNormalizedNotification.data or notificationPayload.notificationPayload
     const notificationData = lastNormalizedNotification.data || lastNormalizedNotification.notificationPayload?.notificationPayload || {};
     
-    switch (lastNormalizedNotification.type) {
+    // Extract type - works for both template and normalized imports
+    const eventType = lastNormalizedNotification.type || lastNormalizedNotification.notificationPayload?.type;
+    
+    console.log('[ProductImport] Processing notification:', { eventType, notificationData, rawEvent: lastNormalizedNotification });
+    
+    switch (eventType) {
       case "import.started":
         setIsNormalizedImportActive(true);
         setNormalizedProgress(null);
@@ -384,11 +406,13 @@ const ProductImportComponentView: React.FC<IDashAutoAdminCustomFieldComponent> =
         
         // Update progress from notification
         if (notificationData.progress) {
+          console.log('[ProductImport] Setting progress:', notificationData.progress);
           setNormalizedProgress(notificationData.progress);
         }
         
         // Update stats from notification
         if (notificationData.stats) {
+          console.log('[ProductImport] Setting stats:', notificationData.stats);
           setNormalizedStats(notificationData.stats);
         }
         
@@ -654,10 +678,13 @@ const ProductImportComponentView: React.FC<IDashAutoAdminCustomFieldComponent> =
   };
 
   // Determine which progress component to show
-  const shouldShowNormalizedProgress = record.import_type === 'normalized' && 
+  // Show normalized progress for BOTH normalized AND template imports when we have type-based notifications
+  // This supports the unified notification format across both import types
+  const shouldShowNormalizedProgress = 
     (isNormalizedImportActive || normalizedProgress);
   
-  const shouldShowTemplateProgress = record.import_type !== 'normalized' && 
+  const shouldShowTemplateProgress = !shouldShowNormalizedProgress &&
+    record.import_type !== 'normalized' && 
     attribute.attribute === "import_log_id" && 
     record.status !== "IMPORT_COMPLETED";
 
