@@ -21,8 +21,8 @@ const path = require('path');
 
 const CONFIG = {
   // Icon and splash source images
-  iconSource: './apps/dash/src/assets/logo-circular.png',
-  splashSource: './apps/dash/src/assets/logo-circular.png',
+  iconSource: './assets/logo-circular.png',
+  splashSource: './assets/logo-circular.png',
   splashLogoSize: 256, // Size in pixels for the splash logo (smaller = takes less screen space)
   
   // Android color theme
