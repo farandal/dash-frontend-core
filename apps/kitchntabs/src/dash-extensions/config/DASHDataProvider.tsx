@@ -14,7 +14,7 @@ const dataProvider = {
 
         let payload = processPostData(
             resource,
-            { ...params.data, ...params.filter, ...{ tenant_id: tenant_id } },
+            { ...params.data, ...params.filter, ...{ tenant_id: tenant_id, no_cache: true } },
             'getList',
         );
 
