@@ -186,21 +186,29 @@ const KitchnTabsPrivateApp: React.FC<KitchnTabsPrivateAppProps> = ({
     useEffect(() => {
         const loadAutoAdminComponents = async () => {
             try {
+                
                 const [
+                    UberStoreAvailability,
+                    BasicTokenGeneratorField,
                     JsonComp,
                     JsonColorSelectorComp,
                     JsonCssVarValuesComp
                 ] = await Promise.all([
+                    import('../components/ecommerce/uber/UberStoreAvailability'),
+                    import('../components/ecommerce/uber/BasicTokenGeneratorField'),
                     import('dash-components').then(module => ({ default: module.Json })),
                     import('dash-components').then(module => ({ default: module.JsonColorSelectorEnhanced })),
                     import('dash-components').then(module => ({ default: module.JsonCssVarValues }))
                 ]);
 
                 setDashAutoAdminComponents({
+                    "UberStoreAvailability": UberStoreAvailability.default,
+                    "BasicTokenGeneratorField": BasicTokenGeneratorField.default,
                     "Json": JsonComp.default,
                     "JsonColorSelector": JsonColorSelectorComp.default,
                     "JsonCssVarValues": JsonCssVarValuesComp.default
                 });
+
             } catch (error) {
                 console.error('Failed to load auto admin components:', error);
                 setDashAutoAdminComponents({});
@@ -209,6 +217,8 @@ const KitchnTabsPrivateApp: React.FC<KitchnTabsPrivateAppProps> = ({
 
         loadAutoAdminComponents();
     }, []);
+
+
 
     // Domain App Layout wrapper
     const DomainAppLayout = useCallback((props: any) => {
