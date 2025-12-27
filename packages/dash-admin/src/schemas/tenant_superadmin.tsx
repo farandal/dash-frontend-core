@@ -26,6 +26,12 @@ const tenantSystemAdminSchema: IDashAutoAdminAttribute[] = [
           throw new Error('Ingresar rut con guion');
       },
 	},
+    {
+        tab: 'Genéricos',
+		label: 'Email',
+		attribute: 'email',
+		type: String,
+	},
     /* TODO! domain spacific logic issue, can't be on the Base tenant controller */
 	/*
     {

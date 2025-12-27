@@ -32,7 +32,13 @@ const tenantSuperAdminSchema:IDashAutoAdminAttribute[] = [
       readOnly: true
     },
 
-    
+      {
+        tab: 'Datos',
+      label: 'Email',
+      attribute: 'email',
+      type: String,
+      readOnly: true
+    },
 
     {
          tab: 'Datos',

@@ -12,6 +12,7 @@ export interface ITenant {
     id: number;
     name: string;
     public_id: string;
+    email: string;
     currencies?: ICurrency[];
     currency_primary_id?: number;
     currency_ids?: number[];

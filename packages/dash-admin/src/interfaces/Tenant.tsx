@@ -2,6 +2,7 @@ export interface Tenant {
 	id: number;
 	name: string;
 	public_id: string;
+    email: string;
 	settings: any;
 	attributes: any;
 	banner_url: string;

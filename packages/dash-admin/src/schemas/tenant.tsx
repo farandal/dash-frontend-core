@@ -21,6 +21,13 @@ const tenantSchema: IDashAutoAdminAttribute[] = [
       },
 	},
 
+    {
+        tab: "Datos",
+		label: 'Email',
+		attribute: 'email',
+		type: String,
+	},
+
       {
          tab: "Datos",
       label: 'Descripción Corta',
