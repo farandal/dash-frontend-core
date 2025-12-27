@@ -68,8 +68,9 @@ import Refresh from "@mui/icons-material/Refresh";
 moment.locale("es-es");
 
 /*
-Known Bugs:
-- individual status of products do not always refresh in the list, because its a delayed job, and individual updates do not sends notifications, because to many refreshes would be needed. 
+Notes:
+- Individual product statuses refresh when campaign operations complete (publish, pause, finish)
+- Real-time updates via campaign.tracker notifications with status "completed" or "finished"
 */
 
 const CampaignEdit: FC = () => {
@@ -124,7 +125,10 @@ useEffect(() => {
   // Add null/undefined checks before using includes()
   if (lastEvent?.data?.type?.includes("campaign.tracker")) {
     
-    if(lastEvent.data.type === "campaign.tracker.failed") {
+    // Refresh on failed or completed tracker status (publish, pause, finish)
+    if(lastEvent.data.type === "campaign.tracker.failed" || 
+       lastEvent.data.status === "completed" ||
+       lastEvent.data.status === "finished") {
         refresh();
     }
 
