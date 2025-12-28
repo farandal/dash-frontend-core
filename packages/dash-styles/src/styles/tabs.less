@@ -17,7 +17,7 @@
     &-horizontal-nav{
         display: flex;
         flex-wrap: unset;
-        border-bottom: 1px solid var(--component-border-base, @component-border-base);
+        //border-bottom: 1px solid var(--component-border-base, @component-border-base);
         position: relative;
         padding-top: 4px;
         margin: 0;
@@ -79,15 +79,23 @@
     }
 }
 
+.dash-module-action-group {
+    position: absolute;
+    right: 0px;
+    top: -5px;
+    z-index: 100;
+}
+
 .dash-module-action {
+    position:relative;
   //display: flex;
   //justify-content: flex-end;
   //margin: 4px 4px 0px 0px;
-  position: absolute;
-  right: 6px;
-  button {
+  //position: absolute;
+  //right: 6px;
+  /*button {
     z-index: 1000;
-  }
+  }*/
 
   .MuiButton-root {
     //padding: 2px 8px;
@@ -106,6 +114,7 @@
       overflow-y: hidden;
   }
   .MuiTabs-root{
+    border-top: 1px solid var(--component-border-base, @component-border-base);
       .MuiTab-root{
           display: -moz-box;
           display: -webkit-box;

@@ -8,7 +8,15 @@
     cursor: pointer;
 }
 
+.dash-module-sidenav {
+    //position:relative;
+}
+
+.dash-datagrid-wrapper {
+    margin-top: 0px !important;
+}
 .dash-module-top {
+    //position:relative;
   display: flex;
   flex-flow: row-reverse;
 }
@@ -384,11 +392,10 @@
     }
 }
 
-
-
 .RaToolbar-mobileToolbar {
     display: flex !important;
     justify-content: flex-end !important;
+    z-index: 1000 !important;
 }
 
 .RaToolbar-desktopToolbar {
@@ -419,22 +426,31 @@
       display: flex;
   }
 
+    #dash-app-layout > div.dash-app-layout-content.MuiBox-root > div.dash-layout-content.MuiBox-root {
+            //HEADER SIZE IN MOBILE
+                margin-top:94px;
+                height: 100vh;
+                //padding-bottom: 40px;
+                //margin-bottom: 40px;
+                // Fade out effect at the bottom with 30px gradient
+                //-webkit-mask-image: linear-gradient(to bottom, black 0%, black calc(100% - 30px), transparent 100%);
+                //mask-image: linear-gradient(to bottom, black 0%, black calc(100% - 30px), transparent 100%);
+    }
 
-  #dash-app-layout > div.dash-app-layout-content.MuiBox-root > div.dash-layout-content.MuiBox-root {
-      //HEADER SIZE IN MOBILE
-      margin-top: 40px;
-      height: 100%;
-      padding-bottom: 40px;
-  }
+    .dash-app-layout .dash-layout-content .dash-app-module .dash-module-box-content {
+        padding-bottom: 40px;
+    }
 
   .android #dash-app-layout > div.dash-app-layout-content.MuiBox-root > div.dash-layout-content.MuiBox-root {
-      margin-top: 80px;
-      height: 100%;
-      padding-bottom: 80px;
+      //margin-top: 80px;
+      //height: 100%;
+      //padding-bottom: 80px;
+        margin-top: 94px;
+        height: 100vh;
   }
 
   .android .dash-app-layout .dash-layout-content .dash-app-module {
-      height: calc(100% - 80px);
+      height: calc(100% - 94px);
       display: flex;
   }
 
@@ -482,10 +498,14 @@
 
 }
 
+
 .dash-header-inline{
     display: flex;
-    align-items: center;
+    flex-direction: row;
+    -webkit-box-align: center;
+    align-items: baseline;
     width: auto;
+    margin-left: 8px;
     //padding: 0 24px;
     &-img{
         margin: 5px 0;
@@ -503,21 +523,26 @@
         display: inline-block;
         font-style: normal;
         font-weight: 700;
-        font-size: 20px;
-        line-height: 28px;
+        //font-size: 18px;
+        line-height: 0.9;
         color:  var(--text-header, @text-header);
-        padding-left: 15px;
+       // padding-left: 15px;
+
+        &::after {
+            content: "▸";
+            margin-left: 5px;
+        }
     }
 
     &-subtitle{
         display: inline-block;
         font-weight: 500;
-        font-size: 14px;
+        //font-size: 14px;
         line-height: 22px;
         color:  var(--text-header, @text-header);
 
         overflow: visible;
-        margin-left: 12px;
+        //margin-left: 12px;
     }
 }
 
