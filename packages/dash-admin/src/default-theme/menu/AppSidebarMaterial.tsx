@@ -79,11 +79,19 @@ const AppSidebarMaterial = (props) => {
             setLocalNavExpanded(expanded);
         });
 
+        // Listen for close drawer events (triggered when navigating on mobile)
+        const unsubscribeClose = NavEventManager.onCloseDrawer(() => {
+            if (localNavSize === 'small') {
+                setLocalNavExpanded(false);
+            }
+        });
+
         return () => {
             unsubscribeToggle();
             unsubscribeSet();
+            unsubscribeClose();
         };
-    }, []);
+    }, [localNavSize]);
 
     // Memoize logo extraction to prevent unnecessary re-renders
     const logos = React.useMemo(() => ({
@@ -244,6 +252,7 @@ const AppSidebarMaterial = (props) => {
     
     return (
         <Box sx={{ display: 'flex' }}>
+          
             <MuiDrawer
                 variant={localNavSize === "small" ? 'temporary' : 'permanent'}
                 open={drawerOpen}

@@ -14,6 +14,7 @@ import bubbleSound from '@app/assets/sounds/bubble.mp3?string';
 import { IPageState, DASH_REDUX_ACTIONS } from 'dash-admin-state';
 import {DASHAppConstants} from 'dash-constants';
 import isCurrentPath from '../../../../hooks/isCurrentPath';
+import { NavEventManager } from '../../../../utils/navEvents';
 
 const SidebarItem = ({
   item,
@@ -73,6 +74,11 @@ const SidebarItem = ({
         if (item?.to) {
            
           navigate(item.to.replace(/\/+/g, '/'));
+          
+          // Close drawer on mobile after navigation (for second-level items)
+          if (navSize === 'small') {
+            NavEventManager.closeDrawer();
+          }
         }
       }}
     >

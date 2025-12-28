@@ -19,6 +19,7 @@ import SidebarItem from './SidebarItem';
 import clickSound from '@app/assets/sounds/click2.mp3?string';
 import { IPageState, DASH_REDUX_ACTIONS } from 'dash-admin-state';
 import {DASHAppConstants} from 'dash-constants';
+import { NavEventManager } from '../../../../utils/navEvents';
 
 const CollapsableSidebarMenu = ({
   item,
@@ -35,10 +36,33 @@ const CollapsableSidebarMenu = ({
     isCurrentPath(loc.pathname, item),
   );
 
-  /* This hook is to open the menu on load onñy, memo state will not rerender this twice */
+  // Generate a unique key for this submenu
+  const submenuKey = `${item.group}-${item.key}`;
+
+  /* This hook is to open the menu on load only, memo state will not rerender this twice */
   useEffect(() => {
     setLocalOpen(isCurrentPath(loc.pathname, item));
   }, []);
+
+  // Listen for other submenus opening (accordion behavior)
+  useEffect(() => {
+    const unsubscribe = NavEventManager.onSubmenuOpened((openedKey: string) => {
+      // If another submenu opened (not this one), close this one
+      if (openedKey !== submenuKey) {
+        setLocalOpen(false);
+      }
+    });
+
+    // Also listen for close all submenus event
+    const unsubscribeCloseAll = NavEventManager.onCloseAllSubmenus(() => {
+      setLocalOpen(false);
+    });
+
+    return () => {
+      unsubscribe();
+      unsubscribeCloseAll();
+    };
+  }, [submenuKey, navSize]);
 
   const navigate = useNavigate();
 
@@ -63,7 +87,24 @@ const CollapsableSidebarMenu = ({
   const handleExpandClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     playClick();
-    setLocalOpen(!localOpen);
+    const newState = !localOpen;
+    setLocalOpen(newState);
+    
+    // Notify other submenus to close (accordion behavior)
+    if (newState) {
+      NavEventManager.notifySubmenuOpened(submenuKey);
+    }
+  };
+
+  // Handle opening submenu - notify others to close
+  const handleOpenSubmenu = () => {
+    const newState = !localOpen;
+    setLocalOpen(newState);
+    
+    // Notify other submenus to close (accordion behavior)
+    if (newState) {
+      NavEventManager.notifySubmenuOpened(submenuKey);
+    }
   };
 
   return (
@@ -75,7 +116,7 @@ const CollapsableSidebarMenu = ({
           // Only handle click if it's not on the expand icon
           if (!(e.target as HTMLElement).closest('.expand-icon')) {
             playClick();
-            setLocalOpen(!localOpen);
+            handleOpenSubmenu();
             
             if (!isCurrentPath(loc.pathname, item)) {
               updatePageState();
