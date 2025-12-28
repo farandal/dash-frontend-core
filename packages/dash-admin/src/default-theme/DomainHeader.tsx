@@ -105,21 +105,31 @@ const DomainHeader = <U, A>({
         <div className='dash-header'>
             <div className='dash-header-container'>
 
-                <Box className='dash-header-subheader' sx={{ display: { xs: 'block', sm: 'block', md: 'none' } }}>
-                    <div className='dash-header-subheader-action'>
-                        <IconButton 
-                                className='drawer-toggler' 
-                                onClick={() => onToggleExpandedNav()}
-                        >
-                            {/*<MenuOpenIcon />*/}
-                             <img height={24} width={24} src={squaredLogo} />
-                        </IconButton>
-                    </div>
-                    {/*<div className='dash-header-subheader-logo'>
-                        <span className='dash-page-header-heading-img'>
-                            {typeof horizontalLogo === 'string' ? <img src={horizontalLogo} /> : horizontalLogo}
-                        </span>
-                    </div>*/}
+                <Box className='dash-header-subheader' sx={{ display: { xs: 'flex', sm: 'flex', md: 'none' }, alignItems: 'center', gap: 1 }}>
+                    {/* Burger icon - always visible, opens/closes drawer */}
+                    <IconButton 
+                        className='dash-header-burger-toggler' 
+                        onClick={() => onToggleExpandedNav()}
+                        sx={{ 
+                            padding: '8px',
+                            borderRadius: '8px',
+                            backgroundColor: 'rgba(0,0,0,0.04)',
+                            '&:hover': {
+                                backgroundColor: 'rgba(0,0,0,0.08)',
+                            }
+                        }}
+                    >
+                        <MenuOpenIcon sx={{ fontSize: 28 }} />
+                    </IconButton>
+                    
+                    {/* Logo - separate from burger, doesn't toggle drawer */}
+                    <Box className='dash-header-subheader-logo' sx={{ display: 'flex', alignItems: 'center', marginLeft: 1 }}>
+                        {typeof squaredLogo === 'string' ? (
+                            <img height={32} width={32} src={squaredLogo} alt="Logo" style={{ borderRadius: '4px' }} />
+                        ) : (
+                            squaredLogo
+                        )}
+                    </Box>
                 </Box>
 
             

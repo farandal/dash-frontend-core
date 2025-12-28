@@ -7,6 +7,7 @@ import { useSelector } from 'react-redux';
 import { List, IconButton, Box } from '@mui/material';
 import KeyboardDoubleArrowLeftIcon from '@mui/icons-material/KeyboardDoubleArrowLeft';
 import KeyboardDoubleArrowRightIcon from '@mui/icons-material/KeyboardDoubleArrowRight';
+import MenuOpenIcon from '@mui/icons-material/MenuOpen';
 import { useEffect } from 'react';
 import { IMenuItem, IAppMenu } from './AppMenuComponents/interfaces';
 import SidebarItem from './AppMenuComponents/expanded/SidebarItem';
@@ -243,6 +244,23 @@ const AppMaterialMenu: React.FC<IAppMenuExtended> = (props) => {
                 flexDirection: 'column',
                 
             }}>
+                {/* Burger icon - visible on mobile (small navSize) when drawer is open */}
+                {navSize === 'small' && (
+                    <IconButton 
+                        className='dash-sidebar-burger-toggler' 
+                        onClick={onToggleDrawer}
+                        sx={{ 
+                            padding: '8px',
+                            borderRadius: '8px',
+                            backgroundColor: 'rgba(255,255,255,0.1)',
+                            '&:hover': {
+                                backgroundColor: 'rgba(255,255,255,0.2)',
+                            }
+                        }}
+                    >
+                        <MenuOpenIcon sx={{ fontSize: 28, transform: 'scaleX(-1)' }} />
+                    </IconButton>
+                )}
                 {!(navExpanded && navSize === 'large') && <TenantAvatarComponent
                     imageUrl={tenantLogos.squaredLogo}
                     size={60}
@@ -258,16 +276,6 @@ const AppMaterialMenu: React.FC<IAppMenuExtended> = (props) => {
                 flexDirection: navExpanded ? 'column-reverse':'column' ,
                 
             }}>
-                
-                {onToggleDrawer && (
-                    <IconButton className='dash-drawer-toggler' color='secondary' onClick={onToggleDrawer} >
-                        {navExpanded ? (
-                            <KeyboardDoubleArrowLeftIcon />
-                        ) : (
-                            <KeyboardDoubleArrowRightIcon />
-                        )}
-                    </IconButton>
-                )}
 
                 {authContext?.authenticated && <AvatarComponent />}
                 </Box>
