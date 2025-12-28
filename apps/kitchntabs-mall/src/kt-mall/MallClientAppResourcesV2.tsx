@@ -118,7 +118,7 @@ const MallClientAppResourcesV2: IDashAutoAdminResourceConfig[] = [
         // Menu configuration
         menu: [
             {
-                title: "☰ Tus ordenes",
+                title: "Tus ordenes",
                 redirect: "tab",
             },
             {

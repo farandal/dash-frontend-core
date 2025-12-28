@@ -30,7 +30,7 @@ const cashCountResource: IAppResourceConfig[] = [
         
         menu: [
             {
-                title: "☰ Cash Counts",
+                title: "Cash Counts",
                 redirect: "/tab/cashcount",
             },
           /* {

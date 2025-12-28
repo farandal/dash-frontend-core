@@ -597,7 +597,7 @@ const TabAgentToolbar: React.FC<ITabAgentToolbar> = (props) => {
         <>
        
             {/* Main Toolbar Row */}
-            <Box
+            <Card
                 sx={{
                     display: 'flex',
                     alignItems: 'center',
@@ -625,10 +625,10 @@ const TabAgentToolbar: React.FC<ITabAgentToolbar> = (props) => {
                                     }}
                                     disabled={isProcessing}
                                     size="small"
-                                    sx={{
+                                    /*sx={{
                                         bgcolor: isCapturing ? alpha(theme.palette.info.main, 0.1) : 'transparent',
                                         '&:hover': { bgcolor: alpha(theme.palette.info.main, 0.1) },
-                                    }}
+                                    }}*/
                                 >
                                     {isCapturing && countdown ? (
                                         <Typography variant="caption" fontWeight={700} color="info.main">
@@ -637,7 +637,7 @@ const TabAgentToolbar: React.FC<ITabAgentToolbar> = (props) => {
                                     ) : isImageProcessing ? (
                                         <CircularProgress size={20} color="info" />
                                     ) : (
-                                        <CameraIcon fontSize="small" color={isCapturing ? 'info' : 'action'} />
+                                        <CameraIcon fontSize="small" color={isCapturing ? 'info' : 'primary'} />
                                     )}
                                 </IconButton>
                             </span>
@@ -649,11 +649,11 @@ const TabAgentToolbar: React.FC<ITabAgentToolbar> = (props) => {
                                     onClick={handleGalleryCapture}
                                     disabled={isProcessing}
                                     size="small"
-                                    sx={{
+                                    /*sx={{
                                         '&:hover': { bgcolor: alpha(theme.palette.info.main, 0.1) },
-                                    }}
+                                    }}*/
                                 >
-                                    <GalleryIcon fontSize="small" color="action" />
+                                    <GalleryIcon fontSize="small" color="primary" />
                                 </IconButton>
                             </span>
                         </Tooltip>
@@ -669,7 +669,7 @@ const TabAgentToolbar: React.FC<ITabAgentToolbar> = (props) => {
                                 disabled={isProcessing && !isRecording}
                                 size="small"
                                 sx={{
-                                    bgcolor: isRecording 
+                                   /*bgcolor: isRecording 
                                         ? alpha(theme.palette.error.main, 0.15)
                                         : isVoiceProcessing 
                                         ? alpha(theme.palette.warning.main, 0.1)
@@ -678,7 +678,7 @@ const TabAgentToolbar: React.FC<ITabAgentToolbar> = (props) => {
                                         bgcolor: isRecording 
                                             ? alpha(theme.palette.error.main, 0.25)
                                             : alpha(theme.palette.primary.main, 0.1),
-                                    },
+                                    },*/
                                     animation: isRecording ? 'pulse 1.5s infinite' : 'none',
                                     '@keyframes pulse': {
                                         '0%': { boxShadow: `0 0 0 0 ${alpha(theme.palette.error.main, 0.4)}` },
@@ -692,7 +692,7 @@ const TabAgentToolbar: React.FC<ITabAgentToolbar> = (props) => {
                                 ) : isRecording ? (
                                     <MicOffIcon fontSize="small" color="error" />
                                 ) : (
-                                    <MicIcon fontSize="small" color="action" />
+                                    <MicIcon fontSize="small" color="primary" />
                                 )}
                             </IconButton>
                         </span>
@@ -764,7 +764,7 @@ const TabAgentToolbar: React.FC<ITabAgentToolbar> = (props) => {
                         {expanded ? <ExpandLessIcon fontSize="small" /> : <ExpandMoreIcon fontSize="small" />}
                     </IconButton>
                 )}
-            </Box>
+            </Card>
 
             {/* Expanded Details */}
             <Collapse in={expanded}>

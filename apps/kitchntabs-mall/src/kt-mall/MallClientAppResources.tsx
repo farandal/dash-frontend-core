@@ -82,7 +82,7 @@ const MallClientAppResources: IDashAutoAdminResourceConfig[] = [
         dataGridComponent: MallClientTabsList,
         menu: [
             {
-                title: "☰ Tus ordenes",
+                title: "Tus ordenes",
                 redirect: "tab",
             },
               {
