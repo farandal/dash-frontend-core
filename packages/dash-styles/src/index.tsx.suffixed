@@ -155,7 +155,7 @@ export const defaultOptions = (options) => {
       MuiCssBaseline: {
         styleOverrides: {
           body: {
-            backgroundColor: `var(--body-bg${currentTheme === 'dark' ? '--dark' : '--light'})`,
+            backgroundColor: `var(--bodybg-primary${currentTheme === 'dark' ? '--dark' : '--light'})`,
             color: `var(--text-color${currentTheme === 'dark' ? '--dark' : '--light'})`,
           },
         },
@@ -604,7 +604,7 @@ export const defaultOptions = (options) => {
           },
         },
         '&.MuiDataGrid-row--odd': {
-          backgroundColor: `var(--body-bg${currentTheme === 'dark' ? '--dark' : '--light'})`,
+          backgroundColor: `var(--bodybg-primary${currentTheme === 'dark' ? '--dark' : '--light'})`,
         },
           },
           footerContainer: {

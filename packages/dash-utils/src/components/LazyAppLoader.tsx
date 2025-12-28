@@ -42,7 +42,7 @@ export const DefaultLoadFailedComponent: React.FC<{ message?: string }> = ({
         justifyContent: 'center',
         alignItems: 'center',
         height: '100vh',
-        backgroundColor: 'var(--body-bg, #121212)',
+        background: 'linear-gradient(to bottom, var(--bodybg-primary), var(--bodybg-secondary))',
         color: '#ff4444',
         flexDirection: 'column',
         gap: '16px'

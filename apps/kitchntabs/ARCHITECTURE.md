@@ -576,14 +576,14 @@ Theming is implemented via CSS custom properties:
 
 ```css
 :root[data-theme="dark"] {
-    --body-bg: #121212;
+    --bodybg-primary: #121212;
     --text-color: #ffffff;
     --primary-color: var(--tenant-primary, #1976d2);
     /* ... */
 }
 
 :root[data-theme="light"] {
-    --body-bg: #ffffff;
+    --bodybg-primary: #ffffff;
     --text-color: #121212;
     /* ... */
 }

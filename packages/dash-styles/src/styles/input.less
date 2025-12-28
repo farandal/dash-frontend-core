@@ -7,8 +7,8 @@ input:-webkit-autofill:hover,
 input:-webkit-autofill:focus,
 input:-webkit-autofill:active {
   transition: background-color 5000s ease-in-out 0s;
-  -webkit-text-fill-color: var(--text-color, @text-color) !important;
-  //-webkit-box-shadow: 0 0 0px 1px var(--component-bg, @component-bg) inset !important;
+  /*-webkit-text-fill-color: var(--text-color, @text-color) !important;
+  -webkit-box-shadow: 0 0 0px 1px var(--component-bg, @component-bg) inset !important;*/
   background-color: var(--component-bg, @component-bg) !important;
   border-color: var(--component-border, @component-border) !important;
 }
@@ -20,7 +20,7 @@ input:-webkit-autofill:active {
 
 // Material-UI Input Base styling
 .MuiInputBase-colorPrimary {
-  color: var(--text-color, @text-color) !important;
+  color: var(--text-color, @text-color--dark) !important;
 
   fieldset {
     border-radius: 6px;
@@ -39,7 +39,7 @@ input:-webkit-autofill:active {
     font-weight: 400;
     font-size: 16px;
     line-height: 24px;
-    color: var(--text-color, @text-color) !important;
+     color: var(--text-color, @text-color--dark)  !important;
 
     // Placeholder styling for all browsers
     &::placeholder,
@@ -47,18 +47,18 @@ input:-webkit-autofill:active {
     &::-moz-placeholder,
     &:-ms-input-placeholder,
     &::-ms-input-placeholder {
-      color: var(--text-light, @text-light) !important;
+      //color: var(--text-light, @text-light) !important;
       opacity: 0.7 !important;
     }
 
     // Focus state
     &:focus {
-      color: var(--text-color, @text-color) !important;
+       color: var(--text-color, @text-color--dark)  !important;
     }
 
     // Disabled state
     &:disabled {
-      color: var(--disabled-color, @disabled-color) !important;
+       color: var(--text-color, @text-color--dark)  !important;
       background-color: var(--disabled-bg, @disabled-bg) !important;
     }
   }
@@ -92,9 +92,12 @@ input:-webkit-autofill:active {
   }
 }
 
+.dash-app-form-item-input label {
+    color: var(--text-color,@text-color--dark) !important;
+}
 // Form label styling
 .MuiFormLabel-root {
-  color: var(--text-color, @text-color) !important;
+  color: var(--text-color,@text-color--dark) !important;
 
   &.Mui-focused {
     color: var(--primary-color, @primary-color) !important;
@@ -125,7 +128,7 @@ input:-webkit-autofill:active {
     font-weight: 400;
     font-size: 14px;
     line-height: 22px;
-    color: var(--text-color, @text-color);
+    color: var(--text-color, @text-color) !important;
   }
 
   > .MuiInputBase-root {
@@ -156,7 +159,7 @@ input:-webkit-autofill:active {
     font-weight: 400;
     font-size: 16px;
     line-height: 24px;
-    color: var(--text-light, @text-light);
+    color: var(--text-light, @text-light)  !important;;
   }
 }
 
@@ -185,7 +188,7 @@ input:-webkit-autofill:active {
   font-weight: 400;
   font-size: 14px;
   line-height: 22px;
-  color: var(--text-color, @text-color);
+  color: var(--text-color, @text-color--dark)  !important;;
 }
 
 // Theme-specific overrides for placeholder colors
@@ -197,7 +200,7 @@ input:-webkit-autofill:active {
       &::-moz-placeholder,
       &:-ms-input-placeholder,
       &::-ms-input-placeholder {
-        //color: var(--text-color--dark, @text-color) !important;
+        color: var(--text-color, @text-color--dark) !important;
         opacity: 0.6 !important;
       }
     }
@@ -212,7 +215,7 @@ input:-webkit-autofill:active {
       &::-moz-placeholder,
       &:-ms-input-placeholder,
       &::-ms-input-placeholder {
-        //color: var(--text-color--light, @text--light) !important;
+        color: var(--text-color, @text-color--light) !important;
         opacity: 0.7 !important;
       }
     }

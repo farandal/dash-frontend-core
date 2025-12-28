@@ -89,8 +89,7 @@ const ResourceMenu: React.FC<IResourceMenu> = (props) => {
                 <div className='dash-module-action'>
 
                         
-                        <ButtonGroup  className='dash-module-action-group' variant="text">
-
+                        
                            {/* <DashResourceButton
                                 resourceConfig={resourceConfig}
                                 label={"Refrescar"}
@@ -104,12 +103,13 @@ const ResourceMenu: React.FC<IResourceMenu> = (props) => {
 
 
                             {(resourceConfig.toolbarCreateButton?.enabled !== false) && !location.pathname.endsWith('/create') && <DashResourceButton
+                                size='small'    
                                 resourceConfig={resourceConfig}
                                 label={resourceConfig.mainAction.title}
                                 mode={resourceConfig.mainAction?.mode || 'create'}  />
                             }
                             {resourceConfig.navActions && resourceConfig.navActions.map((action) => action)}
-                        </ButtonGroup>
+                      
                 </div>
             )}
             <div className={`dash-module-${resourceMenuPosition}-content`}>

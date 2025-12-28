@@ -145,14 +145,14 @@ export const defaultOptions = (options) => {
     },
     components: {
       // Override ALL color usage in component overrides
-      MuiCssBaseline: {
-        styleOverrides: {
-          body: {
-            backgroundColor: 'var(--body-bg)',
-            color: 'var(--text-color)',
-          },
+    MuiCssBaseline: {
+      styleOverrides: {
+        body: {
+            //background: 'linear-gradient(to bottom, var(--bodybg-primary), var(--bodybg-secondary))',
+            //color: 'var(--text-color)',
         },
       },
+    },
 
 
       /* MuiIconButton: {
@@ -329,7 +329,7 @@ export const defaultOptions = (options) => {
           },
         },
       },
-      MuiInputAdornment: {
+     /*MuiInputAdornment: {
         styleOverrides: {
           root: {
             '& svg': {
@@ -337,7 +337,7 @@ export const defaultOptions = (options) => {
             },
           },
         },
-      },
+      },*/
       MuiTab: {
         styleOverrides: {
           root: {
@@ -449,7 +449,7 @@ export const defaultOptions = (options) => {
       },*/
       MuiInputBase: {
       styleOverrides: {
-        input: {
+        /*input: {
           '&::placeholder': {
             color: 'var(--highlight-color)',
             opacity: 1,
@@ -459,6 +459,9 @@ export const defaultOptions = (options) => {
             color: 'var(--highlight-color)',
             opacity: 1,
           },
+        },*/
+        colorPrimary: {
+          color: 'var(--text-color)',
         },
       },
     },
@@ -482,7 +485,7 @@ export const defaultOptions = (options) => {
                 color: 'var(--primary-color)',
               },
             },
-            '& .MuiInputBase-input': {
+           /* '& .MuiInputBase-input': {
               color: 'var(--text-color)',
               // Add placeholder styling here
               '&::placeholder': {
@@ -505,7 +508,7 @@ export const defaultOptions = (options) => {
                 color: 'var(--highlight-color)',
                 opacity: 0.7,
               },
-            },
+            },*/
           },
         },
       },
@@ -646,8 +649,11 @@ export const defaultOptions = (options) => {
                 backgroundColor: 'var(--component-hover-bg)',
               },
             },
+            '&.MuiDataGrid-row': {
+              backgroundColor: 'var(--bodybg-primary)',
+            },
             '&.MuiDataGrid-row--odd': {
-              backgroundColor: 'var(--body-bg)',
+              backgroundColor: 'var(--bodybg-secondary)',
             },
           },
           footerContainer: {

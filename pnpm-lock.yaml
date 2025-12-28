@@ -296,9 +296,15 @@ importers:
       '@reduxjs/toolkit':
         specifier: latest
         version: 2.11.0(react-redux@9.2.0)(react@19.1.0)
+      '@tanstack/query-sync-storage-persister':
+        specifier: ^5.90.15
+        version: 5.90.15
       '@tanstack/react-query':
         specifier: latest
         version: 5.90.12(react@19.1.0)
+      '@tanstack/react-query-persist-client':
+        specifier: ^5.90.15
+        version: 5.90.15(@tanstack/react-query@5.90.12)(react@19.1.0)
       axios:
         specifier: ^1.11.0
         version: 1.13.2
@@ -9694,6 +9700,34 @@ packages:
 
   /@tanstack/query-core@5.90.12:
     resolution: {integrity: sha512-T1/8t5DhV/SisWjDnaiU2drl6ySvsHj1bHBCWNXd+/T+Hh1cf6JodyEYMd5sgwm+b/mETT4EV3H+zCVczCU5hg==}
+    dev: false
+
+  /@tanstack/query-core@5.90.13:
+    resolution: {integrity: sha512-3VzxSkv4ojPPHu0WfOwZ/W5CuN7evAXPzQS+Py2glGxk59Wp+k2T/wgRfrgXAcX1kCTvD9RYUcVEHkMXkEN5jw==}
+    dev: false
+
+  /@tanstack/query-persist-client-core@5.91.12:
+    resolution: {integrity: sha512-1B6EK9m8jRe+Z2hcZBI5DaFvftUiDJ3GfEhzrS/BCasKrQqI8trma8euCZoxTaL+p8P/siSb10A5HU9D2saOhw==}
+    dependencies:
+      '@tanstack/query-core': 5.90.13
+    dev: false
+
+  /@tanstack/query-sync-storage-persister@5.90.15:
+    resolution: {integrity: sha512-MEu27mfGpG3Qf00LVKPcLwFUvyGLb2HHrybFzdIwO/a3toHhZ/nA3Y/64/FtvwDfi8QIccqWochnpAiltW44Xg==}
+    dependencies:
+      '@tanstack/query-core': 5.90.13
+      '@tanstack/query-persist-client-core': 5.91.12
+    dev: false
+
+  /@tanstack/react-query-persist-client@5.90.15(@tanstack/react-query@5.90.12)(react@19.1.0):
+    resolution: {integrity: sha512-tOSmOFu9qpgBP3JVCSIayEsws5lllOIgLfYUO592b1qApEgBojyNf9tjVRXfUmsveOtSvsEdAdjCrsDP7VWNfQ==}
+    peerDependencies:
+      '@tanstack/react-query': ^5.90.13
+      react: 19.1.0
+    dependencies:
+      '@tanstack/query-persist-client-core': 5.91.12
+      '@tanstack/react-query': 5.90.12(react@19.1.0)
+      react: 19.1.0
     dev: false
 
   /@tanstack/react-query@5.90.11(react@19.1.0):

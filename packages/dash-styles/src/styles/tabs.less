@@ -54,11 +54,11 @@
                 }
             }
 
-            &:hover{
+           /* &:hover{
                 .dash-link{
                     color: var(--text-color, @text-color) !important;
                 }
-            }
+            }*/
             &.active{
                 .dash-link{
 
@@ -82,8 +82,14 @@
 .dash-module-action-group {
     position: absolute;
     right: 0px;
-    top: -5px;
+    top: 0px;
     z-index: 100;
+}
+
+
+.dash-module-top button {
+    background-color:  var(--primary-color, @primary-color);
+    z-index: 1000;
 }
 
 .dash-module-action {

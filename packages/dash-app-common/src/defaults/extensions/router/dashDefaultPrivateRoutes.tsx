@@ -15,8 +15,8 @@ const DashDefaultAuthenticatedLanding = () => (
         justifyContent: 'center',
         alignItems: 'center',
         height: '100vh',
-        backgroundColor: 'var(--body-bg, #121212)',
-        color: 'var(--text-color, #ffffff)'
+        background: 'linear-gradient(to bottom, var(--bodybg-primary), var(--bodybg-secondary))',
+        color: 'var(--text-color, @text-color--dark)'
     }}>
         <h1>Welcome back!</h1>
     </div>

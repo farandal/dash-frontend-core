@@ -9,7 +9,7 @@ export interface DashDefaultLoaderProps {
     /** Custom loading message */
     message?: string;
     /** Custom background color (CSS variable or color value) */
-    backgroundColor?: string;
+    background?: string;
     /** Custom text color (CSS variable or color value) */
     textColor?: string;
 }
@@ -19,8 +19,8 @@ export interface DashDefaultLoaderProps {
  */
 export const DashDefaultLoader: React.FC<DashDefaultLoaderProps> = ({
     message = 'Loading...',
-    backgroundColor = 'var(--body-bg, #121212)',
-    textColor = 'var(--text-color, #ffffff)'
+    background = 'linear-gradient(to bottom, var(--bodybg-primary), var(--bodybg-secondary))',
+    textColor = 'var(--text-color, @text-color--dark)'
 }) => (
    <div
         style={{
@@ -30,7 +30,7 @@ export const DashDefaultLoader: React.FC<DashDefaultLoaderProps> = ({
             alignItems: 'center',
             minHeight: '100vh',
             gap: '16px',
-            backgroundColor,
+            background,
             color: textColor
         }}
     >

@@ -51,8 +51,8 @@ export const injectCriticalStyles = () => {
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            //background: var(--body-bg, #121212);
-            color: var(--text-color, #ffffff);
+            //background: var(--bodybg-primary, #121212);
+            color: var(--text-color, @text-color--dark);
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             z-index: 9999;
         }

@@ -146,9 +146,9 @@ const DashResourceButton = <RecordType extends RaRecord = any>(
         '& .MuiButton-text': { paddingLeft: '4px' },
         borderRadius: '50% !important',
         padding: 0,
-        minWidth: '35px',
-        width: '35px',
-        height: '35px',
+        minWidth: '30px',
+        width: '30px',
+        height: '30px',
         overflow: 'hidden'
     } : {}
 

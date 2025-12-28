@@ -19,7 +19,7 @@ const DashDefaultLanding: React.FC = () => {
                 justifyContent: 'center',
                 alignItems: 'center',
                 height: '100vh',
-                color: 'var(--text-color, #ffffff)',
+                color: 'var(--text-color, @text-color--dark)',
                 fontFamily: 'system-ui, -apple-system, sans-serif',
                 textAlign: 'center'
             }}

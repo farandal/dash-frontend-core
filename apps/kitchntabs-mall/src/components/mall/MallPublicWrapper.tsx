@@ -226,7 +226,7 @@ const MallPublicWrapper: React.FC<MallPublicWrapperProps> = () => {
                 display="flex" 
                 flexDirection="column" 
                 minHeight="100vh"
-                sx={{ backgroundColor: 'var(--body-bg, #121212)' }}
+               // sx={{ backgroundColor: 'var(--bodybg-primary, #121212)' }}
             >
                 {/* You can customize this to show mall info, login prompt, etc. */}
                 <MallLanding />

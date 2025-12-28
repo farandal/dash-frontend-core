@@ -13,8 +13,8 @@ const AppLoadingFallback: React.FC<AppLoadingFallbackProps> = ({ message = "Load
       alignItems: 'center',
       minHeight: '100vh',
       gap: '16px',
-      backgroundColor: 'var(--body-bg, #121212)',
-      color: 'var(--text-color, #ffffff)'
+      background: 'linear-gradient(to bottom, var(--bodybg-primary), var(--bodybg-secondary))',
+      color: 'var(--text-color, @text-color--dark)'
     }}
   >
     <div 

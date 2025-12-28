@@ -282,8 +282,8 @@ const KitchnTabsMallBootstrap: React.FC = () => {
                     alignItems: 'center',
                     minHeight: '100vh',
                     gap: '16px',
-                    backgroundColor: 'var(--body-bg, #121212)',
-                    color: 'var(--text-color, #ffffff)'
+                    //backgroundColor: 'var(--bodybg-primary, #121212)',
+                    color: 'var(--text-color, @text-color--dark)',
                 }}
             >
                 <h6 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 500, color: '#f44336' }}>
