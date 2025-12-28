@@ -164,7 +164,7 @@ const Profile: FC = (_props) => {
 					className='dash-form'
 				>
                    
-					<Card className='dash-card-content dash-module dash-card-profile'>
+					<div className='dash-card-content dash-module dash-card-profile'>
                       
 						<Grid 
 							container 
@@ -365,7 +365,7 @@ const Profile: FC = (_props) => {
 								</CardContent>
 							</Grid>
 						</Grid>
-					</Card>
+					</div>
 			
 				</Form>
 				

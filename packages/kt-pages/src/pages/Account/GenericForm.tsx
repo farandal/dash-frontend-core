@@ -170,7 +170,7 @@ const GenericForm: FC = () => {
         
            
 			<form onSubmit={handleSubmit(updateProfile)} className='dash-form'>
-				<Card className='dash-card-content dash-module dash-card-profile'>
+				<div className='dash-card-content dash-module dash-card-profile'>
 					<Grid container>
                         {/*@ts-ignore*/}
 						<Grid item xs={12} md={4}>
@@ -427,7 +427,7 @@ const GenericForm: FC = () => {
 							</CardContent>
 						</Grid>
 					</Grid>
-				</Card>
+				</div>
 			</form>
 		</div>
 	);
