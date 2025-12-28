@@ -22,6 +22,8 @@ export { default as TabListItem } from './TabListItem';
 export { default as TabActionsButtons } from './TabActionsButtons';
 export { default as TabAgentToolbar } from './TabAgentToolbar';
 export { default as TabOrderProductsSelector } from './TabOrderProductsSelector';
+export { default as ProductSearchBox } from './ProductSearchBox';
+export { default as CategorySelector } from './CategorySelector';
 
 // Order Views
 export { default as EditOrder, CreateOrder } from './EditOrder';
@@ -32,3 +34,4 @@ export { default as ViewMarketplaceDetail } from './ViewMarketplaceDetail';
 export type { IOrderProducts } from './OrderProductsEditRefactored';
 export type { IOrderProductsMallFilters } from './OrderProductsMallFilters';
 export type { ITabAgentToolbarConfig, ITabAgentToolbar } from './TabAgentToolbar';
+export type { ICategorySelectorConfig, ICategorySelectorProps } from './CategorySelector';

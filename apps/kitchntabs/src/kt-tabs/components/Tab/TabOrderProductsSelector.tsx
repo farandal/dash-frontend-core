@@ -15,8 +15,6 @@ import {
     useMediaQuery,
     useTheme,
     Tooltip,
-    TextField,
-    InputAdornment,
     FormControl,
     FormLabel,
     FormGroup,
@@ -32,8 +30,6 @@ import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import AddIcon from '@mui/icons-material/Add';
 import RestaurantIcon from '@mui/icons-material/Restaurant';
-import SearchIcon from '@mui/icons-material/Search';
-import ClearIcon from '@mui/icons-material/Clear';
 import { IDashAutoAdminCustomFieldComponent } from 'dash-auto-admin';
 import { Product } from 'kt-ecommerceProduct';
 import { ITab } from '../interfaces/ITab';
@@ -72,6 +68,10 @@ export interface ITabOrderProductsSelectorConfig {
     productsCacheDuration?: number;
     /** Disable caching entirely */
     disableCache?: boolean;
+    /** Hide the big navigation arrow buttons on the carousel sides (default: true) */
+    hideNavigationButtons?: boolean;
+    /** Hide the internal category selector (use external CategorySelector component instead) */
+    hideCategorySelector?: boolean;
 }
 
 export interface ITabOrderProductsSelector extends IDashAutoAdminCustomFieldComponent {
@@ -95,6 +95,8 @@ const DEFAULT_CONFIG: Required<ITabOrderProductsSelectorConfig> = {
     categoryCacheDuration: 60 * 60 * 1000, // 1 hour in milliseconds
     productsCacheDuration: 60 * 60 * 1000, // 1 hour in milliseconds
     disableCache: false,
+    hideNavigationButtons: true,
+    hideCategorySelector: false,
 };
 
 // Cache storage keys
@@ -606,6 +608,16 @@ const TabOrderProductsSelector: React.FC<ITabOrderProductsSelector> = (props) =>
     const [activeCategory, setActiveCategory] = useState<string | number>('all');
     const [isLoadingCategories, setIsLoadingCategories] = useState(true);
 
+    // Sync activeCategory with searchFilters.category_id from context (for external CategorySelector)
+    useEffect(() => {
+        if (searchFilters?.category_id !== undefined) {
+            setActiveCategory(searchFilters.category_id);
+        } else if (Object.keys(searchFilters || {}).length === 0) {
+            // If searchFilters is empty, reset to 'all'
+            setActiveCategory('all');
+        }
+    }, [searchFilters]);
+
     // Carousel state
     const [currentPage, setCurrentPage] = useState(0);
     const [translateX, setTranslateX] = useState(0);
@@ -1062,43 +1074,10 @@ const TabOrderProductsSelector: React.FC<ITabOrderProductsSelector> = (props) =>
     return (
         <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column', position: 'relative' }}>
            
-            {/* Search Box */}
-            {/*<Box sx={{ px: 2, py: 1, borderBottom: 1, borderColor: 'divider', backgroundColor: 'background.paper' }}>*/}
-            <div>
-                <TextField
-                    fullWidth
-                    size="small"
-                    placeholder={translate('tab.products.search.label', { defaultValue: 'Buscar productos...' })}
-                    value={filter}
-                    onChange={(e) => setFilter(e.target.value)}
-                    InputProps={{
-                        startAdornment: (
-                            <InputAdornment position="start">
-                                <SearchIcon color="action" fontSize="small" />
-                            </InputAdornment>
-                        ),
-                        endAdornment: filter && (
-                            <InputAdornment position="end">
-                                <IconButton
-                                    aria-label="Limpiar búsqueda"
-                                    onClick={() => setFilter('')}
-                                    edge="end"
-                                    size="small"
-                                >
-                                    <ClearIcon fontSize="small" />
-                                </IconButton>
-                            </InputAdornment>
-                        ),
-                    }}
-                    sx={{
-                        '& .MuiOutlinedInput-root': {
-                            borderRadius: 2,
-                        },
-                    }}
-                />
-           </div>
+            {/* Search Box - Now handled by separate ProductSearchBox component in schema */}
 
-            {/* Category Navigation */}
+            {/* Category Navigation - hidden when using external CategorySelector */}
+            {!config.hideCategorySelector && (
             <Box
                 sx={{
                     display: 'flex',
@@ -1188,6 +1167,7 @@ const TabOrderProductsSelector: React.FC<ITabOrderProductsSelector> = (props) =>
                     <ChevronRightIcon />
                 </IconButton>
             </Box>
+            )}
 
             {/* Background Loading Indicator */}
             {isLoadingMore && (
@@ -1249,55 +1229,59 @@ const TabOrderProductsSelector: React.FC<ITabOrderProductsSelector> = (props) =>
                 <Box sx={{ display: 'flex', flexDirection: 'column', position: 'relative' }}>
                     {/* Swipeable Products Container with Side Arrows */}
                     <Box sx={{ position: 'relative' }}>
-                        {/* Left Side Arrow */}
-                        <IconButton
-                            onClick={scrollPrev}
-                            disabled={!canScrollPrev || isAnimating}
-                            sx={{
-                                position: 'absolute',
-                                left: 4,
-                                top: '50%',
-                                transform: 'translateY(-50%)',
-                                height: 48,
-                                width: 48,
-                                borderRadius: '50%',
-                                backgroundColor: 'primary.main',
-                                color: 'primary.contrastText',
-                                opacity: canScrollPrev ? 0.9 : 0,
-                                pointerEvents: canScrollPrev ? 'auto' : 'none',
-                                transition: 'opacity 0.2s',
-                                '&:hover': { backgroundColor: 'primary.dark', opacity: 1 },
-                                boxShadow: 3,
-                                zIndex: 10,
-                            }}
-                        >
-                            <ChevronLeftIcon sx={{ fontSize: 28 }} />
-                        </IconButton>
+                        {/* Left Side Arrow - conditionally rendered based on hideNavigationButtons */}
+                        {!config.hideNavigationButtons && (
+                            <IconButton
+                                onClick={scrollPrev}
+                                disabled={!canScrollPrev || isAnimating}
+                                sx={{
+                                    position: 'absolute',
+                                    left: 4,
+                                    top: '50%',
+                                    transform: 'translateY(-50%)',
+                                    height: 48,
+                                    width: 48,
+                                    borderRadius: '50%',
+                                    backgroundColor: 'primary.main',
+                                    color: 'primary.contrastText',
+                                    opacity: canScrollPrev ? 0.9 : 0,
+                                    pointerEvents: canScrollPrev ? 'auto' : 'none',
+                                    transition: 'opacity 0.2s',
+                                    '&:hover': { backgroundColor: 'primary.dark', opacity: 1 },
+                                    boxShadow: 3,
+                                    zIndex: 10,
+                                }}
+                            >
+                                <ChevronLeftIcon sx={{ fontSize: 28 }} />
+                            </IconButton>
+                        )}
 
-                        {/* Right Side Arrow */}
-                        <IconButton
-                            onClick={scrollNext}
-                            disabled={!canScrollNext || isAnimating}
-                            sx={{
-                                position: 'absolute',
-                                right: 4,
-                                top: '50%',
-                                transform: 'translateY(-50%)',
-                                height: 48,
-                                width: 48,
-                                borderRadius: '50%',
-                                backgroundColor: 'primary.main',
-                                color: 'primary.contrastText',
-                                opacity: canScrollNext ? 0.9 : 0,
-                                pointerEvents: canScrollNext ? 'auto' : 'none',
-                                transition: 'opacity 0.2s',
-                                '&:hover': { backgroundColor: 'primary.dark', opacity: 1 },
-                                boxShadow: 3,
-                                zIndex: 10,
-                            }}
-                        >
-                            <ChevronRightIcon sx={{ fontSize: 28 }} />
-                        </IconButton>
+                        {/* Right Side Arrow - conditionally rendered based on hideNavigationButtons */}
+                        {!config.hideNavigationButtons && (
+                            <IconButton
+                                onClick={scrollNext}
+                                disabled={!canScrollNext || isAnimating}
+                                sx={{
+                                    position: 'absolute',
+                                    right: 4,
+                                    top: '50%',
+                                    transform: 'translateY(-50%)',
+                                    height: 48,
+                                    width: 48,
+                                    borderRadius: '50%',
+                                    backgroundColor: 'primary.main',
+                                    color: 'primary.contrastText',
+                                    opacity: canScrollNext ? 0.9 : 0,
+                                    pointerEvents: canScrollNext ? 'auto' : 'none',
+                                    transition: 'opacity 0.2s',
+                                    '&:hover': { backgroundColor: 'primary.dark', opacity: 1 },
+                                    boxShadow: 3,
+                                    zIndex: 10,
+                                }}
+                            >
+                                <ChevronRightIcon sx={{ fontSize: 28 }} />
+                            </IconButton>
+                        )}
 
                         {/* Products Carousel Inner */}
                         <Box

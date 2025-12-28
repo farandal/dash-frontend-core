@@ -10,41 +10,13 @@ import TabAgentToolbar from "../components/Tab/TabAgentToolbar";
 import ViewOrder from "../components/Tab/ViewOrder";
 import TabTotalAmountField from "../components/Tab/TabTotalAmountField";
 import { DeliveryMethodField, TableNumberField } from "../../dash-extensions/components";
+import ProductSearchBox from "../components/Tab/ProductSearchBox";
+import CategorySelector from "../components/Tab/CategorySelector";
 
 const tabSchema: IDashAutoAdminAttribute[] = [
    
     // Show view - Tab summary
-   
-    {
-        tab: 'Comanda',
-        attribute: 'actions',
-        label: 'Acciones',
-        type: String,
-        custom: true,
-        inCreate: false,
-        inEdit: true,
-        inList: false,
-        inShow: true,
-        component: TabActionButtonsField,
-        /*componentProps: {
-            shoeCloseButton: true,
-        }*/
-    },
-    
-      {
-        tab: 'Comanda',
-        attribute: 'status',
-        label: 'Status',
-        type: String,
-        custom: true,
-        inCreate: false,
-        inEdit: true,
-        inList: false,
-        inShow: true,
-        component: TabStatus,
-    },
-
-    {
+     {
         attribute: 'ai_toolbar',
         tab: 'Productos',
         label: '',
@@ -65,6 +37,70 @@ const tabSchema: IDashAutoAdminAttribute[] = [
             }
         }
     },
+    {
+        tab: 'Comanda',
+        attribute: 'actions',
+        label: 'Acciones',
+        type: String,
+        custom: true,
+        inCreate: false,
+        inEdit: true,
+        inList: false,
+        inShow: true,
+        component: TabActionButtonsField,
+        /*componentProps: {
+            shoeCloseButton: true,
+        }*/
+    },
+   
+      {
+        tab: 'Comanda',
+        attribute: 'status',
+        label: 'Status',
+        type: String,
+        custom: true,
+        inCreate: false,
+        inEdit: true,
+        inList: false,
+        inShow: true,
+        component: TabStatus,
+    },
+
+   
+    {
+        attribute: 'product_search',
+        tab: 'Productos',
+        label: '',
+        type: String,
+        inCreate: true,
+        inEdit: true,
+        inList: false,
+        inShow: true,
+        custom: true,
+        component: ProductSearchBox,
+        componentProps: {
+            debounceMs: 300,
+        }
+    },
+    {
+    attribute: 'category_filter',
+    tab: 'Productos',
+    label: '',
+    type: String,
+    inCreate: true,
+    inEdit: true,
+    inList: false,
+    inShow: true,
+    custom: true,
+    component: CategorySelector,
+    componentProps: {
+        config: {
+            categoryResource: 'ecommerce/category',
+            showAllCategory: true,
+            allCategoryLabel: 'Todos',
+        }
+    }
+},
 {
         attribute: 'products',
         tab: 'Productos',
@@ -93,6 +129,7 @@ const tabSchema: IDashAutoAdminAttribute[] = [
                 categoryCacheDuration: 60 * 60 * 1000,  // 1 hour for categories
                 productsCacheDuration: 60 * 60 * 1000,  // 1 hour for products per category
                 disableCache: false,  // Set to true to disable caching
+                hideCategorySelector: true,  // Use external CategorySelector component
             }
         }
     },
