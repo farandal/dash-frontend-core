@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { set, useController } from "react-hook-form";
 import { useDialog } from 'dash-dialog';
 import { NodeRendererProps, Tree, DragPreviewProps, CursorProps } from 'react-arborist';
-import { TextField, Box, Button, IconButton, Typography, Paper, ButtonGroup } from '@mui/material';
+import { TextField, Box, Button, IconButton, Typography, Paper, ButtonGroup, Card } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import SearchIcon from '@mui/icons-material/Search';
@@ -11,6 +11,22 @@ import FolderOpenIcon from '@mui/icons-material/FolderOpen';
 import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import useWindowSize from 'dash-admin/src/hooks/window/useWindowSize';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import ExpandLessIcon from '@mui/icons-material/ExpandLess';
+import { Chip } from '@mui/material';
+import { polyfill } from 'mobile-drag-drop';
+import { scrollBehaviourDragImageTranslateOverride } from 'mobile-drag-drop/scroll-behaviour';
+
+// Initialize mobile drag-drop polyfill for touch support
+polyfill({
+    dragImageTranslateOverride: scrollBehaviourDragImageTranslateOverride,
+    forceApply: true, // Force apply on all touch devices
+});
+
+// Optional: Add class to enable hold-to-drag on touch devices
+if ('ontouchstart' in window) {
+    document.body.classList.add('touch-device');
+}
 
 interface CategoryData {
     id: number | string;
@@ -32,26 +48,6 @@ interface DefaultNodeProps extends NodeRendererProps<TreeNodeData> {
     onEdit: (e: React.MouseEvent, node: any) => void;
     onDelete: (e: React.MouseEvent, node: any) => void;
 }
-
-const DragPreview: React.FC<DragPreviewProps> = ({ offset, mouse, id, dragIds, isDragging }) => (
-    <div
-        style={{
-            position: 'fixed',
-            pointerEvents: 'none',
-            zIndex: 100,
-            left: offset?.x,
-            top: offset?.y,
-            opacity: 0.5,
-            backgroundColor: '#fff',
-            padding: '4px',
-            border: '1px solid #ccc',
-            borderRadius: '4px',
-            boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-        }}
-    >
-        {dragIds.length} item(s) selected
-    </div>
-);
 
 
 const CursorRow: React.FC<CursorProps> = ({ top, left, indent }) => (
@@ -113,13 +109,18 @@ const DefaultNode: React.FC<DefaultNodeProps> = (props) => {
             className={rowClassNames}
             style={{
                 ...style,
-                cursor: isFolder ? 'pointer' : 'default'
+                cursor: isFolder ? 'pointer' : 'default',
             }}
             ref={dragHandle}
-            draggable={true}
             onClick={handleClick}
         >
-            <DragIndicatorIcon fontSize="small" style={{ marginRight: '4px', cursor: 'grab' }} />
+            <DragIndicatorIcon 
+                fontSize="small" 
+                style={{ 
+                    marginRight: '4px', 
+                    cursor: 'grab',
+                }} 
+            />
             <div style={{ marginRight: '8px' }}>
                 {isFolder ? (
                     node.isOpen ? <FolderOpenIcon fontSize="small" /> : <FolderIcon fontSize="small" />
@@ -162,42 +163,128 @@ const DnDTreeGrid: React.FC<{ data: CategoryData[]; onEdit: any; onDelete: any }
     const dialog = useDialog();
     const [searchText, setSearchText] = useState('');
     const treeRef = useRef(null);
+    
+    // DEBUG: Log raw data from props immediately
+    console.log("=== DnDTreeGrid RENDER ===");
+    console.log("Raw data prop:", JSON.stringify(data?.map(d => ({ id: d.id, name: d.name, subCount: d.subcategories?.length })), null, 2));
+
+    // DragPreview component with access to treeData via closure
+    const DragPreview: React.FC<DragPreviewProps> = ({ offset, mouse, id, dragIds, isDragging }) => {
+        // Find the dragged nodes
+        const findNodeById = (nodes: TreeNodeData[], id: string): TreeNodeData | null => {
+            for (const node of nodes) {
+                if (node.id === id) return node;
+                if (node.children) {
+                    const found = findNodeById(node.children, id);
+                    if (found) return found;
+                }
+            }
+            return null;
+        };
+
+        const draggedNodes = dragIds.map(dragId => findNodeById(treeData, dragId)).filter(Boolean);
+
+        if (draggedNodes.length === 0) {
+            return <Chip label={`${dragIds.length}`} />;
+        }
+
+        // Show preview for the first dragged node, with count if multiple
+        const firstNode = draggedNodes[0];
+        const isFolder = firstNode.children && firstNode.children.length > 0;
+
+        return (
+            <div
+                style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    padding: '8px 12px',
+                    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                    border: '1px solid #ddd',
+                    borderRadius: '4px',
+                    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)',
+                    pointerEvents: 'none',
+                    maxWidth: '300px',
+                    zIndex: 1000,
+                }}
+            >
+                <DragIndicatorIcon fontSize="small" style={{ marginRight: '4px', color: '#666' }} />
+                <div style={{ marginRight: '8px' }}>
+                    {isFolder ? (
+                        <FolderIcon fontSize="small" style={{ color: '#1976d2' }} />
+                    ) : (
+                        <InsertDriveFileIcon fontSize="small" style={{ color: '#666' }} />
+                )}
+                </div>
+                <Typography
+                    variant="body2"
+                    style={{
+                        flexGrow: 1,
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        fontWeight: 500,
+                        color: '#333',
+                    }}
+                >
+                    {firstNode.name}
+                    {draggedNodes.length > 1 && ` (+${draggedNodes.length - 1} more)`}
+                </Typography>
+            </div>
+        );
+    };
 
     const convertToTreeFormat = (categories: CategoryData[], parentIndex = 0): TreeNodeData[] => {
         if (!categories || !Array.isArray(categories)) return [];
 
-        return categories.map((category, idx) => ({
-            id: category.id.toString(),
-            name: category.name,
-            is_primary: category.is_primary || false,
-            index: category.tree_index || parentIndex + idx,
-            children: category.subcategories && category.subcategories.length > 0
-                ? convertToTreeFormat(category.subcategories, (parentIndex + idx) * 100)
-                : []
-        }));
+        return categories.map((category, idx) => {
+            // Ensure we have a valid ID
+            const categoryId = category.id?.toString() || `temp_${idx}`;
+            console.log(`Converting category: id=${categoryId}, name=${category.name}`);
+            
+            return {
+                id: categoryId,
+                name: category.name,
+                is_primary: category.is_primary || false,
+                index: category.tree_index ?? (parentIndex + idx),
+                children: category.subcategories && category.subcategories.length > 0
+                    ? convertToTreeFormat(category.subcategories, (parentIndex + idx) * 100)
+                    : []
+            };
+        });
     };
 
     const convertFromTreeFormat = (treeData: TreeNodeData[]): CategoryData[] => {
         if (!treeData || !Array.isArray(treeData)) return [];
 
-        return treeData.map(node => ({
-            id: isNaN(parseInt(node.id)) ? node.id : parseInt(node.id),
-            name: node.name,
-            is_primary: node.is_primary,
-            tree_index: node.index,
-            subcategories: node.children && node.children.length > 0
-                ? convertFromTreeFormat(node.children)
-                : []
-        }));
+        return treeData.map((node, idx) => {
+            // Keep the ID as-is - UUIDs should remain strings
+            // Only convert to number if it's a purely numeric string (no letters)
+            const nodeId = node.id;
+            const isNumericOnly = /^\d+$/.test(nodeId);
+            const finalId = isNumericOnly ? parseInt(nodeId, 10) : nodeId;
+            
+            console.log(`Converting back: node.id=${nodeId}, finalId=${finalId}, name=${node.name}`);
+            
+            return {
+                id: finalId,
+                name: node.name,
+                is_primary: node.is_primary,
+                tree_index: idx, // Use the current position in the array as the index
+                subcategories: node.children && node.children.length > 0
+                    ? convertFromTreeFormat(node.children)
+                    : []
+            };
+        });
     };
 
     const [treeData, setTreeData] = useState<TreeNodeData[]>([]);
 
     useEffect(() => {
         if (data && Array.isArray(data)) {
+            console.log("Input data from props:", JSON.stringify(data, null, 2));
             const formattedData = convertToTreeFormat(data);
             setTreeData(formattedData);
-            console.log("Tree data initialized:", formattedData);
+            console.log("Tree data initialized:", JSON.stringify(formattedData, null, 2));
         } else {
             console.warn("Invalid data format:", data);
             setTreeData([]);
@@ -227,9 +314,10 @@ useEffect(() => {
     
     useEffect(() => {
         if (treeData && treeData.length > 0) {
+            console.log("Tree data before conversion:", JSON.stringify(treeData, null, 2));
             const originalFormat = convertFromTreeFormat(treeData);
+            console.log("Form data to be sent:", JSON.stringify(originalFormat, null, 2));
             treeFormData.field.onChange(originalFormat);
-            console.log("Form data updated:", originalFormat);
         }
     }, [treeData]);
 
@@ -336,8 +424,9 @@ useEffect(() => {
 
     const handleMove = ({ dragIds, parentId, index }: { dragIds: string[]; parentId: string | null; index: number }) => {
         console.log("Move event:", { dragIds, parentId, index });
+        console.log("Current tree data before move:", JSON.stringify(treeData, null, 2));
         const updatedData = moveNode(dragIds, parentId, index);
-        console.log("Updated tree data after move:", updatedData);
+        console.log("Updated tree data after move:", JSON.stringify(updatedData, null, 2));
         setTreeData(updatedData);
     };
 
@@ -355,39 +444,48 @@ useEffect(() => {
 
   
     
-    return (
-        <Paper  elevation={1} style={{ padding: '16px' }}>
-            <Box display="flex" mb={2} gap={2}>
+    return <><div className="dash-tree-menu" style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16 }}>
                 <TextField
-                    fullWidth
-                    variant="outlined"
-                    placeholder="Buscar"
-                    value={searchText}
-                    onChange={(e) => setSearchText(e.target.value)}
-                    onKeyDown={(e) => {
-                        if (e.key === 'Enter') {
-                            handleSearch();
-                        }
-                    }}
-                    InputProps={{
-                        startAdornment: <SearchIcon fontSize="small" style={{ marginRight: 8 }} />,
-                        endAdornment: (
-                            <Button
-                                variant="contained"
-                                size="small"
-                                onClick={handleSearch}
-                                disabled={!searchText}
-                            >
-                                Buscar
-                            </Button>
-                        )
-                    }}
-                />
-                <Button variant="outlined" onClick={expandAll}>Expandir Todo</Button>
-                <Button variant="outlined" onClick={collapseAll}>Colapsar Todo</Button>
-            </Box>
+            variant="outlined"
+            placeholder="Buscar"
+            value={searchText}
+            onChange={(e) => setSearchText(e.target.value)}
+            onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                    handleSearch();
+                }
+            }}
+            sx={{ flexGrow: 1 }}
+            slotProps={{
+                input: {
+                    //startAdornment: <SearchIcon fontSize="small" style={{ marginRight: 8 }} />,
+                    endAdornment: (
+                        <IconButton
+                            onClick={handleSearch}
+                            disabled={!searchText}
+                            size="small"
+                        >
+                            <SearchIcon />
+                        </IconButton>
+                    )
+                }
+            }}
+        />
+                <IconButton onClick={expandAll} aria-label="Expandir Todo">
+                    <ExpandMoreIcon />
+                </IconButton>
+                <IconButton onClick={collapseAll} aria-label="Colapsar Todo">
+                    <ExpandLessIcon />
+                </IconButton>
+            </div>
 
-            <Box ref={containerRef} display="flex" mb={2} gap={2}>
+            <div 
+                ref={containerRef} 
+                style={{ 
+                    display: "flex",
+                    WebkitOverflowScrolling: 'touch', // Smooth scrolling on iOS
+                }}
+            >
             {treeData.length > 0 && currentWidth ? (
                 <Tree
                     width={currentWidth}
@@ -397,14 +495,16 @@ useEffect(() => {
                     data={treeData}
                     openByDefault={true}
                     indent={24}
-                    rowHeight={40}
+                    rowHeight={48} // Slightly larger for better touch targets
                     paddingTop={8}
                     paddingBottom={8}
                     searchTerm={searchText}
                     searchMatch={(node, term) => node.data.name.toLowerCase().includes(term.toLowerCase())}
                     onMove={handleMove}
                     selection="single"
-                    renderDragPreview={DragPreview}
+                    disableDrag={false}
+                    disableDrop={false}
+                    //renderDragPreview={(props) => <DragPreview {...props} />}
                     renderCursor={CursorRow}
                 >
                     {renderNode}
@@ -414,9 +514,7 @@ useEffect(() => {
                     <Typography>No hay datos para mostrar</Typography>
                 </Box>
             )}
-            </Box>
-        </Paper>
-    );
+            </div></>;
 };
 
 export default DnDTreeGrid;

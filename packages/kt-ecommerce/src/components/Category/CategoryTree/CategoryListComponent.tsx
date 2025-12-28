@@ -66,10 +66,8 @@ const CategoryEdit: React.FC<IDashAutoAdminCustomFieldComponent> = ({ method, at
         {
             /* @ts-ignore mismatch */
             pagination: false,
-            filter: {
-                order: 'ASC',
-                field: 'tree_index'
-            }
+            sort: { field: 'tree_index', order: 'ASC' },
+            filter: {}
         },
         { refetchOnWindowFocus: false }
     );
@@ -202,12 +200,12 @@ const CategoryListComponent = ({ method, attribute, resourceConfig }: IDashAutoA
 
         }
     };
-    return <Card title={"Categorías"} style={{ width: '100%' }}>
+    return <div title={"Categorías"} style={{ width: '100%' }}>
         <SimpleForm toolbar={<CustomToolbar />} noValidate onSubmit={onSave} >
 
             <CategoryEdit attribute={attribute} method={method} resourceConfig={resourceConfig} />
         </SimpleForm>
-    </Card>
+    </div>
     // switch (method) {
     //     case "edit":
     //     case "create":
