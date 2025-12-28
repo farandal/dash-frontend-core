@@ -104,7 +104,7 @@ const resources: IDashAutoAdminResourceConfig[] = [
         //listComponent: (resourceConfig) => <Graphs/>,
         menu: [
             {
-                title: "☰ Listado",
+                title: "Listado",
                 redirect: "/tab/tab",
             },
         ],
