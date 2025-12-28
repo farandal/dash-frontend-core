@@ -2,7 +2,10 @@
 export const NAV_EVENTS = {
   TOGGLE_EXPANDED: 'nav:toggle-expanded',
   SET_EXPANDED: 'nav:set-expanded',
-  STATE_CHANGED: 'nav:state-changed'
+  STATE_CHANGED: 'nav:state-changed',
+  CLOSE_DRAWER: 'nav:close-drawer',
+  CLOSE_ALL_SUBMENUS: 'nav:close-all-submenus',
+  SUBMENU_OPENED: 'nav:submenu-opened'
 } as const;
 
 export interface NavStateChangeEvent extends CustomEvent {
@@ -27,6 +30,43 @@ export class NavEventManager {
     window.dispatchEvent(new CustomEvent(NAV_EVENTS.STATE_CHANGED, {
       detail: { expanded, size }
     }));
+  }
+
+  // Close drawer (used when navigating on mobile)
+  static closeDrawer() {
+    window.dispatchEvent(new CustomEvent(NAV_EVENTS.CLOSE_DRAWER));
+  }
+
+  static onCloseDrawer(callback: () => void) {
+    const handler = () => callback();
+    window.addEventListener(NAV_EVENTS.CLOSE_DRAWER, handler);
+    return () => window.removeEventListener(NAV_EVENTS.CLOSE_DRAWER, handler);
+  }
+
+  // Submenu accordion behavior - notify when a submenu opens
+  static notifySubmenuOpened(submenuKey: string) {
+    window.dispatchEvent(new CustomEvent(NAV_EVENTS.SUBMENU_OPENED, {
+      detail: { submenuKey }
+    }));
+  }
+
+  static onSubmenuOpened(callback: (submenuKey: string) => void) {
+    const handler = (event: CustomEvent<{submenuKey: string}>) => {
+      callback(event.detail.submenuKey);
+    };
+    window.addEventListener(NAV_EVENTS.SUBMENU_OPENED, handler as EventListener);
+    return () => window.removeEventListener(NAV_EVENTS.SUBMENU_OPENED, handler as EventListener);
+  }
+
+  // Close all submenus
+  static closeAllSubmenus() {
+    window.dispatchEvent(new CustomEvent(NAV_EVENTS.CLOSE_ALL_SUBMENUS));
+  }
+
+  static onCloseAllSubmenus(callback: () => void) {
+    const handler = () => callback();
+    window.addEventListener(NAV_EVENTS.CLOSE_ALL_SUBMENUS, handler);
+    return () => window.removeEventListener(NAV_EVENTS.CLOSE_ALL_SUBMENUS, handler);
   }
   
   static onToggleExpanded(callback: () => void) {
