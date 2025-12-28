@@ -31,10 +31,11 @@ import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import AddIcon from '@mui/icons-material/Add';
 import RestaurantIcon from '@mui/icons-material/Restaurant';
 import { IDashAutoAdminCustomFieldComponent } from 'dash-auto-admin';
-import { Product } from 'kt-ecommerceProduct';
+
 import { ITab } from '../interfaces/ITab';
 import { useTabManagerOptional } from '../contexts/TabManagerContext';
 import { IModifierGroup } from '../interfaces/ITab';
+import { Product } from '@kt-ecommerce/interfaces';
 
 // Configuration interface
 export interface ITabOrderProductsSelectorConfig {

@@ -8,6 +8,8 @@ import React, { useMemo, useCallback, useEffect, Suspense, useState, PropsWithCh
 import { BrowserRouter, HashRouter, Routes, Route } from 'react-router-dom';
 import { QueryClient } from '@tanstack/react-query';
 import polyglotI18nProvider from 'ra-i18n-polyglot';
+import { createSyncStoragePersister } from '@tanstack/query-sync-storage-persister';
+
 
 // Import translations
 import customEnglish from '../i18n/en.json';
@@ -56,6 +58,15 @@ const CustomReactAdminNotification = (props: any) => {
     return <div {...props} />;
 };
 
+// Create persister for localStorage
+export const localStoragePersister = createSyncStoragePersister({
+  storage: window.localStorage,
+  key: 'KITCHNTABS_QUERY_CACHE', // Unique key for your app
+  serialize: (data) => JSON.stringify(data),
+  deserialize: (data) => JSON.parse(data),
+});
+
+
 const KitchnTabsPrivateApp: React.FC<KitchnTabsPrivateAppProps> = ({
     appPath = null,
     customResources = null,
@@ -86,10 +97,12 @@ const KitchnTabsPrivateApp: React.FC<KitchnTabsPrivateAppProps> = ({
     // Create React Query client
     const customQueryClient = useMemo(() => new QueryClient({
         defaultOptions: {
-            queries: {
-                refetchOnWindowFocus: false,
-                staleTime: 5 * 60 * 1000,
+           queries: {
+                staleTime: 1000 * 60 * 60 * 2, // 2 hours - data is fresh for 2 hours
+                gcTime: 1000 * 60 * 60 * 2, // 2 hours - keep in cache for 2 hours
                 retry: 1,
+                refetchOnWindowFocus: false,
+                refetchOnMount: false, // Don't refetch immediately if we have cached data
             },
         },
     }), []);
@@ -290,6 +303,7 @@ const KitchnTabsPrivateApp: React.FC<KitchnTabsPrivateAppProps> = ({
                 extendedThemeOptions={extendedThemeOptions}
                 dashAutoAdminComponents={dashAutoAdminComponents}
                 queryClient={customQueryClient}
+                queryPersister={localStoragePersister}
             >
                 <GlobalHook />
                    

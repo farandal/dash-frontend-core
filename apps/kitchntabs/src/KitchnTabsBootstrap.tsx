@@ -193,7 +193,7 @@ const KitchnTabsBootstrap: React.FC = () => {
                     alignItems: 'center',
                     minHeight: '100vh',
                     gap: '16px',
-                    backgroundColor: 'var(--body-bg, #121212)',
+                    //backgroundColor: 'var(--bodybg-primary, #121212)',
                     color: 'var(--text-color, #ffffff)'
                 }}
             >

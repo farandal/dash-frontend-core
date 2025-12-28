@@ -47,7 +47,7 @@ export type { IDASHRoutingWrapper } from './RoutingWrapper';
 export { useAuthContext } from "./contexts/auth/AuthContext";
 
 export {default as LaravelEchoContext} from "./contexts/com/LaravelEchoContext"
-export {default as DashQueryClientContext, useDashQueryClient} from "./contexts/DashQueryClientContext"
+export {default as DashQueryClientContext, useDashQueryClient, useDashQueryPersister, useIsCachePersisted} from "./contexts/DashQueryClientContext"
 export { default as SystemRequestsCache, useSystemRequestsCache } from './contexts/SystemRequestsCache';
 export type {ILaravelEchoContext} from "./contexts/com/LaravelEchoContext"
 

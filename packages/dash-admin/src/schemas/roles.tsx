@@ -19,7 +19,7 @@ const roleSchema: IDashAutoAdminAttribute[] = [
 		attribute: 'redirect',
 		type: String,
 		inList: false,
-		helpText: 'Ruta opcional a la que se redirige el usuario al iniciar sesión (ej: /dashboard). Debe comenzar con /',
+		//helpText: 'Ruta opcional a la que se redirige el usuario al iniciar sesión (ej: /dashboard). Debe comenzar con /',
 	},
 	{
 		label: 'Grupo (web)',

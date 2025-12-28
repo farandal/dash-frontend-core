@@ -22,6 +22,7 @@ import { Store } from 'redux';
 import { DashThemeProvider } from './DashThemeContext';
 import { ComponentRegistryProvider, IDashAutoAdminCustomFieldComponent } from 'dash-auto-admin';
 import { QueryClient } from '@tanstack/react-query';
+import { Persister } from '@tanstack/react-query-persist-client';
 
 export interface IDomainAppProviders<U, A, R> extends React.PropsWithChildren {
     wsMessagesManager?: typeof WSMessagesManager
@@ -31,6 +32,8 @@ export interface IDomainAppProviders<U, A, R> extends React.PropsWithChildren {
     extendedThemeOptions?: any
     dashAutoAdminComponents?: Record<string, React.FC<IDashAutoAdminCustomFieldComponent>>
     queryClient?: QueryClient
+    /** Optional persister for localStorage query caching */
+    queryPersister?: Persister
 }
 
 
@@ -41,7 +44,8 @@ const DomainAppProviders = <U, A, R>({
     children,
     extendedThemeOptions,
     dashAutoAdminComponents,
-    queryClient
+    queryClient,
+    queryPersister
 
 }: IDomainAppProviders<U, A, R>): React.JSX.Element => {
    
@@ -49,7 +53,7 @@ const DomainAppProviders = <U, A, R>({
        <DashThemeProvider extendedOptions={extendedThemeOptions}>
         <LocalizationProvider dateAdapter={dateAdapter || AdapterDayjs}>
             <AuthContextProvider>
-                <DashQueryClientContext queryClient={queryClient}>
+                <DashQueryClientContext queryClient={queryClient} persister={queryPersister}>
                 <ComponentRegistryProvider customComponents={dashAutoAdminComponents || {}}>
                     <DialogServiceProvider
                         component={DASHModal}
