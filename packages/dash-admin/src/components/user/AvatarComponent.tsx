@@ -12,6 +12,7 @@ import { useAuthContext } from '../../contexts/auth/AuthContext';
 
 import { useRedirect } from 'react-admin';
 import { useNavigate } from 'react-router-dom';
+import { NavEventManager } from '../../utils/navEvents';
 
 const AvatarComponent: React.FC = (_props) => {
     const { user, logout, authenticated } = useAuthContext();
@@ -157,6 +158,22 @@ useEffect(() => {
             calculateMenuPosition();
         }
     }, [windowSize.width, windowSize.height, open, isSmallScreen]);
+
+    // Listen for other submenus/menus opening and close this one
+    useEffect(() => {
+        const unsubscribeSubmenuOpened = NavEventManager.onSubmenuOpened(() => {
+            setOpen(false);
+        });
+        
+        const unsubscribeCloseAll = NavEventManager.onCloseAllSubmenus(() => {
+            setOpen(false);
+        });
+        
+        return () => {
+            unsubscribeSubmenuOpened();
+            unsubscribeCloseAll();
+        };
+    }, []);
 
     // Show loading state if not authenticated or no user data
     if (!authenticated || !currentUser) {
