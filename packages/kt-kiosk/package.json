@@ -20,7 +20,7 @@
         "dash-utils": "workspace:*",
         "kt-utils": "workspace:*",
         "kt-ecommerce": "workspace:*",
-        "kt-tabs": "workspace:*",
+    
         "react": "latest",
         "react-admin": "5.10.1",
         "react-dom": "latest"

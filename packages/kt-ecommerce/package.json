@@ -35,6 +35,7 @@
         "dash-utils": "workspace:*",
         "kt-pages": "workspace:*",
         "kt-utils": "workspace:*",
+        "mobile-drag-drop": "^3.0.0-rc.0",
         "moment": "^2.30.1",
         "react": "latest",
         "react-18-beautiful-dnd-grid": "workspace:*",

@@ -57,7 +57,7 @@
     "kt-ecommerce": "workspace:*",
     "kt-kiosk": "workspace:*",
     "kt-pages": "workspace:*",
-    "kt-tabs": "workspace:*",
+   
     "kt-utils": "workspace:*",
     "laravel-echo": "latest",
     "lodash": "^4.17.21",
