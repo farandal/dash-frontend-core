@@ -161,7 +161,7 @@ const GenericForm: FC = () => {
 				}),
 			);
 
-		}
+		} 
 	};
 
 

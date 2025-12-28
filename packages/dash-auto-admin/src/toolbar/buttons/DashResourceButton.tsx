@@ -12,7 +12,7 @@ import {
 
 import {
     RaRecord
-} from 'react-admin';
+} from 'react-admin/src';
 
 import useVirtualHash from '../../hooks/useVirtualHash';
 import IDashAutoAdminResourceConfig from '../../interfaces/IDashAutoAdminResourceConfig';

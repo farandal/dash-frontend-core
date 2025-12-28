@@ -60,6 +60,7 @@ export interface IDashAutoListTopToolbar {
     setCollapsed: (collapsed: boolean) => void, // Better typing
     filterCountToCollapse?: number,
     collapsedSize?: number | string,
+    fabButtonSize?: string, // New optional prop for FAB button size
 }
 
 const DashAutoListTopToolbar: FC<IDashAutoListTopToolbar> = (props) => {
@@ -71,7 +72,8 @@ const DashAutoListTopToolbar: FC<IDashAutoListTopToolbar> = (props) => {
         collapsed,
         setCollapsed,
         filterCountToCollapse = 5,
-        collapsedSize = '60px'
+        collapsedSize = '60px',
+        fabButtonSize = '20px' // Default to 20px as requested
     } = props;
 
     // Use safe context hook that doesn't throw when context is missing
@@ -173,13 +175,11 @@ const DashAutoListTopToolbar: FC<IDashAutoListTopToolbar> = (props) => {
 
 
 
-        <Box sx={{
-            position: 'absolute',
-            top: 0,
-            right: 0,
-            display: 'flex',
-            gap: 1,
-            padding: 1
+        <Box  className='toolbar-right-buttons' sx={{
+     
+            gap: 0.5,
+            padding: 0.5
+           
         }}>
             <FabButton
                 onClick={refreshList}
@@ -189,9 +189,9 @@ const DashAutoListTopToolbar: FC<IDashAutoListTopToolbar> = (props) => {
                 icon={<Refresh sx={{ fontSize: '1rem' }} />}
                 tooltip={'Refrescar'}
                 style={{
-                    width: '30px',
-                    height: '30px',
-                    minHeight: '30px'
+                    width: fabButtonSize,
+                    height: fabButtonSize,
+                    minHeight: fabButtonSize
                 }}
             />
             {countFilters && autoFilters ? (
@@ -203,9 +203,9 @@ const DashAutoListTopToolbar: FC<IDashAutoListTopToolbar> = (props) => {
                     icon={<FilterAltOffIcon sx={{ fontSize: '1rem' }} />}
                     tooltip={'Borrar filtros'}
                     style={{
-                        width: '30px',
-                        height: '30px',
-                        minHeight: '30px'
+                        width: fabButtonSize,
+                        height: fabButtonSize,
+                        minHeight: fabButtonSize
                     }}
                 />
             ) : <></>}
@@ -217,9 +217,9 @@ const DashAutoListTopToolbar: FC<IDashAutoListTopToolbar> = (props) => {
                     color='primary'
                     onClick={() => setCollapsed(!collapsed)}
                     style={{
-                        width: '30px',
-                        height: '30px',
-                        minHeight: '30px'
+                        width: fabButtonSize,
+                        height: fabButtonSize,
+                        minHeight: fabButtonSize
                     }}
                     className='toolbar-collapse-button'
                 >

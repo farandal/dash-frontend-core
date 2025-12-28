@@ -1,6 +1,6 @@
 /* eslint-disable no-mixed-spaces-and-tabs */
 
-import { CustomRoutes, ResourceContextProvider, ResourceProps, RestoreScrollPosition } from 'react-admin';
+import { CustomRoutes, NotFound, ResourceContextProvider, ResourceProps, RestoreScrollPosition } from 'react-admin';
 import { Route, Routes, useParams } from 'react-router-dom';
 import { isValidElementType } from 'react-is';
 //import { Outlet } from 'react-router';
@@ -28,7 +28,7 @@ export interface IResourceTemplate {
 
 export const ResourceTemplate = (resourceConfig:IDashAutoAdminResourceConfig) => {
   
-    const debug = true;
+    const debug = false;
 
     const _create = evalActionPermission(resourceConfig, resourceConfig?.create);
     const _edit = evalActionPermission(resourceConfig, resourceConfig?.edit);
@@ -181,12 +181,16 @@ export const ResourceTemplate = (resourceConfig:IDashAutoAdminResourceConfig) =>
                  <Route 
                     path="*" 
                     element={
-                        <div>
-                            <h3>ResourceTemplate Debug</h3>
-                            <p>Resource: {resourceConfig.model}</p>
-                            <p>Current Path: {window.location.pathname}</p>
-                            <p>Expected: /{resourceConfig.model}</p>
-                        </div>
+                        debug ? (
+                            <div>
+                                <h3>ResourceTemplate Debug</h3>
+                                <p>Resource: {resourceConfig.model}</p>
+                                <p>Current Path: {window.location.pathname}</p>
+                                <p>Expected: /{resourceConfig.model}</p>
+                            </div>
+                        ) : (
+                            <NotFound />
+                        )
                     } 
                 />
             </CustomRoutes>

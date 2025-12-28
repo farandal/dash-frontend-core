@@ -27,8 +27,10 @@ export const FabButton: FC<IFabButton> = (props) => {
 					position: 'absolute',
 				}}
 				className={'toolbar-settings-button'}
+                
 				{...rest}
 			>
+                
 				{_icon}
 			</Fab>
 		</Tooltip>

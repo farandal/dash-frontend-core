@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 // Remove this import
 // import { usePermissions } from 'react-admin';
 
-import { List, IconButton, Box } from '@mui/material';
+import { List, IconButton, Box, useMediaQuery, useTheme } from '@mui/material';
 import KeyboardDoubleArrowLeftIcon from '@mui/icons-material/KeyboardDoubleArrowLeft';
 import KeyboardDoubleArrowRightIcon from '@mui/icons-material/KeyboardDoubleArrowRight';
 import MenuOpenIcon from '@mui/icons-material/MenuOpen';
@@ -74,6 +74,9 @@ const GenerateItems: React.FC<{ items: IMenuItem[]; navExpanded: boolean, navSiz
 const AppMaterialMenu: React.FC<IAppMenuExtended> = (props) => {
 
     const { menu, debug, navExpanded, navSize, logos, onToggleDrawer } = props;
+    const theme = useTheme();
+    const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
+    
     //const resources = useResourceDefinitions()
 
     // Replace usePermissions with useAuthContext - add null check
@@ -244,8 +247,8 @@ const AppMaterialMenu: React.FC<IAppMenuExtended> = (props) => {
                 flexDirection: 'column',
                 
             }}>
-                {/* Burger icon - visible on mobile (small navSize) when drawer is open */}
-                {navSize === 'small' && (
+                {/* Toggle icon - burger for mobile, arrows for desktop */}
+                {onToggleDrawer && (
                     <IconButton 
                         className='dash-sidebar-burger-toggler' 
                         onClick={onToggleDrawer}
@@ -258,10 +261,16 @@ const AppMaterialMenu: React.FC<IAppMenuExtended> = (props) => {
                             }
                         }}
                     >
-                        <MenuOpenIcon sx={{ fontSize: 28, transform: 'scaleX(-1)' }} />
+                        {navSize === 'small' ? (
+                            <MenuOpenIcon sx={{ fontSize: 28, transform: 'scaleX(-1)' }} />
+                        ) : navExpanded ? (
+                            <KeyboardDoubleArrowLeftIcon sx={{ fontSize: 28 }} />
+                        ) : (
+                            <KeyboardDoubleArrowRightIcon sx={{ fontSize: 28 }} />
+                        )}
                     </IconButton>
                 )}
-                {!(navExpanded && navSize === 'large') && <TenantAvatarComponent
+                {!(navExpanded && navSize === 'large') && !isSmallScreen && <TenantAvatarComponent
                     imageUrl={tenantLogos.squaredLogo}
                     size={60}
                     alt="Tenant Logo"

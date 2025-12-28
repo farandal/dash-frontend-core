@@ -89,7 +89,7 @@ const ResourceMenu: React.FC<IResourceMenu> = (props) => {
                 <div className='dash-module-action'>
 
                         
-                        <ButtonGroup variant="contained">
+                        <ButtonGroup  className='dash-module-action-group' variant="text">
 
                            {/* <DashResourceButton
                                 resourceConfig={resourceConfig}
@@ -103,14 +103,11 @@ const ResourceMenu: React.FC<IResourceMenu> = (props) => {
                             </DashResourceButton>*/}
 
 
-                            {(resourceConfig.toolbarCreateButton?.enabled !== false) && <DashResourceButton
+                            {(resourceConfig.toolbarCreateButton?.enabled !== false) && !location.pathname.endsWith('/create') && <DashResourceButton
                                 resourceConfig={resourceConfig}
                                 label={resourceConfig.mainAction.title}
-                                mode={resourceConfig.mainAction?.mode || 'create'}  >
-                                <Button>
-                                    <>{resourceConfig.mainAction.title}</>
-                                </Button>
-                            </DashResourceButton>}
+                                mode={resourceConfig.mainAction?.mode || 'create'}  />
+                            }
                             {resourceConfig.navActions && resourceConfig.navActions.map((action) => action)}
                         </ButtonGroup>
                 </div>

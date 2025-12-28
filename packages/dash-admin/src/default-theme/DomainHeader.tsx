@@ -10,6 +10,7 @@ import { Box, IconButton } from '@mui/material';
 import { IDashAutoAdminResourceConfig } from 'dash-auto-admin';
 import { NavEventManager } from '../utils/navEvents';
 import { Breadcrumbs } from '../components/navigation';
+import { AuthPersistenceService } from 'dash-auth';
 
 export interface IDomainHeader<U = any, A = any> extends PropsWithChildren {
     /** Whether to show breadcrumb navigation */
@@ -27,6 +28,15 @@ const DomainHeader = <U, A>({
     const [localNavExpanded, setLocalNavExpanded] = useState(true);
     const [localNavSize, setLocalNavSize] = useState<'small' | 'large'>('large');
 
+    // State for tenant logos
+    const [tenantLogos, setTenantLogos] = useState<{
+        horizontalLogo: string | null;
+        squaredLogo: string | null;
+    }>({
+        horizontalLogo: null,
+        squaredLogo: null
+    });
+
     // Listen to nav state changes from sidebar
     useEffect(() => {
         const unsubscribe = NavEventManager.onStateChange((expanded, size) => {
@@ -38,6 +48,17 @@ const DomainHeader = <U, A>({
 
         return unsubscribe;
     }, [dispatch]);
+
+    // Load tenant logos
+    useEffect(() => {
+        const tenantImages = AuthPersistenceService.getTenantImages();
+        if (tenantImages) {
+            setTenantLogos({
+                horizontalLogo: tenantImages.horizontal_logo?.original || null,
+                squaredLogo: tenantImages.squared_logo?.original || null
+            });
+        }
+    }, []);
 
     const HeaderToolBar = useSelector(
         (state: IDASHAppState<U, A, IDashAutoAdminResourceConfig>) =>
@@ -72,7 +93,7 @@ const DomainHeader = <U, A>({
             sx={{ /*display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%'*/ }}
         >
             {pageSettings.title ? (
-                <Box className='dash-header-inline' sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+                <Box className='dash-header-inline'>
                     <span className='dash-header-inline-title'>
                         {pageSettings.title || ''}
                     </span>
@@ -123,11 +144,11 @@ const DomainHeader = <U, A>({
                     </IconButton>
                     
                     {/* Logo - separate from burger, doesn't toggle drawer */}
-                    <Box className='dash-header-subheader-logo' sx={{ display: 'flex', alignItems: 'center', marginLeft: 1 }}>
-                        {typeof squaredLogo === 'string' ? (
-                            <img height={32} width={32} src={squaredLogo} alt="Logo" style={{ borderRadius: '4px' }} />
+                   <Box className='dash-header-subheader-logo' sx={{ display: 'flex', alignItems: 'center', marginLeft: 1 }}>
+                        {typeof tenantLogos.squaredLogo === 'string' ? (
+                            <img height={32} width={32} src={tenantLogos.squaredLogo} alt="Tenant Logo" style={{ borderRadius: '4px' }} />
                         ) : (
-                            squaredLogo
+                            tenantLogos.squaredLogo || squaredLogo
                         )}
                     </Box>
                 </Box>
