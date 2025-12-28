@@ -12,6 +12,7 @@ import { useLocation, useNavigate } from 'react-router';
 import { IPageState, DASH_REDUX_ACTIONS } from 'dash-admin-state';
 import { useDispatch } from 'react-redux';
 import isCurrentPath from '../../../../hooks/isCurrentPath';
+import { NavEventManager } from '../../../../utils/navEvents';
 
 export interface ICollapsedSidebarItem {
     item: IMenuItem;
@@ -114,12 +115,21 @@ const CollapsedSidebarItem = ({
     const [webView, setWebView] = useState<boolean>(false);
     const [open, setOpen] = useState(false);
     const itemRef = useRef<HTMLDivElement>(null);
+    
+    // Unique key for this submenu to identify it in accordion behavior
+    const submenuKey = `collapsed-${item.key || item.label}`;
 
     const openMenuOnHover = (event) => {
+        // Notify other submenus to close (accordion behavior)
+        NavEventManager.notifySubmenuOpened(submenuKey);
         setOpen(true);
     };
 
     const openMenuOnClick = (event) => {
+        if (!open) {
+            // Notify other submenus to close (accordion behavior)
+            NavEventManager.notifySubmenuOpened(submenuKey);
+        }
         setOpen(prevOpen => !prevOpen);
     };
 
@@ -136,16 +146,36 @@ const CollapsedSidebarItem = ({
             setWebView(false)
         }
     }, []);
+    
+    // Listen for other submenus opening and close this one (accordion behavior)
+    useEffect(() => {
+        const unsubscribeSubmenuOpened = NavEventManager.onSubmenuOpened((openedKey) => {
+            // Close this submenu if a different one was opened
+            if (openedKey !== submenuKey && open) {
+                setOpen(false);
+            }
+        });
+        
+        const unsubscribeCloseAll = NavEventManager.onCloseAllSubmenus(() => {
+            setOpen(false);
+        });
+        
+        return () => {
+            unsubscribeSubmenuOpened();
+            unsubscribeCloseAll();
+        };
+    }, [submenuKey, open]);
 
     const hasChildren = item.children && item.children.length > 0;
 
-    // Helper to close submenu and optionally handle click
+    // Helper to close submenu after item click - navigation is handled by SidebarItem
     const handleSubmenuItemClick = (e, childItem) => {
-        setOpen(false);
-        // Optionally, you can call any navigation logic here if needed
-        // But SidebarItem already handles navigation
-        // If you want to prevent double navigation, you can stop propagation
-        // e.stopPropagation();
+        // Close the dropdown menu after a short delay to allow navigation to complete
+        setTimeout(() => {
+            setOpen(false);
+            // Close the drawer on mobile
+            NavEventManager.closeDrawer();
+        }, 100);
     };
 
     // Calculate submenu position and style based on number of children
@@ -249,6 +279,14 @@ const CollapsedSidebarItem = ({
             navExpanded={navExpanded}
             level={level}
             hasChildren={false}
+            onClick={() => {
+                // Close all other submenus first
+                NavEventManager.closeAllSubmenus();
+                // Close drawer when clicking primary level item without children
+                setTimeout(() => {
+                    NavEventManager.closeDrawer();
+                }, 100);
+            }}
         />
     );
 };
