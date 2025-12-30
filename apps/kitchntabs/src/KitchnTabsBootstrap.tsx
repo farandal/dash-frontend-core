@@ -89,6 +89,31 @@ const KitchnTabsBootstrap: React.FC = () => {
         initializeReduxFromPersisted();
     }, [dispatch, auth.authenticated]);
 
+    // Listen for logout events triggered by token refresh failure
+    useEffect(() => {
+        const handleLogoutEvent = (event: CustomEvent) => {
+            console.log('🔐 KitchnTabsBootstrap: Received logout event', event.detail);
+            
+            // Clear Redux auth state
+            dispatch(
+                DASH_REDUX_ACTIONS.updateAuth(ACTION_UPDATE_AUTH, {
+                    user: null,
+                    authenticated: false,
+                    auth: null,
+                })
+            );
+            
+            // Clear persisted auth
+            AuthPersistenceService.clearAuth();
+        };
+
+        window.addEventListener('auth:logout', handleLogoutEvent as EventListener);
+
+        return () => {
+            window.removeEventListener('auth:logout', handleLogoutEvent as EventListener);
+        };
+    }, [dispatch]);
+
     // App initialization effect
     useEffect(() => {
         const initializeApp = async () => {
