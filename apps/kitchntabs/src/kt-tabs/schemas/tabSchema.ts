@@ -114,6 +114,18 @@ const tabSchema: IDashAutoAdminAttribute[] = [
         component: TabOrderProductsSelector,
         componentProps: {
             config: {
+                // ========== HORIZONTAL SCROLL MODE (Mobile optimized) ==========
+                // Use horizontal scroll instead of pagination for better mobile performance
+                useHorizontalScroll: true,
+                // Card dimensions for horizontal scroll mode
+                horizontalScrollCardWidth: 140,
+                horizontalScrollCardHeight: 180,
+                // Responsive rows: 1 row on mobile, 2 on larger screens
+                horizontalScrollRowsXs: 1,  // 1 row on mobile (xs)
+                horizontalScrollRowsSm: 2,  // 2 rows on tablet (sm)
+                horizontalScrollRowsMd: 4,  // 2 rows on desktop (md+)
+                
+                // ========== PAGINATION MODE (if useHorizontalScroll is false) ==========
                 // Items per page for each breakpoint
                 itemsPerPageXs: 3,  // 3 items in xs (1 row of 3)
                 itemsPerPageSm: 6,  // 6 items in sm (2 rows of 3 or 3 rows of 2)
@@ -124,6 +136,8 @@ const tabSchema: IDashAutoAdminAttribute[] = [
                 gridColumnsSm: 3,   // 2 columns in sm
                 gridColumnsMd: 3,   // 3 columns in md
                 gridColumnsLg: 3,   // 3 columns in lg
+                
+                // ========== COMMON OPTIONS ==========
                 showPrice: true,
                 // Cache configuration (in milliseconds)
                 categoryCacheDuration: 60 * 60 * 1000,  // 1 hour for categories

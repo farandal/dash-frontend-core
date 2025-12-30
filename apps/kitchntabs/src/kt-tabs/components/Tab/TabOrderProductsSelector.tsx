@@ -73,6 +73,20 @@ export interface ITabOrderProductsSelectorConfig {
     hideNavigationButtons?: boolean;
     /** Hide the internal category selector (use external CategorySelector component instead) */
     hideCategorySelector?: boolean;
+    /** Use horizontal scroll instead of pagination (better mobile performance, default: true) */
+    useHorizontalScroll?: boolean;
+    /** Card width for horizontal scroll mode (default: 140) */
+    horizontalScrollCardWidth?: number;
+    /** Card height for horizontal scroll mode (default: 180) */
+    horizontalScrollCardHeight?: number;
+    /** Number of rows in horizontal scroll mode (default: 2) */
+    horizontalScrollRows?: number;
+    /** Number of rows for xs screens (mobile) - overrides horizontalScrollRows */
+    horizontalScrollRowsXs?: number;
+    /** Number of rows for sm screens (tablet) - overrides horizontalScrollRows */
+    horizontalScrollRowsSm?: number;
+    /** Number of rows for md+ screens (desktop) - overrides horizontalScrollRows */
+    horizontalScrollRowsMd?: number;
 }
 
 export interface ITabOrderProductsSelector extends IDashAutoAdminCustomFieldComponent {
@@ -98,6 +112,13 @@ const DEFAULT_CONFIG: Required<ITabOrderProductsSelectorConfig> = {
     disableCache: false,
     hideNavigationButtons: true,
     hideCategorySelector: false,
+    useHorizontalScroll: true, // Enable horizontal scroll by default for better mobile performance
+    horizontalScrollCardWidth: 140,
+    horizontalScrollCardHeight: 180,
+    horizontalScrollRows: 2,
+    horizontalScrollRowsXs: 1, // 1 row on mobile for better UX
+    horizontalScrollRowsSm: 2, // 2 rows on tablet
+    horizontalScrollRowsMd: 2, // 2 rows on desktop
 };
 
 // Cache storage keys
@@ -1044,30 +1065,48 @@ const TabOrderProductsSelector: React.FC<ITabOrderProductsSelector> = (props) =>
     if (isLoadingCategories || isLoadingProducts) {
         return (
             <Box sx={{ width: '100%' }}>
-                {/* Category skeleton */}
-                <Box sx={{ display: 'flex', gap: 1, p: 1, mb: 2 }}>
-                    {[...Array(6)].map((_, index) => (
-                        <Skeleton key={index} variant="rectangular" width={80} height={40} sx={{ borderRadius: 2 }} />
-                    ))}
-                </Box>
-                {/* Products skeleton */}
-                <Box sx={{ p: 2 }}>
-                    <Grid container spacing={2}>
-                        {[...Array(currentItemsPerPage)].map((_, index) => (
-                            <Grid 
-                                size={{ 
-                                    xs: 12 / config.gridColumnsXs,
-                                    sm: 12 / config.gridColumnsSm, 
-                                    md: 12 / config.gridColumnsMd, 
-                                    lg: 12 / config.gridColumnsLg 
-                                }} 
-                                key={index}
-                            >
-                                <Skeleton variant="rectangular" sx={{ width: '100%', minHeight: 200, borderRadius: 2 }} />
-                            </Grid>
+                {/* Category skeleton - only show if hideCategorySelector is false */}
+                {!config.hideCategorySelector && (
+                    <Box sx={{ display: 'flex', gap: 1, p: 1, mb: 2 }}>
+                        {[...Array(6)].map((_, index) => (
+                            <Skeleton key={index} variant="rectangular" width={80} height={40} sx={{ borderRadius: 2 }} />
                         ))}
-                    </Grid>
-                </Box>
+                    </Box>
+                )}
+                {/* Products skeleton - adapt to horizontal scroll or grid mode */}
+                {config.useHorizontalScroll ? (
+                    // Horizontal scroll skeleton
+                    <Box sx={{ display: 'flex', gap: 1.5, p: 1, overflow: 'hidden' }}>
+                        {[...Array(6)].map((_, index) => (
+                            <Skeleton 
+                                key={index} 
+                                variant="rectangular" 
+                                width={config.horizontalScrollCardWidth} 
+                                height={config.horizontalScrollCardHeight} 
+                                sx={{ borderRadius: 2, flexShrink: 0 }} 
+                            />
+                        ))}
+                    </Box>
+                ) : (
+                    // Grid skeleton for pagination mode
+                    <Box sx={{ p: 2 }}>
+                        <Grid container spacing={2}>
+                            {[...Array(currentItemsPerPage)].map((_, index) => (
+                                <Grid 
+                                    size={{ 
+                                        xs: 12 / config.gridColumnsXs,
+                                        sm: 12 / config.gridColumnsSm, 
+                                        md: 12 / config.gridColumnsMd, 
+                                        lg: 12 / config.gridColumnsLg 
+                                    }} 
+                                    key={index}
+                                >
+                                    <Skeleton variant="rectangular" sx={{ width: '100%', minHeight: 200, borderRadius: 2 }} />
+                                </Grid>
+                            ))}
+                        </Grid>
+                    </Box>
+                )}
             </Box>
         );
     }
@@ -1209,7 +1248,7 @@ const TabOrderProductsSelector: React.FC<ITabOrderProductsSelector> = (props) =>
                 </Box>
             )}
 
-            {/* Products Carousel */}
+            {/* Products Display - Horizontal Scroll or Carousel */}
             {filteredProducts.length === 0 ? (
                 <Box
                     sx={{
@@ -1226,7 +1265,125 @@ const TabOrderProductsSelector: React.FC<ITabOrderProductsSelector> = (props) =>
                         {isLoadingMore ? 'Cargando productos...' : 'No hay productos en esta categoría'}
                     </Typography>
                 </Box>
+            ) : config.useHorizontalScroll ? (
+                /* ========== HORIZONTAL SCROLL MODE ========== */
+                <Box sx={{ display: 'flex', flexDirection: 'column', position: 'relative' }}>
+                    {/* Horizontal scrolling products container */}
+                    <Box
+                        sx={{
+                            display: 'flex',
+                            overflowX: 'auto',
+                            overflowY: 'hidden',
+                            gap: 1.5,
+                            px: 1,
+                            py: 1,
+                            scrollbarWidth: 'thin',
+                            scrollbarColor: 'rgba(0,0,0,0.2) transparent',
+                            '&::-webkit-scrollbar': {
+                                height: 6,
+                            },
+                            '&::-webkit-scrollbar-track': {
+                                backgroundColor: 'transparent',
+                            },
+                            '&::-webkit-scrollbar-thumb': {
+                                backgroundColor: 'rgba(0,0,0,0.2)',
+                                borderRadius: 3,
+                            },
+                            // Use CSS scroll snap for better UX
+                            scrollSnapType: 'x mandatory',
+                            WebkitOverflowScrolling: 'touch', // Smooth scrolling on iOS
+                        }}
+                    >
+                        {/* Group products into rows - responsive based on screen size */}
+                        {(() => {
+                            // Determine rows based on screen size
+                            let rows: number;
+                            if (isXs) {
+                                rows = config.horizontalScrollRowsXs ?? config.horizontalScrollRows ?? 1;
+                            } else if (isSm) {
+                                rows = config.horizontalScrollRowsSm ?? config.horizontalScrollRows ?? 2;
+                            } else {
+                                rows = config.horizontalScrollRowsMd ?? config.horizontalScrollRows ?? 2;
+                            }
+                            const cardWidth = config.horizontalScrollCardWidth || 140;
+                            const cardHeight = config.horizontalScrollCardHeight || 180;
+                            
+                            if (rows === 1) {
+                                // Single row - just render products inline
+                                return filteredProducts.map((product, index) => (
+                                    <Box
+                                        key={`product-${product.id}-${index}`}
+                                        sx={{
+                                            flexShrink: 0,
+                                            width: cardWidth,
+                                            scrollSnapAlign: 'start',
+                                        }}
+                                    >
+                                        <ProductCard
+                                            product={product}
+                                            onProductClick={handleProductCardClick}
+                                            getProductPrice={getProductPrice}
+                                            getProductImage={getProductImage}
+                                            showPrice={config.showPrice}
+                                        />
+                                    </Box>
+                                ));
+                            }
+                            
+                            // Multiple rows - group products into columns
+                            const columns: Product[][] = [];
+                            for (let i = 0; i < filteredProducts.length; i += rows) {
+                                columns.push(filteredProducts.slice(i, i + rows));
+                            }
+                            
+                            return columns.map((column, colIndex) => (
+                                <Box
+                                    key={`col-${colIndex}`}
+                                    sx={{
+                                        flexShrink: 0,
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        gap: 1,
+                                        scrollSnapAlign: 'start',
+                                    }}
+                                >
+                                    {column.map((product, rowIndex) => (
+                                        <Box
+                                            key={`product-${product.id}-${colIndex}-${rowIndex}`}
+                                            sx={{
+                                                width: cardWidth,
+                                                height: cardHeight,
+                                            }}
+                                        >
+                                            <ProductCard
+                                                product={product}
+                                                onProductClick={handleProductCardClick}
+                                                getProductPrice={getProductPrice}
+                                                getProductImage={getProductImage}
+                                                showPrice={config.showPrice}
+                                            />
+                                        </Box>
+                                    ))}
+                                </Box>
+                            ));
+                        })()}
+                    </Box>
+                    
+                    {/* Products count indicator */}
+                    <Box
+                        sx={{
+                            display: 'flex',
+                            justifyContent: 'center',
+                            py: 0.5,
+                        }}
+                    >
+                        <Typography variant="caption" color="text.secondary">
+                            {filteredProducts.length} productos
+                        </Typography>
+                    </Box>
+                </Box>
             ) : (
+                /* ========== PAGINATION/CAROUSEL MODE (Original) ========== */
                 <Box sx={{ display: 'flex', flexDirection: 'column', position: 'relative' }}>
                     {/* Swipeable Products Container with Side Arrows */}
                     <Box sx={{ position: 'relative' }}>
