@@ -1295,7 +1295,8 @@ const TabOrderProductsSelector: React.FC<ITabOrderProductsSelector> = (props) =>
             {filteredProducts.length === 0 ? (
                 <Box
                     sx={{
-                        height: 300,
+                        minHeight: 300,
+                        width: '100%',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
@@ -1304,7 +1305,7 @@ const TabOrderProductsSelector: React.FC<ITabOrderProductsSelector> = (props) =>
                     }}
                 >
                     <Typography variant="h2" sx={{ mb: 2, opacity: 0.3 }}>🍽️</Typography>
-                    <Typography variant="h6">
+                    <Typography variant="h6" sx={{ textAlign: 'center' }}>
                         {isLoadingMore ? 'Cargando productos...' : 'No hay productos en esta categoría'}
                     </Typography>
                 </Box>
@@ -1378,7 +1379,7 @@ const TabOrderProductsSelector: React.FC<ITabOrderProductsSelector> = (props) =>
                             overflowX: 'auto',
                             overflowY: 'hidden',
                             gap: 1.5,
-                            px: (isMd || isLg) ? 7 : 1, // Add padding for arrows on larger screens
+                            px: 1,
                             py: 1,
                             scrollbarWidth: 'thin',
                             scrollbarColor: 'rgba(0,0,0,0.2) transparent',
