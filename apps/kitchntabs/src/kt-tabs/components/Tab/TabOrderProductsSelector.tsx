@@ -659,6 +659,40 @@ const TabOrderProductsSelector: React.FC<ITabOrderProductsSelector> = (props) =>
 
     // Container ref for products carousel
     const containerRef = useRef<HTMLDivElement>(null);
+    
+    // Horizontal scroll container ref and state
+    const horizontalScrollRef = useRef<HTMLDivElement>(null);
+    const [canScrollHorizontalLeft, setCanScrollHorizontalLeft] = useState(false);
+    const [canScrollHorizontalRight, setCanScrollHorizontalRight] = useState(true);
+    
+    // Check horizontal scroll position and update arrow visibility
+    const updateHorizontalScrollArrows = useCallback(() => {
+        const container = horizontalScrollRef.current;
+        if (!container) return;
+        
+        const { scrollLeft, scrollWidth, clientWidth } = container;
+        setCanScrollHorizontalLeft(scrollLeft > 10);
+        setCanScrollHorizontalRight(scrollLeft < scrollWidth - clientWidth - 10);
+    }, []);
+    
+    // Scroll horizontal container by a significant amount (4 cards worth)
+    const scrollHorizontalLeft = useCallback(() => {
+        const container = horizontalScrollRef.current;
+        if (!container) return;
+        
+        const cardWidth = config.horizontalScrollCardWidth || 140;
+        const scrollAmount = cardWidth * 4; // Scroll 4 cards at a time
+        container.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+    }, [config.horizontalScrollCardWidth]);
+    
+    const scrollHorizontalRight = useCallback(() => {
+        const container = horizontalScrollRef.current;
+        if (!container) return;
+        
+        const cardWidth = config.horizontalScrollCardWidth || 140;
+        const scrollAmount = cardWidth * 4; // Scroll 4 cards at a time
+        container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+    }, [config.horizontalScrollCardWidth]);
 
     // Load categories on mount (with caching)
     useEffect(() => {
@@ -753,6 +787,15 @@ const TabOrderProductsSelector: React.FC<ITabOrderProductsSelector> = (props) =>
         
         return filtered;
     }, [allProducts, activeCategory, filter]);
+    
+    // Update horizontal scroll arrows when products change or on mount
+    useEffect(() => {
+        // Small delay to ensure DOM is updated
+        const timer = setTimeout(() => {
+            updateHorizontalScrollArrows();
+        }, 100);
+        return () => clearTimeout(timer);
+    }, [filteredProducts.length, updateHorizontalScrollArrows]);
 
     // Calculate pages for carousel based on responsive items per page
     const pages = useMemo(() => {
@@ -1268,14 +1311,74 @@ const TabOrderProductsSelector: React.FC<ITabOrderProductsSelector> = (props) =>
             ) : config.useHorizontalScroll ? (
                 /* ========== HORIZONTAL SCROLL MODE ========== */
                 <Box sx={{ display: 'flex', flexDirection: 'column', position: 'relative' }}>
+                    {/* Left Navigation Arrow - Only on md+ screens */}
+                    {(isMd || isLg) && canScrollHorizontalLeft && (
+                        <IconButton
+                            onClick={scrollHorizontalLeft}
+                            sx={{
+                                position: 'absolute',
+                                left: 0,
+                                top: '50%',
+                                transform: 'translateY(-50%)',
+                                height: 48,
+                                width: 48,
+                                borderRadius: '50%',
+                                backgroundColor: 'primary.main',
+                                color: 'primary.contrastText',
+                                opacity: 0.9,
+                                transition: 'opacity 0.2s, transform 0.2s',
+                                '&:hover': { 
+                                    backgroundColor: 'primary.dark', 
+                                    opacity: 1,
+                                    transform: 'translateY(-50%) scale(1.1)',
+                                },
+                                boxShadow: 3,
+                                zIndex: 10,
+                            }}
+                        >
+                            <ChevronLeftIcon sx={{ fontSize: 28 }} />
+                        </IconButton>
+                    )}
+                    
+                    {/* Right Navigation Arrow - Only on md+ screens */}
+                    {(isMd || isLg) && canScrollHorizontalRight && (
+                        <IconButton
+                            onClick={scrollHorizontalRight}
+                            sx={{
+                                position: 'absolute',
+                                right: 0,
+                                top: '50%',
+                                transform: 'translateY(-50%)',
+                                height: 48,
+                                width: 48,
+                                borderRadius: '50%',
+                                backgroundColor: 'primary.main',
+                                color: 'primary.contrastText',
+                                opacity: 0.9,
+                                transition: 'opacity 0.2s, transform 0.2s',
+                                '&:hover': { 
+                                    backgroundColor: 'primary.dark', 
+                                    opacity: 1,
+                                    transform: 'translateY(-50%) scale(1.1)',
+                                },
+                                boxShadow: 3,
+                                zIndex: 10,
+                            }}
+                        >
+                            <ChevronRightIcon sx={{ fontSize: 28 }} />
+                        </IconButton>
+                    )}
+                    
                     {/* Horizontal scrolling products container */}
                     <Box
+                        ref={horizontalScrollRef}
+                        onScroll={updateHorizontalScrollArrows}
                         sx={{
                             display: 'flex',
                             overflowX: 'auto',
                             overflowY: 'hidden',
                             gap: 1.5,
-                            px: 1,
+                            px: (isMd || isLg) ? 7 : 1, // Add padding for arrows on larger screens
                             py: 1,
                             scrollbarWidth: 'thin',
                             scrollbarColor: 'rgba(0,0,0,0.2) transparent',
