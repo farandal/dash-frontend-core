@@ -11,7 +11,7 @@ import { VoiceAction } from '../voice/useVoiceAgent';
 
 // Configuration constants
 export const SEARCH_CONFIG = {
-    SERVER_SEARCH_MIN_LENGTH: 6,
+    SERVER_SEARCH_MIN_LENGTH: 4,
     LOCAL_SEARCH_ENABLED: true,
     DEBOUNCE_DELAY: 300,
 };

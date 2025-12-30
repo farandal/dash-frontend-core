@@ -187,6 +187,7 @@ const tabSchema: IDashAutoAdminAttribute[] = [
         inList: true,
         inShow: true,
         component: TableNumberField,
+        //default_value:1,
     },
 
 
