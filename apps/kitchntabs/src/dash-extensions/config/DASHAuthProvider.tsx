@@ -44,10 +44,16 @@ const authProvider = {
             */
 
             if (loginResponse.data !== "") {
-                debugger;
                 //setCookie('token', loginResponse.data.token);
             
                 dashStorage.setItem('token', loginResponse.data.token);
+                
+                // Store refresh token if provided (backend uses snake_case: refresh_token)
+                const refreshToken = loginResponse.data.refresh_token || loginResponse.data.refreshToken;
+                if (refreshToken) {
+                    console.log('🔑 Storing refresh token');
+                    dashStorage.setItem('refreshToken', refreshToken);
+                }
             }
 
             try {

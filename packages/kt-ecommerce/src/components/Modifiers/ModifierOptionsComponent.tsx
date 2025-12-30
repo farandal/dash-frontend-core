@@ -69,10 +69,10 @@ const EditComponent: React.FC<IDashAutoAdminCustomFieldComponent> = ({ method, a
   }, [record]);
 
   const updateFormField = React.useCallback((newOptions: IModifierOption[]) => {
-    // Update display_order based on array position
+    // Update display_order based on array position (1-based for user-friendly display)
     const optionsWithOrder = newOptions.map((option, index) => ({
       ...option,
-      display_order: index
+      display_order: index + 1
     }));
     
     field.onChange(optionsWithOrder);
@@ -106,7 +106,7 @@ const EditComponent: React.FC<IDashAutoAdminCustomFieldComponent> = ({ method, a
     
     const updatedOptions = [...modifierOptions, { 
       ...newOption, 
-      display_order: modifierOptions.length 
+      display_order: modifierOptions.length + 1 
     }];
     setModifierOptions(updatedOptions);
     updateFormField(updatedOptions);
@@ -433,7 +433,7 @@ const View: React.FC<IDashAutoAdminCustomFieldComponent> = ({ method, attribute,
               </Grid>
                {/* @ts-ignore */}
               <Grid item xs={12} md={2}>
-                <Typography variant="subtitle1">Orden: {(option.display_order || 0) + 1}</Typography>
+                <Typography variant="subtitle1">Orden: {option.display_order || 1}</Typography>
               </Grid>
             </Grid>
           </CardContent>
