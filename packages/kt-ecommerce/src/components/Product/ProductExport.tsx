@@ -119,22 +119,29 @@ const ProductExport: React.FC<ProductExportProps> = () => {
   const hasSelection = selectedIds.length > 0;
   const exportCount = options.use_selection ? selectedIds.length : '*';
 
-  // Handle export notifications (class-based only)
+  // Handle export notifications (class-based and type-based)
   useEffect(() => {
-    const storedEvent = dashStorage.getItem('lastExportEvent');
-    const currentEvent = JSON.stringify(lastEvent);
+    if (!lastEvent) return;
     
-    if (lastEvent && storedEvent !== currentEvent) {
- 
-      switch (lastEvent.notificationPayload?.class) {
-        case "ProductExportProgressNotification":
-        case "ProductExportNotification":
-        case "ProductExportErrorNotification":
-            /* @ts-ignore */
-          setLastExportNotification(lastEvent);
-          dashStorage.setItem('lastExportEvent', currentEvent);
-          break;
-      }
+    // Check by notification class (nested in notificationPayload)
+    const notificationClass = lastEvent.notificationPayload?.class;
+    // Check by event type (top-level type field)
+    const eventType = lastEvent.type;
+    
+    console.log('🔍 ProductExport checking event:', { notificationClass, eventType, lastEvent });
+    
+    const isExportNotification = 
+      notificationClass === "ProductExportProgressNotification" ||
+      notificationClass === "ProductExportNotification" ||
+      notificationClass === "ProductExportErrorNotification" ||
+      eventType === "export.progress" ||
+      eventType === "export.completed" ||
+      eventType === "export.error";
+    
+    if (isExportNotification) {
+      console.log('✅ ProductExport: Processing export notification');
+      /* @ts-ignore */
+      setLastExportNotification(lastEvent);
     }
   }, [lastEvent]);
 
@@ -146,69 +153,80 @@ const ProductExport: React.FC<ProductExportProps> = () => {
   }, [lastExportNotification]);
 
   const processExportNotification = (notification: ExportNotification) => {
-  const payload = notification.notificationPayload.notificationPayload;
+  // Handle both nested notificationPayload and direct data field
+  const payload = notification.notificationPayload?.notificationPayload || 
+                  (notification as any).data || 
+                  {};
   
-  switch (notification.notificationPayload.class) {
-    case "ProductExportProgressNotification":
-      setExportProgress({
-        jobId: payload.jobId,
-        phaseName: payload.phaseName || 'Processing',
-        phaseNumber: payload.phaseNumber || 1,
-        totalPhases: payload.totalPhases || 4,
-        progress: payload.progress || 0,
-        message: payload.message,
-        status: 'processing'
+  const notificationClass = notification.notificationPayload?.class;
+  const eventType = (notification as any).type;
+  
+  console.log('🔄 processExportNotification:', { notificationClass, eventType, payload });
+  
+  // Determine notification type from class or event type
+  const isProgress = notificationClass === "ProductExportProgressNotification" || eventType === "export.progress";
+  const isCompleted = notificationClass === "ProductExportNotification" || eventType === "export.completed";
+  const isError = notificationClass === "ProductExportErrorNotification" || eventType === "export.error";
+  
+  if (isProgress) {
+    console.log('📊 Setting export progress:', payload);
+    setExportProgress({
+      jobId: payload.jobId,
+      phaseName: payload.phaseName || 'Processing',
+      phaseNumber: payload.phaseNumber || 1,
+      totalPhases: payload.totalPhases || 4,
+      progress: payload.progress || 0,
+      message: payload.message || notification.notificationPayload?.message || 'Procesando...',
+      status: 'processing'
+    });
+  } else if (isCompleted) {
+    console.log('✅ Export completed:', payload);
+    setExportProgress({
+      jobId: payload.jobId,
+      phaseName: 'Completed',
+      phaseNumber: payload.totalPhases || 4,
+      totalPhases: payload.totalPhases || 4,
+      progress: 100,
+      message: payload.message || notification.notificationPayload?.message || 'Exportación completada',
+      status: 'completed'
+    });
+    
+    if (payload.downloadUrls && payload.downloadUrls.length > 0) {
+      // Filter download URLs to only include the requested format
+      const requestedFormat = payload.format || 'xlsx';
+      const filteredDownloadUrls = payload.downloadUrls.filter((file: any) => {
+        const fileExtension = file.filename.split('.').pop()?.toLowerCase();
+        return fileExtension === requestedFormat.toLowerCase();
       });
-      break;
-      
-    case "ProductExportNotification":
-      setExportProgress({
-        jobId: payload.jobId,
-        phaseName: 'Completed',
-        phaseNumber: payload.totalPhases || 4,
-        totalPhases: payload.totalPhases || 4,
-        progress: 100,
-        message: payload.message,
-        status: 'completed'
-      });
-      
-       if (payload.downloadUrls && payload.downloadUrls.length > 0) {
-        // Filter download URLs to only include the requested format
-        const requestedFormat = payload.format || 'xlsx';
-        const filteredDownloadUrls = payload.downloadUrls.filter(file => {
-          const fileExtension = file.filename.split('.').pop()?.toLowerCase();
-          return fileExtension === requestedFormat.toLowerCase();
-        });
 
-        setCompletedExports(prev => [
-          ...prev.filter(exp => exp.jobId !== payload.jobId),
-          {
-            jobId: payload.jobId,
-            filename: payload.filename,
-            downloadUrls: filteredDownloadUrls.map(file => ({
-              ...file,
-              jobId: payload.jobId // Add jobId to each download URL
-            })),
-            completedAt: payload.completedAt || new Date().toISOString()
-          }
-        ]);
-      }
-      notify('Exportación completada exitosamente', { type: 'success' });
-      break;
-      
-    case "ProductExportErrorNotification":
-      setExportProgress({
-        jobId: payload.jobId,
-        phaseName: 'Failed',
-        phaseNumber: payload.totalPhases || 4,
-        totalPhases: payload.totalPhases || 4,
-        progress: 0,
-        message: payload.error || 'Error en la exportación',
-        status: 'failed'
-      });
-      
-      notify(`Error en exportación: ${payload.error || 'Error desconocido'}`, { type: 'error' });
-      break;
+      console.log('📥 Setting completed exports with download URLs:', filteredDownloadUrls);
+      setCompletedExports(prev => [
+        ...prev.filter(exp => exp.jobId !== payload.jobId),
+        {
+          jobId: payload.jobId,
+          filename: payload.filename,
+          downloadUrls: filteredDownloadUrls.map((file: any) => ({
+            ...file,
+            jobId: payload.jobId
+          })),
+          completedAt: payload.completedAt || new Date().toISOString()
+        }
+      ]);
+    }
+    notify('Exportación completada exitosamente', { type: 'success' });
+  } else if (isError) {
+    console.log('❌ Export error:', payload);
+    setExportProgress({
+      jobId: payload.jobId,
+      phaseName: 'Failed',
+      phaseNumber: payload.totalPhases || 4,
+      totalPhases: payload.totalPhases || 4,
+      progress: 0,
+      message: payload.error || 'Error en la exportación',
+      status: 'failed'
+    });
+    
+    notify(`Error en exportación: ${payload.error || 'Error desconocido'}`, { type: 'error' });
   }
 };
 
@@ -329,19 +347,66 @@ const handleDownload = async (url: string, filename: string, jobId?: string) => 
   try {
     const downloadUrl = '/ecommerce/product/download-export';
     
+    // Make request WITHOUT following redirects to get the S3 signed URL
     const response = await axios.post(downloadUrl, {
       jobId: jobId,
-      file: filename // Include filename as fallback
+      file: filename
     }, {
-      responseType: 'blob'
+      maxRedirects: 0, // Don't follow redirects
+      validateStatus: (status) => status >= 200 && status < 400, // Accept 3xx as valid
     });
 
-    const blob = new Blob([response.data]);
-    saveAs(blob, filename);
-    
-    notify('Archivo descargado exitosamente', { type: 'success' });
+    // Check if we got a redirect response with a location header
+    if (response.status >= 300 && response.status < 400 && response.headers.location) {
+      // Open the S3 URL directly - this bypasses CORS since it's a navigation, not an XHR
+      window.open(response.headers.location, '_blank');
+      notify('Descarga iniciada', { type: 'success' });
+      return;
+    }
+
+    // Check if response contains a download_url (JSON response)
+    if (response.data?.download_url) {
+      window.open(response.data.download_url, '_blank');
+      notify('Descarga iniciada', { type: 'success' });
+      return;
+    }
+
+    // If response is a blob (direct file download)
+    if (response.data instanceof Blob || response.headers['content-type']?.includes('application/')) {
+      const blob = new Blob([response.data]);
+      saveAs(blob, filename);
+      notify('Archivo descargado exitosamente', { type: 'success' });
+      return;
+    }
+
+    // Fallback: try to open URL directly if provided in the notification
+    if (url && url.startsWith('http')) {
+      window.open(url, '_blank');
+      notify('Descarga iniciada', { type: 'success' });
+      return;
+    }
+
+    notify('No se pudo obtener el enlace de descarga', { type: 'warning' });
   } catch (error: any) {
     console.error('Download error:', error);
+    
+    // Check if error contains a redirect URL (some axios versions throw on 3xx)
+    if (error.response?.status >= 300 && error.response?.status < 400) {
+      const redirectUrl = error.response.headers?.location;
+      if (redirectUrl) {
+        window.open(redirectUrl, '_blank');
+        notify('Descarga iniciada', { type: 'success' });
+        return;
+      }
+    }
+
+    // Fallback: if we have a URL from the notification, try opening it directly
+    if (url && url.startsWith('http')) {
+      window.open(url, '_blank');
+      notify('Descarga iniciada (enlace directo)', { type: 'info' });
+      return;
+    }
+
     notify('Error al descargar el archivo', { type: 'error' });
   }
 };
