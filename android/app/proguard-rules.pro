@@ -43,6 +43,22 @@
 -dontwarn com.google.firebase.**
 -dontwarn com.google.android.gms.**
 
+# Firebase Crashlytics - preserve stack traces
+-keepattributes SourceFile,LineNumberTable
+-keep public class * extends java.lang.Exception
+-keep class com.google.firebase.crashlytics.** { *; }
+-dontwarn com.google.firebase.crashlytics.**
+
+# Capacitor - Additional rules for permission handling (Xiaomi fix)
+-keep class com.getcapacitor.** { *; }
+-keep class com.getcapacitor.Plugin { *; }
+-keep class com.getcapacitor.PermissionState { *; }
+-keepclassmembers class com.getcapacitor.Plugin {
+    public <methods>;
+    protected <methods>;
+}
+-dontwarn com.getcapacitor.**
+
 # Pusher
 -keep class com.pusher.** { *; }
 -dontwarn com.pusher.**

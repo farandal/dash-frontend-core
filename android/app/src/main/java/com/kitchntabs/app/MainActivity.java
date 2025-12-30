@@ -3,17 +3,27 @@ package com.kitchntabs.app;
 import android.Manifest;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.webkit.PermissionRequest;
+import android.widget.Button;
+import android.view.ViewGroup;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import com.getcapacitor.BridgeActivity;
 import com.getcapacitor.Plugin;
+import com.getcapacitor.PermissionState;
 import com.getcapacitor.annotation.CapacitorPlugin;
 import com.pusher.pushnotifications.PushNotifications;
+import com.google.firebase.crashlytics.FirebaseCrashlytics;
+
+import java.util.HashMap;
+import java.util.Map;
 
 // Add this import for VoiceRecorder
 import com.tchvu3.capacitorvoicerecorder.VoiceRecorder;
@@ -21,14 +31,34 @@ import com.tchvu3.capacitorvoicerecorder.VoiceRecorder;
 public class MainActivity extends BridgeActivity {
     private static final String TAG = "PusherNotifications";
     private static final String AUDIO_TAG = "AudioPermissions";
+    private static final String XIAOMI_TAG = "XiaomiCompat";
     private static final int PERMISSION_REQUEST_CODE = 1001;
+    
+    // Flag to track if we're on a Xiaomi/MIUI device
+    private boolean isXiaomiDevice = false;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+        // Detect Xiaomi devices before calling super (which initializes Capacitor)
+        detectXiaomiDevice();
         
-        // Register the VoiceRecorder plugin
-        registerPlugin(VoiceRecorder.class);
+        // Wrap super.onCreate in try-catch for Xiaomi-specific permission issues
+        try {
+            super.onCreate(savedInstanceState);
+        } catch (Exception e) {
+            Log.e(TAG, "Error in super.onCreate, attempting recovery", e);
+            handleCapacitorInitError(e);
+            // Try again after handling the error
+            try {
+                super.onCreate(savedInstanceState);
+            } catch (Exception e2) {
+                Log.e(TAG, "Recovery failed, continuing with limited functionality", e2);
+                FirebaseCrashlytics.getInstance().recordException(e2);
+            }
+        }
+        
+        // Register the VoiceRecorder plugin with error handling
+        safeRegisterPlugin(VoiceRecorder.class);
         
         // Initialize Pusher Push Notifications
         try {
@@ -55,6 +85,21 @@ public class MainActivity extends BridgeActivity {
         
         // Configure WebView for media capture
         configureWebViewForMediaCapture();
+        /*
+        // Add test crash button for Crashlytics setup
+        Button crashButton = new Button(this);
+        crashButton.setText("Test Crash");
+        crashButton.setOnClickListener(new android.view.View.OnClickListener() {
+            @Override
+            public void onClick(android.view.View v) {
+                throw new RuntimeException("Test Crash"); // Force a crash
+            }
+        });
+        addContentView(crashButton, new ViewGroup.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT));
+
+        */
     }
     
     private void requestMicrophonePermission() {
@@ -137,5 +182,149 @@ public class MainActivity extends BridgeActivity {
             
             Log.d(TAG, "Created notification channel: " + channelId);
         }
+    }
+    
+    /**
+     * Detect if we're running on a Xiaomi/MIUI device.
+     * These devices have known issues with Capacitor's permission handling.
+     */
+    private void detectXiaomiDevice() {
+        String manufacturer = Build.MANUFACTURER.toLowerCase();
+        String brand = Build.BRAND.toLowerCase();
+        
+        isXiaomiDevice = manufacturer.contains("xiaomi") || 
+                        manufacturer.contains("redmi") ||
+                        manufacturer.contains("poco") ||
+                        brand.contains("xiaomi") ||
+                        brand.contains("redmi") ||
+                        brand.contains("poco");
+        
+        if (isXiaomiDevice) {
+            Log.w(XIAOMI_TAG, "Xiaomi/MIUI device detected: " + Build.MANUFACTURER + " " + Build.MODEL);
+            FirebaseCrashlytics.getInstance().setCustomKey("xiaomi_device_detected", true);
+        }
+        
+        // Also check for MIUI
+        String miuiVersion = getSystemProperty("ro.miui.ui.version.name");
+        if (miuiVersion != null && !miuiVersion.isEmpty()) {
+            Log.w(XIAOMI_TAG, "MIUI detected: " + miuiVersion);
+            isXiaomiDevice = true;
+            FirebaseCrashlytics.getInstance().setCustomKey("miui_version", miuiVersion);
+        }
+    }
+    
+    /**
+     * Get system property (for detecting MIUI)
+     */
+    private String getSystemProperty(String key) {
+        try {
+            Class<?> systemProperties = Class.forName("android.os.SystemProperties");
+            java.lang.reflect.Method get = systemProperties.getMethod("get", String.class);
+            return (String) get.invoke(null, key);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+    
+    /**
+     * Safely register a Capacitor plugin with error handling.
+     * This prevents crashes on devices with permission state issues.
+     */
+    private void safeRegisterPlugin(Class<? extends Plugin> pluginClass) {
+        try {
+            registerPlugin(pluginClass);
+            Log.d(TAG, "Successfully registered plugin: " + pluginClass.getSimpleName());
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to register plugin: " + pluginClass.getSimpleName(), e);
+            FirebaseCrashlytics.getInstance().recordException(e);
+            
+            // On Xiaomi devices, log additional context
+            if (isXiaomiDevice) {
+                FirebaseCrashlytics.getInstance().log("Plugin registration failed on Xiaomi device");
+            }
+        }
+    }
+    
+    /**
+     * Handle errors during Capacitor initialization.
+     * This is specifically designed to handle the getPermissionStates NPE on Xiaomi devices.
+     */
+    private void handleCapacitorInitError(Exception e) {
+        Log.e(TAG, "Handling Capacitor init error", e);
+        
+        FirebaseCrashlytics crashlytics = FirebaseCrashlytics.getInstance();
+        crashlytics.setCustomKey("capacitor_init_error", true);
+        crashlytics.setCustomKey("error_class", e.getClass().getSimpleName());
+        
+        // Check if this is the known permission states NPE
+        Throwable cause = e.getCause();
+        while (cause != null) {
+            if (cause instanceof NullPointerException) {
+                String message = cause.getMessage();
+                StackTraceElement[] stack = cause.getStackTrace();
+                
+                for (StackTraceElement element : stack) {
+                    if (element.getClassName().contains("getcapacitor")) {
+                        crashlytics.setCustomKey("capacitor_permission_npe", true);
+                        crashlytics.log("Known Capacitor permission NPE detected at: " + 
+                                       element.getClassName() + "." + element.getMethodName());
+                        Log.e(TAG, "Known Capacitor permission issue at: " + element);
+                        break;
+                    }
+                }
+            }
+            cause = cause.getCause();
+        }
+        
+        crashlytics.recordException(e);
+    }
+    
+    /**
+     * Safely check permission state with null handling.
+     * Use this instead of directly calling Capacitor's getPermissionState.
+     */
+    public PermissionState safeGetPermissionState(String permission) {
+        try {
+            if (permission == null) {
+                Log.w(TAG, "Null permission requested");
+                return PermissionState.PROMPT;
+            }
+            
+            // Use Android's native permission check as a fallback
+            int result = ContextCompat.checkSelfPermission(this, permission);
+            
+            if (result == PackageManager.PERMISSION_GRANTED) {
+                return PermissionState.GRANTED;
+            } else if (ActivityCompat.shouldShowRequestPermissionRationale(this, permission)) {
+                return PermissionState.PROMPT_WITH_RATIONALE;
+            } else {
+                return PermissionState.PROMPT;
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error checking permission state for: " + permission, e);
+            FirebaseCrashlytics.getInstance().recordException(e);
+            return PermissionState.PROMPT;
+        }
+    }
+    
+    /**
+     * Safely get all permission states with null handling.
+     * Returns an empty map instead of null if there's an error.
+     */
+    public Map<String, PermissionState> safeGetPermissionStates(String[] permissions) {
+        Map<String, PermissionState> states = new HashMap<>();
+        
+        if (permissions == null) {
+            Log.w(TAG, "Null permissions array");
+            return states;
+        }
+        
+        for (String permission : permissions) {
+            if (permission != null) {
+                states.put(permission, safeGetPermissionState(permission));
+            }
+        }
+        
+        return states;
     }
 }
