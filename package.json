@@ -4,7 +4,7 @@
   "author": "Francisco Aranda <farandal@gmail.com>",
   "license": "MIT",
   "private": true,
-  "version": "1.3.2",
+  "version": "1.3.4",
   "main": "apps/kitchntabs/dist-electron/main/index.js",
   "scripts": {
     "new": "chmod +x ./new.sh && sh ./new.sh",
@@ -43,7 +43,7 @@
 
     "dev:web:kt:local": "pnpm config:web:kitchntabs:local && pnpm dev",
     "dev:web:kitchntabs:development": "pnpm config:web:kitchntabs:development && pnpm dev",
-    "dev:web:kitchntabs:production": "MODE=production CUSTOM_MODE=kitchntabs.production TARGET_TYPE=web PLATFORM=web APP_PATH=apps/kitchntabs VITE_DEV_PORT=3003  VITE_HMR_PORT=4438  node build_config.js && vite build -c electron.vite.config.mts && cross-env NODE_ENV=production BUILD_ENV=prod CUSTOM_MODE=kitchntabs.production PORT=3003 concurrently \"cd apps/kitchntabs && pnpm dev\"",
+    "dev:web:kitchntabs:production": "MODE=production CUSTOM_MODE=kitchntabs.production TARGET_TYPE=web PLATFORM=web APP_PATH=apps/kitchntabs VITE_DEV_PORT=3006  VITE_HMR_PORT=4438  node build_config.js && vite build -c electron.vite.config.mts && cross-env NODE_ENV=production BUILD_ENV=prod CUSTOM_MODE=kitchntabs.production PORT=3006 concurrently \"cd apps/kitchntabs && pnpm dev\"",
     
     "build:web:kitchntabs:production": "MODE=production CUSTOM_MODE=kitchntabs.production TARGET_TYPE=web PLATFORM=web APP_PATH=apps/kitchntabs node build_config.js && vite build -c electron.vite.config.mts && cross-env NODE_ENV=production BUILD_ENV=prod CUSTOM_MODE=kitchntabs.production concurrently \"cd apps/kitchntabs && pnpm build\"",
    
@@ -56,6 +56,8 @@
    
     "release:android:kitchntabs:development": "pnpm resources:android && pnpm config:android:kitchntabs:development && turbo build --filter=kitchntabs-app --no-cache && cap run android",
     "release:android:kitchntabs:production": "node scripts/increment-android-version.js && pnpm resources:android && pnpm config:android:kitchntabs:production && turbo build --filter=kitchntabs-app --no-cache && cap sync android && cd ./android && ./gradlew bundleRelease",
+    "release-apk:android:kitchntabs:production": "pnpm resources:android && pnpm config:android:kitchntabs:production && turbo build --filter=kitchntabs-app --no-cache && cap sync android && cd ./android && ./gradlew assembleRelease",
+    
     "release:android:kitchntabs:production:test": "pnpm resources:android && pnpm config:android:kitchntabs:production && turbo build --filter=kitchntabs-app --no-cache && cap run android",
     
     "release:android:kitchntabs-mall:development": "pnpm resources:android && pnpm config:android:kitchntabs-mall:development && turbo build --filter=kitchntabs-mall --no-cache && cap run android",
