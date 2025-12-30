@@ -98,14 +98,43 @@ const KitchnTabsPrivateApp: React.FC<KitchnTabsPrivateAppProps> = ({
     const customQueryClient = useMemo(() => new QueryClient({
         defaultOptions: {
            queries: {
-                staleTime: 1000 * 60 * 60 * 2, // 2 hours - data is fresh for 2 hours
-                gcTime: 1000 * 60 * 60 * 2, // 2 hours - keep in cache for 2 hours
+                staleTime: 1000 * 5, // 2 hours - data is fresh for 2 hours
+                gcTime: 1000 * 5, // 2 hours - keep in cache for 2 hours
                 retry: 1,
                 refetchOnWindowFocus: false,
                 refetchOnMount: false, // Don't refetch immediately if we have cached data
             },
         },
     }), []);
+
+    // Add custom defaults for specific endpoints (query keys)
+    useEffect(() => {
+        // Cache "products" for 24 hours (longer cache for less-changing data)
+        /*customQueryClient.setQueryDefaults(['products'], {
+            staleTime: 1000 * 60 * 60 * 24, // 24 hours
+            gcTime: 1000 * 60 * 60 * 24,    // Keep in cache for 24 hours
+        });
+
+        // Cache "users" for 1 hour (shorter for frequently-changing data)
+        customQueryClient.setQueryDefaults(['users'], {
+            staleTime: 1000 * 60 * 60 * 1, // 1 hour
+            gcTime: 1000 * 60 * 60 * 1,    // Keep in cache for 1 hour
+        });*/
+
+        // Cache "ecommerce/product" for 24 hours
+        customQueryClient.setQueryDefaults(['ecommerce/product'], {
+            staleTime: 1000 * 60 * 60 * 4, // 24 hours
+            gcTime: 1000 * 60 * 60 * 4,    // Keep in cache for 24 hours
+        });
+
+        // Cache "ecommerce/category" for 24 hours
+        customQueryClient.setQueryDefaults(['ecommerce/category'], {
+            staleTime: 1000 * 60 * 60 * 24, // 24 hours
+            gcTime: 1000 * 60 * 60 * 24,    // Keep in cache for 24 hours
+        });
+
+        // Add more as needed for other endpoints/resources
+    }, [customQueryClient]);
 
     // Memoize theme options
     const extendedThemeOptions = useMemo(() => ({
