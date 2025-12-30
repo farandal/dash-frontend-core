@@ -170,11 +170,14 @@ class DASHAuthenticationService {
                     console.log("Setting token in storage");
                     //setCookie('token', loginResponse.data.token, { expires });
                     dashStorage.setItem('token', loginResponse.data.token);
-                    if (loginResponse.data?.refreshToken) {
+                    
+                    // Handle refresh token (backend uses snake_case: refresh_token)
+                    const refreshToken = loginResponse.data?.refresh_token || loginResponse.data?.refreshToken;
+                    if (refreshToken) {
                         console.log("Setting refresh token in storage");
-                        //setCookie('refreshToken', loginResponse.data.refreshToken, { expires });
-                        dashStorage.setItem('refreshToken', loginResponse.data.refreshToken);
+                        dashStorage.setItem('refreshToken', refreshToken);
                     }
+                    
                     if (loginResponse.data?.meta) {
                         console.log("Setting app");
                         dashStorage.setItem('app', loginResponse.data.meta.app);
@@ -400,8 +403,10 @@ class DASHAuthenticationService {
 
     async refreshToken(refreshToken: string): Promise<DASHAuthenticationServiceAuthResponse> {
         try {
+            console.log('[DASHAuthService] Attempting to refresh token...');
+            
             const response = await this.axiosInstance.post('/auth/refresh', {
-                refreshToken
+                refresh_token: refreshToken
             });
 
             if (response.status >= 200 && response.status <= 299) {
@@ -409,31 +414,45 @@ class DASHAuthenticationService {
 
                 // Update stored auth data using the same pattern as login
                 if (data.token) {
-                    debugger;
-                    /*const today = new Date();
-                    const expires = new Date();
-                    expires.setDate(today.getDate() + 2);
-                    setCookie('token', data.token, { expires });*/
-                    //setCookie('token', data.token);
                     dashStorage.setItem('token', data.token);
+                    console.log('[DASHAuthService] Access token updated');
                 }
-                 await syncLocalStorageToDeviceStore();
+                
+                if (data.refresh_token) {
+                    dashStorage.setItem('refreshToken', data.refresh_token);
+                    console.log('[DASHAuthService] Refresh token rotated');
+                }
+                
+                await syncLocalStorageToDeviceStore();
+                
+                console.log('[DASHAuthService] Token refresh successful');
+                
                 return {
                     success: true,
                     token: data.token,
-                    refreshToken: data.refreshToken
+                    refreshToken: data.refresh_token,
+                    user: data.user
                 };
             } else {
+                console.warn('[DASHAuthService] Token refresh returned non-success status:', response.status);
                 return {
                     success: false,
                     error: 'Token refresh failed'
                 };
             }
-        } catch (error) {
-            console.error('Token refresh error:', error);
+        } catch (error: any) {
+            console.error('[DASHAuthService] Token refresh error:', error);
+            
+            // Check if it's a 401 error (refresh token expired/invalid)
+            if (error?.response?.status === 401) {
+                console.log('[DASHAuthService] Refresh token is invalid or expired');
+                // Clear auth state since refresh token is no longer valid
+                this.logoutFromStorage('refresh_token_expired');
+            }
+            
             return {
                 success: false,
-                error: 'Network error occurred'
+                error: error?.response?.data?.message || error?.message || 'Network error occurred'
             };
         }
     }
