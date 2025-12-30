@@ -159,6 +159,21 @@ const productSchema: IDashAutoAdminAttribute[] = [
 
   },
   {
+    tab: "Producto",
+    label: 'Orden',
+    attribute: 'display_order',
+    type: Number,
+    sortable: true,
+    inList: false,
+    inShow: true,
+    inEdit: true,
+    inCreate: true,
+    fieldProps: {
+      min: 0,
+      helperText: 'Orden de visualización (1 = primero, 0 = último)',
+    },
+  },
+  {
   tab: "Categoría/Modificadores",
   label: 'Categorías',
   attribute: 'category_ids',
