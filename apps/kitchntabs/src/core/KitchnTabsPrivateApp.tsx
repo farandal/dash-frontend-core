@@ -234,13 +234,15 @@ const KitchnTabsPrivateApp: React.FC<KitchnTabsPrivateAppProps> = ({
                     BasicTokenGeneratorField,
                     JsonComp,
                     JsonColorSelectorComp,
-                    JsonCssVarValuesComp
+                    JsonCssVarValuesComp,
+                    NotificationPreferencesComp
                 ] = await Promise.all([
                     import('../components/ecommerce/uber/UberStoreAvailability'),
                     import('../components/ecommerce/uber/BasicTokenGeneratorField'),
                     import('dash-components').then(module => ({ default: module.Json })),
                     import('dash-components').then(module => ({ default: module.JsonColorSelectorEnhanced })),
-                    import('dash-components').then(module => ({ default: module.JsonCssVarValues }))
+                    import('dash-components').then(module => ({ default: module.JsonCssVarValues })),
+                    import('dash-components').then(module => ({ default: module.NotificationPreferences }))
                 ]);
 
                 setDashAutoAdminComponents({
@@ -248,7 +250,8 @@ const KitchnTabsPrivateApp: React.FC<KitchnTabsPrivateAppProps> = ({
                     "BasicTokenGeneratorField": BasicTokenGeneratorField.default,
                     "Json": JsonComp.default,
                     "JsonColorSelector": JsonColorSelectorComp.default,
-                    "JsonCssVarValues": JsonCssVarValuesComp.default
+                    "JsonCssVarValues": JsonCssVarValuesComp.default,
+                    "NotificationPreferences": NotificationPreferencesComp.default
                 });
 
             } catch (error) {
