@@ -22,8 +22,8 @@ const pricelistResource: IDashAutoAdminResourceConfig =
   component: ResourceTemplate,
   trash: false,
   model: "ecommerce/pricelist",
-  group: "Productos",
-  label: "Lista de Precio",
+  group: "resource.groups.products",
+  label: "resource.ecommerce.pricelists.label",
   schema: pricelistSchema,
   icon: <Icon />,
   refreshAfter: true,
@@ -32,7 +32,7 @@ const pricelistResource: IDashAutoAdminResourceConfig =
 
   menu: [
     {
-      title: "Lista de Precios",
+      title: "resource.ecommerce.pricelists.menu_list",
       redirect: "/ecommerce/pricelist",
     },
 /*{
@@ -58,7 +58,7 @@ const pricelistResource: IDashAutoAdminResourceConfig =
   },*/
 
   mainAction: {
-    title: "Crear lista de precio",
+    title: "resource.ecommerce.pricelists.main_action",
     mode: "create",
     fn: "virtualhash",
     redirect: "inline/create",

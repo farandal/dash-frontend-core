@@ -15,19 +15,19 @@ import { ResourceTemplateCreate } from './ResourceTemplateCreate';
 import { ResourceTemplateEdit } from './ResourceTemplateEdit';
 import { ResourceTemplateList } from './ResourceTemplateList';
 import { ResourceTemplateShow } from './ResourceTemplateShow';
-import {DASHAdminSystemConstants} from  'dash-constants'
+import { DASHAdminSystemConstants } from 'dash-constants'
 
 import TrashTemplate from './TrashTemplate';
 import { DashResourceProvider } from '../contexts/DashResourceContext';
-import {Resource} from '../react-admin-dash/Resource';
+import { Resource } from '../react-admin-dash/Resource';
 
 //import {Resource} from "react-admin";
 export interface IResourceTemplate {
     resourceConfig: IDashAutoAdminResourceConfig;
 }
 
-export const ResourceTemplate = (resourceConfig:IDashAutoAdminResourceConfig) => {
-  
+export const ResourceTemplate = (resourceConfig: IDashAutoAdminResourceConfig) => {
+
     const debug = false;
 
     const _create = evalActionPermission(resourceConfig, resourceConfig?.create);
@@ -61,19 +61,22 @@ export const ResourceTemplate = (resourceConfig:IDashAutoAdminResourceConfig) =>
     const a = '*';
     const idParamName = resourceConfig?.idParamName || 'id';
     //const { [idParamName]: id, [a]: all } = useParams();
-   
-   /*useEffect(()=> {
-       console.log('ResourceTemplate useEffect', resourceConfig);
-        console.log('ResourceTemplate _view', _view);
-    },[]);*/
-    
+
+    /*useEffect(()=> {
+        console.log('ResourceTemplate useEffect', resourceConfig);
+         console.log('ResourceTemplate _view', _view);
+     },[]);*/
+
     return (
         <>
             <CustomRoutes>
                 {/* Custom routes from resource config - rendered at top level */}
-                {typeof resourceConfig.customRoutes === 'function' 
-                    ? resourceConfig.customRoutes(resourceConfig) 
+                {typeof resourceConfig.customRoutes === 'function'
+                    ? resourceConfig.customRoutes(resourceConfig)
                     : null}
+
+                {/* Automatic trash routes if trash is enabled */}
+                {/* Moved outside */}
 
                 <Route element={<MotionWrapper />}>
 
@@ -178,8 +181,8 @@ export const ResourceTemplate = (resourceConfig:IDashAutoAdminResourceConfig) =>
 
                 </Route>
 
-                 <Route 
-                    path="*" 
+                <Route
+                    path="*"
                     element={
                         debug ? (
                             <div>
@@ -191,9 +194,12 @@ export const ResourceTemplate = (resourceConfig:IDashAutoAdminResourceConfig) =>
                         ) : (
                             <NotFound />
                         )
-                    } 
+                    }
                 />
             </CustomRoutes>
+
+            {/* Automatic trash routes if trash is enabled */}
+            {resourceConfig.trash ? TrashTemplate(resourceConfig) : null}
 
             <Resource
                 options={{ label: resourceConfig.label, group: resourceConfig.group }}
@@ -203,23 +209,31 @@ export const ResourceTemplate = (resourceConfig:IDashAutoAdminResourceConfig) =>
                 // @ts-ignore Expected mismatch types, nevertheless compatible 
                 icon={resourceConfig?.icon || null}
 
-                {..._list && {list : () => {
-                    return <ResourceTemplateList resourceConfig={resourceConfig} />;
-                } }}
+                {..._list && {
+                    list: () => {
+                        return <ResourceTemplateList resourceConfig={resourceConfig} />;
+                    }
+                }}
 
-                {..._create && {create : () => {
-                    return <ResourceTemplateCreate resourceConfig={resourceConfig} />;
-                } }}
+                {..._create && {
+                    create: () => {
+                        return <ResourceTemplateCreate resourceConfig={resourceConfig} />;
+                    }
+                }}
 
-                 {..._view && {show : () => {
-                    
-                    return <ResourceTemplateShow resourceConfig={resourceConfig} />;
-                } }}
+                {..._view && {
+                    show: () => {
 
-                  {..._edit && {edit : () => {
-                 
-                    return <ResourceTemplateEdit resourceConfig={resourceConfig} />;
-                } }}
+                        return <ResourceTemplateShow resourceConfig={resourceConfig} />;
+                    }
+                }}
+
+                {..._edit && {
+                    edit: () => {
+
+                        return <ResourceTemplateEdit resourceConfig={resourceConfig} />;
+                    }
+                }}
             />
         </>
 

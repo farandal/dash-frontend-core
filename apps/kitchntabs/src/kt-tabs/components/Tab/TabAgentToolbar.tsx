@@ -1,4 +1,5 @@
 import React, { useState, useCallback } from 'react';
+import { useTranslate } from 'react-admin';
 import {
     Box,
     Card,
@@ -111,6 +112,7 @@ const DEFAULT_CONFIG: Required<ITabAgentToolbarConfig> = {
 const TabAgentToolbar: React.FC<ITabAgentToolbar> = (props) => {
     const { record, config: userConfig } = props;
     const theme = useTheme();
+    const translate = useTranslate();
     
     // Merge config with defaults
     const config = { ...DEFAULT_CONFIG, ...(userConfig || {}) };
@@ -286,11 +288,11 @@ const TabAgentToolbar: React.FC<ITabAgentToolbar> = (props) => {
 
     // Status indicator
     const getStatusInfo = () => {
-        if (isRecording) return { color: 'error', text: 'Grabando...', icon: '🔴' };
-        if (isVoiceProcessing) return { color: 'warning', text: 'Procesando voz...', icon: '🟡' };
-        if (isImageProcessing) return { color: 'warning', text: 'Procesando imagen...', icon: '🟡' };
-        if (isCapturing) return { color: 'info', text: countdown ? `Capturando en ${countdown}...` : 'Capturando...', icon: '📷' };
-        if (isProcessingVoiceActions) return { color: 'info', text: 'Aplicando...', icon: '⚙️' };
+        if (isRecording) return { color: 'error', text: translate('voice.recording'), icon: '🔴' };
+        if (isVoiceProcessing) return { color: 'warning', text: translate('voice.processing_voice'), icon: '🟡' };
+        if (isImageProcessing) return { color: 'warning', text: translate('voice.processing_image'), icon: '🟡' };
+        if (isCapturing) return { color: 'info', text: countdown ? translate('voice.capturing_countdown', { countdown }) : translate('voice.capturing'), icon: '📷' };
+        if (isProcessingVoiceActions) return { color: 'info', text: translate('voice.applying'), icon: '⚙️' };
         return { color: 'default', text: '✨', icon: '✨' };
     };
 

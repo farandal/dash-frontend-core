@@ -192,6 +192,25 @@
   "tab.assistance.not_available": "Asistencia no disponible en este momento.",
   "tab.store.no_products": "No hay productos destacados",
 
+    "tabs.mall_notifications.order_in_preparation": "Orden en preparación",
+    "tabs.mall_notifications.order_ready": "¡Orden lista!",
+    "tabs.mall_notifications.order_ready_pickup": "Lista para recoger",
+    "tabs.mall_notifications.order_completed": "Orden completada",
+    "tabs.mall_notifications.order_cancelled": "Orden cancelada",
+    "tabs.mall_notifications.order_confirmed": "Orden confirmada",
+    "tabs.mall_notifications.order_status_updated": ":store actualizó tu orden a :status",
+    "tabs.mall_notifications.order_in_preparation_message": ":store está preparando tu orden",
+    "tabs.mall_notifications.order_prepared_message": ":store tiene :count artículos listos",
+    "tabs.mall_notifications.order_delivered_message": ":store ha entregado tu orden",
+    "tabs.mall_notifications.order_status_message": ":store: La orden está ahora :status",
+    "tabs.mall_notifications.new_order_created": "Nueva orden creada",
+    "tabs.mall_notifications.new_order_at_store": "Nueva orden en :store",
+    "tabs.mall_notifications.new_order_message": "Orden de :customer en mesa :table",
+    "tabs.mall_notifications.new_order_message_no_table": "Orden de :customer",
+    "tabs.mall_notifications.new_order_with_items": ":customer en mesa :table ordenó :count artículos",
+    "tabs.mall_notifications.assistance_requested": "¡Asistencia solicitada!",
+    "tabs.mall_notifications.assistance_message": ":customer en mesa :table necesita ayuda",
+
     "mall.errors.sessionIdRequired": "Se requiere ID de sesión del mall",
     "mall.errors.validationDefault": "Ocurrió un error al validar la sesión",
     "mall.errors.sessionExpired": "La sesión ha expirado. Las sesiones son válidas por 10 horas desde su activación.",
@@ -281,5 +300,25 @@
     "mall.mediator.continue_button": "Continuar",
 
     "mall.products": "productos",
-    "mall.swipe_for_more": "Desliza para más"
+    "mall.swipe_for_more": "Desliza para más",
+
+    "resource.system.tenants.label": "Inquilinos",
+    "resource.system.tenants.name": "Inquilinos",
+    "resource.system.tenants.menu_list": "Listar Inquilinos",
+    "resource.system.tenants.filter_name": "Nombre",
+    "resource.system.tenants.main_action": "Crear Inquilino",
+
+    "resource.system.roles.label": "Roles",
+    "resource.system.roles.name": "Roles",
+    "resource.system.roles.menu_list": "Listar Roles",
+    "resource.system.roles.filter_name": "Nombre",
+    "resource.system.roles.main_action": "Crear Rol",
+
+    "resource.system.users.label": "Usuarios",
+    "resource.system.users.name": "Usuarios",
+    "resource.system.users.menu_list": "Listar Usuarios",
+    "resource.system.users.filter_search": "Buscar",
+    "resource.system.users.main_action": "Crear Usuario",
+
+    "resource.groups.system_resources": "Recursos del Sistema"
 }

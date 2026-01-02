@@ -1,7 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { Button, useRedirect, useStore } from 'react-admin';
+import { Button, useRedirect, useStore, useTranslate } from 'react-admin';
 import useVirtualHash from '../hooks/useVirtualHash';
 import { IDashAutoAdminResourceConfig } from 'dash-auto-admin';
+
+/**
+ * Check if a string looks like a translation key
+ */
+const isTranslationKey = (value: string): boolean => {
+    if (!value || typeof value !== 'string') return false;
+    // Translation keys typically contain dots and are lowercase
+    return value.includes('.') && value === value.toLowerCase();
+};
 
 export interface IApplicationLayoutMenuItem {
     title: string;
@@ -30,8 +39,22 @@ const ApplicationLayout: React.FC<IApplicationLayout> = ({
 }) => {
     const [drawerState, setDrawerState] = useState<boolean>(false);
     const redirect = useRedirect();
+    const translate = useTranslate();
     const { setVirtualHash } = useVirtualHash();
     const [, setResourceConfig] = useStore('resourceConfig', resourceConfig);
+
+    /**
+     * Translate a label if it's a translation key, otherwise return as-is
+     */
+    const translateLabel = (label: string): string => {
+        if (!label) return '';
+        if (isTranslationKey(label)) {
+            const translated = translate(label, { _: label });
+            // If translation returns the key itself, use the label as-is
+            return translated === label ? label : translated;
+        }
+        return label;
+    };
 
     useEffect(() => {
         setResourceConfig(resourceConfig);
@@ -108,7 +131,7 @@ const ApplicationLayout: React.FC<IApplicationLayout> = ({
                                         {menuItem.icon && (
                                             <i className={`icon icon-${menuItem.icon}`} />
                                         )}
-                                        <span>{menuItem.title}</span>
+                                        <span>{translateLabel(menuItem.title)}</span>
                                     </span>
                                 </li>
                             ))}
@@ -125,7 +148,7 @@ const ApplicationLayout: React.FC<IApplicationLayout> = ({
                                 className="dash-btn-block"
                                 onClick={handleMainAction}
                             >
-                                {resourceConfig.mainAction.title}
+                                {translateLabel(resourceConfig.mainAction.title)}
                             </Button>
                         </div>
                         </>

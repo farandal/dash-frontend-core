@@ -12,8 +12,8 @@ const campaignResource: IDashAutoAdminResourceConfig =
     roles: [DASHAppConstants.system.TENANT_ROLE],
     component: CampaignResourceTemplate,
     model: "ecommerce/campaign",
-    group: "Campañas",
-    label: "Campañas",
+    group: "resource.groups.campaigns",
+    label: "resource.campaigns.label",
     schema: campaignSchema,
     icon: <Icon />,
     /*drawer: true,
@@ -26,12 +26,12 @@ const campaignResource: IDashAutoAdminResourceConfig =
     
     menu: [
         {
-            title: "Listado de Campañas",
+            title: "resource.campaigns.menu_list",
             redirect: "/ecommerce/campaign",
         },
     ],
        mainAction: {
-        title: "Crear",
+        title: "resource.campaigns.main_action",
         fn: "redirect",
         // type: "ghost",
         mode: "create",
@@ -41,7 +41,7 @@ const campaignResource: IDashAutoAdminResourceConfig =
     referenceFilters: [
         {
             id: "Nombre",
-            label: "Nombre",
+            label: "resource.campaigns.filter_name",
             source: "name",
             reference: null,
             optionText: null,

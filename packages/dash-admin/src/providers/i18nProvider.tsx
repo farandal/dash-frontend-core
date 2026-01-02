@@ -9,7 +9,15 @@ const messages = {
 	en: englishMessages,
 };
 
+const availableLocales = [
+	{ locale: 'en', name: 'English' },
+	{ locale: 'es', name: 'Español' },
+];
+
+// ra-i18n-polyglot signature: (getMessages, initialLocale, availableLocales, polyglotOptions)
 export default polyglotI18nProvider(
 	(locale) => (messages[locale] ? messages[locale] : messages.es),
 	resolveBrowserLocale(),
+	availableLocales,    // 3rd param: availableLocales array
+	{ allowMissing: true } // 4th param: polyglotOptions
 );

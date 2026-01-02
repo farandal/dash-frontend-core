@@ -18,6 +18,17 @@ import { parseAxiosError } from "dash-admin/src/helpers/parseAxiosError";
 import {DASHAppConstants} from "dash-constants";
 import { Grid } from "@mui/material";
 
+// Helper function to get status filter options with translation keys
+const getStatusFilterOptions = () => [
+    { id: 'CREATED', name: 'tab.status.created' },
+    { id: 'CONFIRMED', name: 'tab.status.confirmed' },
+    { id: 'IN_PREPARATION', name: 'tab.status.in_preparation' },
+    { id: 'PREPARED', name: 'tab.status.prepared' },
+    { id: 'DELIVERED', name: 'tab.status.delivered' },
+    { id: 'CANCELLED', name: 'tab.status.cancelled' },
+    { id: 'CLOSED', name: 'tab.status.closed' }
+];
+
 const resources: IDashAutoAdminResourceConfig[] = [
     {
         
@@ -25,7 +36,7 @@ const resources: IDashAutoAdminResourceConfig[] = [
         roles: [DASHAppConstants.system.SYSTEM_ROLE,DASHAppConstants.system.TENANT_ROLE,"Staff"],
         component: ResourceTemplate,
         model: "tab/tab-admin",
-        label: "Tabs Admin",
+        label: "tab.resource.tabs_admin",
         schema: tabSchema,
         icon: <RestaurantMenu />,
        
@@ -72,19 +83,14 @@ const resources: IDashAutoAdminResourceConfig[] = [
         referenceFilters: [
             {
                 id: 'status_id',
-                label: 'Estado',
+                label: 'tab.resource.filter.status',
                 source: 'status',
                 alwaysOn: true,
-                reference: [
-                    { id: 'CREATED', name: 'Creado' },
-                    { id: 'CONFIRMED', name: 'Confirmado' },
-                    { id: 'IN_PREPARATION', name: 'En preparación' },
-                    { id: 'PREPARED', name: 'Preparado' },
-                    { id: 'DELIVERED', name: 'Entregado' },
-                    { id: 'CANCELLED', name: 'Cancelado' },
-                    { id: 'CLOSED', name: 'Cerrado' }
-                ],
+                reference: getStatusFilterOptions(),
                 optionText: 'name',
+                fieldProps: {
+                    translateChoice: true, // Enable translation of choice labels
+                },
                 //fieldOptions: { defaultValue: 'Todos' }, 
                 referenceComponent: SelectInput,
             },
@@ -97,19 +103,19 @@ const resources: IDashAutoAdminResourceConfig[] = [
         dataGridComponent: TabsList,
         model: "tab/tab",
         
-        label: "Tabs",
+        label: "tab.resource.tabs",
         schema: tabSchema,
         icon: <RestaurantMenu />,
         
         //listComponent: (resourceConfig) => <Graphs/>,
         menu: [
             {
-                title: "Listado",
+                title: "tab.resource.menu.list",
                 redirect: "/tab/tab",
             },
         ],
         mainAction: {
-            title: "⊕ Crear tab",
+            title: "tab.resource.action.create",
             fn: "redirect",
             // type: "ghost",
             mode: "create",
@@ -136,19 +142,14 @@ const resources: IDashAutoAdminResourceConfig[] = [
         referenceFilters: [
             {
                 id: 'status_id',
-                label: 'Estado',
+                label: 'tab.resource.filter.status',
                 source: 'status',
                 alwaysOn: true,
-                reference: [
-                    { id: 'CREATED', name: 'Creado' },
-                    { id: 'CONFIRMED', name: 'Confirmado' },
-                    { id: 'IN_PREPARATION', name: 'En preparación' },
-                    { id: 'PREPARED', name: 'Preparado' },
-                    { id: 'DELIVERED', name: 'Entregado' },
-                    { id: 'CANCELLED', name: 'Cancelado' },
-                    { id: 'CLOSED', name: 'Cerrado' }
-                ],
+                reference: getStatusFilterOptions(),
                 optionText: 'name',
+                fieldProps: {
+                    translateChoice: true, // Enable translation of choice labels
+                },
                 //fieldOptions: { defaultValue: 'Todos' }, 
                 referenceComponent: SelectInput,
             },
@@ -216,7 +217,7 @@ const resources: IDashAutoAdminResourceConfig[] = [
         contextComponent: TabsContext,
         dataGridComponent: KitchenTabsList,
         model: "tab/kitchentab",
-        label: "Tabs",
+        label: "tab.resource.tabs",
         schema: tabSchema,
         icon: <Kitchen />,
         //listComponent: (resourceConfig) => <Graphs/>,

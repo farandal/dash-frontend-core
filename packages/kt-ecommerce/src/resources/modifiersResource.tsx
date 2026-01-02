@@ -11,19 +11,19 @@ const modifierGroupResource: IDashAutoAdminResourceConfig = {
   component: ResourceTemplate,
   trash: true,
   model: "ecommerce/modifier",
-  group: "Productos",
-  label: "Grupos de Modificadores",
+  group: "resource.groups.products",
+  label: "resource.ecommerce.modifiers.label",
   schema: modifierGroupSchema,
   icon: <LocalOffer />,
   menu: [
     {
-      title: "Grupos de Modificadores",
+      title: "resource.ecommerce.modifiers.menu_list",
       redirect: "/ecommerce/modifier",
     },
   
   ],
   mainAction: {
-    title: "Crear grupo de modificadores",
+    title: "resource.ecommerce.modifiers.main_action",
     mode: "create",
     fn: "virtualhash",
     redirect: "inline/create",
@@ -38,7 +38,7 @@ const modifierGroupResource: IDashAutoAdminResourceConfig = {
       referenceFilters: [
         {
             id: "Nombre",
-            label: "Nombre", // filter label'
+            label: "resource.ecommerce.modifiers.filter_name",
             source: "name", // id field
             reference: null,
             optionText: null,
@@ -46,7 +46,7 @@ const modifierGroupResource: IDashAutoAdminResourceConfig = {
         },
         {
             id: "description",
-            label: "Descripción", // filter label'
+            label: "resource.ecommerce.products.filter_description",
             source: "description", // id field
             reference: null,
             optionText: null,

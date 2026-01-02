@@ -67,15 +67,15 @@ const systemResources: IAppResourceConfig[] = [
             )
         },
         model: 'system/tenant',
-        label: 'Clientes',
+        label: 'resource.system.tenants.label',
 
         schema: tenantSystemAdminSchema,
         //references: [{ reference: 'roles', target: 'role', schema: rolesSchema }]
         //references: [{ reference: 'roles', target: 'gitid', schema: roleSchema }],
         icon: <Person />,
-        group: 'Recursos de sistema',
+        group: 'resource.groups.system_resources',
         menu: [{
-            title: 'Clientes',
+            title: 'resource.system.tenants.menu_list',
             redirect: '/system/tenant',
         },
 
@@ -96,7 +96,7 @@ const systemResources: IAppResourceConfig[] = [
         referenceFilters: [
             {
                 id: "Nombre",
-                label: "Nombre", // filter label'
+                label: "resource.system.tenants.filter_name",
                 source: "name", // id field
                 reference: null,
                 optionText: null,
@@ -105,7 +105,7 @@ const systemResources: IAppResourceConfig[] = [
         ],
 
         mainAction: {
-            title: 'Crear cliente',
+            title: 'resource.system.tenants.main_action',
             fn: "redirect",
             // type: "ghost",
             mode: "create",
@@ -278,12 +278,12 @@ const systemResources: IAppResourceConfig[] = [
         roles: [DASHAppConstants.system.SYSTEM_ROLE],
         component: ResourceTemplate,
         model: 'system/role-permissions-bulk',
-        label: 'roles',
+        label: 'resource.system.roles.label',
         icon: <SystemUpdateAlt />,
-        group: 'Recursos de sistema',
+        group: 'resource.groups.system_resources',
         menu: [
             {
-                title: 'Roles',
+                title: 'resource.system.roles.menu_list',
                 redirect: '/system/role-permissions-bulk',
             },
         ],
@@ -301,7 +301,7 @@ const systemResources: IAppResourceConfig[] = [
         referenceFilters: [
             {
                 id: "Nombre",
-                label: "Nombre", // filter label'
+                label: "resource.system.roles.filter_name",
                 source: "name", // id field
                 reference: null,
                 optionText: null,
@@ -311,7 +311,7 @@ const systemResources: IAppResourceConfig[] = [
         toolbarCreateButton: { enabled: true },
 
         mainAction: {
-            title: 'Agregar Rol',
+            title: 'resource.system.roles.main_action',
             fn: "redirect",
             // type: "ghost",
             mode: "create",
@@ -465,14 +465,14 @@ const systemResources: IAppResourceConfig[] = [
         trash: true,
         isFormData: true,
         model: 'system/user',
-        group: 'Recursos de sistema',
-        label: 'Usuarios',
+        group: 'resource.groups.system_resources',
+        label: 'resource.system.users.label',
         refreshAfter: true,
         referenceFilters: [
             // TODO: Cuando se cambia el cliente se debn mostrar sólo los CP de este filtro
             {
                 id: 'search',
-                label: 'Buscar',
+                label: 'resource.system.users.filter_search',
                 source: 'q',
                 reference: null,
                 optionText: '', // field from the model
@@ -684,7 +684,7 @@ const systemResources: IAppResourceConfig[] = [
         showNotifyAfterSubmit: true,
         menu: [
             {
-                title: 'Usuarios',
+                title: 'resource.system.users.menu_list',
                 redirect: '/system/user',
             },
             {
@@ -697,7 +697,7 @@ const systemResources: IAppResourceConfig[] = [
         //    redirect: "/trash/admin/user",
         //}],
         mainAction: {
-            title: 'Crear usuario',
+            title: 'resource.system.users.main_action',
             // type: "ghost",
             redirect: '/system/user/create',
         },

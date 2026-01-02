@@ -17,13 +17,13 @@ const categoryResource: IDashAutoAdminResourceConfig =
     component: ResourceTemplate,
     trash: false,
     model: "ecommerce/category",
-    group: "Productos",
-    label: "Categorías",
+    group: "resource.groups.products",
+    label: "resource.ecommerce.categories.label",
     schema: schemas.categorySchema,
     icon: <Icon />,
     menu: [
         {
-            title: "Listado de categorías",
+            title: "resource.ecommerce.categories.menu_list",
             redirect: "/ecommerce/category",
         },
         /*{
@@ -32,7 +32,7 @@ const categoryResource: IDashAutoAdminResourceConfig =
         },*/
     ],
     mainAction: {
-        title: "Crear categoría",
+        title: "resource.ecommerce.categories.main_action",
         mode: "create",
         fn:"virtualhash",
         redirect: "inline/create",

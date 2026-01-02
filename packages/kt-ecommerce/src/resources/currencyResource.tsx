@@ -16,15 +16,15 @@ const currencyResource: IDashAutoAdminResourceConfig =
     component: ResourceTemplate,
     trash: true,
     model: "ecommerce/currency",
-    label: "Monedas",
+    label: "resource.ecommerce.currencies.label",
     schema: currencySchema,
     //references: [{ reference: 'roles', target: 'role', schema: rolesSchema }]
     //references: [{ reference: 'roles', target: 'id', schema: roleSchema }],
     icon: <Icon />,
-    group: "Recursos de sistema",
+    group: "resource.groups.system_resources",
     menu: [
         {
-            title: "Monedas",
+            title: "resource.ecommerce.currencies.menu_list",
             redirect: "/ecommerce/currency",
         },
         {
@@ -34,7 +34,7 @@ const currencyResource: IDashAutoAdminResourceConfig =
     ],
    
     mainAction: {
-        title: "Crear moneda",
+        title: "resource.ecommerce.currencies.main_action",
         mode: "create",
         fn:"virtualhash",
         redirect: "inline/create",

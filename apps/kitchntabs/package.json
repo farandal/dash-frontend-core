@@ -35,7 +35,7 @@
     "@mui/utils": "latest",
     "@mui/x-date-pickers": "^8.10.0",
     "@reduxjs/toolkit": "latest",
-    "@tanstack/query-sync-storage-persister": "^5.90.15",
+    "@tanstack/query-async-storage-persister": "^5.90.15",
     "@tanstack/react-query": "latest",
     "@tanstack/react-query-persist-client": "^5.90.15",
     "axios": "^1.11.0",

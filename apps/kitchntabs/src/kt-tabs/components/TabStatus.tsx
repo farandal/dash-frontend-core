@@ -3,7 +3,7 @@ import { CardMedia, CardContent, ListItem, List, IconButton, Typography, Box, Gr
 
 import { IDashAutoAdminCustomFieldComponent } from "dash-auto-admin";
 import { useState, useEffect } from "react";
-import { Loading, useDataProvider, useEditContext, useGetList, useRecordContext, useRefresh } from "react-admin";
+import { Loading, useDataProvider, useEditContext, useGetList, useRecordContext, useRefresh, useTranslate } from "react-admin";
 
 import { useFieldArray, useFormContext, useFormState } from "react-hook-form";
 import ImagePlaceHolder from 'kt-utils/src/components/ImagePlaceHolder/ImagePlaceHolder';
@@ -15,6 +15,7 @@ import { Button } from "@mui/material";
 const ItemEdit: React.FC<IDashAutoAdminCustomFieldComponent> = (props) => {
    
     const  {attribute, method, resourceConfig} = props;
+    const translate = useTranslate();
 
     const _r = method === "create" ? {record:{}} : useEditContext();
     const record = _r.record;
@@ -40,13 +41,13 @@ const ItemEdit: React.FC<IDashAutoAdminCustomFieldComponent> = (props) => {
     }, [record, setValue, status]);
 
     const statusLabels = {
-        'CREATED': 'Creado',
-        'CONFIRMED': 'Confirmado',
-        'IN_PREPARATION': 'En preparación',
-        'PREPARED': 'Preparado',
-        'DELIVERED': 'Entregado',
-        'CLOSED': 'Cerrado',
-        'CANCELLED': 'Cancelado'
+        'CREATED': translate('tab.status.created'),
+        'CONFIRMED': translate('tab.status.confirmed'),
+        'IN_PREPARATION': translate('tab.status.in_preparation'),
+        'PREPARED': translate('tab.status.prepared'),
+        'DELIVERED': translate('tab.status.delivered'),
+        'CLOSED': translate('tab.status.closed'),
+        'CANCELLED': translate('tab.status.cancelled')
     };
 
     const updateTabStatus = async (id, status) => {
@@ -61,7 +62,7 @@ const ItemEdit: React.FC<IDashAutoAdminCustomFieldComponent> = (props) => {
             refresh();
         } catch (error) {
             console.error("Error updating status:", error);
-            toast.error("Error updating status");
+            toast.error(translate('tab.status.error_updating'));
         } finally {
             setLoading(false);
         }
@@ -93,14 +94,14 @@ const ItemEdit: React.FC<IDashAutoAdminCustomFieldComponent> = (props) => {
                 }
             }}
         >
-            {loading ? <CircularProgress size={24} color="inherit" /> : <><ArrowForward /> Cambiar estado a {nextStatusLabel}</>}
+            {loading ? <CircularProgress size={24} color="inherit" /> : <><ArrowForward /> {translate('tab.status.change_to', { status: nextStatusLabel })}</>}
         </Button>}
 
 
         <TextField
             select
             fullWidth
-            label="Estado"
+            label={translate('tab.status.label')}
             value={status || ''}
             onChange={handleStatusChange}
             disabled={loading}

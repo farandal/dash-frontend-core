@@ -10,8 +10,8 @@ import { QueryClient } from '@tanstack/react-query';
 import polyglotI18nProvider from 'ra-i18n-polyglot';
 
 // Import translations
-import customEnglish from '../i18n/en.json';
-import customSpanish from '../i18n/es.json';
+import customEnglish from '../i18n/en.ts';
+import customSpanish from '../i18n/es.ts';
 
 // Import essential admin components
 import { NotFound } from 'dash-components';
@@ -148,21 +148,48 @@ const KitchnTabsPrivateApp: React.FC<KitchnTabsPrivateAppProps> = ({
     useEffect(() => {
         const loadTranslations = async () => {
             try {
-                const [enLang, esLang] = await Promise.all([
-                    import('dash-admin').then(module => module.en),
-                    import('dash-admin').then(module => module.es)
-                ]);
+                console.log('🌍 Loading translations...');
+                console.log('🌍 customEnglish keys:', Object.keys(customEnglish));
+                console.log('🌍 customSpanish keys:', Object.keys(customSpanish));
+
+                // Import translations from dash-admin
+                const { en: enLang, es: esLang } = await import('dash-admin');
+
+                console.log('🌍 enLang type:', typeof enLang, 'keys:', enLang ? Object.keys(enLang) : 'null');
+                console.log('🌍 esLang type:', typeof esLang, 'keys:', esLang ? Object.keys(esLang) : 'null');
 
                 const translationsData = {
                     en: { ...enLang, ...customEnglish },
                     es: { ...esLang, ...customSpanish },
                 };
 
+                console.log('🌍 Final translationsData.en keys count:', Object.keys(translationsData.en).length);
+                console.log('🌍 Final translationsData.es keys count:', Object.keys(translationsData.es).length);
+                console.log('🌍 Sample custom keys in en:', Object.keys(translationsData.en).filter(key => key.includes('resource.system.tenants')));
+
                 setTranslations(translationsData);
             
+                // Locale priority:
+                // 1. User's explicitly selected locale (persisted in localStorage)
+                // 2. Tenant's configured primary language code (from settings.primary_language_code or settings.primary_language)
+                // 3. Default to 'en'
+                const persistedLocale = localStorage.getItem('dash-user-locale');
+                
+                // Get tenant's language code - could be from primary_language_code or primary_language (string)
+                const tenantLanguageCode = typeof settings?.primary_language_code === 'string' 
+                    ? settings.primary_language_code 
+                    : (typeof settings?.primary_language === 'string' 
+                        ? settings.primary_language 
+                        : null);
+                
+                // If user has explicitly chosen a locale, use that; otherwise use tenant's language
+                const initialLocale = persistedLocale || tenantLanguageCode || settings?.locale || 'en';
+                
+                console.log('🌍 KitchnTabsPrivateApp (mall): Persisted locale:', persistedLocale, 'Tenant language:', tenantLanguageCode, 'Using:', initialLocale);
+
                 const provider = polyglotI18nProvider(
                     locale => translationsData[locale] || translationsData.en,
-                    settings?.locale || 'en',
+                    initialLocale,  // Use persisted locale or fallback
                     settings?.availableLocales?.map(({ locale, name }) => ({ locale, name })) || [
                         { locale: 'en', name: 'English' },
                         { locale: 'es', name: 'Español' }

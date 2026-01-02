@@ -82,6 +82,7 @@ export { default as useFormPersistence } from "./hooks/useFormPersistance";
 
 export { default as AvatarComponent } from './components/user/AvatarComponent';
 export { default as TenantAvatarComponent } from './components/user/TenantAvatarComponent';
+export { default as UserPreferences } from './components/user/UserPreferences';
 export { default as LanguageSwitcher } from './components/misc/LanguageSwitcher';
 export { default as DarkModeSwitcher } from './components/misc/DarkModeSwitcher';
 

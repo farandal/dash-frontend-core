@@ -51,6 +51,7 @@ export interface IGetAuthUser {
 	webhook_token: any
 	print_label_pagination_limit: number
 	role_ids: number[]
+	preferences?: any
 	created_at: string
 	updated_at: string
 	deleted_at: any

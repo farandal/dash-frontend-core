@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useRedirect, useRefresh } from 'react-admin';
+import { useRedirect, useRefresh, useTranslate } from 'react-admin';
 import { useDispatch } from 'react-redux';
 import { useLocation } from 'react-router';
 import IAppResourceConfig from '../interfaces/IAppResourceConfig';
@@ -8,6 +8,15 @@ import useVirtualHash from '../hooks/useVirtualHash';
 import { Button, ButtonGroup } from '@mui/material';
 import DashResourceButton from 'dash-auto-admin/src/toolbar/buttons/DashResourceButton';
 import RefreshIcon from '@mui/icons-material/Refresh';
+
+/**
+ * Check if a string looks like a translation key
+ */
+const isTranslationKey = (value: string): boolean => {
+    if (!value || typeof value !== 'string') return false;
+    // Translation keys typically contain dots and are lowercase
+    return value.includes('.') && value === value.toLowerCase();
+};
 
 export interface IResourceMenu {
     resourceConfig: IAppResourceConfig;
@@ -29,13 +38,27 @@ const ResourceMenu: React.FC<IResourceMenu> = (props) => {
         resourceConfig;
 
     const redirect = useRedirect();
+    const translate = useTranslate();
     const { hash, setVirtualHash } = useVirtualHash();
     const location = useLocation();
+
+    /**
+     * Translate a label if it's a translation key, otherwise return as-is
+     */
+    const translateLabel = (label: string): string => {
+        if (!label) return '';
+        if (isTranslationKey(label)) {
+            const translated = translate(label, { _: label });
+            // If translation returns the key itself, use the label as-is
+            return translated === label ? label : translated;
+        }
+        return label;
+    };
 
     const dispatch = useDispatch();
     const updatePageState = (menuItem) => {
         const newPageState: IPageState = {
-            title: menuItem?.title,
+            title: translateLabel(menuItem?.title),
             //icon: item?.icon,
             //subTitle: item?.group,
         };
@@ -105,7 +128,7 @@ const ResourceMenu: React.FC<IResourceMenu> = (props) => {
                             {(resourceConfig.toolbarCreateButton?.enabled !== false) && !location.pathname.endsWith('/create') && <DashResourceButton
                                 size='small'    
                                 resourceConfig={resourceConfig}
-                                label={resourceConfig.mainAction.title}
+                                label={translateLabel(resourceConfig.mainAction.title)}
                                 mode={resourceConfig.mainAction?.mode || 'create'}  />
                             }
                             {resourceConfig.navActions && resourceConfig.navActions.map((action) => action)}
@@ -125,7 +148,7 @@ const ResourceMenu: React.FC<IResourceMenu> = (props) => {
                                 >
                                     <span className={'dash-link'}>
                                         <i className={`icon icon-${menuItem?.icon}`} />
-                                        <span>{menuItem.title}</span>
+                                        <span>{translateLabel(menuItem.title)}</span>
                                     </span>
                                 </li>
                             );

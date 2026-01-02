@@ -53,8 +53,8 @@ const productResource: IDashAutoAdminResourceConfig =
     },
     icon: <Producto />,
     model: "ecommerce/product",
-    group: "Productos",
-    label: "Productos",
+    group: "resource.groups.products",
+    label: "resource.ecommerce.products.label",
     schema: productSchema,
     exporter: false,
     
@@ -274,7 +274,7 @@ const productResource: IDashAutoAdminResourceConfig =
 
     menu: [
         {
-            title: "Listado de productos",
+            title: "resource.ecommerce.products.menu_list",
             redirect: "/ecommerce/product",
         },
         {
@@ -283,7 +283,7 @@ const productResource: IDashAutoAdminResourceConfig =
         },
     ],
     mainAction: {
-        title: "Crear producto",
+        title: "resource.ecommerce.products.main_action",
         fn: "redirect",
         // type: "ghost",
         mode: "create",
@@ -295,7 +295,7 @@ const productResource: IDashAutoAdminResourceConfig =
     referenceFilters: [
         {
             id: "Nombre",
-            label: "Nombre",
+            label: "resource.ecommerce.products.filter_name",
             source: "name",
             reference: null,
             optionText: null,
@@ -303,7 +303,7 @@ const productResource: IDashAutoAdminResourceConfig =
         },
         {
             id: "description",
-            label: "Descripción",
+            label: "resource.ecommerce.products.filter_description",
             source: "description",
             reference: null,
             optionText: null,
@@ -311,7 +311,7 @@ const productResource: IDashAutoAdminResourceConfig =
         },
         {
             id: "sku",
-            label: "SKU",
+            label: "resource.ecommerce.products.filter_sku",
             source: "sku",
             reference: null,
             optionText: null,

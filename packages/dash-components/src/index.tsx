@@ -24,6 +24,7 @@ export { default as JsonColorSelectorEnhanced } from './components/JsonColorSele
 //export { default as useAsyncColorThief } from ''
 export { default as Json } from './components/Json/Json'
 export { default as JsonCssVarValues } from './components/JsonColorSelector/JsonCssVarValues'
+export { default as NotificationPreferences } from './components/NotificationPreferences/NotificationPreferences'
 
 // Notifications Components
 export {

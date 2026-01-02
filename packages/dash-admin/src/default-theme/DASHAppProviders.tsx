@@ -23,6 +23,7 @@ import { DashThemeProvider } from './DashThemeContext';
 import { ComponentRegistryProvider, IDashAutoAdminCustomFieldComponent } from 'dash-auto-admin';
 import { QueryClient } from '@tanstack/react-query';
 import { Persister } from '@tanstack/react-query-persist-client';
+import { I18nBridgeProvider } from '../contexts/I18nBridgeContext';
 
 export interface IDomainAppProviders<U, A, R> extends React.PropsWithChildren {
     wsMessagesManager?: typeof WSMessagesManager
@@ -50,6 +51,7 @@ const DomainAppProviders = <U, A, R>({
 }: IDomainAppProviders<U, A, R>): React.JSX.Element => {
    
     const content = (
+       <I18nBridgeProvider>
        <DashThemeProvider extendedOptions={extendedThemeOptions}>
         <LocalizationProvider dateAdapter={dateAdapter || AdapterDayjs}>
             <AuthContextProvider>
@@ -74,6 +76,7 @@ const DomainAppProviders = <U, A, R>({
             </AuthContextProvider>
             </LocalizationProvider>
          </DashThemeProvider>
+         </I18nBridgeProvider>
     );
 
     return store ? <Provider store={store}>{content}</Provider> : content;

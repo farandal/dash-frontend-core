@@ -19,10 +19,7 @@ import { useDashResource } from '../contexts/DashResourceContext';
 import { IResourceTemplate } from './ResourceTemplate';
 
 
-const TrashTemplate: React.FC<IResourceTemplate> = (props) => {	
-    
-    //const {resourceConfig} = useDashResource()
-    const {resourceConfig} = props;
+const TrashTemplate = (resourceConfig: IDashAutoAdminResourceConfig) => {	
     const TrashBulkActions = () => {
        
 		const axios = initAxios();

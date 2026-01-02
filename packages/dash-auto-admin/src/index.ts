@@ -41,6 +41,14 @@ export { default as enumToChoices } from './utils/enumToChoices';
 export { default as groupByTabs } from './utils/groupByTabs';
 export { default as validate } from './utils/validate';
 
+/** Translation utilities */
+export { 
+    useAutoAdminTranslate, 
+    isTranslationKey, 
+    translateLabelSync 
+} from './hooks/useAutoAdminTranslate';
+export { TranslatedLabel, withTranslatedLabel } from './common/components/TranslatedLabel';
+
 export { default as DashRedirect } from './DashRedirect';
 
 export { default as evalActionPermission } from './utils/evalActionPermission';

@@ -17,8 +17,8 @@ const galleryResource: IDashAutoAdminResourceConfig =
     component: ResourceTemplate,
     trash: true,
     model: "ecommerce/gallery",
-    group: "Productos",
-    label: "Galerías",
+    group: "resource.groups.products",
+    label: "resource.ecommerce.galleries.label",
     schema: gallerySchema,
     dataGridProps: {
         //bulkActionButtons: false,
@@ -28,7 +28,7 @@ const galleryResource: IDashAutoAdminResourceConfig =
     icon: <Icon />,
     menu: [
         {
-            title: "Galerías",
+            title: "resource.ecommerce.galleries.menu_list",
             redirect: "/ecommerce/gallery",
         },
         {
@@ -37,7 +37,7 @@ const galleryResource: IDashAutoAdminResourceConfig =
         },
     ],
     mainAction: {
-        title: "Crear galería",
+        title: "resource.ecommerce.galleries.main_action",
         mode: "create",
         fn:"redirect",
         redirect: "create",
@@ -45,7 +45,7 @@ const galleryResource: IDashAutoAdminResourceConfig =
     referenceFilters: [
         {
             id: "Nombre",
-            label: "Nombre", // filter label'
+            label: "resource.ecommerce.galleries.filter_name",
             source: "title", // id field
             reference: null,
             optionText: null,

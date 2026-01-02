@@ -3,7 +3,7 @@ import { Box, Chip, IconButton, Skeleton } from '@mui/material';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { IDashAutoAdminCustomFieldComponent } from 'dash-auto-admin';
-import { useDataProvider } from 'react-admin';
+import { useDataProvider, useTranslate } from 'react-admin';
 import { useTabManagerOptional } from '../contexts/TabManagerContext';
 
 /**
@@ -34,15 +34,15 @@ interface Category {
     icon?: string;
 }
 
-// Default configuration
-const DEFAULT_CONFIG: Required<ICategorySelectorConfig> = {
+// Default configuration will use translation
+const getDefaultConfig = (translate: any): Required<ICategorySelectorConfig> => ({
     categoryResource: 'ecommerce/category',
     categoryCacheDuration: 60 * 60 * 1000, // 1 hour
     disableCache: false,
     showAllCategory: true,
-    allCategoryLabel: 'Todo',
+    allCategoryLabel: translate('category.all'),
     allCategoryIcon: '📋',
-};
+});
 
 // Cache key
 const CATEGORY_CACHE_KEY = 'category_selector_categories';
@@ -237,6 +237,8 @@ const CategorySelectorSkeleton = memo(function CategorySelectorSkeleton() {
  * Category Selector for Create mode
  */
 const CategorySelectorCreate: React.FC<ICategorySelectorProps> = ({ resourceConfig, attribute, config: propConfig }) => {
+    const translate = useTranslate();
+    const DEFAULT_CONFIG = getDefaultConfig(translate);
     const config = { ...DEFAULT_CONFIG, ...propConfig };
     const dataProvider = useDataProvider();
     const tabManager = useTabManagerOptional();

@@ -48,5 +48,8 @@ export { default as OrderProductsView } from './OrderProductsView';
 export { default as StoreProgressBars } from './StoreProgressBars';
 export { default as MallOrderVouchers } from './MallOrderVouchers';
 
+// User Preferences
+// export { default as UserPreferences } from './UserPreferences';
+
 // Toolbar mediator (for schema-based top-of-layout toolbar)
 export { default as MallOrderToolbarMediator } from './MallOrderToolbarMediator';

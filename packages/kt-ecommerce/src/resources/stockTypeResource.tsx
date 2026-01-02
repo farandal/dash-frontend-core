@@ -14,13 +14,13 @@ const stockTypeResource: IDashAutoAdminResourceConfig =
     component: ResourceTemplate,
     trash: true,
     model: "ecommerce/stock_type",
-    group: "Productos",
-    label: "Tipo de Stock",
+    group: "resource.groups.products",
+    label: "resource.ecommerce.stock_types.label",
     schema: stocktypeSchema,
     icon: <Icon />,
     menu: [
         {
-            title: "Tipos de Stock",
+            title: "resource.ecommerce.stock_types.menu_list",
             redirect: "/ecommerce/stock_type",
         },
         {
@@ -35,7 +35,7 @@ const stockTypeResource: IDashAutoAdminResourceConfig =
     
 
     mainAction: {
-        title: "Crear Tipo de Stock",
+        title: "resource.ecommerce.stock_types.main_action",
         mode: "create",
         fn:"virtualhash",
         redirect: "inline/create",

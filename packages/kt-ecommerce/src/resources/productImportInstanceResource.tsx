@@ -13,19 +13,19 @@ const productImportInstanceResource: IDashAutoAdminResourceConfig =
  roles:[DASHAppConstants.system.SYSTEM_ROLE, DASHAppConstants.system.TENANT_ROLE],
   component: ResourceTemplate,
   model: "ecommerce/product_import_instances",
-  group: "Import/Export",
-  label: "Importar Productos",
+  group: "resource.groups.import_export",
+  label: "resource.import.instances.label",
   schema: productImportSchema,
   icon: <Icon />,
   menu: [
     {
-      title: "Importar Productos",
+      title: "resource.import.instances.menu_list",
       redirect: "/ecommerce/product_import_instances",
     },
   ],
  
     mainAction: {
-            title: 'Crear Importación',
+            title: "resource.import.instances.main_action",
             fn: "redirect",
             // type: "ghost",
             mode: "create",

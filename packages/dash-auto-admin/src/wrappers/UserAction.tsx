@@ -21,7 +21,14 @@ import isFC from '../utils/isFC';
 
 
 const UserAction: React.FC<IDashAutoAdminCustomFieldComponent> = ({ method, attribute, resourceConfig, record }) => {
+    const DEBUG = false;
+   
+   DEBUG &&  console.log('🔧 UserAction - component:', attribute.component);
+   DEBUG &&  console.log('🔧 UserAction - isFC(attribute.component):', isFC(attribute.component));
+   DEBUG &&  console.log('🔧 UserAction - method:', method);
+    
     if (attribute.component && isFC(attribute.component)) {
+       DEBUG &&  console.log('🔧 UserAction - Rendering custom component');
      
         const Action = attribute.component as React.FC<IDashAutoAdminCustomFieldComponent>;
 

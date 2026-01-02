@@ -318,6 +318,149 @@ const dashSpanish = {
 		auto_reset_notice: 'Esta pantalla se reiniciará automáticamente en 30 segundos',
 		loading: 'Cargando...',
 	},
+	// Resource labels for admin panel
+	resource: {
+		// Groups
+		groups: {
+			system_resources: 'Recursos de Sistema',
+			products: 'Productos',
+			integrations: 'Integraciones',
+			configuration: 'Configuración',
+			campaigns: 'Campañas',
+			import_export: 'Import/Export',
+			cashier: 'Caja',
+		},
+		// System resources
+		system: {
+			tenants: {
+				label: 'Clientes',
+				menu_list: 'Clientes',
+				menu_trash: 'Papelera',
+				main_action: 'Crear cliente',
+				filter_name: 'Nombre',
+			},
+			roles: {
+				label: 'Roles',
+				menu_list: 'Roles',
+				main_action: 'Agregar Rol',
+				filter_name: 'Nombre',
+			},
+			users: {
+				label: 'Usuarios',
+				menu_list: 'Usuarios',
+				menu_trash: 'Papelera',
+				main_action: 'Crear usuario',
+				filter_search: 'Buscar',
+			},
+		},
+		// E-commerce resources
+		ecommerce: {
+			products: {
+				label: 'Productos',
+				menu_list: 'Productos',
+				menu_trash: 'Papelera',
+				main_action: 'Crear Producto',
+				filter_name: 'Nombre',
+				filter_description: 'Descripción',
+				filter_sku: 'SKU',
+				filter_categories: 'Categorías',
+				filter_status: 'Estado',
+				filter_is_pack: 'Es Pack',
+			},
+			categories: {
+				label: 'Categorías',
+				menu_list: 'Listado de categorías',
+				main_action: 'Crear categoría',
+				filter_name: 'Nombre',
+			},
+			brands: {
+				label: 'Marcas',
+				menu_list: 'Listado de Marcas',
+				main_action: 'Crear marca',
+			},
+			galleries: {
+				label: 'Galerías',
+				menu_list: 'Listado de galerías',
+				main_action: 'Crear galería',
+				filter_name: 'Nombre',
+			},
+			currencies: {
+				label: 'Monedas',
+				menu_list: 'Listado de monedas',
+				main_action: 'Crear moneda',
+			},
+			pricelists: {
+				label: 'Lista de Precio',
+				menu_list: 'Lista de Precios',
+				main_action: 'Crear lista de precio',
+			},
+			modifiers: {
+				label: 'Grupos de Modificadores',
+				menu_list: 'Listado de modificadores',
+				main_action: 'Crear grupo de modificadores',
+				filter_name: 'Nombre',
+				filter_selection_mode: 'Modo de selección',
+				filter_is_active: 'Activo',
+			},
+			stock_types: {
+				label: 'Tipo de Stock',
+				menu_list: 'Tipos de Stock',
+				main_action: 'Crear Tipo de Stock',
+			},
+			marketplaces: {
+				label: 'Marketplaces',
+				menu_list: 'Ver Marketplaces',
+				main_action: 'Agregar Marketplace',
+			},
+			point_of_sale: {
+				label: 'Puntos de Venta',
+				menu_list: 'Ver Puntos de Venta',
+				main_action: 'Agregar Punto de Venta',
+			},
+			tenant_data: {
+				label: 'Datos',
+				menu_list: 'Cliente Módulo Ecommerce',
+			},
+			users: {
+				label: 'Usuarios',
+			},
+		},
+		// Campaigns
+		campaigns: {
+			label: 'Campañas',
+			menu_list: 'Listado de Campañas',
+			main_action: 'Crear',
+			filter_name: 'Nombre',
+		},
+		// Import/Export
+		import: {
+			templates: {
+				label: 'Plantillas de importación',
+				menu_list: 'Plantillas',
+				main_action: 'Crear Plantilla',
+			},
+			instances: {
+				label: 'Importar Productos',
+				menu_list: 'Importaciones',
+				main_action: 'Crear Importación',
+			},
+		},
+		// Mall resources
+		mall: {
+			label: 'Centro Comercial',
+			menu_list: 'Listado',
+			main_action: 'Crear Centro Comercial',
+		},
+		// Cash Count resources
+		cashcount: {
+			label: 'Arqueos de Caja',
+			menu_list: 'Arqueos de Caja',
+			main_action: 'Nuevo Arqueo',
+			filter_status: 'Estado',
+			filter_period_start: 'Período Desde',
+			filter_period_end: 'Período Hasta',
+		},
+	},
 	mall: {
 		// Store Selector
 		all_stores: 'Todas las Tiendas',

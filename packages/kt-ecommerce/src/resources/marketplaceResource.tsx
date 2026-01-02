@@ -16,21 +16,21 @@ const marketplaceResource: IDashAutoAdminResourceConfig =
     //component: TenantMarketplaceResource,
     component: ResourceTemplate,
     model: "ecommerce/marketplace",
-    label: "Marketplaces",
+    label: "resource.ecommerce.marketplaces.label",
     schema: tenantMarketplaceSchema,
     //references: [{ reference: 'roles', target: 'role', schema: rolesSchema }]
     //references: [{ reference: 'roles', target: 'id', schema: roleSchema }],
 
     icon: <Icon />,
-    group: "Integraciones",
+    group: "resource.groups.integrations",
     menu: [
         {
-            title: "ver marketplaces",
+            title: "resource.ecommerce.marketplaces.menu_list",
             redirect: "/ecommerce/marketplace",
         },
     ],
     mainAction: {
-        title: "Agregar Marketplace",
+        title: "resource.ecommerce.marketplaces.main_action",
         // type: "ghost",
         redirect: "/ecommerce/marketplace/create",
     },

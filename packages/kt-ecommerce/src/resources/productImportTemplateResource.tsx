@@ -20,13 +20,13 @@ const productImportInstanceResource: IDashAutoAdminResourceConfig =
   ),
   trash: true,
   model: "ecommerce/product_template",
-  group: "Import/Export",
-  label: "Plantillas de importación",
+  group: "resource.groups.import_export",
+  label: "resource.import.templates.label",
   schema: productTemplateImportSchema,
   icon: <ListAlt />,
   menu: [
     {
-      title: "Lista de plantillas de importación",
+      title: "resource.import.templates.menu_list",
       redirect: "/ecommerce/product_template",
     },
     {
@@ -35,7 +35,7 @@ const productImportInstanceResource: IDashAutoAdminResourceConfig =
     },
   ],
   mainAction: {
-    title: "Crear Plantilla",
+    title: "resource.import.templates.main_action",
     // type: "ghost",
     redirect: "/ecommerce/product_template/create",
   },

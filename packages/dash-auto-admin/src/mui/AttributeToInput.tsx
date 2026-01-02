@@ -157,6 +157,8 @@ const AttributeToInput = (
     index?: number,
     options?: IDashAutoAdminFormOptions,
 ) => {
+
+    const DEBUG = false;
     // Get the component registry
     const { components } = useComponentRegistry();
 
@@ -233,9 +235,14 @@ const AttributeToInput = (
             case 'custom':
             default:
                 input.custom = true;
+                DEBUG && console.log('🔧 AttributeToInput - custom type detected, input.component:', input?.component);
+                DEBUG && console.log('🔧 AttributeToInput - components available:', Object.keys(components));
          
                 if(typeof input?.component === "string") {
-                    input = { ...input, ...typeComponentMapper( input.component ) };
+                    const mappedResult = typeComponentMapper( input.component );
+                    DEBUG && console.log('🔧 AttributeToInput - typeComponentMapper result:', mappedResult);
+                    input = { ...input, ...mappedResult };
+                    DEBUG && console.log('🔧 AttributeToInput - after merge, input.component:', input.component);
                 }
                
         }
@@ -472,6 +479,41 @@ const AttributeToInput = (
 
     /* Special cases – Passing strings, passing enums */
     if (typeof input.type === 'string') {
+        // Handle 'select' type with static options (no API call needed)
+        if (input.type === 'select' && Array.isArray(input.options) && input.options.length > 0) {
+            const choices = input.options.map((opt: { id: any; name: any }) => ({
+                id: opt.id,
+                name: opt.name,
+            }));
+            
+            return (
+                <FunctionFieldWrapper index={index} method={mode} input={input}>
+                    <SelectInput
+                        key={index}
+                        fullWidth
+                        label={input.label}
+                        source={input.listAttribute || input.attribute}
+                        choices={choices}
+                        {...input.fieldProps}
+                        onChange={e => {
+                            if (options?.handleChange) {
+                                options.handleChange(e);
+                            }
+                            if (input.fieldProps?.onChange) {
+                                input.fieldProps.onChange(e);
+                            }
+                        }}
+                    />
+                </FunctionFieldWrapper>
+            );
+        }
+
+        // Handle 'select' type without options - skip rendering to avoid API errors
+        if (input.type === 'select' && (!input.options || input.options.length === 0)) {
+            console.warn(`Select field "${input.attribute}" has no options defined. Skipping render.`);
+            return null;
+        }
+
         const _params = {
             ...params, ...(location.pathname.match(/\d+/g) || []).map(Number).reduce((acc, curr, currentIndex) => {
                 acc[currentIndex] = curr;

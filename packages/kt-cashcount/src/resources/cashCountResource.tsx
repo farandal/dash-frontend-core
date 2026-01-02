@@ -10,11 +10,11 @@ import ExportCashCountsButton from "../components/Export/ExportCashCountsButton"
 
 const cashCountResource: IAppResourceConfig[] = [
     {
-        group: "Cashier",
+        group: "resource.groups.cashier",
         roles: [DASHAppConstants.system.TENANT_ROLE, DASHAppConstants.system.CLOSING_ROLE],
         component: ResourceTemplate,
         model: "tab/cashcount",
-        label: "Cash Counts",
+        label: "resource.cashcount.label",
         schema: cashCountSchema,
         icon: <AccountBalance />,
         
@@ -30,7 +30,7 @@ const cashCountResource: IAppResourceConfig[] = [
         
         menu: [
             {
-                title: "Cash Counts",
+                title: "resource.cashcount.menu_list",
                 redirect: "/tab/cashcount",
             },
           /* {
@@ -40,7 +40,7 @@ const cashCountResource: IAppResourceConfig[] = [
         ],
         
         mainAction: {
-            title: "⊕ New Cash Count",
+            title: "resource.cashcount.main_action",
             fn: "redirect",
             mode: "create",
             redirect: "create",

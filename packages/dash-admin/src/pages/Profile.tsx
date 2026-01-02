@@ -19,6 +19,7 @@ import React from 'react';
 import useAxios from '../hooks/axios';
 import SingleImageUploader from './SingleImageUploader';
 import { useAuthContext } from '../contexts/auth';
+import UserPreferences from "../components/user/UserPreferences";
 
 const Profile: FC = (_props) => {
 	const [currTab, setCurrTab] = useState('auth/update/info');
@@ -155,6 +156,7 @@ const Profile: FC = (_props) => {
         </Col>
       </Row>
       */}
+ 
 
 			{user ? (
 				<Form
@@ -362,6 +364,18 @@ const Profile: FC = (_props) => {
 											</Button>
 										</Grid>
 									</Grid>
+								</CardContent>
+							</Grid>
+
+							{/* User Preferences Section */}
+							<Grid size={{ xs: 12
+                             }}>
+								<CardHeader
+									sx={{ padding: '16px 25px 0' }}
+									title='Preferencias'
+								/>
+								<CardContent sx={{ padding: '25px' }}>
+									<UserPreferences />
 								</CardContent>
 							</Grid>
 						</Grid>

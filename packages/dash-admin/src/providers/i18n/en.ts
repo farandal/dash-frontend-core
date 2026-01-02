@@ -250,26 +250,19 @@ const dashEnglish = {
 			save_and_show: 'Save and Show',
 		},
 	},
+	// Tab statuses and actions
 	tab: {
-		tabs: 'Tabs',
-		kitchen_tabs: 'Kitchen Orders',
-		action: {
-			cancel: 'Cancel',
-			confirm: 'Confirm',
-			print: 'Print',
-			pay: 'Pay',
-			close: 'Close',
-		},
 		status: {
 			created: 'Created',
 			confirmed: 'Confirmed',
-			preparing: 'Preparing',
-			ready: 'Ready',
+			in_preparation: 'In Preparation',
+			prepared: 'Prepared',
 			delivered: 'Delivered',
-			completed: 'Completed',
+			closed: 'Closed',
 			cancelled: 'Cancelled',
 		},
 	},
+	// Kiosk translations
 	kiosk: {
 		// Header
 		total: 'Total',
@@ -280,7 +273,7 @@ const dashEnglish = {
 		// Navigation
 		prev: 'Prev',
 		next: 'Next',
-		page_of: 'Page %{current} of %{total} • %{items} items',
+		page_of: 'Page %{current} of %{total} • %{items} products',
 		products: 'Products',
 		
 		// Product Card
@@ -315,9 +308,153 @@ const dashEnglish = {
 		your_order_number: 'Your Order Number',
 		status: 'Status',
 		start_new_order: 'Start New Order',
-		auto_reset_notice: 'This screen will reset automatically in 30 seconds',
+		auto_reset_notice: 'This screen will automatically reset in 30 seconds',
 		loading: 'Loading...',
 	},
+	// Resource labels for admin panel
+	resource: {
+		// Groups
+		groups: {
+			system_resources: 'System Resources',
+			products: 'Products',
+			integrations: 'Integrations',
+			configuration: 'Configuration',
+			campaigns: 'Campaigns',
+			import_export: 'Import/Export',
+			cashier: 'Cashier',
+		},
+		// System resources
+		system: {
+			tenants: {
+				label: 'Tenants',
+				menu_list: 'Tenants',
+				menu_trash: 'Trash',
+				main_action: 'Create Tenant',
+				filter_name: 'Name',
+			},
+			roles: {
+				label: 'Roles',
+				menu_list: 'Roles',
+				main_action: 'Add Role',
+				filter_name: 'Name',
+			},
+			users: {
+				label: 'Users',
+				menu_list: 'Users',
+				menu_trash: 'Trash',
+				main_action: 'Create User',
+				filter_search: 'Search',
+			},
+		},
+		// E-commerce resources
+		ecommerce: {
+			products: {
+				label: 'Products',
+				menu_list: 'Products',
+				menu_trash: 'Trash',
+				main_action: 'Create Product',
+				filter_name: 'Name',
+				filter_description: 'Description',
+				filter_sku: 'SKU',
+				filter_categories: 'Categories',
+				filter_status: 'Status',
+				filter_is_pack: 'Is Pack',
+			},
+			categories: {
+				label: 'Categories',
+				menu_list: 'Category List',
+				main_action: 'Create Category',
+				filter_name: 'Name',
+			},
+			brands: {
+				label: 'Brands',
+				menu_list: 'Brand List',
+				main_action: 'Create Brand',
+			},
+			galleries: {
+				label: 'Galleries',
+				menu_list: 'Gallery List',
+				main_action: 'Create Gallery',
+				filter_name: 'Name',
+			},
+			currencies: {
+				label: 'Currencies',
+				menu_list: 'Currency List',
+				main_action: 'Create Currency',
+			},
+			pricelists: {
+				label: 'Price List',
+				menu_list: 'Price Lists',
+				main_action: 'Create Price List',
+			},
+			modifiers: {
+				label: 'Modifier Groups',
+				menu_list: 'Modifier List',
+				main_action: 'Create Modifier Group',
+				filter_name: 'Name',
+				filter_selection_mode: 'Selection Mode',
+				filter_is_active: 'Active',
+			},
+			stock_types: {
+				label: 'Stock Type',
+				menu_list: 'Stock Types',
+				main_action: 'Create Stock Type',
+			},
+			marketplaces: {
+				label: 'Marketplaces',
+				menu_list: 'View Marketplaces',
+				main_action: 'Add Marketplace',
+			},
+			point_of_sale: {
+				label: 'Points of Sale',
+				menu_list: 'View Points of Sale',
+				main_action: 'Add Point of Sale',
+			},
+			tenant_data: {
+				label: 'Data',
+				menu_list: 'E-commerce Module Client',
+			},
+			users: {
+				label: 'Users',
+			},
+		},
+		// Campaigns
+		campaigns: {
+			label: 'Campaigns',
+			menu_list: 'Campaign List',
+			main_action: 'Create',
+			filter_name: 'Name',
+		},
+		// Import/Export
+		import: {
+			templates: {
+				label: 'Import Templates',
+				menu_list: 'Templates',
+				main_action: 'Create Template',
+			},
+			instances: {
+				label: 'Import Products',
+				menu_list: 'Imports',
+				main_action: 'Create Import',
+			},
+		},
+		// Mall resources
+		mall: {
+			label: 'Mall',
+			menu_list: 'List',
+			main_action: 'Create Mall',
+		},
+		// Cash Count resources
+		cashcount: {
+			label: 'Cash Count',
+			menu_list: 'Cash Counts',
+			main_action: 'New Cash Count',
+			filter_status: 'Status',
+			filter_period_start: 'Period From',
+			filter_period_end: 'Period To',
+		},
+	},
+	// Mall translations
 	mall: {
 		// Store Selector
 		all_stores: 'All Stores',
@@ -327,21 +464,24 @@ const dashEnglish = {
 		// Assistance
 		request_assistance: 'Request Assistance',
 		assistance_sent: 'Assistance request sent',
-		assistance_error: 'Failed to send assistance request',
+		assistance_error: 'Error sending assistance request',
+		select_store_first: 'Select a store first',
+		assistance_requested: 'Assistance requested',
+		assistance_rate_limit: 'You have recently requested assistance, please wait a moment',
 		
 		// Search
 		search_products: 'Search products...',
 		
 		// Product Grid
 		no_products_found: 'No products found',
-		try_different_store_or_search: 'Try selecting a different store or adjusting your search',
+		try_different_store_or_search: 'Try selecting another store or adjusting your search',
 		featured: 'Featured',
 		add: 'Add',
 		
 		// Pagination
-		display_mode: 'Display',
+		display_mode: 'View',
 		horizontal_pagination: 'Show products in pages',
-		infinite_scroll: 'Show all products in a scroll',
+		infinite_scroll: 'Show all products in scroll',
 		pages: 'Pages',
 		scroll: 'Scroll',
 		prev: 'Prev',
@@ -356,15 +496,29 @@ const dashEnglish = {
 		
 		// Cart Drawer
 		your_order: 'Your Order',
-		add_products_to_continue: 'Add some products to continue',
+		add_products_to_continue: 'Add products to continue',
 		unknown_store: 'Unknown Store',
 		clear_cart: 'Clear Cart',
 		total: 'Total',
 		confirm_order: 'Confirm Order',
+		submit_order: 'Submit Order',
 		submitting_order: 'Submitting...',
 		continue_shopping: 'Continue Shopping',
 		product_added: 'Product added to cart',
 		product_added_with_name: '%{name} added to cart',
+		product_updated: 'Product updated',
+		
+		// Cart Item Actions
+		edit_item: 'Edit item',
+		remove_item: 'Remove item',
+		update_item: 'Update',
+		add_to_cart: 'Add to Cart',
+		
+		// Product Modifiers Modal
+		required: 'Required',
+		select_up_to: 'Select up to %{count}',
+		special_instructions: 'Special instructions',
+		special_instructions_placeholder: 'E.g.: no onions, extra sauce, etc.',
 		
 		// Product Grid
 		all_products: 'All Products',

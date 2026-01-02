@@ -15,14 +15,14 @@ const brandResource: IDashAutoAdminResourceConfig =
     component: ResourceTemplate,
     trash: true,
     model: "ecommerce/brand",
-    label: "Marcas",
+    label: "resource.ecommerce.brands.label",
     schema: brandSchema,
     icon: <Icon />,
-    group: "Productos",
+    group: "resource.groups.products",
 
     menu: [
         {
-            title: "Lsitado de Marcas",
+            title: "resource.ecommerce.brands.menu_list",
             redirect: "/ecommerce/brand",
         },
         {
@@ -32,7 +32,7 @@ const brandResource: IDashAutoAdminResourceConfig =
     ],
 
     mainAction: {
-        title: "Crear marca",
+        title: "resource.ecommerce.brands.main_action",
         mode: "create",
         fn:"virtualhash",
         redirect: "inline/create",

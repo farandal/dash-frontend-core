@@ -14,6 +14,12 @@ export const getCurrencyFromAuth = () => {
    
 };
 
+export const getLanguageFromAuth = () => {
+    // Try to get from AuthContext or AuthPersistenceService
+    const language = AuthPersistenceService.getTenantSettings()?.primary_language || null;
+    return language;
+};
+
 export const getDefaultServiceFeeFromAuth = () => {
     // Try to get from AuthContext or AuthPersistenceService
     const serviceFee = AuthPersistenceService.getTenantSettings()?.service_fee || 10;

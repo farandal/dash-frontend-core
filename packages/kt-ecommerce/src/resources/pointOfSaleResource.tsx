@@ -30,20 +30,20 @@ const pointOfSaleResource: IDashAutoAdminResourceConfig =
     },*/
 
     model: "ecommerce/point_of_sale",
-    label: "Puntos de Venta",
+    label: "resource.ecommerce.point_of_sale.label",
     schema: pointOfSaleSchema,
     //references: [{ reference: 'roles', target: 'role', schema: rolesSchema }]
     //references: [{ reference: 'roles', target: 'id', schema: roleSchema }],
     icon: <Icon />,
-    group: "Integraciones",
+    group: "resource.groups.integrations",
     menu: [
         {
-            title: "listado de puntos de venta",
+            title: "resource.ecommerce.point_of_sale.menu_list",
             redirect: "/ecommerce/point_of_sale",
         },
     ],
     mainAction: {
-        title: "Agregar Punto de Venta",
+        title: "resource.ecommerce.point_of_sale.main_action",
         // type: "ghost",
         redirect: "/ecommerce/point_of_sale/inline/create",
         fn: "virtualhash",

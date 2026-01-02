@@ -14,14 +14,14 @@ const MallResources: IDashAutoAdminResourceConfig[] = [
     component: ResourceTemplate,
     trash: true,
     model: "system/mall",
-    label: "Mall",
+    label: "resource.mall.label",
     schema: MallSchema,
     icon: <Icon />,
     redirectAfterUpdate: "edit",
-    group: "Recursos de sistema",
+    group: "resource.groups.system_resources",
     menu: [
         {
-            title: "List",
+            title: "resource.mall.menu_list",
             redirect: "/system/mall",
         },
     /*    {
@@ -31,7 +31,7 @@ const MallResources: IDashAutoAdminResourceConfig[] = [
     */
         ],
     mainAction: {
-        title: "Create Mall",
+        title: "resource.mall.main_action",
         redirect: "inline/create",
     },
     isFormData: true,

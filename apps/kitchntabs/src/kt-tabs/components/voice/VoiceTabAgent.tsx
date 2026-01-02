@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useEffect } from 'react';
+import { useTranslate } from 'react-admin';
 import {
     Box,
     Button,
@@ -58,6 +59,7 @@ const VoiceTabAgent: React.FC<VoiceTabAgentProps> = ({
     sessionId,
     debug = false
 }) => {
+    const translate = useTranslate();
     const [showDetails, setShowDetails] = useState(false);
     const [showExamplesPanel, setShowExamplesPanel] = useState(false);
     const [showDebugInfo, setShowDebugInfo] = useState(false);
@@ -186,14 +188,14 @@ const VoiceTabAgent: React.FC<VoiceTabAgentProps> = ({
     const audioChunksInfo = getAudioChunksInfo();
 
     const examples = [
-        "Agrega dos hamburguesas con queso",
-        "Quiero un café grande para llevar",
-        "Elimina la pizza del pedido",
-        "Cambia la cantidad de tacos a tres",
-        "Agrega nota: sin cebolla al burrito",
-        "Quita el segundo ramyun", // Context-aware examples
-        "Modifica el lomo a cantidad 1",
-        "Agrega nota sin picante al ceviche"
+        translate('voice.examples.add_two_burgers'),
+        translate('voice.examples.large_coffee_takeout'),
+        translate('voice.examples.remove_pizza'),
+        translate('voice.examples.change_tacos_quantity'),
+        translate('voice.examples.add_note_no_onion'),
+        translate('voice.examples.remove_second_ramen'),
+        translate('voice.examples.modify_steak_quantity'),
+        translate('voice.examples.add_note_not_spicy')
     ];
 
     const getStatusColor = () => {
@@ -204,10 +206,10 @@ const VoiceTabAgent: React.FC<VoiceTabAgentProps> = ({
     };
 
     const getStatusText = () => {
-        if (isProcessing) return 'Procesando con IA...';
-        if (isRecording) return 'Grabando...';
-        if (lastActions.length > 0) return `${lastActions.length} acción(es) detectada(s)`;
-        return 'Listo para grabar';
+        if (isProcessing) return translate('voice.processing_ai');
+        if (isRecording) return translate('voice.recording');
+        if (lastActions.length > 0) return translate('voice.actions_detected', { count: lastActions.length });
+        return translate('voice.ready_to_record');
     };
 
     const getStatusCircle = () => {
@@ -744,9 +746,9 @@ const VoiceTabAgent: React.FC<VoiceTabAgentProps> = ({
                     {/* Recording Button Row */}
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, width: '100%' }}>
                         <Tooltip title={
-                            disabled ? 'Grabación deshabilitada' :
-                            isProcessing ? 'Procesando...' :
-                            isRecording ? 'Detener grabación' : 'Iniciar grabación'
+                            disabled ? translate('voice.recording_disabled') :
+                            isProcessing ? translate('voice.processing') :
+                            isRecording ? translate('voice.stop_recording') : translate('voice.start_recording')
                         }>
                             <Button
                                 variant={isRecording ? "outlined" : "contained"}
@@ -769,7 +771,7 @@ const VoiceTabAgent: React.FC<VoiceTabAgentProps> = ({
                                         </Tooltip>
                                         {hasEnhancedAnalysis && (
                                             <Chip
-                                                label="IA"
+                                                label={translate('voice.ai_label')}
                                                 color="success"
                                                 size="small"
                                                 icon={<BrainIcon />}
@@ -777,7 +779,7 @@ const VoiceTabAgent: React.FC<VoiceTabAgentProps> = ({
                                         )}
                                         {autoApply && (
                                             <Chip
-                                                label="Auto"
+                                                label={translate('voice.auto_label')}
                                                 color="info"
                                                 size="small"
                                                 variant="outlined"
@@ -799,12 +801,12 @@ const VoiceTabAgent: React.FC<VoiceTabAgentProps> = ({
                                 }
                                 sx={{ minWidth: 140, flex: 1, justifyContent: 'flex-start' }}
                             >
-                                {isProcessing ? 'Procesando...' : isRecording ? 'Detener' : 'Grabar'}
+                                {isProcessing ? translate('voice.processing') : isRecording ? translate('voice.stop') : translate('voice.record')}
                             </Button>
                         </Tooltip>
 
                         {/* Info Button - Outside Recording Button */}
-                        <Tooltip title="Ver análisis de IA">
+                        <Tooltip title={translate('voice.view_ai_analysis')}>
                             <IconButton
                                 onClick={() => setShowAnalysisDrawer(true)}
                                 sx={{
@@ -864,7 +866,7 @@ const VoiceTabAgent: React.FC<VoiceTabAgentProps> = ({
                             }
                             sx={{ minWidth: 200, minHeight: 48 }}
                         >
-                            {isProcessing ? 'Procesando con IA...' : isRecording ? 'Detener Grabación' : 'Iniciar Grabación'}
+                            {isProcessing ? translate('voice.processing_ai') : isRecording ? translate('voice.stop_recording_full') : translate('voice.start_recording_full')}
                         </Button>
 
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -873,7 +875,7 @@ const VoiceTabAgent: React.FC<VoiceTabAgentProps> = ({
                             </Tooltip>
                             {hasEnhancedAnalysis && (
                                 <Chip
-                                    label="IA"
+                                    label={translate('voice.ai_label')}
                                     color="success"
                                     size="small"
                                     icon={<AIIcon />}
@@ -883,13 +885,13 @@ const VoiceTabAgent: React.FC<VoiceTabAgentProps> = ({
 
                         {autoApply && (
                             <Alert severity="info" sx={{ width: '100%' }}>
-                                Las acciones se aplicarán automáticamente
+                                {translate('voice.auto_apply_info')}
                             </Alert>
                         )}
 
                         {disabled && (
                             <Alert severity="warning" sx={{ width: '100%' }}>
-                                Grabación de voz deshabilitada
+                                {translate('voice.recording_disabled_full')}
                             </Alert>
                         )}
                     </Box>
