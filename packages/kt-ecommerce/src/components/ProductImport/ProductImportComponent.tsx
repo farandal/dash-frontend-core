@@ -6,7 +6,7 @@ import LaravelEchoContext, { ILaravelEchoContext } from "dash-admin/src/contexts
 import { getCookie, setCookie } from "dash-admin/src/utils/cookies";
 import AppDialog, { useDialog } from "dash-dialog";
 import React, { useContext, useState, useEffect } from "react";
-import { LinearProgressProps, LinearProgress, useRecordContext, Identifier, useRefresh, Loading, Button } from "react-admin";
+import { LinearProgressProps, LinearProgress, useRecordContext, Identifier, useRefresh, Loading, Button, useTranslate } from "react-admin";
 import { ProductImportLogComponent } from "../ProductImportLog";
 import { IDashAutoAdminCustomFieldComponent } from "dash-auto-admin";
 import { useAxios } from 'dash-axios-hook';
@@ -40,6 +40,7 @@ const NormalizedProgressComponent = ({ progress, stats, mode }: {
   stats: any, 
   mode: 'preview' | 'import' 
 }) => {
+  const translate = useTranslate();
   const formatDuration = (seconds: number) => {
     if (seconds < 60) return `${Math.round(seconds)}s`;
     if (seconds < 3600) return `${Math.round(seconds / 60)}m`;
@@ -56,7 +57,9 @@ const NormalizedProgressComponent = ({ progress, stats, mode }: {
   return (
     <Box sx={{ width: "100%", p: 2 }}>
       <Typography variant="h6" gutterBottom>
-        {mode === 'preview' ? 'Preview' : 'Import'} Progress
+        {mode === 'preview' 
+          ? translate('resource.import.instances.progress.title_preview') 
+          : translate('resource.import.instances.progress.title_import')}
       </Typography>
       
       {/* Main Progress Bar */}
@@ -67,7 +70,10 @@ const NormalizedProgressComponent = ({ progress, stats, mode }: {
           sx={{ height: 10, borderRadius: 5 }}
         />
         <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-          {progress?.processed || 0} of {progress?.total || 0} products processed
+          {translate('resource.import.instances.progress.processed_count', { 
+            processed: progress?.processed || 0, 
+            total: progress?.total || 0 
+          })}
         </Typography>
       </Box>
 
@@ -75,7 +81,7 @@ const NormalizedProgressComponent = ({ progress, stats, mode }: {
       {progress?.current_sku && progress.current_sku !== 'completed' && (
         <Box sx={{ mb: 2 }}>
           <Typography variant="body2">
-            Currently processing: <Chip label={progress.current_sku} size="small" color="primary" />
+            {translate('resource.import.instances.progress.currently_processing')} <Chip label={progress.current_sku} size="small" color="primary" />
           </Typography>
         </Box>
       )}
@@ -91,25 +97,25 @@ const NormalizedProgressComponent = ({ progress, stats, mode }: {
           {mode === 'preview' ? (
             <>
               <Box>
-                <Typography variant="body2" color="text.secondary">To Create</Typography>
+                <Typography variant="body2" color="text.secondary">{translate('resource.import.instances.stats.to_create')}</Typography>
                 <Typography variant="h6" color="success.main">
                   {stats.products_to_create || 0}
                 </Typography>
               </Box>
               <Box>
-                <Typography variant="body2" color="text.secondary">To Update</Typography>
+                <Typography variant="body2" color="text.secondary">{translate('resource.import.instances.stats.to_update')}</Typography>
                 <Typography variant="h6" color="info.main">
                   {stats.products_to_update || 0}
                 </Typography>
               </Box>
               <Box>
-                <Typography variant="body2" color="text.secondary">Categories to Create</Typography>
+                <Typography variant="body2" color="text.secondary">{translate('resource.import.instances.stats.categories_to_create')}</Typography>
                 <Typography variant="h6">
                   {stats.categories_to_create || 0}
                 </Typography>
               </Box>
               <Box>
-                <Typography variant="body2" color="text.secondary">Brands to Create</Typography>
+                <Typography variant="body2" color="text.secondary">{translate('resource.import.instances.stats.brands_to_create')}</Typography>
                 <Typography variant="h6">
                   {stats.brands_to_create || 0}
                 </Typography>
@@ -118,25 +124,25 @@ const NormalizedProgressComponent = ({ progress, stats, mode }: {
           ) : (
             <>
               <Box>
-                <Typography variant="body2" color="text.secondary">Created</Typography>
+                <Typography variant="body2" color="text.secondary">{translate('resource.import.instances.stats.created')}</Typography>
                 <Typography variant="h6" color="success.main">
                   {stats.products_created || 0}
                 </Typography>
               </Box>
               <Box>
-                <Typography variant="body2" color="text.secondary">Updated</Typography>
+                <Typography variant="body2" color="text.secondary">{translate('resource.import.instances.stats.updated')}</Typography>
                 <Typography variant="h6" color="info.main">
                   {stats.products_updated || 0}
                 </Typography>
               </Box>
               <Box>
-                <Typography variant="body2" color="text.secondary">Categories Created</Typography>
+                <Typography variant="body2" color="text.secondary">{translate('resource.import.instances.stats.categories_created')}</Typography>
                 <Typography variant="h6">
                   {stats.categories_created || 0}
                 </Typography>
               </Box>
               <Box>
-                <Typography variant="body2" color="text.secondary">Galleries Created</Typography>
+                <Typography variant="body2" color="text.secondary">{translate('resource.import.instances.stats.galleries_created')}</Typography>
                 <Typography variant="h6">
                   {stats.galleries_created || 0}
                 </Typography>
@@ -146,13 +152,13 @@ const NormalizedProgressComponent = ({ progress, stats, mode }: {
           
           {/* Common stats */}
           <Box>
-            <Typography variant="body2" color="text.secondary">Errors</Typography>
+            <Typography variant="body2" color="text.secondary">{translate('resource.import.instances.stats.errors')}</Typography>
             <Typography variant="h6" color={stats.errors_count > 0 ? "error.main" : "text.primary"}>
               {stats.errors_count || 0}
             </Typography>
           </Box>
           <Box>
-            <Typography variant="body2" color="text.secondary">Skipped</Typography>
+            <Typography variant="body2" color="text.secondary">{translate('resource.import.instances.stats.skipped')}</Typography>
             <Typography variant="h6" color={stats.skipped_rows > 0 ? "warning.main" : "text.primary"}>
               {stats.skipped_rows || 0}
             </Typography>
@@ -163,7 +169,9 @@ const NormalizedProgressComponent = ({ progress, stats, mode }: {
       {/* Last Update */}
       {progress?.timestamp && (
         <Typography variant="caption" color="text.secondary">
-          Last updated: {new Date(progress.timestamp).toLocaleTimeString()}
+          {translate('resource.import.instances.progress.last_updated', { 
+            time: new Date(progress.timestamp).toLocaleTimeString() 
+          })}
         </Typography>
       )}
     </Box>
@@ -234,6 +242,7 @@ const ProductImportComponentView: React.FC<IDashAutoAdminCustomFieldComponent> =
   const record = useRecordContext();
   const axios = useAxios();
   const refresh = useRefresh();
+  const translate = useTranslate();
 
   // Legacy template import progress
   const [progress, setProgress] = useState<IProgressObject>();
@@ -427,19 +436,21 @@ const ProductImportComponentView: React.FC<IDashAutoAdminCustomFieldComponent> =
         
         // Show info notification
         SetNotificationDialogOpen(true);
+        const modeLabel = notificationData.mode === 'preview' ? translate('resource.import.instances.tabs.preview') : translate('resource.import.instances.tabs.import');
+        
         SetNotificationDialogProps({
           variant: "info",
-          title: `${notificationData.mode === 'preview' ? 'Preview' : 'Import'} Already Completed`,
+          title: translate('resource.import.instances.dialog.already_completed.title', { mode: modeLabel }),
           content: (
             <Alert severity="info">
               <Typography variant="body1">
-                This {notificationData.mode === 'preview' ? 'preview' : 'import'} was already completed previously.
+                {translate('resource.import.instances.dialog.already_completed.message', { mode: modeLabel })}
               </Typography>
               <Typography variant="body2" sx={{ mt: 1 }}>
-                Current status: <strong>{notificationData.completed_status}</strong>
+                {translate('resource.import.instances.dialog.already_completed.status', { status: notificationData.completed_status })}
               </Typography>
               <Typography variant="body2">
-                If you need to run it again, please refresh the page or create a new import instance.
+                {translate('resource.import.instances.dialog.already_completed.footer')}
               </Typography>
             </Alert>
           ),
@@ -553,19 +564,21 @@ const ProductImportComponentView: React.FC<IDashAutoAdminCustomFieldComponent> =
       
       // Show info notification
       SetNotificationDialogOpen(true);
+      const modeLabel = importData.preview_mode ? translate('resource.import.instances.tabs.preview') : translate('resource.import.instances.tabs.import');
+
       SetNotificationDialogProps({
         variant: "info",
-        title: `${importData.preview_mode ? 'Preview' : 'Import'} Already Completed`,
+        title: translate('resource.import.instances.dialog.already_completed.title', { mode: modeLabel }),
         content: (
           <Alert severity="info">
             <Typography variant="body1">
               {data.message}
             </Typography>
             <Typography variant="body2" sx={{ mt: 1 }}>
-              Current status: <strong>{data.status}</strong>
+              {translate('resource.import.instances.dialog.already_completed.status', { status: data.status })}
             </Typography>
             <Typography variant="body2">
-              If you need to run it again, please refresh the page or create a new import instance.
+              {translate('resource.import.instances.dialog.already_completed.footer')}
             </Typography>
           </Alert>
         ),
@@ -585,19 +598,21 @@ const ProductImportComponentView: React.FC<IDashAutoAdminCustomFieldComponent> =
       
       // Show info notification
       SetNotificationDialogOpen(true);
+      const modeLabel = importData.preview_mode ? translate('resource.import.instances.tabs.preview') : translate('resource.import.instances.tabs.import');
+
       SetNotificationDialogProps({
         variant: "info",
-        title: `${importData.preview_mode ? 'Preview' : 'Import'} Already Running`,
+        title: translate('resource.import.instances.dialog.already_running.title', { mode: modeLabel }),
         content: (
           <Alert severity="info">
             <Typography variant="body1">
               {data.message}
             </Typography>
             <Typography variant="body2" sx={{ mt: 1 }}>
-              Current status: <strong>{data.status}</strong>
+              {translate('resource.import.instances.dialog.already_running.status', { status: data.status })}
             </Typography>
             <Typography variant="body2">
-              Please wait for the current process to complete or refresh the page to see the latest status.
+              {translate('resource.import.instances.dialog.already_running.footer')}
             </Typography>
           </Alert>
         ),
@@ -715,20 +730,20 @@ const ProductImportComponentView: React.FC<IDashAutoAdminCustomFieldComponent> =
       <Card>
         {attribute.attribute == "preview_log_id" ? (
           <CardHeader
-            title="Mass Import Preview"
+            title={translate('resource.import.instances.headers.preview_title')}
             subheader={
               record.import_type === 'normalized' 
-                ? "Preview with normalized format"
-                : "Preview with custom template"
+                ? translate('resource.import.instances.headers.preview_normalized_sub')
+                : translate('resource.import.instances.headers.preview_template_sub')
             }
           />
         ) : (
           <CardHeader
-            title="Mass Import"
+            title={translate('resource.import.instances.headers.import_title')}
             subheader={
               record.import_type === 'normalized'
-                ? "Import with normalized format"
-                : "Import with custom template"
+                ? translate('resource.import.instances.headers.import_normalized_sub')
+                : translate('resource.import.instances.headers.import_template_sub')
             }
           />
         )}
@@ -744,7 +759,9 @@ const ProductImportComponentView: React.FC<IDashAutoAdminCustomFieldComponent> =
                 variant="contained"
                 color="primary"
               >
-                {isNormalizedImportActive ? "Preview in Progress..." : "Preview Import"}
+                {isNormalizedImportActive 
+                  ? translate('resource.import.instances.actions.preview_in_progress') 
+                  : translate('resource.import.instances.actions.preview_start')}
               </Button>
             </>
           ) : (
@@ -761,7 +778,9 @@ const ProductImportComponentView: React.FC<IDashAutoAdminCustomFieldComponent> =
                 variant="contained"
                 color="primary"
               >
-                {isNormalizedImportActive ? "Import in Progress..." : "Start Import"}
+                {isNormalizedImportActive 
+                  ? translate('resource.import.instances.actions.import_in_progress') 
+                  : translate('resource.import.instances.actions.import_start')}
               </Button> 
             </>
           ) : (
@@ -788,7 +807,11 @@ const ProductImportComponentView: React.FC<IDashAutoAdminCustomFieldComponent> =
           {stats && (
             <Box sx={{ mt: 2 }}>
               <Typography variant="h6" gutterBottom>
-                {attribute.attribute === "preview_log_id" ? "Preview" : "Import"} Results
+                {translate('resource.import.instances.results.title', { 
+                  mode: attribute.attribute === "preview_log_id" 
+                    ? translate('resource.import.instances.tabs.preview') 
+                    : translate('resource.import.instances.tabs.import') 
+                })}
               </Typography>
               <MUISimpleJsonTable tableData={JSON.parse(JSON.stringify(stats))} vertical showKey />
               {stats.log_id && <LogFileById id={stats.log_id} />}

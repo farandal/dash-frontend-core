@@ -2,11 +2,12 @@ import React from 'react';
 import { IDashAutoAdminCustomFieldComponent } from 'dash-auto-admin';
 import { useController } from 'react-hook-form';
 import { FormControl, FormLabel, RadioGroup, FormControlLabel, Radio, Typography, CardContent, Card } from '@mui/material';
-import { useRecordContext } from 'react-admin';
+import { useRecordContext, useTranslate } from 'react-admin';
 
 const ImportTypeSelectorEdit: React.FC<IDashAutoAdminCustomFieldComponent> = ({ method, attribute }) => {
   const importTypeField = useController({ name: 'import_type', defaultValue: 'normalized' });
   const productTemplateIdField = useController({ name: 'product_template_id' });
+  const translate = useTranslate();
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
@@ -29,9 +30,9 @@ const ImportTypeSelectorEdit: React.FC<IDashAutoAdminCustomFieldComponent> = ({ 
                 control={<Radio />} 
                 label={
                   <div>
-                    <Typography variant="body1">Importación Normalizada (Recomendado)</Typography>
+                    <Typography variant="body1">{translate('resource.import.instances.types.normalized.title')}</Typography>
                     <Typography variant="body2" color="textSecondary">
-                      Utiliza el formato normalizado estándar con columnas predefinidas
+                      {translate('resource.import.instances.types.normalized.desc')}
                     </Typography>
                   </div>
                 }
@@ -49,9 +50,9 @@ const ImportTypeSelectorEdit: React.FC<IDashAutoAdminCustomFieldComponent> = ({ 
                 control={<Radio />} 
                 label={
                   <div>
-                    <Typography variant="body1">Importación con Plantilla</Typography>
+                    <Typography variant="body1">{translate('resource.import.instances.types.template.title')}</Typography>
                     <Typography variant="body2" color="textSecondary">
-                      Utiliza una plantilla personalizada para mapear columnas
+                      {translate('resource.import.instances.types.template.desc')}
                     </Typography>
                   </div>
                 }
@@ -65,11 +66,14 @@ const ImportTypeSelectorEdit: React.FC<IDashAutoAdminCustomFieldComponent> = ({ 
 
 const ImportTypeSelectorView: React.FC<IDashAutoAdminCustomFieldComponent> = ({ method, attribute }) => {
   const record = useRecordContext();
+  const translate = useTranslate();
   const importType = record.import_type || (record.product_template_id ? 'template' : 'normalized');
   
   return (
     <Typography>
-      {importType === 'normalized' ? 'Importación Normalizada' : 'Importación con Plantilla'}
+      {importType === 'normalized' 
+        ? translate('resource.import.instances.types.normalized.title') 
+        : translate('resource.import.instances.types.template.title')}
     </Typography>
   );
 };

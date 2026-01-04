@@ -3,7 +3,7 @@ import React, { useState } from 'react'
 import { useController } from 'react-hook-form';
 import { Chip, Switch } from '@mui/material';
 import MUISimpleJsonTable from '../MuiSimpleJsonTable';
-import { useRecordContext } from 'react-admin';
+import { useRecordContext, useTranslate } from 'react-admin';
 
 const ProductImportStatusEdit: React.FC<IDashAutoAdminCustomFieldComponent> = ({ method, attribute }) => {
   // No se puede editar el status desde el panel
@@ -15,8 +15,9 @@ const ProductImportStatusEdit: React.FC<IDashAutoAdminCustomFieldComponent> = ({
 
 const ProductImportStatusView: React.FC<IDashAutoAdminCustomFieldComponent> = ({ method, attribute }) => {
   const record = useRecordContext();
+  const translate = useTranslate();
   return (
-    <Chip label={record.status} />
+    <Chip label={translate(`resource.import.instances.statuses.${record.status}`)} />
   )
 }
 

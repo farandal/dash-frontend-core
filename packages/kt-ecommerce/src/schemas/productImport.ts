@@ -12,9 +12,9 @@ import ProductImportLog from "../components/ProductImportLog";
 const productImportSchema: IDashAutoAdminAttribute[] = [
 
   {
-    tab: "Datos",
+    tab: "resource.import.instances.tabs.datos",
     attribute: 'import_type',
-    label: 'Tipo de Importación',
+    label: 'resource.import.instances.fields.import_type',
     type: String,
     custom: true,
     inList: false,
@@ -22,9 +22,9 @@ const productImportSchema: IDashAutoAdminAttribute[] = [
   },
 
   {
-    tab: "Datos",
+    tab: "resource.import.instances.tabs.datos",
     attribute: 'product_template_id',
-    label: 'Template',
+    label: 'resource.import.instances.fields.template',
     type: String,
     custom: true,
     inList: false,
@@ -32,10 +32,10 @@ const productImportSchema: IDashAutoAdminAttribute[] = [
   },
 
   {
-    tab: "Datos",
+    tab: "resource.import.instances.tabs.datos",
     attribute: 'products_file',
     listAttribute: 'filepath',
-    label: 'Archivo',
+    label: 'resource.import.instances.fields.file',
     type: String,
     custom: true,
     inList: false,
@@ -44,9 +44,9 @@ const productImportSchema: IDashAutoAdminAttribute[] = [
   },
 
   {
-    tab: "Datos",
+    tab: "resource.import.instances.tabs.datos",
     attribute: 'import_options',
-    label: 'Opciones de Importación',
+    label: 'resource.import.instances.fields.options',
     type: String,
     custom: true,
     inList: true,
@@ -54,9 +54,9 @@ const productImportSchema: IDashAutoAdminAttribute[] = [
   },
 
   {
-    tab: "Datos",
+    tab: "resource.import.instances.tabs.datos",
     attribute: 'status',
-    label: 'Status',
+    label: 'resource.import.instances.fields.status',
     type: String,
     custom: true,
     inList: true,
@@ -64,9 +64,9 @@ const productImportSchema: IDashAutoAdminAttribute[] = [
   },
 
   {
-    tab: "Previsualizar",
+    tab: "resource.import.instances.tabs.preview",
     attribute: 'preview_log_id',
-    label: 'Previsualizar',
+    label: 'resource.import.instances.fields.preview',
     type: String,
     custom: true,
     inList: false,
@@ -74,9 +74,9 @@ const productImportSchema: IDashAutoAdminAttribute[] = [
   },
 
   {
-    tab: "Importar",
+    tab: "resource.import.instances.tabs.import",
     attribute: 'import_log_id',
-    label: 'Importar',
+    label: 'resource.import.instances.fields.import_action',
     type: String,
     custom: true,
     inList: false,
@@ -84,9 +84,9 @@ const productImportSchema: IDashAutoAdminAttribute[] = [
   },
 
   {
-    tab: "Logs",
+    tab: "resource.import.instances.tabs.logs",
     attribute: 'logs',
-    label: 'Logs',
+    label: 'resource.import.instances.fields.logs',
     type: "custom",
     component: ProductImportLog,
     inEdit: true,
@@ -96,18 +96,18 @@ const productImportSchema: IDashAutoAdminAttribute[] = [
 
 
   {
-    tab: "Datos",
+    tab: "resource.import.instances.tabs.datos",
     attribute: 'created_at',
-    label: 'Creado',
+    label: 'resource.import.instances.fields.created_at',
     type: Date,
     inEdit: false,
     inCreate: false
   },
 
   {
-    tab: "Datos",
+    tab: "resource.import.instances.tabs.datos",
     attribute: 'updated_at',
-    label: 'Actualizado',
+    label: 'resource.import.instances.fields.updated_at',
     type: Date,
     inEdit: false,
     inCreate: false

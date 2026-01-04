@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { IDashAutoAdminCustomFieldComponent } from 'dash-auto-admin';
 import { useController, useWatch } from 'react-hook-form';
-import { useRecordContext, Loading } from 'react-admin';
+import { useRecordContext, Loading, useTranslate } from 'react-admin';
 import { Card, Alert, Typography, Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
 import { useAxios } from 'dash-axios-hook';
 import { DashAutoFormGroups } from 'dash-auto-admin';
@@ -11,7 +11,8 @@ const ImportOptionsSelectorBase: React.FC<IDashAutoAdminCustomFieldComponent & {
   method, 
   attribute, 
   record, 
-  isCreate = false 
+  isCreate = false,
+  translate 
 }) => {
   const axios = useAxios();
 
@@ -112,7 +113,7 @@ const ImportOptionsSelectorBase: React.FC<IDashAutoAdminCustomFieldComponent & {
         <Card style={{ padding: "8px" }}>
           <Accordion defaultExpanded={false}>
             <AccordionSummary expandIcon={<span>▼</span>}>
-              <Typography variant="subtitle1">Configuración Avanzada</Typography>
+              <Typography variant="subtitle1">{translate('resource.import.instances.options.advanced_config')}</Typography>
             </AccordionSummary>
             <AccordionDetails>
               {DashAutoFormGroups({
@@ -131,7 +132,7 @@ const ImportOptionsSelectorBase: React.FC<IDashAutoAdminCustomFieldComponent & {
 
       {(!optionsSchema || optionsSchema.length === 0) && !loading && (
         <Alert severity="info">
-          No hay opciones configurables para este tipo de importación.
+          {translate('resource.import.instances.options.no_options')}
         </Alert>
       )}
     </>
@@ -140,21 +141,24 @@ const ImportOptionsSelectorBase: React.FC<IDashAutoAdminCustomFieldComponent & {
 
 const ImportOptionsSelectorEdit: React.FC<IDashAutoAdminCustomFieldComponent> = (props) => {
   const record = useRecordContext();
-  return <ImportOptionsSelectorBase {...props} record={record} isCreate={false} />;
+  const translate = useTranslate();
+  return <ImportOptionsSelectorBase {...props} record={record} isCreate={false} translate={translate} />;
 };
 
 const ImportOptionsSelectorCreate: React.FC<IDashAutoAdminCustomFieldComponent> = (props) => {
   // Don't use useRecordContext in create mode
-  return <ImportOptionsSelectorBase {...props} record={null} isCreate={true} />;
+  const translate = useTranslate();
+  return <ImportOptionsSelectorBase {...props} record={null} isCreate={true} translate={translate} />;
 };
 
 const ImportOptionsSelectorView: React.FC<IDashAutoAdminCustomFieldComponent> = ({ method, attribute }) => {
   const record = useRecordContext();
+  const translate = useTranslate();
   
   return (
     <Card style={{ padding: "8px" }}>
       <Typography variant="h6" gutterBottom>
-        Opciones de Importación ({record.import_type || 'normalized'})
+        {translate('resource.import.instances.options.view_title', { type: record.import_type || 'normalized' })}
       </Typography>
       <MUISimpleJsonTable 
         vertical 

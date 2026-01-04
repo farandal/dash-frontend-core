@@ -1,6 +1,6 @@
 import { IDashAutoAdminCustomFieldComponent } from 'dash-auto-admin';;
 import React, { useEffect, useState } from 'react'
-import { useRecordContext } from "react-admin";
+import { useRecordContext, useTranslate } from "react-admin";
 
 import { FileInput } from 'react-admin';
 import { Confirm } from 'react-admin';
@@ -13,16 +13,14 @@ import { IProductTemplateColumn, Product } from '../../interfaces';
 import { IProductImportTemplateRow } from '../Product/ProductImportExport/Interfaces';
 import { Alert, Typography } from '@mui/material';
 
-const deleteText = "¿Está seguro de eliminar este registro?"
-const onlyExcel = "You can only upload Excel file!"
-const maxSizeMessage = "File must be smaller than 2MB!"
-const maxSize = 5; //MB
-const noFileMessage = "No file uploaded!"
-const unknownFileTypeMessage = "Unknown file format. Only Excel files are uploaded!"
-const noDataMessage = "No data found in file!"
-const defaultExcelRendererError = "Error reading excel File"
-
 const ExcelUploadAndPreviewEdit: React.FC<IDashAutoAdminCustomFieldComponent> = ({ method, attribute }) => {
+  const translate = useTranslate();
+
+  const deleteText = translate('resource.import.instances.messages.delete_file_confirm');
+  const unknownFileTypeMessage = translate('resource.import.instances.messages.unknown_format');
+  const noDataMessage = translate('resource.import.instances.messages.no_data');
+  const defaultExcelRendererError = translate('resource.import.instances.messages.read_error');
+  const noFileMessage = translate('resource.import.instances.messages.no_file');
 
   const [removeFile, setRemoveFile] = useState(null);
   const [showModal, setShowModal] = useState(false);
@@ -127,15 +125,14 @@ const ExcelUploadAndPreviewEdit: React.FC<IDashAutoAdminCustomFieldComponent> = 
     <>
       {!canShowPreview && importType === 'template' && (
         <Alert severity="warning" sx={{ mb: 2 }}>
-          Debe seleccionar una plantilla antes de subir el archivo
+          {translate('resource.import.instances.alerts.select_template')}
         </Alert>
       )}
 
       {importType === 'normalized' && (
         <Alert severity="info" sx={{ mb: 2 }}>
           <Typography variant="body2">
-            <strong>Formato Normalizado:</strong> Su archivo debe seguir el formato estándar con columnas como: 
-            sku, name, description, price_*, stock_*, category_name, brand_name, images, etc.
+            <strong>{translate('resource.import.instances.alerts.normalized_format_title')}</strong> {translate('resource.import.instances.alerts.normalized_format_desc')}
           </Typography>
         </Alert>
       )}
@@ -158,7 +155,7 @@ const ExcelUploadAndPreviewEdit: React.FC<IDashAutoAdminCustomFieldComponent> = 
           });
           setShowModal(true);
           return promise.then((result) => {
-            console.log('Archivo eliminado!');
+            console.log(translate('resource.import.instances.messages.file_removed'));
           });
         }}
       >
@@ -167,8 +164,8 @@ const ExcelUploadAndPreviewEdit: React.FC<IDashAutoAdminCustomFieldComponent> = 
 
       <Confirm
         isOpen={showModal}
-        title="Eliminar archivo"
-        content={`${removeFile?.rawFile?.title ?? ''} será eliminado`}
+        title={translate('resource.import.instances.messages.delete_file_title')}
+        content={translate('resource.import.instances.messages.delete_file_content', { title: removeFile?.rawFile?.title ?? '' })}
         onConfirm={() => {
           setShowModal(false);
           removeFile && removeFile.delete();

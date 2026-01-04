@@ -2,13 +2,14 @@ import { LinearProgress, TextareaAutosize } from "@mui/material";
 import { IProductImportLogComponent } from "dash-admin/src/interfaces/Log";
 import { useAxios } from 'dash-axios-hook';
 import React, { useState } from "react";
-import { Button, useRecordContext } from "react-admin";
+import { Button, useRecordContext, useTranslate } from "react-admin";
 import MUISimpleJsonTable from "./MuiSimpleJsonTable";
 import { saveAs } from 'file-saver';
 import { IDashAutoAdminCustomFieldComponent } from "dash-auto-admin";
 
 export const ProductImportLogComponent: React.FC<IProductImportLogComponent> = ({ logs }) => {
   const axios = useAxios();
+  const translate = useTranslate();
 
   // Store contents and loading state per log index
   const [logContents, setLogContents] = useState<string[]>([]);
@@ -71,7 +72,7 @@ export const ProductImportLogComponent: React.FC<IProductImportLogComponent> = (
               style={{ width: "100%" }}
               maxRows={50}
               value={logContents[index] !== undefined ? logContents[index] : ""}
-              placeholder="Previsualiza el log aquí..."
+              placeholder={translate('resource.import.instances.logs.placeholder')}
               readOnly
             />
           </div>
@@ -82,14 +83,14 @@ export const ProductImportLogComponent: React.FC<IProductImportLogComponent> = (
                 disabled={!!loading[log.id]}
                 onClick={() => previewLog(log, index)}
               >
-                <span>Previsualizar</span>
+                <span>{translate('resource.import.instances.logs.preview')}</span>
               </Button>
               <Button
                 loading={!!loading[log.id]}
                 disabled={!!loading[log.id]}
                 onClick={() => downloadLog(log)}
               >
-                <span>Descargar</span>
+                <span>{translate('resource.import.instances.logs.download')}</span>
               </Button>
             </>
           )}

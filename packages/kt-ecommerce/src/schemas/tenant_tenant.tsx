@@ -105,6 +105,16 @@ const tenantTenantSchema:IDashAutoAdminAttribute[] = [
       component: SelectInput,
       //searchField: "subdomain"
     },
+    {
+      tab: 'Datos',
+      label: 'Idiomas Disponibles',
+      attribute: 'language_ids',
+      type: 'common/language.code',
+      pagination: false,
+      multiple: true,
+      component: SelectArrayInput,
+      componentProps: {multiple:true},
+    },
     /*{
       label: 'Teléfono de emergencia',
       attribute: 'emergency_phone',
