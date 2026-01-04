@@ -20,11 +20,13 @@ const useSafeListContext = (): any => {
 export interface IDashAutoAdminDataGrid {
 	resourceConfig: IDashAutoAdminResourceConfig;
 	dataGridProps?: IDashAutoList['dataGridProps'];
+	locale?: string;
 }
 
 const DashAutoListDataGridWrapper: React.FC<IDashAutoAdminDataGrid> = ({
 	resourceConfig,
 	dataGridProps,
+	locale,
 }) => {
 	const listContext = useSafeListContext();
 	const setFilters = listContext?.setFilters;
@@ -55,7 +57,7 @@ const DashAutoListDataGridWrapper: React.FC<IDashAutoAdminDataGrid> = ({
 	return (
 		<div className={loading ? 'loading-overlay' : 'default-overlay'}>
 			{loading && <CircularProgress className={'datagrid-olverlay-loading'} />}
-			<AutoDataGrid resourceConfig={resourceConfig} {...dataGridProps} />
+			<AutoDataGrid resourceConfig={resourceConfig} {...dataGridProps} locale={locale} />
 		</div>
 	);
 

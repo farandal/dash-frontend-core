@@ -39,6 +39,7 @@ const DashAutoTabbedForm: React.FC<IDashAutoTabbedForm> = ({
 	toolbar,
 	mode,
 	isDrawer = false,
+	locale,
 }) => {
     
 	const resource = useResourceContext();
@@ -71,7 +72,7 @@ const DashAutoTabbedForm: React.FC<IDashAutoTabbedForm> = ({
         }).length;
     };
 
-    const visibleTabCount = getVisibleTabCount();
+    const visibleTabCount = useMemo(() => getVisibleTabCount(), [resourceConfig.schema, mode, locale]);
 
     // Fallback to layout if only one visible tab for the current mode
     if (formGroupMode === "tabs" && visibleTabCount <= 1) {
@@ -166,11 +167,11 @@ const DashAutoTabbedForm: React.FC<IDashAutoTabbedForm> = ({
     // causing React to unmount and remount the entire component tree
     const ContextComponent = useMemo(() => {
         return resourceConfig.contextComponent || (({children}: {children: ReactNode}) => <>{children}</>);
-    }, [resourceConfig.contextComponent]);
+    }, [resourceConfig.contextComponent, locale]);
 
     // 🔧 FIX: Memoize the context value to prevent unnecessary re-renders
     // The onSave and mode values only change when their dependencies change
-    const formContextValue = useMemo(() => ({ onSave, mode }), [onSave, mode]);
+    const formContextValue = useMemo(() => ({ onSave, mode, locale }), [onSave, mode, locale]);
   
 
     if(!formData) return <Loading/>
@@ -235,7 +236,7 @@ const DashAutoTabbedForm: React.FC<IDashAutoTabbedForm> = ({
             </DashAutoAdminFormProvider>
         );
         return Wrapper;
-    }, [formContextValue, ContextComponent, mode, resourceConfig]);
+    }, [formContextValue, ContextComponent, mode, resourceConfig, locale]);
 
 	if (formGroupMode === 'tabs' && groupByTabs(resourceConfig.schema).length > 1) {
         //console.log(record,formData, {...record,...formData});
@@ -262,7 +263,7 @@ const DashAutoTabbedForm: React.FC<IDashAutoTabbedForm> = ({
 				{DashAutoFormTabs({
 					schema: resourceConfig.schema,
 					resourceConfig: resourceConfig,
-					options: { mode: mode, isDrawer: isDrawer },
+					options: { mode: mode, isDrawer: isDrawer, locale: locale },
 				})}
                 
 			</TabbedForm>

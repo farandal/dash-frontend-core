@@ -20,6 +20,7 @@ const isTranslationKey = (value: string): boolean => {
 
 export interface IResourceMenu {
     resourceConfig: IAppResourceConfig;
+    locale?: string;
 }
 
 /**
@@ -33,7 +34,7 @@ export interface IResourceMenu {
  * @returns {JSX.Element} - JSX element
  */
 const ResourceMenu: React.FC<IResourceMenu> = (props) => {
-    const { resourceConfig } = props;
+    const { resourceConfig, locale } = props;
     const { resourceMenuDisabled = false, resourceMenuPosition = 'top' } =
         resourceConfig;
 
@@ -89,7 +90,7 @@ const ResourceMenu: React.FC<IResourceMenu> = (props) => {
                 ? resourceConfig.menu()
                 : null;
         setResourceMenu(val);
-    }, []);
+    }, [resourceConfig.menu, locale]);
 
     useEffect(() => {
         const val = Array.isArray(resourceConfig.menu)
@@ -98,7 +99,7 @@ const ResourceMenu: React.FC<IResourceMenu> = (props) => {
                 ? resourceConfig.menu()
                 : null;
         setResourceMenu(val);
-    }, [loc]);
+    }, [loc, resourceConfig.menu, locale]);
 
     //const refresh = useRefresh();
 

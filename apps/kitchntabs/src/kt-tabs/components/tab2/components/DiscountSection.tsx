@@ -22,7 +22,7 @@ import {
     ExpandLess as ExpandLessIcon
 } from '@mui/icons-material';
 import { useFormContext, Controller } from 'react-hook-form';
-import { useEditContext } from 'react-admin';
+import { useEditContext, useTranslate } from 'react-admin';
 import { ITab } from '../../interfaces/ITab';
 import { useTabManager } from '../../contexts/TabManagerContext';
 import { formatCurrencyWithTenant, getCurrencyFromAuth } from '../utils';
@@ -39,6 +39,7 @@ const DiscountSection: React.FC<DiscountSectionProps> = ({
 }) => {
     const formContext = useFormContext();
     const { totalAmount } = useTabManager();
+    const translate = useTranslate();
     const [tenantCurrency, setTenantCurrency] = useState<any>(null);
     const [expanded, setExpanded] = useState(false);
     const initializedRef = useRef<string | number | null>(null);
@@ -165,7 +166,7 @@ const DiscountSection: React.FC<DiscountSectionProps> = ({
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                     <DiscountIcon color={hasDiscount ? 'success' : 'action'} />
                     <Typography variant="subtitle1" fontWeight="medium">
-                        Descuento
+                         {translate('tab.order.discount')}
                     </Typography>
                     {hasDiscount && (
                         <Typography 
@@ -192,32 +193,32 @@ const DiscountSection: React.FC<DiscountSectionProps> = ({
                     <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
                         {/* Discount Type */}
                         <FormControl size="small" sx={{ minWidth: 150 }}>
-                            <InputLabel>Tipo</InputLabel>
+                            <InputLabel>{translate('tab.order.type')}</InputLabel>
                             <Controller
                                 name="discount_type"
                                 control={formContext.control}
                                 render={({ field }) => (
                                     <Select
                                         {...field}
-                                        label="Tipo"
+                                        label={translate('tab.order.type')}
                                         value={field.value || ''}
                                         onChange={(e) => {
                                             field.onChange(e.target.value || null);
                                         }}
                                     >
                                         <MenuItem value="">
-                                            <em>Sin descuento</em>
+                                            <em>{translate('tab.order.no_discount')}</em>
                                         </MenuItem>
                                         <MenuItem value={DISCOUNT_TYPE_PERCENTAGE}>
                                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                                                 <PercentIcon fontSize="small" />
-                                                Porcentaje
+                                                {translate('tab.order.percentage')}
                                             </Box>
                                         </MenuItem>
                                         <MenuItem value={DISCOUNT_TYPE_FIXED}>
                                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                                                 <MoneyIcon fontSize="small" />
-                                                Monto Fijo
+                                                {translate('tab.order.fixed_amount')}
                                             </Box>
                                         </MenuItem>
                                     </Select>
@@ -233,7 +234,7 @@ const DiscountSection: React.FC<DiscountSectionProps> = ({
                                 <TextField
                                     {...field}
                                     size="small"
-                                    label="Valor"
+                                    label={translate('tab.order.value')}
                                     type="number"
                                     disabled={!discountType}
                                     value={field.value || ''}
@@ -279,12 +280,12 @@ const DiscountSection: React.FC<DiscountSectionProps> = ({
                             <TextField
                                 {...field}
                                 size="small"
-                                label="Razón del descuento (opcional)"
+                                label={translate('tab.order.discount_reason')}
                                 fullWidth
                                 disabled={!discountType}
                                 value={field.value || ''}
                                 sx={{ mt: 2 }}
-                                placeholder="Ej: Cortesía del chef, Cliente frecuente, Promoción..."
+                                placeholder={translate('tab.order.discount_reason_placeholder')}
                             />
                         )}
                     />
@@ -303,7 +304,7 @@ const DiscountSection: React.FC<DiscountSectionProps> = ({
                             }}
                         >
                             <Typography variant="body2" color="text.secondary">
-                                Descuento aplicado:
+                                {translate('tab.order.discount_applied')}
                             </Typography>
                             <Typography variant="body1" fontWeight="bold" color="success.main">
                                 -{formatCurrency(calculatedDiscountAmount)}

@@ -14,7 +14,10 @@ export interface IDashAutoLayoutRenderFunction {
 	): JSX.Element[];
 }
 
-const DashAutoLayout = (resourceConfig: IDashAutoAdminResourceConfig) => {
+const DashAutoLayout = (
+	resourceConfig: IDashAutoAdminResourceConfig,
+	options?: IDashAutoAdminFormOptions,
+) => {
 	const renderShow: IDashAutoLayoutRenderFunction = (
 		tab,
 		options,

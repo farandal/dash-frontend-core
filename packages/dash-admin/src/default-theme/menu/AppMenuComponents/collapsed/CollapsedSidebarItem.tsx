@@ -229,7 +229,6 @@ const CollapsedSidebarItem = ({
                     onMouseEnter={!webView ? openMenuOnHover: null}
                     onMouseLeave={closeMenu}
                     onClick={webView ? openMenuOnClick : null}
-                    onTouchStart={closeMenu} 
                     item={item}
                     showText={false}
                     navSize={navSize}
@@ -262,6 +261,7 @@ const CollapsedSidebarItem = ({
                                             key={index}
                                             hasChildren={item.children && item.children.length > 0}
                                             onClick={(e) => handleSubmenuItemClick(e, item)}
+                                            onTouchStart={(e) => e.stopPropagation()}
                                         />
                                     );
                                 })}

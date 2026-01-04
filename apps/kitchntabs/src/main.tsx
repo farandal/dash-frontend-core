@@ -98,32 +98,36 @@ const getDefaultAppCommon = () => {
     };
 };
 
-const defaultAppSettings = () => ({
-    ...defaultSettings,
-    loading: false,
-    navStyle: DASHLayoutSettings.NAV_STYLE_FIXED,
-    layoutType: DASHLayoutSettings.LAYOUT_TYPE_FRAMED,
-    themeType: DASHLayoutSettings.THEME_TYPE_DARK,
-    layoutSettings: DASHLayoutSettings,
-    groupIcons: DASHGroupIcons,
-    themeColor: '',
-    isDirectionRTL: false,
-    locale: 'es',
-    availableLocales: [
-        {
-            locale: 'en',
-            languageId: 'english',
-            name: 'English',
-            icon: 'en',
-        },
-        {
-            locale: 'es',
-            languageId: 'spanish',
-            name: 'Español',
-            icon: 'es',
-        },
-    ],
-});
+const defaultAppSettings = () => {
+    const tenantSettings = AuthPersistenceService.getTenantSettings();
+    return {
+        ...defaultSettings,
+        ...(tenantSettings || {}),
+        loading: false,
+        navStyle: DASHLayoutSettings.NAV_STYLE_FIXED,
+        layoutType: DASHLayoutSettings.LAYOUT_TYPE_FRAMED,
+        themeType: DASHLayoutSettings.THEME_TYPE_DARK,
+        layoutSettings: DASHLayoutSettings,
+        groupIcons: DASHGroupIcons,
+        themeColor: '',
+        isDirectionRTL: false,
+        locale: 'es',
+        availableLocales: [
+            {
+                locale: 'es',
+                languageId: 'spanish',
+                name: 'Español',
+                icon: 'es',
+            },
+            {
+                locale: 'en',
+                languageId: 'english',
+                name: 'English',
+                icon: 'en',
+            },
+        ],
+    };
+};
 
 const INITIAL_APP_STATE: IDASHAppState<any, any, any> = {
     settings: defaultAppSettings(),

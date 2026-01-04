@@ -265,7 +265,6 @@ const AppSidebarMaterial = (props) => {
                 }}
                 ModalProps={{
                     keepMounted: true, // Better open performance on mobile
-                    disablePortal: true, 
                 }}
             >
                 <AppMaterialMenu 

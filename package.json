@@ -49,6 +49,8 @@
    
     "_ELECTRON": "BUILD",
 
+    "release:full:kitchntabs:production": "pnpm release:android:kitchntabs:production && pnpm release-apk:android:kitchntabs:production && pnpm release:electron:kitchntabs-app:debian:arm64",
+
     "dev:electron:kitchntabs:development": "MODE=production CUSTOM_MODE=kitchntabs.development TARGET_TYPE=web PLATFORM=web APP_PATH=apps/kitchntabs VITE_DEV_PORT=3003  VITE_HMR_PORT=4438  node build_config.js && vite build -c electron.vite.config.mts && cross-env NODE_ENV=development BUILD_ENV=dev CUSTOM_MODE=kitchntabs.development PORT=3003 concurrently \"cd apps/kitchntabs && pnpm dev\" \"wait-on http://127.0.0.1:3003 && electron .\"",
     "dev:electron:kitchntabs:production": "pnpm config:electron:kitchntabs:production && vite build -c electron.vite.config.mts && cross-env NODE_ENV=development BUILD_ENV=dev CUSTOM_MODE=kitchntabs.production concurrently \"pnpm dev\" \"wait-on http://127.0.0.1:3006 && electron .\"",
     "dev:android:kitchntabs:development": "pnpm resources:android && cross-env MODE=development CUSTOM_MODE=kitchntabs.development TARGET_TYPE=mobile PLATFORM=android APP_PATH=apps/kitchntabs NODE_OPTIONS=--max-old-space-size=4048 node build_config.js && turbo build --filter=kitchntabs-app --no-cache && cap run android",

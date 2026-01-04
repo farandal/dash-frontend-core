@@ -7,4 +7,6 @@ export default interface IAutoShow {
 	id?: React.Key;
 	/** */
 	isDrawer?: boolean;
+	/** */
+	locale?: string;
 }

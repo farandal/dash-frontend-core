@@ -20,6 +20,7 @@ interface AutoDataGridProps {
     resourceConfig?: IDashAutoAdminResourceConfig;
     className?: string;
     bulkActions?: React.ReactNode;
+    locale?: string;
 }
 
 export type IAutoDataGrid = AutoDataGridProps;
@@ -32,8 +33,10 @@ const MemoizedListDeleteButton = memo(ListDeleteButton);
 const AutoDataGrid: React.FC<IAutoDataGrid> = ({
     resourceConfig,
     schema,
+    locale,
     ...dataGridProps
 }) => {
+    const _locale = locale || resourceConfig?.locale;
     const _schema: IDashAutoAdminAttribute[] = resourceConfig?.schema || schema;
 
     if (!_schema || !_schema.filter)
@@ -56,7 +59,7 @@ const AutoDataGrid: React.FC<IAutoDataGrid> = ({
     // Memoize the filtered schema for list display
     const filteredSchema = useMemo(() => 
         _schema.filter((attribute) => attribute.inList !== false)
-    , [_schema]);
+    , [_schema, _locale]);
 
     // Default grid wrapper component
     const DefaultGridWrapper = memo((props: { children: React.ReactNode, className?: string, gridWrapperProps?: any }) => {

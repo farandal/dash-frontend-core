@@ -65,6 +65,16 @@ const tenantSystemAdminSchema: IDashAutoAdminAttribute[] = [
         //custom: true,
         component: SelectInput,
         //searchField: "subdomain"
+      },
+      {
+        tab: 'Genéricos',
+        label: 'Idiomas Disponibles',
+        attribute: 'language_ids',
+        type: 'common/language.code',
+        pagination: false,
+        multiple: true,
+        component: SelectArrayInput,
+        componentProps: {multiple:true},
       },*/
 	{
 		tab: 'Configuración',

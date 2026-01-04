@@ -24,32 +24,25 @@ import { IDashAutoAdminResourceConfig } from 'dash-auto-admin';
 export interface IResourceLayout extends PropsWithChildren {
 	/** React Auto Admin Resource Config */
 	resourceConfig: IAppResourceConfig;
+    /** Current locale */
+    locale?: string;
 }
 
 // Memoized ResourceMenu component
 const MemoizedResourceMenu = React.memo(({ 
-	resourceConfig 
+	resourceConfig,
+    locale
 }: { 
-	resourceConfig: IAppResourceConfig 
+	resourceConfig: IAppResourceConfig;
+    locale?: string;
 }) => (
-	<ResourceMenu resourceConfig={resourceConfig} />
+	<ResourceMenu resourceConfig={resourceConfig} locale={locale} />
 ), (prevProps, nextProps) => {
-	return prevProps.resourceConfig === nextProps.resourceConfig;
-});
-
-// Memoized children wrapper
-const MemoizedChildrenWrapper = React.memo(({ 
-	children 
-}: { 
-	children: React.ReactNode 
-}) => (
-	<div className='dash-module-box-content'>{children}</div>
-), (prevProps, nextProps) => {
-	return prevProps.children === nextProps.children;
+	return prevProps.resourceConfig === nextProps.resourceConfig && prevProps.locale === nextProps.locale;
 });
 
 const ResourceLayout: React.FC<IResourceLayout> = (props) => {
-	const { resourceConfig, children } = props;
+	const { resourceConfig, children, locale } = props;
 
 	// Memoize the destructured values to prevent unnecessary recalculations
 	const { resourceMenuDisabled, resourceMenuPosition } = useMemo(() => ({
@@ -76,7 +69,7 @@ const ResourceLayout: React.FC<IResourceLayout> = (props) => {
 		return (
 			<div className='dash-module-box-header'>
 				<div className='dash-module-sidenav dash-d-none dash-d-lg-flex'>
-					<MemoizedResourceMenu resourceConfig={resourceConfig} />
+					<MemoizedResourceMenu resourceConfig={resourceConfig} locale={locale} />
 				</div>
 			</div>
 		);
@@ -86,9 +79,9 @@ const ResourceLayout: React.FC<IResourceLayout> = (props) => {
 		<div className='dash-app-module'>
 			<div className='dash-module-horizontal-box' style={{ maxWidth: '100%' }}>
 				{headerContent}
-				<MemoizedChildrenWrapper>
+				<div className='dash-module-box-content'>
 					{children}
-				</MemoizedChildrenWrapper>
+				</div>
 			</div>
 		</div>
 	);
@@ -96,15 +89,17 @@ const ResourceLayout: React.FC<IResourceLayout> = (props) => {
 
 // Memoize the entire component
 export default React.memo(ResourceLayout, (prevProps, nextProps) => {
-	// Compare resourceConfig reference
-	const resourceConfigEqual = prevProps.resourceConfig === nextProps.resourceConfig;
+	// Compare resourceConfig reference and locale
+	const propsEqual = prevProps.resourceConfig === nextProps.resourceConfig && 
+                      prevProps.locale === nextProps.locale;
 	
 	// Debug logging (remove in production)
-	if (!resourceConfigEqual) {
+	if (!propsEqual) {
 		console.log('ResourceLayout re-rendering:', {
-			resourceConfigEqual
+			resourceConfigChanged: prevProps.resourceConfig !== nextProps.resourceConfig,
+            localeChanged: prevProps.locale !== nextProps.locale
 		});
 	}
 
-	return resourceConfigEqual;
+	return propsEqual;
 });

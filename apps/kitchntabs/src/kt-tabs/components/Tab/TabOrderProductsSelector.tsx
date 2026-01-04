@@ -720,8 +720,9 @@ const TabOrderProductsSelector: React.FC<ITabOrderProductsSelector> = (props) =>
                     filter: {},
                 });
 
+             
                 const mappedCategories: Category[] = [
-                    { id: 'all', name: 'Todos', icon: '📋', position: -1 },
+                    { id: 'all', name: translate('tab.common.todos'), icon: '📋', position: -1 },
                     ...response.data.map((cat: any) => ({
                         id: cat.id,
                         name: cat.name,
@@ -744,7 +745,7 @@ const TabOrderProductsSelector: React.FC<ITabOrderProductsSelector> = (props) =>
                 setCategories(mappedCategories);
             } catch (error) {
                 console.error('Error loading categories:', error);
-                setCategories([{ id: 'all', name: 'Todos', icon: '📋', position: -1 }]);
+                setCategories([{ id: 'all', name: translate('tab.common.todos'), icon: '📋', position: -1 }]);
             } finally {
                 setIsLoadingCategories(false);
             }
@@ -1286,7 +1287,7 @@ const TabOrderProductsSelector: React.FC<ITabOrderProductsSelector> = (props) =>
                         }}
                     />
                     <Typography variant="caption" color="text.secondary">
-                        Actualizando...
+                        {translate('tab.products.updating')}
                     </Typography>
                 </Box>
             )}
@@ -1306,7 +1307,7 @@ const TabOrderProductsSelector: React.FC<ITabOrderProductsSelector> = (props) =>
                 >
                     <Typography variant="h2" sx={{ mb: 2, opacity: 0.3 }}>🍽️</Typography>
                     <Typography variant="h6" sx={{ textAlign: 'center' }}>
-                        {isLoadingMore ? 'Cargando productos...' : 'No hay productos en esta categoría'}
+                        {isLoadingMore ? translate('tab.products.loading') : translate('tab.products.no_products_category')}
                     </Typography>
                 </Box>
             ) : config.useHorizontalScroll ? (

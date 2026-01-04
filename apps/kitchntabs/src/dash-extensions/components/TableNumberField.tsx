@@ -2,6 +2,7 @@ import { IDashAutoAdminCustomFieldComponent } from "dash-auto-admin";
 import React from "react";
 import { useRecordContext } from "react-admin";
 import { useFormContext } from "react-hook-form";
+import { useTranslate } from "react-admin";
 import { TextField } from "@mui/material";
 
 interface TableNumberFieldProps extends IDashAutoAdminCustomFieldComponent {
@@ -11,12 +12,13 @@ const TableNumberFieldEdit: React.FC<TableNumberFieldProps> = ({
   attribute, 
 }) => {
   const { register } = useFormContext();
+  const translate = useTranslate();
 
   return (
     <TextField
       fullWidth
       margin="normal"
-      label="Table Number"
+      label={translate('Table Number')}
       {...register(attribute.attribute)}
     />
   );
@@ -26,12 +28,13 @@ const TableNumberFieldCreate: React.FC<TableNumberFieldProps> = ({
   attribute, 
 }) => {
   const { register } = useFormContext();
+  const translate = useTranslate();
 
   return (
     <TextField
       fullWidth
       margin="normal"
-      label="Table Number"
+      label={translate('Table Number')}
       {...register(attribute.attribute)}
     />
   );

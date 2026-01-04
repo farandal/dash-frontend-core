@@ -19,4 +19,6 @@ export default interface IAutoForm {
 	actions?: React.ReactElement;
 	/** */
 	isDrawer?: boolean;
+	/** */
+	locale?: string;
 }

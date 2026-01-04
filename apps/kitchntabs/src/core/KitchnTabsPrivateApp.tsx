@@ -57,7 +57,7 @@ interface KitchnTabsPrivateAppProps extends PropsWithChildren {
 }
 
 // Custom notification component
-const CustomReactAdminNotification = (props: any) => {
+const CustomReactAdminNotification = (props?: any) => {
     return <div {...props} />;
 };
 
@@ -75,7 +75,7 @@ const KitchnTabsPrivateApp: React.FC<KitchnTabsPrivateAppProps> = ({
     customResources = null,
     useOwnRouter = true,
     GlobalHook = () => <></>,
-    AdminHook = (props) => props.children,
+    AdminHook = (props?: any) => props?.children,
     customDataProvider,
     customAuthProvider,
     customPublicRoutes = null,
@@ -99,7 +99,7 @@ const KitchnTabsPrivateApp: React.FC<KitchnTabsPrivateAppProps> = ({
     console.log('KitchnTabsPrivateApp: Environment Variables:', envVars);
 
     // Create React Query client
-    const customQueryClient = useMemo(() => new QueryClient({
+    const customQueryClient = useMemo<any>(() => new QueryClient({
         defaultOptions: {
             queries: {
                 staleTime: 1000 * 5, // 2 hours - data is fresh for 2 hours
@@ -161,11 +161,11 @@ const KitchnTabsPrivateApp: React.FC<KitchnTabsPrivateAppProps> = ({
     }), []);
 
     // Create i18n provider with lazy loaded translations
-    const [translations, setTranslations] = React.useState<any>(null);
     const [i18nProvider, setI18nProvider] = React.useState<any>(null);
 
     const common = useSelector((state: any) => state.common);
     const settings = useSelector((state: any) => state.settings);
+    const auth = useSelector((state: any) => state.auth);
 
     const [routePath, setRoutePath] = useState<string>('');
 
@@ -193,113 +193,78 @@ const KitchnTabsPrivateApp: React.FC<KitchnTabsPrivateAppProps> = ({
         setRoutePath(calculatedPath);
     }, [useOwnRouter, appPath, common?.appPath]);
 
+    // Memoize translations data to avoid unnecessary provider recreations
+    const translationsData = useMemo(() => {
+        console.log('🌍 Memoizing translationsData...');
+        return {
+            en: {
+                ...dashAdminEn,
+                ...customEnglish,
+                resource: {
+                    ...(dashAdminEn?.resource || {}),
+                    ...(customEnglish?.resource || {}),
+                },
+            },
+            es: {
+                ...dashAdminEs,
+                ...customSpanish,
+                resource: {
+                    ...(dashAdminEs?.resource || {}),
+                    ...(customSpanish?.resource || {}),
+                },
+            },
+        };
+    }, []);
+
     useEffect(() => {
         const loadTranslations = () => {
             try {
-                console.log('🌍 Loading translations...');
-                console.log('🌍 customEnglish keys:', Object.keys(customEnglish));
-                console.log('🌍 customSpanish keys:', Object.keys(customSpanish));
-
-                // Use static imports for dash-admin translations
-                console.log('🌍 dashAdminEn type:', typeof dashAdminEn, 'keys:', dashAdminEn ? Object.keys(dashAdminEn) : 'null');
-                console.log('🌍 dashAdminEs type:', typeof dashAdminEs, 'keys:', dashAdminEs ? Object.keys(dashAdminEs) : 'null');
-
-                const translationsData = {
-                    en: {
-                        ...dashAdminEn,
-                        ...customEnglish,
-                        resource: {
-                            ...(dashAdminEn?.resource || {}),
-                            ...(customEnglish?.resource || {}),
-                        },
-                    },
-                    es: {
-                        ...dashAdminEs,
-                        ...customSpanish,
-                        resource: {
-                            ...(dashAdminEs?.resource || {}),
-                            ...(customSpanish?.resource || {}),
-                        },
-                    },
-                };
-
-                console.log('🌍 Final translationsData.en keys count:', Object.keys(translationsData.en).length);
-                console.log('🌍 Final translationsData.es keys count:', Object.keys(translationsData.es).length);
-                // Check nested path properly (not flat key lookup)
-                console.log('🌍 Check nested path in dashAdminEn:', {
-                    hasResource: !!dashAdminEn?.resource,
-                    hasSystem: !!dashAdminEn?.resource?.system,
-                    hasTenants: !!dashAdminEn?.resource?.system?.tenants,
-                    tenantsLabel: dashAdminEn?.resource?.system?.tenants?.label,
-                });
-                console.log('🌍 Check nested path in translationsData.en:', {
-                    hasResource: !!translationsData.en?.resource,
-                    hasSystem: !!translationsData.en?.resource?.system,
-                    hasTenants: !!translationsData.en?.resource?.system?.tenants,
-                    tenantsLabel: translationsData.en?.resource?.system?.tenants?.label,
-                });
-                console.log('🌍 Full resource object in dashAdminEn:', JSON.stringify(dashAdminEn?.resource, null, 2));
-
-                setTranslations(translationsData);
+                console.log('🌍 Initializing i18nProvider...');
 
                 const availableLocales = settings?.availableLocales?.map(({ locale, name }) => ({ locale, name })) || [
-                    { locale: 'en', name: 'English' },
-                    { locale: 'es', name: 'Español' }
+                    { locale: 'es', name: 'Español' },
+                    { locale: 'en', name: 'English' }
                 ];
 
-                DEBUG && console.log('🌍 KitchnTabsPrivateApp: Creating i18nProvider with availableLocales:', JSON.stringify(availableLocales, null, 2));
-
-                // Locale priority:
-                // 1. User's explicitly selected locale (persisted in localStorage)
-                // 2. Tenant's configured primary language code (from settings.primary_language_code or settings.primary_language)
-                // 3. Default to 'en'
+                // Get user preference from profile
+                const userPreferenceLocale = auth?.user?.preferences?.locale || settings?.preferences?.locale;
                 const persistedLocale = localStorage.getItem('dash-user-locale');
 
-                // Get tenant's language code - could be from primary_language_code or primary_language (string)
+                // Get tenant's language code
                 const tenantLanguageCode = typeof settings?.primary_language_code === 'string'
                     ? settings.primary_language_code
                     : (typeof settings?.primary_language === 'string'
                         ? settings.primary_language
-                        : null);
+                        : (typeof settings?.primary_language === 'object' && settings?.primary_language?.code
+                            ? settings.primary_language.code
+                            : null));
 
-                // If user has explicitly chosen a locale, use that; otherwise use tenant's language
-                const initialLocale = persistedLocale || tenantLanguageCode || settings?.locale || 'en';
-
-                DEBUG && console.log('🌍 KitchnTabsPrivateApp: Persisted locale:', persistedLocale);
-                DEBUG && console.log('🌍 KitchnTabsPrivateApp: Tenant language code:', tenantLanguageCode);
-                DEBUG && console.log('🌍 KitchnTabsPrivateApp: Initial locale:', initialLocale);
-                DEBUG && console.log('🌍 KitchnTabsPrivateApp: translationsData keys:', Object.keys(translationsData));
-                DEBUG && console.log('🌍 KitchnTabsPrivateApp: EN messages count:', Object.keys(translationsData.en || {}).length);
-                DEBUG && console.log('🌍 KitchnTabsPrivateApp: ES messages count:', Object.keys(translationsData.es || {}).length);
+                // Priority for INITIAL locale only
+                const initialLocale = persistedLocale || userPreferenceLocale || tenantLanguageCode || settings?.locale || 'es';
 
                 // Filter availableLocales to only include locales that have translations
                 const localesWithTranslations = availableLocales.filter(
                     ({ locale }) => translationsData[locale] && Object.keys(translationsData[locale]).length > 0
                 );
 
-                DEBUG && console.log('🌍 KitchnTabsPrivateApp: Locales with translations:', JSON.stringify(localesWithTranslations, null, 2));
-
                 // ra-i18n-polyglot signature: (getMessages, initialLocale, availableLocales, polyglotOptions)
-                // 3rd param = availableLocales (array), 4th param = polyglotOptions (object)
-                DEBUG && console.log('🌍 Creating provider with correct parameter order...');
                 const provider = polyglotI18nProvider(
                     (locale) => translationsData[locale] || translationsData.en,
-                    initialLocale,  // Use persisted locale or fallback
-                    localesWithTranslations,  // 3rd param: availableLocales array
-                    { allowMissing: true }    // 4th param: polyglotOptions
+                    initialLocale,
+                    localesWithTranslations,
+                    { allowMissing: true }
                 );
-
-                DEBUG && console.log('🌍 KitchnTabsPrivateApp: i18nProvider created:', provider);
-                DEBUG && console.log('🌍 KitchnTabsPrivateApp: i18nProvider.getLocales result:', JSON.stringify(provider.getLocales ? provider.getLocales() : 'NO METHOD', null, 2));
 
                 setI18nProvider(provider);
             } catch (error) {
-                DEBUG && console.error('Failed to load translations:', error);
+                DEBUG && console.error('Failed to initialize i18nProvider:', error);
             }
         };
 
         loadTranslations();
-    }, [settings]);
+        // Only recreate if available locales or preferences change significantly.
+        // We exclude settings.locale from dependencies to let I18nReduxSync handle switches.
+    }, [translationsData, settings?.availableLocales, settings?.preferences]);
 
     // Load auto admin components
     const [dashAutoAdminComponents, setDashAutoAdminComponents] = React.useState<any>(null);
@@ -391,7 +356,7 @@ const KitchnTabsPrivateApp: React.FC<KitchnTabsPrivateAppProps> = ({
         : (manifestResources || []);
 
     // Show loading while essential components are loading
-    if (!translations || !i18nProvider || !dashAutoAdminComponents || !routePath) {
+    if (!i18nProvider || !dashAutoAdminComponents || !routePath) {
         return <GlobalSmallLoader message="Loading admin application..." />;
     }
 

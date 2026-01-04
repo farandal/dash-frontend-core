@@ -23,6 +23,8 @@ import successSound from './assets/success.mp3';
 /* @ts-ignore Eslint not capable to find path to resource */
 import infoSound from './assets/modalInfo.mp3';
 
+import { useTranslate } from 'react-admin';
+
 import IAppDialogProps from 'dash-dialog/src/IAppDialogProps';
 
 export interface IIcon extends PropsWithChildren {
@@ -65,6 +67,7 @@ const Icon:React.FC<IIcon> = (props) => {
 };
 
 const DASHModal: React.FC<IAppDialogProps> = (props) => {
+	const translate = useTranslate();
 	const {
 		variant = 'default',
 		onClose,
@@ -73,8 +76,8 @@ const DASHModal: React.FC<IAppDialogProps> = (props) => {
 		//onSubmit,
 		open = false,
 		//closeText = null,
-		confirmText = 'Continuar',
-		cancelText = 'Cancelar',
+		confirmText = translate('dash.action.continue'),
+		cancelText = translate('dash.action.cancel'),
         closeText = null,
 		title,
 		content = null,

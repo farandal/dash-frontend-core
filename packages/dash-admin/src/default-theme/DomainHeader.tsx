@@ -145,11 +145,13 @@ const DomainHeader = <U, A>({
                     
                     {/* Logo - separate from burger, doesn't toggle drawer */}
                    <Box className='dash-header-subheader-logo' sx={{ display: 'flex', alignItems: 'center', marginLeft: 1 }}>
-                        {typeof tenantLogos.squaredLogo === 'string' ? (
-                            <img height={32} width={32} src={tenantLogos.squaredLogo} alt="Tenant Logo" style={{ borderRadius: '4px' }} />
-                        ) : (
-                            tenantLogos.squaredLogo || squaredLogo
-                        )}
+                        {(() => {
+                            const logoToRender = tenantLogos.squaredLogo || squaredLogo;
+                            if (typeof logoToRender === 'string') {
+                                return <img height={32} width={32} src={logoToRender} alt="Logo" style={{ borderRadius: '4px', objectFit: 'contain' }} />;
+                            }
+                            return logoToRender;
+                        })()}
                     </Box>
                 </Box>
 

@@ -9,8 +9,8 @@ The KitchnTabs application uses react-admin's i18n system with JSON translation 
 ## File Locations
 
 ### Frontend Translation Files
-- `/apps/kitchntabs/src/i18n/es.json` - Spanish translations
-- `/apps/kitchntabs/src/i18n/en.json` - English translations
+- `/apps/kitchntabs/src/i18n/es.tsx` - Spanish translations
+- `/apps/kitchntabs/src/i18n/en.tsx` - English translations
 
 ### Backend Translation Files (Laravel)
 - `/dash-backend/lang/es/` - Spanish translations

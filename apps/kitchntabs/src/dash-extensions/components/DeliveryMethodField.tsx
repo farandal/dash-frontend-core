@@ -2,6 +2,7 @@ import { IDashAutoAdminCustomFieldComponent } from "dash-auto-admin";
 import React from "react";
 import { useRecordContext } from "react-admin";
 import { useFormContext } from "react-hook-form";
+import { useTranslate } from "react-admin";
 import { MenuItem, Select, FormControl, InputLabel } from "@mui/material";
 
 interface DeliveryMethodFieldProps extends IDashAutoAdminCustomFieldComponent {
@@ -18,19 +19,20 @@ const DeliveryMethodFieldEdit: React.FC<DeliveryMethodFieldProps> = ({
 }) => {
   const { register, watch, setValue } = useFormContext();
   const value = watch(attribute.attribute);
+  const translate = useTranslate();
 
   return (
     <FormControl fullWidth margin="normal">
-      <InputLabel>Delivery Method</InputLabel>
+      <InputLabel>{translate('Delivery Method')}</InputLabel>
       <Select
         value={value || ''}
-        label="Delivery Method"
+        label={translate('Delivery Method')}
         {...register(attribute.attribute)}
         onChange={(e) => setValue(attribute.attribute, e.target.value)}
       >
         {DELIVERY_METHODS.map((method) => (
           <MenuItem key={method.value} value={method.value}>
-            {method.label}
+            {translate(method.label)}
           </MenuItem>
         ))}
       </Select>
@@ -43,19 +45,20 @@ const DeliveryMethodFieldCreate: React.FC<DeliveryMethodFieldProps> = ({
 }) => {
   const { register, watch, setValue } = useFormContext();
   const value = watch(attribute.attribute);
+  const translate = useTranslate();
 
   return (
     <FormControl fullWidth margin="normal">
-      <InputLabel>Delivery Method</InputLabel>
+      <InputLabel>{translate('Delivery Method')}</InputLabel>
       <Select
         value={value || 'TABLE'}
-        label="Delivery Method"
+        label={translate('Delivery Method')}
         {...register(attribute.attribute)}
         onChange={(e) => setValue(attribute.attribute, e.target.value)}
       >
         {DELIVERY_METHODS.map((method) => (
           <MenuItem key={method.value} value={method.value}>
-            {method.label}
+            {translate(method.label)}
           </MenuItem>
         ))}
       </Select>
@@ -68,9 +71,10 @@ const DeliveryMethodFieldView: React.FC<DeliveryMethodFieldProps> = ({
 }) => {
   const record = useRecordContext();
   const value = record?.[attribute.attribute];
+  const translate = useTranslate();
   const label = DELIVERY_METHODS.find(m => m.value === value)?.label || value;
 
-  return <span>{label}</span>;
+  return <span>{translate(label)}</span>;
 };
 
 const DeliveryMethodFieldList: React.FC<DeliveryMethodFieldProps> = ({ 
@@ -78,9 +82,10 @@ const DeliveryMethodFieldList: React.FC<DeliveryMethodFieldProps> = ({
 }) => {
   const record = useRecordContext();
   const value = record?.[attribute.attribute];
+  const translate = useTranslate();
   const label = DELIVERY_METHODS.find(m => m.value === value)?.label || value;
 
-  return <span>{label}</span>;
+  return <span>{translate(label)}</span>;
 };
 
 const DeliveryMethodField = ({ 

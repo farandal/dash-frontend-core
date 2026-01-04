@@ -222,6 +222,12 @@ class DASHAuthenticationService {
                     // Use AuthPersistenceService to save auth data
                     AuthPersistenceService.saveAuth(auth);
 
+                    // Sync dash-user-locale with tenant's primary language or user preference
+                    const languageCode = auth.auth?.tenantSettings?.primary_language_code || auth.user?.preferences?.locale;
+                    if (languageCode) {
+                        localStorage.setItem('dash-user-locale', languageCode);
+                    }
+
                     // Set basic localStorage for react-admin compatibility
                     dashStorage.setItem('authenticated', 'true');
                     dashStorage.setItem('user', JSON.stringify(auth.user));
@@ -619,6 +625,12 @@ class DASHAuthenticationService {
 
                         // Update stored auth data
                         AuthPersistenceService.saveAuth(auth);
+
+                        // Sync dash-user-locale with fresh tenant/user preference
+                        const languageCode = auth.auth?.tenantSettings?.primary_language_code || auth.user?.preferences?.locale;
+                        if (languageCode) {
+                            localStorage.setItem('dash-user-locale', languageCode);
+                        }
 
                         // Update localStorage with fresh data
                         dashStorage.setItem('user', JSON.stringify(auth.user));

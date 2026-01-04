@@ -17,4 +17,6 @@ export default interface IDashAutoAdminFormOptions {
 	isDrawer?: boolean;
     /** */
     handleChange?: (e:any) => void;
+	/** */
+	locale?: string;
 }

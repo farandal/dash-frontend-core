@@ -1,3 +1,4 @@
+import { useTranslate } from 'react-admin';
 import IDashAutoAdminResourceConfig from '../interfaces/IDashAutoAdminResourceConfig';
 
 export interface IAutoTitle {
@@ -10,9 +11,12 @@ const DashAutoTitle: React.FC<IAutoTitle> = ({
 	record,
 	..._props
 }) => {
+	const translate = useTranslate();
+	const translatedLabel = translate(resourceConfig.label, { _: resourceConfig.label });
+
 	return (
 		<span>
-			Edit {record ? `"${record[resourceConfig.schema[0].attribute]}"` : ''}
+			{record ? `${translate('dash.action.edit')} "${record[resourceConfig.schema[0].attribute]}"` : translatedLabel}
 		</span>
 	);
 };

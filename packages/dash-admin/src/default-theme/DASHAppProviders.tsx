@@ -23,7 +23,7 @@ import { DashThemeProvider } from './DashThemeContext';
 import { ComponentRegistryProvider, IDashAutoAdminCustomFieldComponent } from 'dash-auto-admin';
 import { QueryClient } from '@tanstack/react-query';
 import { Persister } from '@tanstack/react-query-persist-client';
-import { I18nBridgeProvider } from '../contexts/I18nBridgeContext';
+import { I18nBridgeProvider, useI18nBridge } from '../contexts/I18nBridgeContext';
 
 export interface IDomainAppProviders<U, A, R> extends React.PropsWithChildren {
     wsMessagesManager?: typeof WSMessagesManager
@@ -32,11 +32,34 @@ export interface IDomainAppProviders<U, A, R> extends React.PropsWithChildren {
     store?: Store<IDASHAppState<U, A, R>>
     extendedThemeOptions?: any
     dashAutoAdminComponents?: Record<string, React.FC<IDashAutoAdminCustomFieldComponent>>
-    queryClient?: QueryClient
+    queryClient?: any
     /** Optional persister for localStorage query caching */
     queryPersister?: Persister
 }
 
+/**
+ * BridgedDASHModal
+ * 
+ * A wrapper for DASHModal that uses the I18nBridgeContext to provide
+ * translations when rendered outside of the React Admin context.
+ */
+const BridgedDASHModal = (props: any) => {
+    const { i18nProvider, locale } = useI18nBridge();
+    
+    const translate = React.useCallback((key: string, options?: any) => {
+        if (!i18nProvider) return key;
+        try {
+            return i18nProvider.translate(key, options);
+        } catch (e) {
+            return key;
+        }
+    }, [i18nProvider, locale]);
+
+    const confirmText = props.confirmText === undefined ? translate('dash.action.continue') : props.confirmText;
+    const cancelText = props.cancelText === undefined ? translate('dash.action.cancel') : props.cancelText;
+    
+    return <DASHModal {...props} confirmText={confirmText} cancelText={cancelText} />;
+};
 
 const DomainAppProviders = <U, A, R>({
     wsMessagesManager,
@@ -58,7 +81,7 @@ const DomainAppProviders = <U, A, R>({
                 <DashQueryClientContext queryClient={queryClient} persister={queryPersister}>
                 <ComponentRegistryProvider customComponents={dashAutoAdminComponents || {}}>
                     <DialogServiceProvider
-                        component={DASHModal}
+                        component={BridgedDASHModal}
                         componentProps={{ sound: DASHAppConstants.system.UI_SOUNDS }}
                     ><FCMProvider>
                         <LaravelEchoProvider manager={wsMessagesManager || WSMessagesManager}>

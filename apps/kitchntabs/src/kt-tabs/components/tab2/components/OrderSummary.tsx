@@ -14,6 +14,7 @@ import { OrderSummaryProps } from '../types';
 import { formatCurrencyWithTenant, getCurrencyFromAuth, getDefaultServiceFeeFromAuth, calculateServiceFee } from '../utils';
 import { useTabManager } from '../../contexts/TabManagerContext';
 import { useFormContext, useWatch } from 'react-hook-form';
+import { useTranslate } from 'react-admin';
 
 interface ExtendedOrderSummaryProps extends Omit<OrderSummaryProps, 'totalAmount'> {
     showDiscount?: boolean;
@@ -26,6 +27,7 @@ const OrderSummary: React.FC<ExtendedOrderSummaryProps> = ({
 }) => {
     const { totalAmount } = useTabManager();
     const formContext = useFormContext();
+    const translate = useTranslate();
     
     const [tenantCurrency, setTenantCurrency] = useState<any>(null);
     const [defaultServiceFeePercentage, setDefaultServiceFeePercentage] = useState<number>(0);
@@ -70,7 +72,7 @@ const OrderSummary: React.FC<ExtendedOrderSummaryProps> = ({
             <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                 <ReceiptIcon sx={{ mr: 1, color: 'primary.main' }} />
                 <Typography variant="h6" color="primary">
-                    Resumen de la Orden
+                    {translate('tab.order.summary')}
                 </Typography>
                 {tenantCurrency && (
                     <Chip 
@@ -87,7 +89,7 @@ const OrderSummary: React.FC<ExtendedOrderSummaryProps> = ({
             {/* Subtotal */}
             <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
                 <Typography variant="body1">
-                    Subtotal:
+                    {translate('tab.order.subtotal')}
                 </Typography>
                 <Typography variant="body1" fontWeight="medium">
                     {formatCurrencyWithTenant(subtotalBeforeDiscount, tenantCurrency)}
@@ -108,7 +110,7 @@ const OrderSummary: React.FC<ExtendedOrderSummaryProps> = ({
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                         <DiscountIcon color="success" fontSize="small" />
                         <Typography variant="body2" color="success.dark">
-                            Descuento
+                            {translate('tab.order.discount')}
                             {discountType === 'percentage' && ` (${discountValue}%)`}:
                         </Typography>
                     </Box>
@@ -122,7 +124,7 @@ const OrderSummary: React.FC<ExtendedOrderSummaryProps> = ({
             {enableServiceFee && showServiceFee && (
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
                     <Typography variant="body2">
-                        Servicio sugerido ({defaultServiceFeePercentage}%):
+                        {translate('tab.order.suggested_service', { percent: defaultServiceFeePercentage })}
                     </Typography>
                     <Typography variant="body2">
                         {formatCurrencyWithTenant(serviceFee, tenantCurrency)}
@@ -134,7 +136,7 @@ const OrderSummary: React.FC<ExtendedOrderSummaryProps> = ({
             <Divider sx={{ mb: 1 }} />
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <Typography variant="h6" color="primary">
-                    Total:
+                    {translate('tab.order.total')}
                 </Typography>
                 <Typography variant="h6" color="primary" fontWeight="bold">
                     {formatCurrencyWithTenant(finalTotal, tenantCurrency)}
@@ -145,7 +147,7 @@ const OrderSummary: React.FC<ExtendedOrderSummaryProps> = ({
             {tenantCurrency && (
                 <Box sx={{ mt: 2, pt: 1, borderTop: '1px solid', borderColor: 'divider' }}>
                     <Typography variant="caption" color="text.secondary">
-                        Moneda: {tenantCurrency.code} ({tenantCurrency.symbol})
+                        {translate('tab.order.currency', { code: tenantCurrency.code, symbol: tenantCurrency.symbol })}
                     </Typography>
                 </Box>
             )}

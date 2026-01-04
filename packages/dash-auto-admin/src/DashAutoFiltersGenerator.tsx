@@ -177,6 +177,7 @@ export const generateFilter = (
 
 const dashAutoFiltersGenerator = (
 	resourceConfig: IDashAutoAdminResourceConfig,
+	locale?: string,
 ): JSX.Element[] => {
 	const referenceFilters: IReferenceFilter[] =
 		resourceConfig?.referenceFilters || [];

@@ -288,11 +288,11 @@ const TabAgentToolbar: React.FC<ITabAgentToolbar> = (props) => {
 
     // Status indicator
     const getStatusInfo = () => {
-        if (isRecording) return { color: 'error', text: translate('voice.recording'), icon: '🔴' };
-        if (isVoiceProcessing) return { color: 'warning', text: translate('voice.processing_voice'), icon: '🟡' };
-        if (isImageProcessing) return { color: 'warning', text: translate('voice.processing_image'), icon: '🟡' };
-        if (isCapturing) return { color: 'info', text: countdown ? translate('voice.capturing_countdown', { countdown }) : translate('voice.capturing'), icon: '📷' };
-        if (isProcessingVoiceActions) return { color: 'info', text: translate('voice.applying'), icon: '⚙️' };
+        if (isRecording) return { color: 'error', text: translate('tab.agent.recording'), icon: '🔴' };
+        if (isVoiceProcessing) return { color: 'warning', text: translate('tab.agent.processing_voice'), icon: '🟡' };
+        if (isImageProcessing) return { color: 'warning', text: translate('tab.agent.processing_image'), icon: '🟡' };
+        if (isCapturing) return { color: 'info', text: countdown ? translate('tab.agent.capturing_countdown', { countdown }) : translate('tab.agent.capturing'), icon: '📷' };
+        if (isProcessingVoiceActions) return { color: 'info', text: translate('tab.agent.applying'), icon: '⚙️' };
         return { color: 'default', text: '✨', icon: '✨' };
     };
 
@@ -360,7 +360,7 @@ const TabAgentToolbar: React.FC<ITabAgentToolbar> = (props) => {
                                 textShadow: '0 0 10px rgba(0,0,0,0.8)'
                             }}
                         >
-                            {countdown > 0 ? 'Preparando captura...' : '¡Capturando!'}
+                            {countdown > 0 ? translate('tab.agent.capture_preparing') : translate('tab.agent.capturing')}
                         </Typography>
                     </Box>
                 )}
@@ -400,12 +400,12 @@ const TabAgentToolbar: React.FC<ITabAgentToolbar> = (props) => {
                     variant="contained"
                     startIcon={<CloseIcon />}
                 >
-                    Cancelar
+                    {translate('tab.agent.cancel')}
                 </Button>
                 <Box sx={{ flex: 1, textAlign: 'center' }}>
                     {countdown !== null && (
                         <Chip
-                            label={`Captura en ${countdown}s`}
+                            label={translate('tab.agent.capture_in', { seconds: countdown })}
                             color="warning"
                             sx={{ 
                                 fontSize: '1rem',
@@ -435,7 +435,7 @@ const TabAgentToolbar: React.FC<ITabAgentToolbar> = (props) => {
                 <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
                     <Typography variant="h6" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                         <AIIcon color="primary" />
-                        Detalles del Análisis IA
+                        {translate('tab.agent.drawer_title')}
                     </Typography>
                     <IconButton onClick={() => setShowAnalysisDrawer(false)} size="small">
                         <CloseIcon />
@@ -447,14 +447,14 @@ const TabAgentToolbar: React.FC<ITabAgentToolbar> = (props) => {
                 {/* Voice Section */}
                 <Typography variant="subtitle1" sx={{ mb: 1, display: 'flex', alignItems: 'center', gap: 1 }}>
                     <MicIcon fontSize="small" color="primary" />
-                    Agente de Voz
+                    {translate('tab.agent.voice_agent_title')}
                 </Typography>
                 
                 {lastTranscription ? (
                     <Card variant="outlined" sx={{ mb: 2 }}>
                         <CardContent>
                             <Typography variant="subtitle2" color="primary" sx={{ mb: 1 }}>
-                                Última transcripción:
+                                {translate('tab.agent.last_transcription')}
                             </Typography>
                             <Typography variant="body2" sx={{ 
                                 fontStyle: 'italic',
@@ -468,7 +468,7 @@ const TabAgentToolbar: React.FC<ITabAgentToolbar> = (props) => {
                     </Card>
                 ) : (
                     <Alert severity="info" sx={{ mb: 2 }}>
-                        No hay transcripciones de voz recientes.
+                        {translate('tab.agent.no_recent_transcriptions')}
                     </Alert>
                 )}
 
@@ -477,7 +477,7 @@ const TabAgentToolbar: React.FC<ITabAgentToolbar> = (props) => {
                         <CardContent>
                             <Typography variant="subtitle2" color="primary" sx={{ mb: 1, display: 'flex', alignItems: 'center', gap: 1 }}>
                                 <SpeedIcon fontSize="small" />
-                                Acciones de Voz ({voiceActions.length})
+                                {translate('tab.agent.voice_actions_title')} ({voiceActions.length})
                             </Typography>
                             <List dense>
                                 {voiceActions.map((action, index) => (
@@ -491,11 +491,11 @@ const TabAgentToolbar: React.FC<ITabAgentToolbar> = (props) => {
                                                         color={action.action === 'add' ? 'success' : action.action === 'remove' ? 'error' : 'default'}
                                                     />
                                                     <Typography variant="body2" fontWeight="medium">
-                                                        {action.product_names?.join(', ') || 'Sin nombre'}
+                                                        {action.product_names?.join(', ') || translate('tab.agent.no_name')}
                                                     </Typography>
                                                 </Box>
                                             }
-                                            secondary={`Cantidad: ${action.quantity || 1} | Confianza: ${((action.confidence || 0) * 100).toFixed(0)}%`}
+                                            secondary={`${translate('tab.agent.quantity')}: ${action.quantity || 1} | ${translate('tab.agent.confidence')}: ${((action.confidence || 0) * 100).toFixed(0)}%`}
                                         />
                                     </ListItem>
                                 ))}
@@ -509,12 +509,12 @@ const TabAgentToolbar: React.FC<ITabAgentToolbar> = (props) => {
                 {/* Image Section */}
                 <Typography variant="subtitle1" sx={{ mb: 1, display: 'flex', alignItems: 'center', gap: 1 }}>
                     <CameraIcon fontSize="small" color="primary" />
-                    Agente de Imagen
+                    {translate('tab.agent.image_agent_title')}
                 </Typography>
 
                 {!lastResult ? (
                     <Alert severity="info" sx={{ mb: 2 }}>
-                        No hay resultados de análisis de imagen disponibles.
+                        {translate('tab.agent.no_image_analysis')}
                     </Alert>
                 ) : (
                     <>
@@ -524,7 +524,7 @@ const TabAgentToolbar: React.FC<ITabAgentToolbar> = (props) => {
                                 <CardContent>
                                     <Typography variant="subtitle2" color="primary" sx={{ mb: 1, display: 'flex', alignItems: 'center', gap: 1 }}>
                                         <BrainIcon fontSize="small" />
-                                        Análisis Original (Vision API)
+                                        {translate('tab.agent.original_analysis')}
                                     </Typography>
                                     <Typography variant="body2" sx={{ 
                                         whiteSpace: 'pre-wrap', 
@@ -548,7 +548,7 @@ const TabAgentToolbar: React.FC<ITabAgentToolbar> = (props) => {
                                 <CardContent>
                                     <Typography variant="subtitle2" color="primary" sx={{ mb: 1, display: 'flex', alignItems: 'center', gap: 1 }}>
                                         <SpeedIcon fontSize="small" />
-                                        Acciones de Imagen ({imageActions.length})
+                                        {translate('tab.agent.image_actions_title')} ({imageActions.length})
                                     </Typography>
                                     <List dense>
                                         {imageActions.map((action, index) => (
@@ -562,11 +562,11 @@ const TabAgentToolbar: React.FC<ITabAgentToolbar> = (props) => {
                                                                 color={action.action === 'add' ? 'success' : action.action === 'remove' ? 'error' : 'default'}
                                                             />
                                                             <Typography variant="body2" fontWeight="medium">
-                                                                {action.product_names?.join(', ') || 'Sin nombre'}
+                                                                {action.product_names?.join(', ') || translate('tab.agent.no_name')}
                                                             </Typography>
                                                         </Box>
                                                     }
-                                                    secondary={`Cantidad: ${action.quantity || 1} | Confianza: ${((action.confidence || 0) * 100).toFixed(0)}%`}
+                                                    secondary={`${translate('tab.agent.quantity')}: ${action.quantity || 1} | ${translate('tab.agent.confidence')}: ${((action.confidence || 0) * 100).toFixed(0)}%`}
                                                 />
                                             </ListItem>
                                         ))}
@@ -581,10 +581,10 @@ const TabAgentToolbar: React.FC<ITabAgentToolbar> = (props) => {
                                 <CardContent>
                                     <Typography variant="subtitle2" color="primary" sx={{ mb: 1, display: 'flex', alignItems: 'center', gap: 1 }}>
                                         <SpeedIcon fontSize="small" />
-                                        Información de Procesamiento
+                                        {translate('tab.agent.processing_info')}
                                     </Typography>
                                     <Typography variant="caption" display="block">
-                                        Tiempo total: {lastResult.processing_time}ms
+                                        {translate('tab.agent.total_time')}: {lastResult.processing_time}ms
                                     </Typography>
                                 </CardContent>
                             </Card>
@@ -613,7 +613,7 @@ const TabAgentToolbar: React.FC<ITabAgentToolbar> = (props) => {
                 {/* Image Agent Buttons */}
                 {config.enableImage && (
                     <>
-                        <Tooltip title={`Capturar con cámara ${!isCameraSupported ? '(no disponible)' : ''}`}>
+                        <Tooltip title={translate('tab.agent.camera_button_tooltip') + (!isCameraSupported ? ` ${translate('tab.agent.unavailable')}` : '')}>
                             <span>
                                 <IconButton
                                     onClick={() => {
@@ -645,7 +645,7 @@ const TabAgentToolbar: React.FC<ITabAgentToolbar> = (props) => {
                             </span>
                         </Tooltip>
 
-                        <Tooltip title="Seleccionar imagen">
+                        <Tooltip title={translate('tab.agent.gallery_button_tooltip')}>
                             <span>
                                 <IconButton
                                     onClick={handleGalleryCapture}
@@ -664,7 +664,7 @@ const TabAgentToolbar: React.FC<ITabAgentToolbar> = (props) => {
 
                 {/* Voice Agent Button */}
                 {config.enableVoice && (
-                    <Tooltip title={isRecording ? 'Detener grabación' : 'Grabar comando de voz'}>
+                    <Tooltip title={isRecording ? translate('tab.agent.voice_stop_tooltip') : translate('tab.agent.voice_record_tooltip')}>
                         <span>
                             <IconButton
                                 onClick={handleVoiceToggle}
@@ -705,7 +705,7 @@ const TabAgentToolbar: React.FC<ITabAgentToolbar> = (props) => {
                 <Box sx={{ flex: 1 }} />
 
                 {/* Info Button - Opens Analysis Drawer */}
-                <Tooltip title="Ver detalles del análisis">
+                <Tooltip title={translate('tab.agent.analysis_tooltip')}>
                     <span>
                         <IconButton
                             size="small"
@@ -783,7 +783,7 @@ const TabAgentToolbar: React.FC<ITabAgentToolbar> = (props) => {
                     {lastTranscription && (
                         <Box sx={{ mb: 1 }}>
                             <Typography variant="caption" color="text.secondary">
-                                Última transcripción:
+                                {translate('tab.agent.last_transcription')}
                             </Typography>
                             <Typography variant="body2">
                                 "{lastTranscription}"
@@ -796,7 +796,7 @@ const TabAgentToolbar: React.FC<ITabAgentToolbar> = (props) => {
                         <Box sx={{ display: 'flex', gap: 1 }}>
                             {voiceActions.length > 0 && (
                                 <Chip
-                                    label={`${voiceActions.length} acción(es) de voz`}
+                                    label={translate('tab.agent.voice_actions_count', { count: voiceActions.length })}
                                     size="small"
                                     color="success"
                                     variant="outlined"
@@ -804,7 +804,7 @@ const TabAgentToolbar: React.FC<ITabAgentToolbar> = (props) => {
                             )}
                             {imageActions.length > 0 && (
                                 <Chip
-                                    label={`${imageActions.length} acción(es) de imagen`}
+                                    label={translate('tab.agent.image_actions_count', { count: imageActions.length })}
                                     size="small"
                                     color="info"
                                     variant="outlined"

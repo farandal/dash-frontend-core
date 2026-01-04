@@ -20,21 +20,21 @@ import ResourceTemplate from './templates/ResourceTemplate';
 import TenantSettingsFormatsProvider from './components/tenant/TenantSettingsContext';
 // @deprecated, dont use!
 export const GroupIcons = {
-  Administración: <Settings />,
-  'Logs y Notificaciones': <Notifications />,
-  'Recursos de sistema': <LocationCity />,
-  Usuarios: <Person />,
-  Cliente: <Person />,
+  'resource.group.admin': <Settings />,
+  'resource.group.logs': <Notifications />,
+  'resource.group.system': <LocationCity />,
+  'resource.group.users': <Person />,
+  'resource.group.client': <Person />,
 };
 const resources: IAppResourceConfig[] = [
   {
     roles: [constants.system.DASH_SYSTEM_ROLE],
     component: ResourceTemplate,
     model: 'system/permission',
-    label: 'Permisos',
+    label: 'resource.permission.name',
     schema: permissionSchema,
     icon: <Https />,
-    group: 'Recursos de sistema',
+    group: 'resource.group.system',
 
     menu: [
       {
@@ -59,9 +59,9 @@ const resources: IAppResourceConfig[] = [
     roles: [constants.system.DASH_SYSTEM_ROLE],
     component: ResourceTemplate,
     model: 'system/role',
-    label: 'roles',
+    label: 'resource.role.name',
     icon: <SystemUpdateAlt />,
-    group: 'Recursos de sistema',
+    group: 'resource.group.system',
     menu: [
       {
         title: 'Roles',
@@ -163,7 +163,7 @@ JSON.parse(constants.system.ENABLE_TENANT_IMPERSONATION) &&
     component: ResourceTemplate,
     trash: true,
     model: 'system/tenant',
-    label: 'Cliente',
+    label: 'resource.tenant.name',
     contextComponent: ({ resourceConfig,mode,children }) => {
         console.log("TenantSettingsFormatsProvider", resourceConfig, mode);
         debugger;
@@ -215,7 +215,7 @@ JSON.parse(constants.system.ENABLE_LOGS_AND_NOTIFICATIONS) &&
     roles: [constants.system.DASH_SYSTEM_ROLE],
     component: ResourceTemplate,
     model: 'system/notification',
-    label: 'Notifications',
+    label: 'resource.notification.name',
     schema: notificationSchema,
     //references: [{ reference: 'roles', target: 'role', schema: rolesSchema }]
     //references: [{ reference: 'roles', target: 'id', schema: roleSchema }],
@@ -251,10 +251,10 @@ JSON.parse(constants.system.ENABLE_LOGS_AND_NOTIFICATIONS) &&
     ],
     component: LogResource,
     model: 'system/log',
-    label: 'Logs',
+    label: 'resource.log.name',
     schema: logSchema,
     icon: <LockClock />,
-    group: 'Logs y Notificaciones',
+    group: 'resource.group.logs',
     menu: [
       {
         title: 'Logs',

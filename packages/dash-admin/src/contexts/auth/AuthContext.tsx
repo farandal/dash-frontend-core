@@ -454,8 +454,11 @@ export const AuthContextProvider: FC<IAuthContextProvider> = (props) => {
         console.log('Recreating MUI theme with tenant settings from auth context');
         lastTenantSettingsRef.current = tenantSettingsKey;
         recreateTheme(tenantSettings);
-       
-       
+        
+        // Sync tenant settings to Redux settings slice
+        dispatch(
+          DASH_REDUX_ACTIONS.updateThemeSettings(tenantSettings)
+        );
       }
 
       // Handle system values data (only if we have new data)

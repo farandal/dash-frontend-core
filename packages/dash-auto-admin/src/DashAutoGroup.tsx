@@ -3,8 +3,12 @@ import IDashAutoAdminResourceConfig from './interfaces/IDashAutoAdminResourceCon
 import { AttributeToField } from './mui/AttributeToField';
 import groupByTabs from './utils/groupByTabs';
 import { AutoAdminSettings } from '.';
+import IDashAutoAdminFormOptions from './interfaces/IDashAutoAdminFormOptions';
 
-const DashAutoGroup = (resourceConfig: IDashAutoAdminResourceConfig) => {
+const DashAutoGroup = (
+    resourceConfig: IDashAutoAdminResourceConfig,
+    options?: IDashAutoAdminFormOptions,
+) => {
     return (
         <SimpleShowLayout>
             {groupByTabs(resourceConfig.schema).map((groupOfAttributes, idx) => {
@@ -24,7 +28,8 @@ const DashAutoGroup = (resourceConfig: IDashAutoAdminResourceConfig) => {
                                     'view',
                                     resourceConfig,
                                     attribute,
-                                    i /*, options*/,
+                                    i,
+                                    options,
                                 ),
                             )}
                     </fieldset> : <></>

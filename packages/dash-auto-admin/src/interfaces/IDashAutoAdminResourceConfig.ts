@@ -10,7 +10,8 @@ import IDashAutoAdminCustomFieldComponent from './IDashAutoAdminCustomFieldCompo
 import { IDashAutoDrawerPublicProps } from '../DashAutoDrawer';
 import React, { FC, JSX, ReactNode, ReactPortal } from 'react';
 
-import { PaginationProps, Datagrid, ListProps, DatagridProps } from 'react-admin';
+import type { PaginationProps, ListProps, DatagridProps } from 'react-admin';
+import { Datagrid } from 'react-admin';
 
 import { IDashAutoLayoutRenderFunction } from '../DashAutoLayout';
 import { IDashAutoListActionsWrapper } from '../list/DashAutoListDefaultActionsWrapper';
@@ -27,6 +28,7 @@ The interface is used to configure the behavior of the auto-admin components, su
 */
 
 export default interface IDashAutoAdminResourceConfig {
+    locale?: string;
     redirect?: string;
     hidden?: boolean;
     resourceMenuDisabled?: boolean;
@@ -161,7 +163,7 @@ export default interface IDashAutoAdminResourceConfig {
 		children,
 	}: IDashAutoAdminCustomFieldComponent) => React.ReactElement;
 	/** DataGridProps extends Partial<DatagridProps> from React Admin. */
-	dataGridProps?: Partial<DatagridProps>;
+	dataGridProps?: any;
 	/** DataGridComponent replaces the default <AutoDataGrid/> wrapped in a <List/>; use the listComponent to replace the complete list view. */
 	dataGridComponent?: React.FC<IDashAutoAdminDataGrid>;
 	/** DataGridRootComponent replaces the root React Admin GridComponent. */
@@ -175,11 +177,11 @@ export default interface IDashAutoAdminResourceConfig {
 	 */
 	dataGridWrapper?: (props: any) => React.ReactElement;
 	/** ListProps extends Partial<ListProps> from React Admin. */
-	listProps?: Partial<ListProps>;
+	listProps?: any;
 	/** Pagination is an optional component that aims to replace the default Pagination component that extends React Admin PaginationProps. */
-	Pagination?: FC<PaginationProps>;
+	Pagination?: FC<any>;
 	/** */
-	paginationProps?: Partial<PaginationProps>;
+	paginationProps?: any;
 	/** FilterFormComponent replaces entirely the default <FilterForm> React-admin component. */
 	//FilterFormComponent?: FC<{ resourceConfig: IDashAutoAdminResourceConfig }>;
 	FilterFormComponent?:  React.ForwardRefExoticComponent<IToolbarFilters & React.RefAttributes<IToolbarFiltersHandler>>;

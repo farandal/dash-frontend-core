@@ -3,7 +3,7 @@ import { Resource } from 'react-admin';
 import { Route } from 'react-router';
 import { useListContext } from 'react-admin';
 import { useState } from 'react';
-import { useRefresh } from 'react-admin';
+import { useRefresh, useTranslate } from 'react-admin';
 import { useUnselectAll } from 'react-admin';
 
 import { Button } from 'react-admin';
@@ -19,7 +19,7 @@ import { useDashResource } from '../contexts/DashResourceContext';
 import { IResourceTemplate } from './ResourceTemplate';
 
 
-const TrashTemplate = (resourceConfig: IDashAutoAdminResourceConfig) => {	
+const TrashTemplate = (resourceConfig: IDashAutoAdminResourceConfig, locale?: string) => {	
     const TrashBulkActions = () => {
        
 		const axios = initAxios();
@@ -28,6 +28,7 @@ const TrashTemplate = (resourceConfig: IDashAutoAdminResourceConfig) => {
 		const { selectedIds } = useListContext();
 
 		const refresh = useRefresh();
+		const translate = useTranslate();
 		const unselectAll = useUnselectAll(trashResourceConfig.model);
 
 		// RestoreMany
@@ -66,8 +67,8 @@ const TrashTemplate = (resourceConfig: IDashAutoAdminResourceConfig) => {
 				unselectAll();
 				dialog({
 					variant: 'info',
-					title: 'Restauración Realizada',
-					content: 'Se han restaurado los elementos seleccionados',
+					title: translate('dash.resource.updated'),
+					content: translate('dash.resource.updated_message', { label: translate(trashResourceConfig.label, { _: trashResourceConfig.label }) }),
 					onConfirm: () => {},
 					onClose: () => {},
 				});
@@ -87,9 +88,8 @@ const TrashTemplate = (resourceConfig: IDashAutoAdminResourceConfig) => {
 				unselectAll();
 				dialog({
 					variant: 'info',
-					title: 'Eliminación permanente realizada',
-					content:
-						'Se han eliminado permanentemente los elementos seleccionados',
+					title: translate('dash.resource.updated'),
+					content: translate('dash.resource.updated_message', { label: translate(trashResourceConfig.label, { _: trashResourceConfig.label }) }),
 					onConfirm: () => {},
 					onClose: () => {},
 				});
@@ -101,21 +101,21 @@ const TrashTemplate = (resourceConfig: IDashAutoAdminResourceConfig) => {
 		return (
 			<>
         
-				<Button label='Restaurar' onClick={handleRestoreManyClick} />
+				<Button label={translate('dash.action.continue')} onClick={handleRestoreManyClick} />
 				<Confirm
 					isOpen={restoreConfirmDialogOpen}
 					loading={isRestoringLoading}
-					title='Restaurar'
-					content='¿Está seguro de restaurar los elementos seleccionados?'
+					title={translate('dash.action.continue')}
+					content={translate('dash.message.are_you_sure')}
 					onConfirm={handleRestoreManyConfirm}
 					onClose={handleRestoreManyDialogClose}
 				/>
-				<Button label='Eliminar' onClick={handleDeleteManyClick} />
+				<Button label={translate('ra.action.delete')} onClick={handleDeleteManyClick} />
 				<Confirm
 					isOpen={pemanentDeleteConfirmDialogOpen}
 					loading={isDeletingLoading}
-					title='Eliminar'
-					content='¿Está seguro de eliminar permanentemente los elementos seleccionados?'
+					title={translate('ra.action.delete')}
+					content={translate('dash.message.are_you_sure')}
 					onConfirm={handleDeleteManyConfirm}
 					onClose={handleDeleteManyDialogClose}
 				/>
@@ -148,7 +148,7 @@ const TrashTemplate = (resourceConfig: IDashAutoAdminResourceConfig) => {
 						group: trashResourceConfig.group,
 					}}
 					name={trashResourceConfig.model}
-					list={() => <><ResourceTemplateList resourceConfig={trashResourceConfig} /></>/*{
+					list={() => <><ResourceTemplateList resourceConfig={trashResourceConfig} locale={locale} /></>/*{
 						return (
 							<ApplicationLayout
 								//icon={trashResourceConfig.icon} 
