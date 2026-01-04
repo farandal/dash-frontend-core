@@ -1,6 +1,6 @@
 /* eslint-disable no-mixed-spaces-and-tabs */
 
-import { CustomRoutes, NotFound, ResourceContextProvider, ResourceProps, RestoreScrollPosition } from 'react-admin';
+import { CustomRoutes, NotFound, ResourceContextProvider, ResourceProps, RestoreScrollPosition, useLocaleState } from 'react-admin';
 import { Route, Routes, useParams } from 'react-router-dom';
 import { isValidElementType } from 'react-is';
 //import { Outlet } from 'react-router';
@@ -24,10 +24,12 @@ import { Resource } from '../react-admin-dash/Resource';
 //import {Resource} from "react-admin";
 export interface IResourceTemplate {
     resourceConfig: IDashAutoAdminResourceConfig;
+    locale?: string;
 }
 
-export const ResourceTemplate = (resourceConfig: IDashAutoAdminResourceConfig) => {
-
+export const ResourceTemplate = (resourceConfig: IDashAutoAdminResourceConfig & { locale?: string }) => {
+    // const [locale] = useLocaleState(); // Removed hook to allow function call
+    const locale = resourceConfig.locale;
     const debug = false;
 
     const _create = evalActionPermission(resourceConfig, resourceConfig?.create);
@@ -36,10 +38,6 @@ export const ResourceTemplate = (resourceConfig: IDashAutoAdminResourceConfig) =
     const _list = evalActionPermission(resourceConfig, resourceConfig?.list); // TODO: when view is false, the show routes still works.
     const _delete = evalActionPermission(resourceConfig, resourceConfig?.delete);
 
-    /*const _showNotifyAfterSubmit =
-    resourceConfig?.showNotifyAfterSubmit === false ? false : true;
-    const _showDialogAfterSubmit =
-    resourceConfig?.showDialogAfterSubmit === false ? false : true;*/
     const URL_PREFIX = DASHAdminSystemConstants.system.URL_PREFIX;
     const PATH = resourceConfig.model;
 
@@ -199,7 +197,7 @@ export const ResourceTemplate = (resourceConfig: IDashAutoAdminResourceConfig) =
             </CustomRoutes>
 
             {/* Automatic trash routes if trash is enabled */}
-            {resourceConfig.trash ? TrashTemplate(resourceConfig) : null}
+            {resourceConfig.trash ? TrashTemplate(resourceConfig, locale) : null}
 
             <Resource
                 options={{ label: resourceConfig.label, group: resourceConfig.group }}
@@ -211,27 +209,27 @@ export const ResourceTemplate = (resourceConfig: IDashAutoAdminResourceConfig) =
 
                 {..._list && {
                     list: () => {
-                        return <ResourceTemplateList resourceConfig={resourceConfig} />;
+                        return <ResourceTemplateList resourceConfig={resourceConfig} locale={locale} />;
                     }
                 }}
 
                 {..._create && {
                     create: () => {
-                        return <ResourceTemplateCreate resourceConfig={resourceConfig} />;
+                        return <ResourceTemplateCreate resourceConfig={resourceConfig} locale={locale} />;
                     }
                 }}
 
                 {..._view && {
                     show: () => {
 
-                        return <ResourceTemplateShow resourceConfig={resourceConfig} />;
+                        return <ResourceTemplateShow resourceConfig={resourceConfig} locale={locale} />;
                     }
                 }}
 
                 {..._edit && {
                     edit: () => {
 
-                        return <ResourceTemplateEdit resourceConfig={resourceConfig} />;
+                        return <ResourceTemplateEdit resourceConfig={resourceConfig} locale={locale} />;
                     }
                 }}
             />

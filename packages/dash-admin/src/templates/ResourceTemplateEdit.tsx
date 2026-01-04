@@ -1,5 +1,5 @@
 /* eslint-disable no-mixed-spaces-and-tabs */
-import { useNotify } from 'react-admin';
+import { useNotify, useTranslate } from 'react-admin';
 import { useRedirect } from 'react-admin';
 import { useRefresh } from 'react-admin';
 import { Toolbar } from 'react-admin';
@@ -19,8 +19,9 @@ import { parseAxiosError } from '../helpers/parseAxiosError';
 import { useDashResource } from '../contexts/DashResourceContext';
 
 export const ResourceTemplateEdit: FC<IResourceTemplate> = (props) => {
-	const {resourceConfig} = props;
+	const {resourceConfig, locale} = props;
 	const notify = useNotify();
+	const translate = useTranslate();
 
 	const redirect = useRedirect();
 
@@ -42,15 +43,17 @@ export const ResourceTemplateEdit: FC<IResourceTemplate> = (props) => {
 
 	const onEdit = (data: any) => {
 
+		const translatedLabel = translate(resourceConfig.label, { _: resourceConfig.label });
+
 		if (_showNotifyAfterSubmit) {
-			notify('Recurso Editado', { type: 'success' });
+			notify('dash.resource.edited', { type: 'success' });
 		}
 
 		if (_showDialogAfterSubmit) {
 			dialog({
 				variant: 'info',
-				title: 'Recurso Actualizado',
-				content: 'Se ha actualizado el recurso  ' + resourceConfig.label,
+				title: translate('dash.resource.updated'),
+				content: translate('dash.resource.updated_message', { label: translatedLabel }),
 				onConfirm: () => {
 					//resourceConfig.refreshAfter && refresh();
 					switch (resourceConfig.redirectAfterUpdate) {
@@ -103,9 +106,11 @@ export const ResourceTemplateEdit: FC<IResourceTemplate> = (props) => {
             return;
 		} 
        
+        const translatedLabel = translate(resourceConfig.label, { _: resourceConfig.label });
+
         dialog({
             variant: 'danger',
-            title: `${resourceConfig.label} Error`,
+            title: translate('dash.resource.error', { label: translatedLabel }),
             content: _errorParser(_error),
             onConfirm: () => {},
             onClose: () => {},
@@ -128,7 +133,7 @@ export const ResourceTemplateEdit: FC<IResourceTemplate> = (props) => {
 	);
    
 	return resourceConfig.editComponent ? (
-		<ResourceLayout resourceConfig={resourceConfig}>
+		<ResourceLayout resourceConfig={resourceConfig} locale={locale}>
 			<Edit>
 				<SimpleForm  reValidateMode="onBlur" toolbar={<ToolBar />}>
 					{resourceConfig.editComponent(resourceConfig)}
@@ -146,7 +151,7 @@ export const ResourceTemplateEdit: FC<IResourceTemplate> = (props) => {
 			)}
 		</ResourceLayout>
 	) : (
-		<ResourceLayout resourceConfig={resourceConfig}>
+		<ResourceLayout resourceConfig={resourceConfig} locale={locale}>
             
 			<DashAutoEdit
 				//toolbar={<ToolBar />}
@@ -154,6 +159,7 @@ export const ResourceTemplateEdit: FC<IResourceTemplate> = (props) => {
 				onSubmit={onEdit}
 				beforeSubmit={onBeforeSubmit}
 				resourceConfig={resourceConfig}
+				locale={locale}
 			/>
 			{resourceConfig.drawer && (
 				<DashAutoDrawer

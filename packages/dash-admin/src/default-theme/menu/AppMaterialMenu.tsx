@@ -88,10 +88,13 @@ const AppMaterialMenu: React.FC<IAppMenuExtended> = (props) => {
     // Get i18n from both React Admin context and Bridge context
     // The bridge context has the real i18nProvider from AdminContext
     const i18nProviderFromRA = useI18nProvider();
-    const { i18nProvider: bridgedI18nProvider } = useI18nBridge();
+    const { i18nProvider: bridgedI18nProvider, locale: bridgedLocale } = useI18nBridge();
     const bridgedLocales = useBridgedLocales();
     const raLocales = useLocales();
-    const [currentLocale] = useLocaleState();
+    const [raLocale] = useLocaleState();
+    
+    // Default to bridged locale if available, effectively overriding RA's state which might be stale/disconnected
+    const currentLocale = bridgedLocale || raLocale;
 
     // Use bridged locales if available, otherwise fall back to React Admin's
     const availableLocales = bridgedLocales.length > 0 ? bridgedLocales : raLocales;

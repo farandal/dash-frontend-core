@@ -26,6 +26,7 @@ export interface IDashAutoAdminForm {
 	mode: 'create' | 'edit';
 	children?: JSX.Element;
 	isDrawer?: boolean;
+	locale?: string;
 }
 
 //only to consume externally:

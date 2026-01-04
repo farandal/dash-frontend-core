@@ -28,7 +28,7 @@ import { IResourceTemplate } from './ResourceTemplate';
 
 export const ResourceTemplateShow: FC<IResourceTemplate> = (props) => {
 	//const {resourceConfig} = useDashResource()
-      const {resourceConfig} = props;
+      const {resourceConfig, locale} = props;
 
 	/*const ShowActions = ({ edit }) => (
     <TopToolbar>{edit !== false && <EditButton />}</TopToolbar>
@@ -38,7 +38,7 @@ export const ResourceTemplateShow: FC<IResourceTemplate> = (props) => {
   },[]);*/
 
 	return resourceConfig.showComponent ? (
-		<ResourceLayout resourceConfig={resourceConfig}>
+		<ResourceLayout resourceConfig={resourceConfig} locale={locale}>
 			{/* <Show
         title={
           <DashAutoTitle
@@ -50,7 +50,7 @@ export const ResourceTemplateShow: FC<IResourceTemplate> = (props) => {
       >
         {resourceConfig.showComponent(resourceConfig)}
       </Show>*/}
-			<DashAutoShow resourceConfig={resourceConfig} />
+			<DashAutoShow resourceConfig={resourceConfig} locale={locale} />
 
 			{resourceConfig.drawer && (
 				<DashAutoDrawer
@@ -62,7 +62,7 @@ export const ResourceTemplateShow: FC<IResourceTemplate> = (props) => {
 			)}
 		</ResourceLayout>
 	) : (
-		<ResourceLayout resourceConfig={resourceConfig}>
+		<ResourceLayout resourceConfig={resourceConfig} locale={locale}>
 			{/*<Show
         title={
           <DashAutoTitle
@@ -74,7 +74,7 @@ export const ResourceTemplateShow: FC<IResourceTemplate> = (props) => {
       >
         <DashAutoShow resourceConfig={resourceConfig} />
       </Show>*/}
-			<DashAutoShow resourceConfig={resourceConfig} />
+			<DashAutoShow resourceConfig={resourceConfig} locale={locale} />
 			{resourceConfig.drawer && (
 				<DashAutoDrawer
 					resourceConfig={resourceConfig}

@@ -7,6 +7,8 @@ export default interface IDashAutoAdminCustomFieldComponent {
     method: 'list' | 'view' | 'edit' | 'create';
     resourceConfig: IDashAutoAdminResourceConfig;
     record?: any;
+    locale?: string;
+    options?: any;
    
 	/** */
 	children?: JSX.Element;

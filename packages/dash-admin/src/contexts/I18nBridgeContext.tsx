@@ -16,27 +16,37 @@ import type { I18nProvider } from 'react-admin';
 
 interface I18nBridgeContextValue {
     i18nProvider: I18nProvider | null;
+    locale: string;
     setI18nProvider: (provider: I18nProvider) => void;
+    setLocale: (locale: string) => void;
 }
 
 const I18nBridgeContext = createContext<I18nBridgeContextValue>({
     i18nProvider: null,
+    locale: 'es', // Default to es
     setI18nProvider: () => {},
+    setLocale: () => {},
 });
 
 export const I18nBridgeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [i18nProvider, setI18nProviderState] = useState<I18nProvider | null>(null);
+    const [locale, setLocale] = useState<string>('es');
 
     const setI18nProvider = useCallback((provider: I18nProvider) => {
         console.log('🌐 I18nBridgeContext: Setting bridged i18nProvider', {
             hasGetLocales: !!provider?.getLocales,
             locales: provider?.getLocales?.(),
+            currentLocale: provider?.getLocale?.(),
         });
         setI18nProviderState(provider);
+        // Also sync initial locale from provider if possible
+        if (provider?.getLocale) {
+            setLocale(provider.getLocale());
+        }
     }, []);
 
     return (
-        <I18nBridgeContext.Provider value={{ i18nProvider, setI18nProvider }}>
+        <I18nBridgeContext.Provider value={{ i18nProvider, locale, setI18nProvider, setLocale }}>
             {children}
         </I18nBridgeContext.Provider>
     );
@@ -87,15 +97,7 @@ export const useBridgedChangeLocale = () => {
  * Hook to get current locale from the bridged provider
  */
 export const useBridgedLocale = () => {
-    const { i18nProvider } = useI18nBridge();
-    
-    const locale = React.useMemo(() => {
-        if (!i18nProvider?.getLocale) {
-            return 'en';
-        }
-        return i18nProvider.getLocale();
-    }, [i18nProvider]);
-
+    const { locale } = useI18nBridge();
     return locale;
 };
 

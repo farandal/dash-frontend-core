@@ -51,7 +51,7 @@ const SettingsReducer = (
 		case UPDATE_THEME_SETTINGS:
 			return {
 				...state,
-				...action,
+				...action.payload,
 			};
 
 		case DefaultThemeSettings.NAV_STYLE:

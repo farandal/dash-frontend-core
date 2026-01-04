@@ -26,6 +26,7 @@ import { dashStorage } from 'dash-utils';
 
 import { CustomRoutes, AdminUI, AdminContext, AdminUIProps } from 'react-admin';
 import I18nBridgeSetter from './contexts/I18nBridgeSetter';
+import I18nReduxSync from './contexts/I18nReduxSync';
 
 export interface IAppResourceGroupsIcon {
     [x: string]: JSX.Element;
@@ -52,7 +53,7 @@ export interface IDASHAdmin<U, A, R, C> {
     customThemeConfig?: any;
     customAuthRoutes?: React.ReactElement[];
     customRoutes?: React.ReactElement[];
-    customQueryClient?: QueryClient;
+    customQueryClient?: any;
     history?: any;
     customDict?: { [x: string]: string }
     customReplacements?: { [x: string]: string }
@@ -93,6 +94,7 @@ import { DASHAdminSystemConstants } from 'dash-constants';
 
 interface IAsyncResources extends AdminUIProps {
     resources: any;
+    locale: any;
     customProfilePage?: JSX.Element | false;
     customAuthRoutes?: React.ReactElement[];
     customRoutes?: React.ReactElement[];
@@ -109,6 +111,7 @@ const selectResources = (state: IDASHAppState<unknown, unknown, IDashAutoAdminRe
 const AsyncResources: React.FC<IAsyncResources> = React.memo((props) => {
     const {
         resources: res,
+        locale,
         customProfilePage,
         customAuthRoutes = [],
         customRoutes = [],
@@ -124,9 +127,11 @@ const AsyncResources: React.FC<IAsyncResources> = React.memo((props) => {
         return res.map((originalResource: any) => {
             const { component: InputResourceTemplate, ...restProps } = originalResource;
             const ResourceComponent = InputResourceTemplate || ResourceTemplate;
-            return ResourceComponent(restProps);
+            // Reverted to function call to allow react-admin introspection
+            // Passing locale explicitly as a prop
+            return ResourceComponent({ ...restProps, locale });
         });
-    }, [res]);
+    }, [res, locale]);
 
     // Memoize route functions
     const getCustomAuthRoutes = useCallback(() => customAuthRoutes, [customAuthRoutes]);
@@ -194,12 +199,16 @@ const AsyncResources: React.FC<IAsyncResources> = React.memo((props) => {
 
 }, (prevProps, nextProps) => {
     // Deep comparison for AsyncResources
-    const resourcesEqual = prevProps.resources.length === nextProps.resources.length &&
-        prevProps.resources.every((resource, index) =>
-            resource === nextProps.resources[index]
+    const prevRes = prevProps.resources || [];
+    const nextRes = nextProps.resources || [];
+    
+    const resourcesEqual = prevRes.length === nextRes.length &&
+        prevRes.every((resource, index) =>
+            resource === nextRes[index]
         );
 
     return resourcesEqual &&
+        prevProps.locale === nextProps.locale &&
         prevProps.layout === nextProps.layout &&
         prevProps.loginPage === nextProps.loginPage &&
         prevProps.notification === nextProps.notification &&
@@ -340,22 +349,6 @@ const DASHAdminApp: React.FC<IDASHAdmin<unknown, unknown, unknown, unknown>> = R
     } as any;
 
 
-    // Add this debug right before the AdminContext
-    const usedI18nProvider = customI18nProvider || i18nProvider;
-    console.log('🌐 DASHAdmin: i18nProvider debugging:', {
-        hasCustomI18nProvider: !!customI18nProvider,
-        customI18nProviderLocales: customI18nProvider?.getLocales?.() || 'N/A',
-        defaultI18nProviderLocales: i18nProvider?.getLocales?.() || 'N/A',
-        usedI18nProviderLocales: usedI18nProvider?.getLocales?.() || 'N/A',
-    });
-    console.log('AdminContext Configuration:', {
-        adminContextProps,
-        basename: basePath || '/',
-        currentWindowPath: window.location.pathname,
-        expectedRelativePath: window.location.pathname.replace(basePath || '', '') || '/',
-        resources: resources?.map(r => r.model)
-    });
-
     const adminUIProps = useMemo(() => ({
         ...(customNotification && { notification: customNotification }),
         layout: customLayout,
@@ -371,6 +364,7 @@ const DASHAdminApp: React.FC<IDASHAdmin<unknown, unknown, unknown, unknown>> = R
             replacements={memoizedReplacements}
         >
             <AdminContext {...adminContextProps}>
+                <I18nReduxSync locale={ReactLocale} />
                 <I18nBridgeSetter />
                 <AdminHook />
                 <AdminUI {...adminUIProps}>
@@ -386,11 +380,13 @@ const DASHAdminApp: React.FC<IDASHAdmin<unknown, unknown, unknown, unknown>> = R
             replacements={memoizedReplacements}
         >
             <AdminContext {...adminContextProps}>
+                <I18nReduxSync locale={ReactLocale} />
                 <I18nBridgeSetter />
                 <AdminHook />
                 <AsyncResources
                     {...adminUIProps}
                     resources={resources}
+                    locale={ReactLocale}
                     customProfilePage={customProfilePage}
                     customAuthRoutes={customAuthRoutes}
                     customRoutes={customRoutes}

@@ -1,5 +1,5 @@
 /* eslint-disable no-mixed-spaces-and-tabs */
-import { useNotify } from 'react-admin';
+import { useNotify, useTranslate } from 'react-admin';
 import { useRedirect } from 'react-admin';
 import { useRefresh } from 'react-admin';
 import { FC, useCallback, useMemo } from 'react';
@@ -27,8 +27,9 @@ const MemoizedDashAutoDrawer = React.memo(({
 
 const ResourceTemplateListComponent: FC<IResourceTemplate> = (props) => {
 	//const { resourceConfig } = useDashResource();
-      const {resourceConfig} = props;
+      const {resourceConfig, locale} = props;
 	const notify = useNotify();
+	const translate = useTranslate();
 	const redirect = useRedirect();
 	const dialog = useDialog();
 	const refresh = useRefresh();
@@ -46,15 +47,17 @@ const ResourceTemplateListComponent: FC<IResourceTemplate> = (props) => {
 
 	// Memoize the onSubmit function with proper dependencies
 	const onSubmit = useCallback((data: any) => {
+		const translatedLabel = translate(resourceConfig.label, { _: resourceConfig.label });
+
 		if (showNotifyAfterSubmit) {
-			notify('Recurso Actualizado', { type: 'success' });
+			notify('dash.resource.updated', { type: 'success' });
 		}
 
 		if (showDialogAfterSubmit) {
 			dialog({
 				variant: 'info',
-				title: 'Recurso Actualizado',
-				content: 'Se ha actualizado el recurso  ' + resourceConfig.label,
+				title: translate('dash.resource.updated'),
+				content: translate('dash.resource.updated_message', { label: translatedLabel }),
 				onConfirm: () => {
 					//resourceConfig.refreshAfter && refresh();
 					switch (resourceConfig.redirectAfterUpdate) {
@@ -104,7 +107,8 @@ const ResourceTemplateListComponent: FC<IResourceTemplate> = (props) => {
 		resourceConfig.label,
 		resourceConfig.model,
 		resourceConfig.redirectAfterUpdate,
-		resourceConfig.refreshAfter
+		resourceConfig.refreshAfter,
+		translate
 	]);
 	
 	// Memoize the onError function with proper dependencies
@@ -145,7 +149,7 @@ const ResourceTemplateListComponent: FC<IResourceTemplate> = (props) => {
 
 	// Remove mainContent useMemo and directly return the components
 	return (
-		<ResourceLayout resourceConfig={resourceConfig}>
+		<ResourceLayout resourceConfig={resourceConfig} locale={locale}>
 			<DashAutoList
 				resourceConfig={resourceConfig}
 				onSubmit={onSubmit}
@@ -164,18 +168,14 @@ const ResourceTemplateListComponent: FC<IResourceTemplate> = (props) => {
 export const ResourceTemplateList = React.memo(
 	ResourceTemplateListComponent,
 	(prevProps, nextProps) => {
-		// Since we're using useDashResource() hook, we need to compare the context
-		// But the main comparison should be based on the resourceConfig from context
-		// This is a bit tricky because we can't access the hook result in the comparison function
-		
-		// For now, we'll do a simple props comparison
-		// The real optimization comes from the memoized sub-components
-		const propsEqual = prevProps === nextProps;
+		const propsEqual = prevProps.resourceConfig === nextProps.resourceConfig && 
+						  prevProps.locale === nextProps.locale;
 		
 		if (!propsEqual) {
-			console.log('ResourceTemplateList re-rendering - props changed');
-		} else {
-			console.log('ResourceTemplateList skipping re-render - props equal');
+			console.log('ResourceTemplateList re-rendering - props changed', {
+				resourceConfigChanged: prevProps.resourceConfig !== nextProps.resourceConfig,
+				localeChanged: prevProps.locale !== nextProps.locale
+			});
 		}
 		
 		return propsEqual;
@@ -184,11 +184,14 @@ export const ResourceTemplateList = React.memo(
 
 // Modify the ResourceTemplateListWithConfig component
 export const ResourceTemplateListWithConfig = React.memo(({
-	resourceConfig
+	resourceConfig,
+	locale
 }: {
 	resourceConfig: any;
+	locale: string;
 }) => {
 	const notify = useNotify();
+	const translate = useTranslate();
 	const redirect = useRedirect();
 	const dialog = useDialog();
 	const refresh = useRefresh();
@@ -206,15 +209,17 @@ export const ResourceTemplateListWithConfig = React.memo(({
 
 	// Memoize the onSubmit function with proper dependencies
 	const onSubmit = useCallback((data: any) => {
+		const translatedLabel = translate(resourceConfig.label, { _: resourceConfig.label });
+
 		if (showNotifyAfterSubmit) {
-			notify('Recurso Actualizado', { type: 'success' });
+			notify('dash.resource.updated', { type: 'success' });
 		}
 
 		if (showDialogAfterSubmit) {
 			dialog({
 				variant: 'info',
-				title: 'Recurso Actualizado',
-				content: 'Se ha actualizado el recurso  ' + resourceConfig.label,
+				title: translate('dash.resource.updated'),
+				content: translate('dash.resource.updated_message', { label: translatedLabel }),
 				onConfirm: () => {
 					switch (resourceConfig.redirectAfterUpdate) {
 						case false:
@@ -263,7 +268,8 @@ export const ResourceTemplateListWithConfig = React.memo(({
 		resourceConfig.label,
 		resourceConfig.model,
 		resourceConfig.redirectAfterUpdate,
-		resourceConfig.refreshAfter
+		resourceConfig.refreshAfter,
+		translate
 	]);
 	
 	// Memoize the onError function with proper dependencies
@@ -303,9 +309,10 @@ export const ResourceTemplateListWithConfig = React.memo(({
 	);
 
 	return (
-		<ResourceLayout resourceConfig={resourceConfig}>
+		<ResourceLayout resourceConfig={resourceConfig} locale={locale}>
 			<DashAutoList
 				resourceConfig={resourceConfig}
+				locale={locale}
 				onSubmit={onSubmit}
 				onError={onError}
 				{...paginationProps}
@@ -317,18 +324,17 @@ export const ResourceTemplateListWithConfig = React.memo(({
 		</ResourceLayout>
 	);
 }, (prevProps, nextProps) => {
-	const resourceConfigEqual = prevProps.resourceConfig === nextProps.resourceConfig;
+	const propsEqual = prevProps.resourceConfig === nextProps.resourceConfig &&
+					  prevProps.locale === nextProps.locale;
 	
-	if (!resourceConfigEqual) {
-		console.log('ResourceTemplateListWithConfig re-rendering - resourceConfig changed:', {
-			prevModel: prevProps.resourceConfig?.model,
-			nextModel: nextProps.resourceConfig?.model
+	if (!propsEqual) {
+		console.log('ResourceTemplateListWithConfig re-rendering - props changed', {
+			resourceConfigChanged: prevProps.resourceConfig !== nextProps.resourceConfig,
+			localeChanged: prevProps.locale !== nextProps.locale
 		});
-	} else {
-		console.log('ResourceTemplateListWithConfig skipping re-render - resourceConfig equal');
 	}
 	
-	return resourceConfigEqual;
+	return propsEqual;
 });
 
 export default ResourceTemplateList;

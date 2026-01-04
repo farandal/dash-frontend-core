@@ -1,6 +1,6 @@
 /* eslint-disable no-mixed-spaces-and-tabs */
 
-import { useNotify } from 'react-admin';
+import { useNotify, useTranslate } from 'react-admin';
 import { useRedirect } from 'react-admin';
 import { useRefresh } from 'react-admin';
 import { FC } from 'react';
@@ -19,8 +19,9 @@ import { useDashResource } from '../contexts/DashResourceContext';
 
 export const ResourceTemplateCreate: FC<IResourceTemplate> = (props) => {
 	//const {resourceConfig} = useDashResource()};
-    const {resourceConfig} = props;
+    const {resourceConfig, locale} = props;
 	const notify = useNotify();
+	const translate = useTranslate();
 	const redirect = useRedirect();
 	const refresh = useRefresh();
 	//console.log("CREATE", resourceConfig)
@@ -38,16 +39,16 @@ export const ResourceTemplateCreate: FC<IResourceTemplate> = (props) => {
 
 	const onCreate = (data: any) => {
 
-
+		const translatedLabel = translate(resourceConfig.label, { _: resourceConfig.label });
 
 		if (_showNotifyAfterSubmit) {
-			notify('Recurso Creado', { type: 'success' });
+			notify('dash.resource.created', { type: 'success' });
 		}
 		if (_showDialogAfterSubmit) {
 			dialog({
 				variant: 'info',
-				title: 'Recurso Creado',
-				content: 'Se ha creado el recurso  ' + resourceConfig.label,
+				title: translate('dash.resource.created'),
+				content: translate('dash.resource.created_message', { label: translatedLabel }),
 				onConfirm: () => {
 					switch (resourceConfig?.redirectAfterCreate) {
 						case false:
@@ -101,9 +102,11 @@ export const ResourceTemplateCreate: FC<IResourceTemplate> = (props) => {
             return;
 		} 
 
+        const translatedLabel = translate(resourceConfig.label, { _: resourceConfig.label });
+
         dialog({
             variant: 'danger',
-            title: `${resourceConfig.label} Error`,
+            title: translate('dash.resource.error', { label: translatedLabel }),
             content: `${parseAxiosError(_error)}`,
             onConfirm: () => {},
             onClose: () => {},
@@ -126,7 +129,7 @@ export const ResourceTemplateCreate: FC<IResourceTemplate> = (props) => {
 	);*/
 
 	return resourceConfig.createComponent ? (
-		<ResourceLayout resourceConfig={resourceConfig}>
+		<ResourceLayout resourceConfig={resourceConfig} locale={locale}>
 			<Create>
 				<SimpleForm>
 					{resourceConfig.createComponent(resourceConfig)}
@@ -142,13 +145,14 @@ export const ResourceTemplateCreate: FC<IResourceTemplate> = (props) => {
 			)}
 		</ResourceLayout>
 	) : (
-		<ResourceLayout resourceConfig={resourceConfig}>
+		<ResourceLayout resourceConfig={resourceConfig} locale={locale}>
 			<DashAutoCreate
 				//toolbar={<ToolBar />}
 				onError={onError}
 				onSubmit={onCreate}
 				beforeSubmit={onBeforeSubmit}
 				resourceConfig={resourceConfig}
+				locale={locale}
 			/>
 			{resourceConfig.drawer && (
 				<DashAutoDrawer

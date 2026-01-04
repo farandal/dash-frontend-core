@@ -17,7 +17,8 @@ import {
     Toolbar,
     useNotify,
     useRedirect,
-    useRefresh
+    useRefresh,
+    useTranslate
 } from 'react-admin';
 import {
     DashAutoCreate,
@@ -35,6 +36,7 @@ import {
 
 import { DashResourceProvider } from '../contexts/DashResourceContext';
 import DashAutoAdminSaveButton from 'dash-auto-admin/src/DashAutoAdminSaveButton';
+import { parseAxiosError } from '../helpers/parseAxiosError';
 // TODO: The following dependencies shpuld not depend on @dashboard
 
 export const ResourceTemplateFull = (
@@ -50,34 +52,6 @@ export const ResourceTemplateFull = (
         resourceConfig?.showNotifyAfterSubmit === false ? false : true;
     const _showDialogAfterSubmit =
         resourceConfig?.showDialogAfterSubmit === false ? false : true;
-
-    const showError = (error: any) => {
-        if (error && error.nativeEvent) return;
-
-        let _error: any = error;
-        try {
-            const _parsedError =
-                typeof error === 'string' ? JSON.parse(error) : error;
-            if (typeof _parsedError === 'object') {
-                _error = <>{JSON.stringify(_parsedError)}</>;
-            }
-        } catch (e) {
-            console.error(e);
-        }
-
-        toast.error(<>{_error}</>, {
-            position: 'bottom-center',
-            //autoClose: 10000,
-            autoClose: false,
-            hideProgressBar: true,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            //progress: undefined,
-            /*onClose: () => {
-            }*/
-        });
-    };
 
     return (
         <DashResourceProvider resourceConfig={resourceConfig}>
@@ -155,22 +129,25 @@ export const ResourceTemplateFull = (
                     const redirect = useRedirect();
                     const dialog = useDialog();
                     const refresh = useRefresh();
+                    const translate = useTranslate();
 
                     useEffect(() => {
                         console.log('LIST', resourceConfig);
                     }, []);
 
                     const onSubmit = (data: any) => {
+
+                        const translatedLabel = translate(resourceConfig.label, { _: resourceConfig.label });
+
                         if (_showNotifyAfterSubmit) {
-                            notify('Recurso Actualizado', { type: 'success' });
+                            notify('dash.resource.updated', { type: 'success' });
                         }
 
                         if (_showDialogAfterSubmit) {
                             dialog({
                                 variant: 'info',
-                                title: 'Recurso Actualizado',
-                                content:
-                                    'Se ha actualizado el recurso  ' + resourceConfig.label,
+                                title: translate('dash.resource.updated'),
+                                content: translate('dash.resource.updated_message', { label: translatedLabel }),
                                 onConfirm: () => {
                                     //resourceConfig.refreshAfter && refresh();
                                     switch (resourceConfig.redirectAfterUpdate) {
@@ -215,8 +192,15 @@ export const ResourceTemplateFull = (
                             refresh();
                         }
                     }; const onError = (error: any) => {
-                        //notify(`Error!`);
-                        showError(error);
+                        const translatedLabel = translate(resourceConfig.label, { _: resourceConfig.label });
+                        dialog({
+                            variant: 'danger',
+                            title: translate('dash.resource.error', { label: translatedLabel }),
+                            content: `${parseAxiosError(error)}`,
+                            onConfirm: () => {},
+                            onClose: () => {},
+                        });
+                        //showError(error);
                     };
 
                     return (
@@ -257,18 +241,21 @@ export const ResourceTemplateFull = (
                         const redirect = useRedirect();
                         const dialog = useDialog();
                         const refresh = useRefresh();
+                        const translate = useTranslate();
                         //const location = useLocation();
 
                         const onEdit = (data: any) => {
+
+                            const translatedLabel = translate(resourceConfig.label, { _: resourceConfig.label });
+
                             if (_showNotifyAfterSubmit) {
-                                notify('Recurso Editado');
+                                notify('dash.resource.edited', { type: 'success' });
                             }
                             if (_showDialogAfterSubmit) {
                                 dialog({
                                     variant: 'info',
-                                    title: 'Recurso Actualizado',
-                                    content:
-                                        'Se ha actualizado el recurso  ' + resourceConfig.label,
+                                    title: translate('dash.resource.updated'),
+                                    content: translate('dash.resource.updated_message', { label: translatedLabel }),
                                     onConfirm: () => {
                                         //resourceConfig.refreshAfter && refresh();
                                         switch (resourceConfig.redirectAfterUpdate) {
@@ -316,8 +303,14 @@ export const ResourceTemplateFull = (
                                 refresh();
                             }
                         }; const onError = (error: any) => {
-                            //notify(`Error!`);
-                            showError(error);
+                            const translatedLabel = translate(resourceConfig.label, { _: resourceConfig.label });
+                            dialog({
+                                variant: 'danger',
+                                title: translate('dash.resource.error', { label: translatedLabel }),
+                                content: `${parseAxiosError(error)}`,
+                                onConfirm: () => {},
+                                onClose: () => {},
+                            });
                         };
 
                         const onBeforeSubmit = (values: any) => {
@@ -390,18 +383,21 @@ export const ResourceTemplateFull = (
                         const notify = useNotify();
                         const redirect = useRedirect();
                         const refresh = useRefresh();
-                        //console.log("CREATE", resourceConfig)
                         const dialog = useDialog();
+                        const translate = useTranslate();
 
                         const onCreate = (data: any) => {
+
+                            const translatedLabel = translate(resourceConfig.label, { _: resourceConfig.label });
+
                             if (_showNotifyAfterSubmit) {
-                                notify('Recurso Creado');
+                                notify('dash.resource.created', { type: 'success' });
                             }
                             if (_showDialogAfterSubmit) {
                                 dialog({
                                     variant: 'info',
-                                    title: 'Recurso Creado',
-                                    content: 'Se ha creado el recurso  ' + resourceConfig.label,
+                                    title: translate('dash.resource.created'),
+                                    content: translate('dash.resource.created_message', { label: translatedLabel }),
                                     onConfirm: () => {
                                         switch (resourceConfig?.redirectAfterCreate) {
                                             case false:
@@ -450,9 +446,14 @@ export const ResourceTemplateFull = (
                         }; 
                         
                         const onError = (error: any) => {
-                            //notify(`Error!`);
-                           
-                            showError(error);
+                            const translatedLabel = translate(resourceConfig.label, { _: resourceConfig.label });
+                            dialog({
+                                variant: 'danger',
+                                title: translate('dash.resource.error', { label: translatedLabel }),
+                                content: `${parseAxiosError(error)}`,
+                                onConfirm: () => {},
+                                onClose: () => {},
+                            });
                         };
 
                         const onBeforeSubmit = (values: any) => {

@@ -20,6 +20,7 @@ const DashAutoShow: React.FC<IAutoShow> = ({
 	resourceConfig,
 	id,
 	isDrawer = false,
+	locale,
 	...props
 }) => {
 
@@ -92,7 +93,7 @@ const DashAutoShow: React.FC<IAutoShow> = ({
 					),
 				}}
 			>
-				{DashAutoTabs(resourceConfig)}
+				{DashAutoTabs(resourceConfig, { mode: 'view', locale })}
 				{resourceConfig.references &&
 					resourceConfig.references.map((reference) =>
 						DashAutoReferenceTab(reference),
@@ -119,7 +120,7 @@ const DashAutoShow: React.FC<IAutoShow> = ({
 					),
 				}}
 			>
-				{AutoGroup(resourceConfig)}
+				{AutoGroup(resourceConfig, { mode: 'view', locale })}
 				{resourceConfig.references &&
 					resourceConfig.references.map((reference) =>
 						DashAutoReferenceTab(reference),
@@ -146,7 +147,7 @@ const DashAutoShow: React.FC<IAutoShow> = ({
 					),
 				}}
 			>
-				{AutoLayout(resourceConfig)}
+				{AutoLayout(resourceConfig, { mode: 'view', locale })}
 				{resourceConfig.references &&
 					resourceConfig.references.map((reference) =>
 						DashAutoReferenceTab(reference),
@@ -172,7 +173,7 @@ const DashAutoShow: React.FC<IAutoShow> = ({
 				),
 			}}
 		>
-			{DashAutoTabs(resourceConfig)}
+			{DashAutoTabs(resourceConfig, { mode: 'view', locale })}
 			{resourceConfig.references &&
 				resourceConfig.references.map((reference) =>
 					DashAutoReferenceTab(reference),

@@ -17,6 +17,7 @@ const DashAutoCreate: React.FC<IAutoForm> = ({
 	onError,
 	beforeSubmit,
 	isDrawer /*, showActions, */,
+	locale,
 }) => {
 	const CreateActions: React.FC = ({ ...props }) => {
 		const _showListwbutton: boolean =
@@ -108,6 +109,7 @@ return  <Toolbar {...props}>
 				onError={onError}
 				beforeSubmit={beforeSubmit}
 				isDrawer={isDrawer}
+				locale={locale}
 			/>
             
 		</Create>

@@ -22,6 +22,7 @@ export interface IDashAutoList {
 	dataGridProps?: any;
 	children?: any;
 	Pagination?: FC<PaginationProps>;
+	locale?: string;
 	//stickyHeader?: boolean;
 }
 
@@ -71,6 +72,7 @@ const DashAutoList: React.FC<IDashAutoList> = ({
 	Pagination,
 	children,
 	dataGridProps,
+	locale,
 	...listProps
 }) => {
 	const { exporter } = resourceConfig;
@@ -103,7 +105,7 @@ const DashAutoList: React.FC<IDashAutoList> = ({
 		timestamp: new Date().toISOString()
 	});
 
-	const autoFilters = autoFiltersGenerator(resourceConfig);
+	const autoFilters = autoFiltersGenerator(resourceConfig, locale);
 
 	// DEBUG: Log generated filters
 	console.log('✅ DashAutoList DEBUG - Filters generated (fieldProps standardized):', {
@@ -224,6 +226,7 @@ const DashAutoList: React.FC<IDashAutoList> = ({
 				<DashAutoListDataGridWrapper
 					resourceConfig={resourceConfig}
 					dataGridProps={_dataGridProps}
+					locale={locale}
 				/>
 			)}
             </ContextComponent>

@@ -18,6 +18,7 @@ const DashAutoEdit: React.FC<IAutoForm> = ({
 	toolbar,
 	actions,
 	isDrawer = false,
+	locale,
 }) => {
 	const EditActions: React.FC = ({ ...props }) => {
 
@@ -98,7 +99,7 @@ const DashAutoEdit: React.FC<IAutoForm> = ({
 				onError={onError}
 				{...(beforeSubmit && { beforeSubmit: beforeSubmit })}
 				onCancel={onCancel}
-               
+				locale={locale}
 			/>
       
 		</Edit>

@@ -82,3 +82,10 @@ export function setSidebarProps(width, expandedWidth) {
 		});
 	};
 }
+
+export function updateThemeSettings(settings) {
+	return {
+		type: UPDATE_THEME_SETTINGS,
+		payload: settings,
+	};
+}

@@ -20,12 +20,15 @@ import isFC from '../utils/isFC';
  */
 
 
-const UserAction: React.FC<IDashAutoAdminCustomFieldComponent> = ({ method, attribute, resourceConfig, record }) => {
+const UserAction: React.FC<IDashAutoAdminCustomFieldComponent> = (props) => {
+    const { method, attribute, resourceConfig, record, options } = props;
     const DEBUG = false;
    
    DEBUG &&  console.log('🔧 UserAction - component:', attribute.component);
    DEBUG &&  console.log('🔧 UserAction - isFC(attribute.component):', isFC(attribute.component));
    DEBUG &&  console.log('🔧 UserAction - method:', method);
+   
+    const locale = options?.locale || (props as any).locale;
     
     if (attribute.component && isFC(attribute.component)) {
        DEBUG &&  console.log('🔧 UserAction - Rendering custom component');
@@ -38,7 +41,8 @@ const UserAction: React.FC<IDashAutoAdminCustomFieldComponent> = ({ method, attr
                 resourceConfig={resourceConfig}
                 {...record && { record: record }}
                 {...attribute?.componentProps}
-
+                locale={locale}
+                options={options}
             />
     }
 

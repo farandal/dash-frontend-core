@@ -42,6 +42,7 @@ export const AttributeToField = (
 	resource?: string,
 	record?: IRecord,
 ) => {
+	// Locale is available in options?.locale
 	// Get the component registry
 	const { components } = useComponentRegistry();
 	
@@ -208,6 +209,7 @@ export const AttributeToField = (
 								method={method}
 								attribute={input}
                                 resourceConfig={resourceConfig}
+                                options={options}
 							/>
 						</ComponentWrapper>
                        
