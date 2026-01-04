@@ -18,7 +18,7 @@ const tabSchema: IDashAutoAdminAttribute[] = [
     // Show view - Tab summary
      {
         attribute: 'ai_toolbar',
-        tab: 'Productos',
+        tab: 'tab.tab.productos',
         label: '',
         type: String,
         inCreate: true,
@@ -38,9 +38,9 @@ const tabSchema: IDashAutoAdminAttribute[] = [
         }
     },
     {
-        tab: 'Comanda',
+        tab: 'tab.tab.comanda',
         attribute: 'actions',
-        label: 'Acciones',
+        label: 'tab.attribute.actions',
         type: String,
         custom: true,
         inCreate: false,
@@ -54,9 +54,9 @@ const tabSchema: IDashAutoAdminAttribute[] = [
     },
    
       {
-        tab: 'Comanda',
+        tab: 'tab.tab.comanda',
         attribute: 'status',
-        label: 'Status',
+        label: 'tab.attribute.status',
         type: String,
         custom: true,
         inCreate: false,
@@ -69,7 +69,7 @@ const tabSchema: IDashAutoAdminAttribute[] = [
    
     {
         attribute: 'product_search',
-        tab: 'Productos',
+        tab: 'tab.tab.productos',
         label: '',
         type: String,
         inCreate: true,
@@ -84,7 +84,7 @@ const tabSchema: IDashAutoAdminAttribute[] = [
     },
     {
     attribute: 'category_filter',
-    tab: 'Productos',
+    tab: 'tab.tab.productos',
     label: '',
     type: String,
     inCreate: true,
@@ -97,14 +97,13 @@ const tabSchema: IDashAutoAdminAttribute[] = [
         config: {
             categoryResource: 'ecommerce/category',
             showAllCategory: true,
-            allCategoryLabel: 'Todos',
         }
     }
 },
 {
         attribute: 'products',
-        tab: 'Productos',
-        label: 'Productos',
+        tab: 'tab.tab.productos',
+        label: 'tab.attribute.productos',
         type: Array,
        
         inEdit: true,
@@ -151,8 +150,8 @@ const tabSchema: IDashAutoAdminAttribute[] = [
   
     {
         attribute: 'products',
-        tab: 'Comanda',
-        label: 'Tab',
+        tab: 'tab.tab.comanda',
+        label: 'tab.attribute.tab',
         type: Array,
         inCreate: true,
         inList: false,
@@ -165,9 +164,9 @@ const tabSchema: IDashAutoAdminAttribute[] = [
 
 
      {
-        tab: 'Comanda',
+        tab: 'tab.tab.comanda',
         attribute: 'delivery_method',
-        label: 'Método de Entrega',
+        label: 'tab.attribute.delivery_method',
         type: String,
         custom: true,
         inCreate: true,
@@ -177,9 +176,9 @@ const tabSchema: IDashAutoAdminAttribute[] = [
         component: DeliveryMethodField,
     },
     {
-        tab: 'Comanda',
+        tab: 'tab.tab.comanda',
         attribute: 'table_number',
-        label: 'Número de Mesa',
+        label: 'tab.attribute.table_number',
         type: String,
         custom: true,
         inCreate: true,
@@ -193,17 +192,17 @@ const tabSchema: IDashAutoAdminAttribute[] = [
 
 
       {
-        tab: 'Comanda',
+        tab: 'tab.tab.comanda',
         attribute: 'note',
-        label: 'Notas',
+        label: 'tab.attribute.note',
         type: String,
         inList: false
     },
 
      {
         attribute: 'order_summary',
-        tab: 'Productos',
-        label: 'Resumen de la Orden',
+        tab: 'tab.tab.productos',
+        label: 'tab.attribute.order_summary',
         type: String,
         inCreate: false,
         inEdit: false,
@@ -216,8 +215,8 @@ const tabSchema: IDashAutoAdminAttribute[] = [
     
     {
         attribute: 'order.total_amount',
-        tab: 'Productos',
-        label: 'Total',
+        tab: 'tab.tab.productos',
+        label: 'tab.attribute.total',
         type: String,
         inCreate: false,
         inEdit: false,
@@ -227,8 +226,8 @@ const tabSchema: IDashAutoAdminAttribute[] = [
     },
     {
         attribute: 'order.is_paid',
-        tab: 'Productos',
-        label: 'Pago',
+        tab: 'tab.tab.productos',
+        label: 'tab.attribute.is_paid',
         type: Boolean,
         inCreate: false,
         inEdit: false,
@@ -236,9 +235,9 @@ const tabSchema: IDashAutoAdminAttribute[] = [
     },
   
     {
-        tab: 'Marketplace',
+        tab: 'tab.tab.marketplace',
         attribute: 'order',
-        label: 'Status',
+        label: 'tab.attribute.marketplace_status',
         type: String,
         custom: true,
         inCreate: false,
@@ -248,9 +247,9 @@ const tabSchema: IDashAutoAdminAttribute[] = [
     },
    
     {
-        tab: 'Datos',
+        tab: 'tab.tab.datos',
         attribute: 'date_created',
-        label: 'creación',
+        label: 'tab.attribute.created',
         type: Date,
         fieldProps: {showTime:true},
         inCreate: false,
@@ -259,16 +258,16 @@ const tabSchema: IDashAutoAdminAttribute[] = [
         inShow: false,
     },
     {
-        tab: 'Datos',
+        tab: 'tab.tab.datos',
         attribute: 'date_confirmed',
-        label: 'ingresada',
+        label: 'tab.attribute.ingresada',
         type: Date,
         fieldProps: {showTime:true},
         inCreate: false,
         inEdit: false,
         inShow: false,
     },
-    
+  
 
 
 ];

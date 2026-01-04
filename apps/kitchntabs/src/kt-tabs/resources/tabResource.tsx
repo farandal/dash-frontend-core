@@ -170,10 +170,10 @@ const resources: IDashAutoAdminResourceConfig[] = [
            return (
                <Grid container spacing={2} >
                       <Grid size={{ xs: 12}}>
-                       {render("Productos")}
+                       {render("tab.tab.productos")}
                    </Grid>
                      <Grid size={{ xs: 12}}>
-                       {render("Comanda")}
+                       {render("tab.tab.comanda")}
                    </Grid>
                </Grid>
            )
@@ -183,10 +183,10 @@ const resources: IDashAutoAdminResourceConfig[] = [
                <Grid container spacing={2} /*direction={{ xs: 'column-reverse', sm: 'row' }}*/>
                 
                   <Grid size={{ xs: 12, sm: 6 }}>
-                       {render("Productos")}
+                       {render("tab.tab.productos")}
                    </Grid>
                      <Grid size={{ xs: 12, sm: 6 }}>
-                       {render("Comanda")}
+                       {render("tab.tab.comanda")}
                    </Grid>
                  
                  
@@ -198,10 +198,10 @@ const resources: IDashAutoAdminResourceConfig[] = [
                <Grid container spacing={2} /*direction={{ xs: 'column-reverse', sm: 'row' }}*/>
                 
                  <Grid size={{ xs: 12, sm: 6 }}>
-                       {render("Productos")}
+                       {render("tab.tab.productos")}
                    </Grid>
                     <Grid size={{ xs: 12, sm: 6 }}>
-                       {render("Comanda")}
+                       {render("tab.tab.comanda")}
                    </Grid>
                   
                   
@@ -222,18 +222,18 @@ const resources: IDashAutoAdminResourceConfig[] = [
         icon: <Kitchen />,
         //listComponent: (resourceConfig) => <Graphs/>,
         menu: [
-        /*    {
-                title: "Comandas activas",
+            {
+                title: "tab.resource.menu.kitchen_active",
                 redirect: "/tab/kitchentab",
-            },*/
+            },
         ],
-        /*mainAction: {
-            title: "Crear tab",
+        mainAction: {
+            title: "tab.resource.action.create",
             fn: "redirect",
             // type: "ghost",
             mode: "create",
             redirect: "create",
-        },*/
+        },
         mutationMode: "pessimistic",
         drawer: true,
         drawerOptions: {
@@ -259,7 +259,7 @@ const resources: IDashAutoAdminResourceConfig[] = [
         /*referenceFilters: [
             {
                 id: 'status_id',
-                label: 'Estado',
+                label: 'tab.attribute.status',
                 source: 'status',
                 alwaysOn: true,
                 reference: [

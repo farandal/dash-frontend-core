@@ -54,10 +54,30 @@
     "tab.resource.kitchen": "Kitchen",
     "tab.resource.menu.list": "Listado",
     "tab.resource.action.create": "⊕ Crear tab",
+    "tab.resource.menu.kitchen_active": "Comandas activas",
     "tab.resource.filter.status": "Estado",
     "tab.resource.layout.products": "Productos",
     "tab.resource.layout.order": "Comanda",
-        "tab.modal.cancel": "Cancelar Tab",
+    "tab.modal.cancel": "Cancelar Tab",
+
+    "tab.attribute.actions": "Acciones",
+    "tab.attribute.status": "Estado",
+    "tab.attribute.productos": "Productos",
+    "tab.attribute.tab": "Tab",
+    "tab.attribute.delivery_method": "Método de Entrega",
+    "tab.attribute.table_number": "Número de Mesa",
+    "tab.attribute.note": "Notas",
+    "tab.attribute.order_summary": "Resumen de la Orden",
+    "tab.attribute.total": "Total",
+    "tab.attribute.is_paid": "Pago",
+    "tab.attribute.marketplace_status": "Status Marketplace",
+    "tab.attribute.created": "creación",
+    "tab.attribute.ingresada": "ingresada",
+
+    "tab.tab.productos": "Productos",
+    "tab.tab.comanda": "Comanda",
+    "tab.tab.marketplace": "Marketplace",
+    "tab.tab.datos": "Datos",
   
   "tab.list.timer.confirmed": "Confirmado",
   "tab.list.timer.in_preparation": "En Preparación",
@@ -108,6 +128,20 @@
     "common.view": "Ver",
     "common.edit": "Editar",
     "common.unknown_error": "Error desconocido",
+    "resource.permission.name": "Permisos",
+    "resource.role.name": "Roles",
+    "resource.user.name": "Usuarios",
+    "resource.notification.name": "Notificaciones",
+    "resource.log.name": "Logs",
+    "resource.tenant.name": "Cliente",
+    "resource.group.system": "Recursos de sistema",
+    "resource.group.admin": "Administración",
+    "resource.group.logs": "Logs y Notificaciones",
+    "resource.group.users": "Usuarios",
+    "resource.action.create_permission": "Crear permiso",
+    "resource.action.add_role": "Agregar Rol",
+    "resource.action.create_user": "Crear usuario",
+    "resource.action.create_tenant": "Crear cliente",
 
   
         "cashcount.invalid_date": "Fecha inválida",
@@ -328,10 +362,5 @@
 
     "mall.session.order_status_overall": "Estado General del Pedido",
     "mall.session.stores_progress": "Progreso por Tienda",
-    "mall.session.items": "artículos",
-
-    "mall.session.products_count": "Productos (%{count})",
-    "mall.session.product.unknown": "Producto Desconocido",
-    "mall.session.product.quantity": "Cant: %{quantity}",
-    "mall.session.product.pending": "Pendiente"
+    "mall.session.items": "artículos"
 }

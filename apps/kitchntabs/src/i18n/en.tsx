@@ -1,6 +1,14 @@
 const customEn = {
+    "Delivery Method": "Delivery Method",
+    "Table Number": "Table Number",
+    "Counter": "Counter",
+    "Table": "Table",
+    "Delivery": "Delivery",
 
     tab: {
+        attribute: {
+             note: "Note",
+        },
         tabs: 'Tabs',
         kitchen_tabs: 'Kitchen Orders',
         action: {
@@ -51,6 +59,9 @@ const customEn = {
             infinite_scroll: {
                 end_of_results: "End of results",
             },
+            no_products_category: "No products in this category",
+            loading: "Loading products...",
+            updating: "Updating...",
             display: {
                 showing_results: "Showing %{displayed} of %{total} results",
                 showing_results_local: "Showing %{displayed} of %{total} results (local)",
@@ -81,6 +92,19 @@ const customEn = {
             note_placeholder: "Add a note for this item...",
             quantity: "Quantity",
             total: "Total",
+            summary: "Order Summary",
+            subtotal: "Subtotal:",
+            suggested_service: "Suggested service (%{percent}%):",
+            currency: "Currency: %{code} (%{symbol})",
+            discount: "Discount",
+            type: "Type",
+            value: "Value",
+            discount_reason: "Discount reason (optional)",
+            discount_reason_placeholder: "Ex: Chef's courtesy, Frequent customer, Promotion...",
+            no_discount: "No discount",
+            percentage: "Percentage",
+            fixed_amount: "Fixed Amount",
+            discount_applied: "Discount applied:",
         },
         modal: {
             close_status: {
@@ -203,6 +227,41 @@ const customEn = {
             action: {
                 create: 'Create',
             },
+        },
+        view_order: {
+            title: "Order #%{id}",
+            no_data: "No order data available",
+            products_title: "Products",
+            product_default: "Product",
+            option_default: "Option",
+            unit_price_suffix: "unit price",
+            subtotal: "Subtotal",
+            discount: "Discount",
+            total: "Total",
+            paid: "Paid",
+            order_note: "Order Note",
+            marketplace_info: "Marketplace: %{name}",
+            type: "Type",
+            payment_info: "Payment Information",
+            payment_status: "Payment Status",
+            pending: "Pending",
+            broker_status: "Broker Status",
+            receipt: "Receipt",
+            invoice: "Invoice",
+            view_document: "View Document",
+            dates_times: "Dates & Times",
+            created_at: "Created at",
+            confirmed_at: "Confirmed at",
+            preparing_at: "Started at",
+            prepared_at: "Prepared at",
+            delivered_at: "Delivered at",
+            closed_at: "Closed at",
+            cancelled_at: "Cancelled at",
+            tenant_info: "Store Information",
+            name: "Name",
+            address: "Address",
+            phone: "Phone",
+            email: "Email"
         },
     },
     kiosk: {
@@ -393,7 +452,121 @@ const customEn = {
             instances: {
                 label: 'Import Products',
                 menu_list: 'Imports',
-                main_action: 'Create Import',
+                main_action: 'Import Products',
+                tabs: {
+                    datos: 'Data',
+                    preview: 'Preview',
+                    import: 'Import',
+                    logs: 'Logs',
+                },
+                fields: {
+                    import_type: 'Import Type',
+                    template: 'Template',
+                    file: 'File',
+                    options: 'Import Options',
+                    status: 'Status',
+                    preview: 'Preview',
+                    import_action: 'Import',
+                    logs: 'Logs',
+                    created_at: 'Created',
+                    updated_at: 'Updated',
+                },
+                types: {
+                    normalized: {
+                        title: 'Normalized Import (Recommended)',
+                        desc: 'Use standard normalized format with predefined columns',
+                    },
+                    template: {
+                        title: 'Template Import',
+                        desc: 'Use a custom template to map columns',
+                    },
+                },
+                options: {
+                    advanced_config: 'Advanced Configuration',
+                    no_options: 'No configurable options for this import type.',
+                    view_title: 'Import Options (%{type})',
+                },
+                alerts: {
+                    select_template: 'You must select a template before uploading the file',
+                    normalized_format_title: 'Normalized Format:',
+                    normalized_format_desc: 'Your file must follow the standard format with columns like: sku, name, description, price_*, stock_*, category_name, brand_name, images, etc.',
+                },
+                messages: {
+                    delete_file_confirm: 'Are you sure you want to delete this record?',
+                    file_removed: 'File removed!',
+                    delete_file_title: 'Delete file',
+                    delete_file_content: '%{title} will be deleted',
+                    only_excel: 'You can only upload Excel files!',
+                    max_size: 'File must be smaller than 2MB!',
+                    no_file: 'No file uploaded!',
+                    unknown_format: 'Unknown file format. Only Excel files are supported!',
+                    no_data: 'No data found in file!',
+                    read_error: 'Error reading excel file',
+                },
+                progress: {
+                    title_preview: 'Preview Progress',
+                    title_import: 'Import Progress',
+                    processed_count: '%{processed} of %{total} products processed',
+                    currently_processing: 'Currently processing:',
+                    last_updated: 'Last updated: %{time}',
+                },
+                stats: {
+                    to_create: 'To Create',
+                    to_update: 'To Update',
+                    categories_to_create: 'Categories to Create',
+                    brands_to_create: 'Brands to Create',
+                    created: 'Created',
+                    updated: 'Updated',
+                    categories_created: 'Categories Created',
+                    galleries_created: 'Galleries Created',
+                    errors: 'Errors',
+                    skipped: 'Skipped',
+                },
+                dialog: {
+                    already_completed: {
+                        title: '%{mode} Already Completed',
+                        message: 'This %{mode} was already completed previously.',
+                        status: 'Current status: %{status}',
+                        footer: 'If you need to run it again, please refresh the page or create a new import instance.',
+                    },
+                    already_running: {
+                        title: '%{mode} Already Running',
+                        message: '%{message}',
+                        status: 'Current status: %{status}',
+                        footer: 'Please wait for the current process to complete or refresh the page to see the latest status.',
+                    },
+                },
+                headers: {
+                    preview_title: 'Mass Import Preview',
+                    preview_normalized_sub: 'Preview with normalized format',
+                    preview_template_sub: 'Preview with custom template',
+                    import_title: 'Mass Import',
+                    import_normalized_sub: 'Import with normalized format',
+                    import_template_sub: 'Import with custom template',
+                },
+                actions: {
+                    preview_in_progress: 'Preview in Progress...',
+                    preview_start: 'Preview Import',
+                    import_in_progress: 'Import in Progress...',
+                    import_start: 'Start Import',
+                },
+                results: {
+                    title: '%{mode} Results',
+                },
+                logs: {
+                    placeholder: 'Preview log here...',
+                    preview: 'Preview',
+                    download: 'Download',
+                },
+                statuses: {
+                    NOT_INITIATED: 'Not Initiated',
+                    PREVIEW_STARTED: 'Preview Started',
+                    PREVIEW_COMPLETED: 'Preview Completed',
+                    PREVIEW_FAILED: 'Preview Failed',
+                    IMPORT_STARTED: 'Import Started',
+                    IMPORT_COMPLETED: 'Import Completed',
+                    IMPORT_FAILED: 'Import Failed',
+                }
             },
         },
         // Mall resources
@@ -702,22 +875,25 @@ const customEn = {
             assistance_requested: 'Assistance requested!',
             assistance_message: ':customer at table :table needs help',
         },
-        resource: {
-            tabs_admin: 'Tabs Admin',
-            filter: {
-                status: 'Status',
-            },
-            tabs: 'Tabs',
-            menu: {
-                list: 'List',
-            },
-            action: {
-                create: 'Create',
-            },
-        },
     },
-
-
+    dash: {
+        resource: {
+            created: 'Resource Created',
+            created_message: 'The resource %{label} has been created',
+            updated: 'Resource Updated',
+            updated_message: 'The resource %{label} has been updated',
+            edited: 'Resource Edited',
+            error: '%{label} Error',
+        },
+        action: {
+            cancel: 'Cancel',
+            confirm: 'Confirm',
+            continue: 'Continue',
+            edit: 'Edit',
+            save: 'Save',
+            delete: 'Delete',
+        }
+    }
 };
 
 export default customEn;

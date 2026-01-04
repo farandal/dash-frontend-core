@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { IDashAutoAdminCustomFieldComponent } from "dash-auto-admin";
-import { useShowContext } from "react-admin";
+import { useShowContext, useTranslate } from "react-admin";
 
 import { 
     CardContent, 
@@ -66,18 +66,11 @@ const statusColors: Record<string, "default" | "primary" | "secondary" | "error"
     'CANCELLED': 'error'
 };
 
-const statusLabels: Record<string, string> = {
-    'CREATED': 'Creado',
-    'CONFIRMED': 'Confirmado',
-    'IN_PREPARATION': 'En preparación',
-    'PREPARED': 'Preparado',
-    'DELIVERED': 'Entregado',
-    'CLOSED': 'Cerrado',
-    'CANCELLED': 'Cancelado'
-};
 
-const ViewOrder: React.FC<IDashAutoAdminCustomFieldComponent> = ({ method, attribute, resourceConfig }) => {
+
+const ViewOrder: React.FC<IDashAutoAdminCustomFieldComponent> = ({ method, attribute, resourceConfig, locale }) => {
     const { record: tab, isPending } = useShowContext<ITab>();
+    const translate = useTranslate();
     const [tenantCurrency, setTenantCurrency] = useState<any>(null);
 
     useEffect(() => {
@@ -96,7 +89,9 @@ const ViewOrder: React.FC<IDashAutoAdminCustomFieldComponent> = ({ method, attri
     // Format date helper
     const formatDate = (dateString: string | null | undefined) => {
         if (!dateString) return '-';
-        return new Date(dateString).toLocaleString('es-ES', { 
+        // Use the passed locale or fallback to 'es-ES'
+        const dateLocale = locale || 'es-ES';
+        return new Date(dateString).toLocaleString(dateLocale, { 
             day: '2-digit', 
             month: '2-digit', 
             year: '2-digit', 
@@ -118,7 +113,7 @@ const ViewOrder: React.FC<IDashAutoAdminCustomFieldComponent> = ({ method, attri
     if (!tab) {
         return (
             <Box sx={{ p: 2 }}>
-                <Typography color="text.secondary">No hay datos disponibles</Typography>
+                <Typography color="text.secondary">{translate('tab.view_order.no_data')}</Typography>
             </Box>
         );
     }
@@ -133,7 +128,7 @@ const ViewOrder: React.FC<IDashAutoAdminCustomFieldComponent> = ({ method, attri
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 2 }}>
                     <Box>
                         <Typography variant="h5" gutterBottom>
-                            Tab #{String(tab.id).slice(-6)}
+                            {translate('tab.view_order.title', { id: String(tab.id).slice(-6) })}
                         </Typography>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
                             <AccessTimeIcon fontSize="small" color="action" />
@@ -152,7 +147,7 @@ const ViewOrder: React.FC<IDashAutoAdminCustomFieldComponent> = ({ method, attri
                     </Box>
                     <Box sx={{ textAlign: 'right' }}>
                         <Chip 
-                            label={statusLabels[tab.status] || tab.status_localized || tab.status}
+                            label={tab.status_localized || translate(`tab.status.${tab.status.toLowerCase()}`)}
                             color={statusColors[tab.status] || 'default'}
                             sx={{ mb: 1 }}
                         />
@@ -160,7 +155,7 @@ const ViewOrder: React.FC<IDashAutoAdminCustomFieldComponent> = ({ method, attri
                             {formatCurrencyWithTenant(order?.total_amount || 0, tenantCurrency)}
                         </Typography>
                         {order?.is_paid && (
-                            <Chip label="Pagado" color="success" size="small" sx={{ mt: 1 }} />
+                            <Chip label={translate('tab.view_order.paid')} color="success" size="small" sx={{ mt: 1 }} />
                         )}
                     </Box>
                 </Box>
@@ -168,7 +163,7 @@ const ViewOrder: React.FC<IDashAutoAdminCustomFieldComponent> = ({ method, attri
 
             {/* Products List */}
             <Typography variant="h6" sx={{ mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
-                <ReceiptIcon /> Productos ({order?.items?.length || 0})
+                <ReceiptIcon /> {translate('tab.view_order.products_title')} ({order?.items?.length || 0})
             </Typography>
 
             {order?.items && order.items.length > 0 ? (
@@ -205,7 +200,7 @@ const ViewOrder: React.FC<IDashAutoAdminCustomFieldComponent> = ({ method, attri
                                             <Box sx={{ flex: 1, minWidth: 0 }}>
                                                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 0.5 }}>
                                                     <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
-                                                        {item.quantity}x {item.product?.name || item.product_name || 'Producto'}
+                                                        {item.quantity}x {item.product?.name || item.product_name || translate('tab.view_order.product_default')}
                                                     </Typography>
                                                     <Typography variant="subtitle1" sx={{ fontWeight: 'bold', color: 'primary.main', whiteSpace: 'nowrap', ml: 1 }}>
                                                         {formatCurrencyWithTenant(itemTotal, tenantCurrency)}
@@ -213,7 +208,7 @@ const ViewOrder: React.FC<IDashAutoAdminCustomFieldComponent> = ({ method, attri
                                                 </Box>
 
                                                 <Typography variant="body2" color="text.secondary">
-                                                    {formatCurrencyWithTenant(item.unit_price, tenantCurrency)} c/u
+                                                    {formatCurrencyWithTenant(item.unit_price, tenantCurrency)} {translate('tab.view_order.unit_price_suffix')}
                                                 </Typography>
 
                                                 {/* Note */}
@@ -229,7 +224,7 @@ const ViewOrder: React.FC<IDashAutoAdminCustomFieldComponent> = ({ method, attri
                                                         {item.modifiers.map((modifier, modIndex) => (
                                                             <Box key={modIndex} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                                                 <Typography variant="body2" color="text.secondary">
-                                                                    + {modifier.modifier_option?.name || `Opción ${modIndex + 1}`}
+                                                                    + {modifier.modifier_option?.name || `${translate('tab.view_order.option_default')} ${modIndex + 1}`}
                                                                 </Typography>
                                                                 {parseFloat(modifier.price_adjustment) !== 0 && (
                                                                     <Typography variant="body2" color="text.secondary">
@@ -250,20 +245,20 @@ const ViewOrder: React.FC<IDashAutoAdminCustomFieldComponent> = ({ method, attri
                     })}
                 </List>
             ) : (
-                <Typography color="text.secondary" sx={{ py: 2 }}>No hay productos en esta orden</Typography>
+                <Typography color="text.secondary" sx={{ py: 2 }}>{translate('tab.view_order.no_data')}</Typography>
             )}
 
             {/* Order Summary */}
             {order && (
                 <Paper elevation={0} sx={{ p: 2, mt: 2, bgcolor: 'background.default', borderRadius: 2 }}>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-                        <Typography variant="body1">Subtotal</Typography>
+                        <Typography variant="body1">{translate('tab.view_order.subtotal')}</Typography>
                         <Typography variant="body1">{formatCurrencyWithTenant(order.subtotal, tenantCurrency)}</Typography>
                     </Box>
                     {order.discount_amount && parseFloat(String(order.discount_amount)) > 0 && (
                         <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
                             <Typography variant="body1" color="error.main">
-                                Descuento {order.discount_type === 'percentage' ? `(${order.discount_value}%)` : ''}
+                                {translate('tab.view_order.discount')} {order.discount_type === 'percentage' ? `(${order.discount_value}%)` : ''}
                             </Typography>
                             <Typography variant="body1" color="error.main">
                                 -{formatCurrencyWithTenant(order.discount_amount, tenantCurrency)}
@@ -272,7 +267,7 @@ const ViewOrder: React.FC<IDashAutoAdminCustomFieldComponent> = ({ method, attri
                     )}
                     <Divider sx={{ my: 1 }} />
                     <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                        <Typography variant="h6" sx={{ fontWeight: 'bold' }}>Total</Typography>
+                        <Typography variant="h6" sx={{ fontWeight: 'bold' }}>{translate('tab.view_order.total')}</Typography>
                         <Typography variant="h6" sx={{ fontWeight: 'bold', color: 'primary.main' }}>
                             {formatCurrencyWithTenant(order.total_amount, tenantCurrency)}
                         </Typography>
@@ -283,7 +278,7 @@ const ViewOrder: React.FC<IDashAutoAdminCustomFieldComponent> = ({ method, attri
             {/* Tab Note */}
             {tab.note && (
                 <Paper elevation={0} sx={{ p: 2, mt: 2, bgcolor: 'warning.light', borderRadius: 2 }}>
-                    <Typography variant="subtitle2" gutterBottom>Nota de la orden:</Typography>
+                    <Typography variant="subtitle2" gutterBottom>{translate('tab.view_order.order_note')}</Typography>
                     <Typography variant="body1">{tab.note}</Typography>
                 </Paper>
             )}
@@ -296,7 +291,7 @@ const ViewOrder: React.FC<IDashAutoAdminCustomFieldComponent> = ({ method, attri
                         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                                 <StoreIcon />
-                                <Typography>Marketplace: {marketplaceInfo.name}</Typography>
+                                <Typography>{translate('tab.view_order.marketplace_info', { name: marketplaceInfo.name })}</Typography>
                             </Box>
                         </AccordionSummary>
                         <AccordionDetails>
@@ -305,7 +300,7 @@ const ViewOrder: React.FC<IDashAutoAdminCustomFieldComponent> = ({ method, attri
                                     <Avatar src={marketplaceInfo.system_marketplace.icon_url} alt={marketplaceInfo.name} />
                                 )}
                                 <Box>
-                                    <Typography variant="body1"><strong>Tipo:</strong> {marketplaceInfo.type}</Typography>
+                                    <Typography variant="body1"><strong>{translate('tab.view_order.type')}</strong> {marketplaceInfo.type}</Typography>
                                     <Typography variant="body2" color="text.secondary">
                                         {marketplaceInfo.system_marketplace?.name}
                                     </Typography>
@@ -324,21 +319,21 @@ const ViewOrder: React.FC<IDashAutoAdminCustomFieldComponent> = ({ method, attri
                         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                                 <PaymentIcon />
-                                <Typography>Información de Pago</Typography>
-                                {order.is_paid && <Chip label="Pagado" color="success" size="small" sx={{ ml: 1 }} />}
+                                <Typography>{translate('tab.view_order.payment_info')}</Typography>
+                                {order.is_paid && <Chip label={translate('tab.view_order.paid')} color="success" size="small" sx={{ ml: 1 }} />}
                             </Box>
                         </AccordionSummary>
                         <AccordionDetails>
-                            <Typography><strong>Estado:</strong> {order.is_paid ? 'Pagado' : 'Pendiente'}</Typography>
-                            <Typography><strong>Broker Status:</strong> {order.broker_status || '-'}</Typography>
+                            <Typography><strong>{translate('tab.view_order.payment_status')}</strong> {order.is_paid ? translate('tab.view_order.paid') : translate('tab.view_order.pending')}</Typography>
+                            <Typography><strong>{translate('tab.view_order.broker_status')}</strong> {order.broker_status || '-'}</Typography>
                             {order.billing_path && (
                                 <Typography>
-                                    <strong>Boleta:</strong> <a href={order.billing_path} target="_blank" rel="noopener noreferrer">Ver documento</a>
+                                    <strong>{translate('tab.view_order.receipt')}</strong> <a href={order.billing_path} target="_blank" rel="noopener noreferrer">{translate('tab.view_order.view_document')}</a>
                                 </Typography>
                             )}
                             {order.tax_document_path && (
                                 <Typography>
-                                    <strong>Factura:</strong> <a href={order.tax_document_path} target="_blank" rel="noopener noreferrer">Ver documento</a>
+                                    <strong>{translate('tab.view_order.invoice')}</strong> <a href={order.tax_document_path} target="_blank" rel="noopener noreferrer">{translate('tab.view_order.view_document')}</a>
                                 </Typography>
                             )}
                         </AccordionDetails>
@@ -350,47 +345,47 @@ const ViewOrder: React.FC<IDashAutoAdminCustomFieldComponent> = ({ method, attri
                     <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                             <InfoIcon />
-                            <Typography>Fechas y Tiempos</Typography>
+                            <Typography>{translate('tab.view_order.dates_times')}</Typography>
                         </Box>
                     </AccordionSummary>
                     <AccordionDetails>
                         <Box sx={{ display: 'grid', gridTemplateColumns: 'auto 1fr', gap: 1, rowGap: 0.5 }}>
-                            <Typography variant="body2" color="text.secondary">Creado:</Typography>
+                            <Typography variant="body2" color="text.secondary">{translate('tab.view_order.created_at')}</Typography>
                             <Typography variant="body2">{formatDate(tab.date_created)}</Typography>
                             
                             {tab.date_confirmed && (
                                 <>
-                                    <Typography variant="body2" color="text.secondary">Confirmado:</Typography>
+                                    <Typography variant="body2" color="text.secondary">{translate('tab.view_order.confirmed_at')}</Typography>
                                     <Typography variant="body2">{formatDate(tab.date_confirmed)}</Typography>
                                 </>
                             )}
                             {tab.date_in_preparation && (
                                 <>
-                                    <Typography variant="body2" color="text.secondary">En preparación:</Typography>
+                                    <Typography variant="body2" color="text.secondary">{translate('tab.view_order.preparing_at')}</Typography>
                                     <Typography variant="body2">{formatDate(tab.date_in_preparation)}</Typography>
                                 </>
                             )}
                             {tab.date_prepared && (
                                 <>
-                                    <Typography variant="body2" color="text.secondary">Preparado:</Typography>
+                                    <Typography variant="body2" color="text.secondary">{translate('tab.view_order.prepared_at')}</Typography>
                                     <Typography variant="body2">{formatDate(tab.date_prepared)}</Typography>
                                 </>
                             )}
                             {tab.date_delivered && (
                                 <>
-                                    <Typography variant="body2" color="text.secondary">Entregado:</Typography>
+                                    <Typography variant="body2" color="text.secondary">{translate('tab.view_order.delivered_at')}</Typography>
                                     <Typography variant="body2">{formatDate(tab.date_delivered)}</Typography>
                                 </>
                             )}
                             {tab.date_closed && (
                                 <>
-                                    <Typography variant="body2" color="text.secondary">Cerrado:</Typography>
+                                    <Typography variant="body2" color="text.secondary">{translate('tab.view_order.closed_at')}</Typography>
                                     <Typography variant="body2">{formatDate(tab.date_closed)}</Typography>
                                 </>
                             )}
                             {tab.date_cancelled && (
                                 <>
-                                    <Typography variant="body2" color="text.secondary">Cancelado:</Typography>
+                                    <Typography variant="body2" color="text.secondary">{translate('tab.view_order.cancelled_at')}</Typography>
                                     <Typography variant="body2">{formatDate(tab.date_cancelled)}</Typography>
                                 </>
                             )}
@@ -404,14 +399,14 @@ const ViewOrder: React.FC<IDashAutoAdminCustomFieldComponent> = ({ method, attri
                         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                                 <StoreIcon />
-                                <Typography>Información del Tenant</Typography>
+                                <Typography>{translate('tab.view_order.tenant_info')}</Typography>
                             </Box>
                         </AccordionSummary>
                         <AccordionDetails>
-                            <Typography><strong>Nombre:</strong> {tab.tenant.public_name || tab.tenant.name}</Typography>
-                            {tab.tenant.address && <Typography><strong>Dirección:</strong> {tab.tenant.address}</Typography>}
-                            {tab.tenant.phone && <Typography><strong>Teléfono:</strong> {tab.tenant.phone}</Typography>}
-                            {tab.tenant.contact_email && <Typography><strong>Email:</strong> {tab.tenant.contact_email}</Typography>}
+                            <Typography><strong>{translate('tab.view_order.name')}</strong> {tab.tenant.public_name || tab.tenant.name}</Typography>
+                            {tab.tenant.address && <Typography><strong>{translate('tab.view_order.address')}</strong> {tab.tenant.address}</Typography>}
+                            {tab.tenant.phone && <Typography><strong>{translate('tab.view_order.phone')}</strong> {tab.tenant.phone}</Typography>}
+                            {tab.tenant.contact_email && <Typography><strong>{translate('tab.view_order.email')}</strong> {tab.tenant.contact_email}</Typography>}
                         </AccordionDetails>
                     </Accordion>
                 )}

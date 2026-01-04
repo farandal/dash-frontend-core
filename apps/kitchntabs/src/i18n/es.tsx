@@ -1,6 +1,14 @@
 const customEs = {
+    "Delivery Method": "Método de Entrega",
+    "Table Number": "Número de Mesa",
+    "Counter": "Mostrador",
+    "Table": "Mesa",
+    "Delivery": "Entrega",
     tab: {
-        tabs: 'Pestañas',
+        attribute: {
+            note: "Nota",
+        },
+        tabs: 'Tabs',
         kitchen_tabs: 'Comandas de Cocina',
         action: {
             cancel: 'Cancelar',
@@ -13,9 +21,9 @@ const customEs = {
             prepared: "Preparado",
             delivered: "Entregado",
             closed: "Cerrar",
-            close_tab: "Cerrar Pestaña",
-            print_tab: "Imprimir Pestaña",
-            download: "Descargar Pestaña",
+            close_tab: "Cerrar Tab",
+            print_tab: "Imprimir Tab",
+            download: "Descargar Tab",
             payment: "Registrar Pago",
         },
         status: {
@@ -50,6 +58,9 @@ const customEs = {
             infinite_scroll: {
                 end_of_results: "Fin de los resultados",
             },
+            no_products_category: "No hay productos en esta categoría",
+            loading: "Cargando productos...",
+            updating: "Actualizando...",
             display: {
                 showing_results: "Mostrando %{displayed} de %{total} resultados",
                 showing_results_local: "Mostrando %{displayed} de %{total} resultados (local)",
@@ -69,7 +80,7 @@ const customEs = {
             },
             message: {
                 added: "Producto agregado a la orden",
-                created_success: "¡Pestaña creada exitosamente!",
+                created_success: "¡Tab creada exitosamente!",
             },
         },
         order: {
@@ -80,14 +91,27 @@ const customEs = {
             note_placeholder: "Agregar una nota para este ítem...",
             quantity: "Cantidad",
             total: "Total",
+            summary: "Resumen de la Orden",
+            subtotal: "Subtotal:",
+            suggested_service: "Servicio sugerido (%{percent}%):",
+            currency: "Moneda: %{code} (%{symbol})",
+            discount: "Descuento",
+            type: "Tipo",
+            value: "Valor",
+            discount_reason: "Razón del descuento (opcional)",
+            discount_reason_placeholder: "Ej: Cortesía del chef, Cliente frecuente, Promoción...",
+            no_discount: "Sin descuento",
+            percentage: "Porcentaje",
+            fixed_amount: "Monto Fijo",
+            discount_applied: "Descuento aplicado:",
         },
         modal: {
             close_status: {
                 title: "Estado de Cierre",
-                message: "Por favor selecciona un estado de cierre para esta pestaña",
+                message: "Por favor selecciona un estado de cierre para esta Tab",
             },
-            close: "Cerrar Pestaña",
-            cancel: "Cancelar Pestaña",
+            close: "Cerrar Tab",
+            cancel: "Cancelar Tab",
             payment: {
                 title: "Registrar Pago",
                 tip: "Propina",
@@ -97,8 +121,8 @@ const customEs = {
                 details: "Detalles de Pago",
             },
             close_confirm: {
-                title: "Cerrar Pestaña",
-                confirmation: "¿Estás seguro de que deseas cerrar esta pestaña?",
+                title: "Cerrar Tab",
+                confirmation: "¿Estás seguro de que deseas cerrar esta Tab?",
                 status: "Estado de Cierre",
             },
             assistance_dialog: {
@@ -123,26 +147,26 @@ const customEs = {
             transfer: "Transferencia",
         },
         queue: {
-            download: "Pestaña #{id} en cola para descarga",
-            print: "Pestaña #{id} en cola para impresión",
-            payment_update: "Pestaña #{id} en cola para actualización de pago",
-            status_update: "Pestaña #{id} en cola para actualización de estado a %{status}",
+            download: "Tab #{id} en cola para descarga",
+            print: "Tab #{id} en cola para impresión",
+            payment_update: "Tab #{id} en cola para actualización de pago",
+            status_update: "Tab #{id} en cola para actualización de estado a %{status}",
         },
         download: {
-            success: "Pestaña #{id} descargada exitosamente",
-            error: "Error descargando Pestaña #{id}: %{error}",
+            success: "Tab #{id} descargada exitosamente",
+            error: "Error descargando Tab #{id}: %{error}",
         },
         print: {
-            success: "Pestaña #{id} enviada a la impresora",
-            error: "Error imprimiendo Pestaña #{id}: %{error}",
+            success: "Tab #{id} enviada a la impresora",
+            error: "Error imprimiendo Tab #{id}: %{error}",
         },
         payment_update: {
-            success: "Pago de Pestaña #{id} actualizado exitosamente",
-            error: "Error actualizando pago para Pestaña #{id}: %{error}",
+            success: "Pago de Tab #{id} actualizado exitosamente",
+            error: "Error actualizando pago para Tab #{id}: %{error}",
         },
         status_update: {
-            success: "Estado de Pestaña #{id} actualizado a %{status}",
-            error: "Error actualizando estado para Pestaña #{id}: %{error}",
+            success: "Estado de Tab #{id} actualizado a %{status}",
+            error: "Error actualizando estado para Tab #{id}: %{error}",
         },
         status_change_notification: "El estado de la orden cambió de %{old} a %{new}",
         paid: "Pagado",
@@ -173,8 +197,8 @@ const customEs = {
             recording_attempts: "Intentos de Grabación",
             audio_chunks: "Fragmentos de Audio",
             session_id: "ID de Sesión",
-            tab_id: "ID de Pestaña",
-            has_tab_data: "Tiene Datos de Pestaña",
+            tab_id: "ID de Tab",
+            has_tab_data: "Tiene Datos de Tab",
             last_transcription: "Última Transcripción",
             active: "Activo",
             inactive: "Inactivo",
@@ -182,26 +206,60 @@ const customEs = {
             no: "No",
         },
         context: {
-            title: "Contexto de Pestaña",
+            title: "Contexto de Tab",
             table: "Mesa",
             status: "Estado",
             items: "Ítems",
             current_order: "Orden Actual",
             more_items: "... y %{count} ítems más",
         },
-
         resource: {
-            tabs_admin: 'Admin Pestañas',
+            tabs_admin: 'Administración de Tabs',
             filter: {
                 status: 'Estado',
             },
-            tabs: 'Pestañas',
+            tabs: 'Tabs',
             menu: {
                 list: 'Lista',
             },
             action: {
                 create: 'Crear',
             },
+        },
+        view_order: {
+            title: "Orden #%{id}",
+            no_data: "No hay datos de la orden disponibles",
+            products_title: "Productos",
+            product_default: "Producto",
+            option_default: "Opción",
+            unit_price_suffix: "precio unitario",
+            subtotal: "Subtotal",
+            discount: "Descuento",
+            total: "Total",
+            paid: "Pagado",
+            order_note: "Nota de la Orden",
+            marketplace_info: "Marketplace: %{name}",
+            type: "Tipo",
+            payment_info: "Información de Pago",
+            payment_status: "Estado de Pago",
+            pending: "Pendiente",
+            broker_status: "Estado del Broker",
+            receipt: "Recibo",
+            invoice: "Factura",
+            view_document: "Ver Documento",
+            dates_times: "Fechas y Horas",
+            created_at: "Creado el",
+            confirmed_at: "Confirmado el",
+            preparing_at: "Iniciado el",
+            prepared_at: "Preparado el",
+            delivered_at: "Entregado el",
+            closed_at: "Cerrado el",
+            cancelled_at: "Cancelado el",
+            tenant_info: "Información del Local",
+            name: "Nombre",
+            address: "Dirección",
+            phone: "Teléfono",
+            email: "Correo"
         },
     },
     kiosk: {
@@ -254,14 +312,14 @@ const customEs = {
     },
     // Resource labels for admin panel
     resource: {
-        tabs_admin: "Admin Pestañas",
-        tabs: "Pestañas",
+        tabs_admin: "Admin Tabs",
+        tabs: "Tabs",
         kitchen: "Cocina",
         menu: {
             list: "Lista",
         },
         action: {
-            create: "⊕ Crear pestaña",
+            create: "⊕ Crear Tab",
         },
         filter: {
             status: "Estado",
@@ -392,7 +450,121 @@ const customEs = {
             instances: {
                 label: 'Importar Productos',
                 menu_list: 'Importaciones',
-                main_action: 'Crear Importación',
+                main_action: 'Importar Productos',
+                tabs: {
+                    datos: 'Datos',
+                    preview: 'Previsualizar',
+                    import: 'Importar',
+                    logs: 'Logs',
+                },
+                fields: {
+                    import_type: 'Tipo de Importación',
+                    template: 'Plantilla',
+                    file: 'Archivo',
+                    options: 'Opciones de Importación',
+                    status: 'Estado',
+                    preview: 'Previsualizar',
+                    import_action: 'Importar',
+                    logs: 'Logs',
+                    created_at: 'Creado',
+                    updated_at: 'Actualizado',
+                },
+                types: {
+                    normalized: {
+                        title: 'Importación Normalizada (Recomendado)',
+                        desc: 'Utiliza el formato normalizado estándar con columnas predefinidas',
+                    },
+                    template: {
+                        title: 'Importación con Plantilla',
+                        desc: 'Utiliza una plantilla personalizada para mapear columnas',
+                    },
+                },
+                options: {
+                    advanced_config: 'Configuración Avanzada',
+                    no_options: 'No hay opciones configurables para este tipo de importación.',
+                    view_title: 'Opciones de Importación (%{type})',
+                },
+                alerts: {
+                    select_template: 'Debe seleccionar una plantilla antes de subir el archivo',
+                    normalized_format_title: 'Formato Normalizado:',
+                    normalized_format_desc: 'Su archivo debe seguir el formato estándar con columnas como: sku, name, description, price_*, stock_*, category_name, brand_name, images, etc.',
+                },
+                messages: {
+                    delete_file_confirm: '¿Está seguro de eliminar este registro?',
+                    file_removed: '¡Archivo eliminado!',
+                    delete_file_title: 'Eliminar archivo',
+                    delete_file_content: '%{title} será eliminado',
+                    only_excel: '¡Solo puedes subir archivos Excel!',
+                    max_size: '¡El archivo debe ser menor a 2MB!',
+                    no_file: '¡No hay archivo subido!',
+                    unknown_format: 'Formato de archivo desconocido. ¡Solo se suben archivos Excel!',
+                    no_data: '¡No se encontraron datos en el archivo!',
+                    read_error: 'Error al leer el archivo Excel',
+                },
+                progress: {
+                    title_preview: 'Progreso de Previsualización',
+                    title_import: 'Progreso de Importación',
+                    processed_count: '%{processed} de %{total} productos procesados',
+                    currently_processing: 'Procesando actualmente:',
+                    last_updated: 'Última actualización: %{time}',
+                },
+                stats: {
+                    to_create: 'Por Crear',
+                    to_update: 'Por Actualizar',
+                    categories_to_create: 'Categorías por Crear',
+                    brands_to_create: 'Marcas por Crear',
+                    created: 'Creados',
+                    updated: 'Actualizados',
+                    categories_created: 'Categorías Creadas',
+                    galleries_created: 'Galerías Creadas',
+                    errors: 'Errores',
+                    skipped: 'Omitidos',
+                },
+                dialog: {
+                    already_completed: {
+                        title: '%{mode} Ya Completado',
+                        message: 'Este %{mode} ya se completó anteriormente.',
+                        status: 'Estado actual: %{status}',
+                        footer: 'Si necesita ejecutarlo nuevamente, actualice la página o cree una nueva instancia de importación.',
+                    },
+                    already_running: {
+                        title: '%{mode} Ya en Ejecución',
+                        message: '%{message}',
+                        status: 'Estado actual: %{status}',
+                        footer: 'Espere a que se complete el proceso actual o actualice la página para ver el estado más reciente.',
+                    },
+                },
+                headers: {
+                    preview_title: 'Previsualización de Importación Masiva',
+                    preview_normalized_sub: 'Previsualización con formato normalizado',
+                    preview_template_sub: 'Previsualización con plantilla personalizada',
+                    import_title: 'Importación Masiva',
+                    import_normalized_sub: 'Importación con formato normalizado',
+                    import_template_sub: 'Importación con plantilla personalizada',
+                },
+                actions: {
+                    preview_in_progress: 'Previsualización en progreso...',
+                    preview_start: 'Previsualizar Importación',
+                    import_in_progress: 'Importación en progreso...',
+                    import_start: 'Iniciar Importación',
+                },
+                results: {
+                    title: 'Resultados de %{mode}',
+                },
+                logs: {
+                    placeholder: 'Previsualiza el log aquí...',
+                    preview: 'Previsualizar',
+                    download: 'Descargar',
+                },
+                statuses: {
+                    NOT_INITIATED: 'No Iniciado',
+                    PREVIEW_STARTED: 'Previsualización Iniciada',
+                    PREVIEW_COMPLETED: 'Previsualización Completada',
+                    PREVIEW_FAILED: 'Previsualización Fallida',
+                    IMPORT_STARTED: 'Importación Iniciada',
+                    IMPORT_COMPLETED: 'Importación Completada',
+                    IMPORT_FAILED: 'Importación Fallida',
+                }
             },
         },
         // Mall resources
@@ -701,22 +873,25 @@ const customEs = {
             assistance_requested: '¡Asistencia solicitada!',
             assistance_message: ':customer en mesa :table necesita ayuda',
         },
-        resource: {
-            tabs_admin: 'Admin Pestañas',
-            filter: {
-                status: 'Estado',
-            },
-            tabs: 'Pestañas',
-            menu: {
-                list: 'Lista',
-            },
-            action: {
-                create: 'Crear',
-            },
-        },
     },
-
-
+    dash: {
+        resource: {
+            created: 'Recurso Creado',
+            created_message: 'Se ha creado el recurso %{label}',
+            updated: 'Recurso Actualizado',
+            updated_message: 'Se ha actualizado el recurso %{label}',
+            edited: 'Recurso Editado',
+            error: 'Error en %{label}',
+        },
+        action: {
+            cancel: 'Cancelar',
+            confirm: 'Confirmar',
+            continue: 'Continuar',
+            edit: 'Editar',
+            save: 'Guardar',
+            delete: 'Eliminar',
+        }
+    }
 };
 
 export default customEs;
