@@ -6,6 +6,10 @@ import TenantTheme from "../components/TenantTheme";
 import { ColorPallete, ThemePallete } from "kt-utils";
 import { IDashAutoAdminAttribute } from "dash-auto-admin";
 import { SelectArrayInput, SelectInput } from "react-admin";
+import TenantTests from "../components/TenantTests";
+import TenantAlarmSettings from "../components/TenantAlarmSettings";
+import TenantStoreSchedule from "../components/TenantStoreSchedule";
+import TenantStoreStatus from "../components/TenantStoreStatus";
 
 const tenantTenantSchema:IDashAutoAdminAttribute[] = [
     /*{
@@ -115,6 +119,33 @@ const tenantTenantSchema:IDashAutoAdminAttribute[] = [
       component: SelectArrayInput,
       componentProps: {multiple:true},
     },
+    {
+      tab: 'Datos',
+      label: 'Zona Horaria',
+      attribute: 'timezone',
+      type: String,
+      custom: true,
+      inList: false,
+      inShow: false,
+      component: SelectInput,
+       componentProps: {
+        source: 'timezone',
+        choices: (() => {
+            try {
+            /* @ts-ignore */
+            return Intl.supportedValuesOf('timeZone').map((tz) => ({ id: tz, name: tz }));
+            } catch (e) {
+            return [
+                { id: 'America/Santiago', name: 'America/Santiago' },
+                { id: 'UTC', name: 'UTC' },
+                { id: 'America/New_York', name: 'America/New_York' },
+                { id: 'Europe/London', name: 'Europe/London' },
+            ];
+            }
+        })(),
+        defaultValue: 'America/Santiago'
+        }
+    },
     /*{
       label: 'Teléfono de emergencia',
       attribute: 'emergency_phone',
@@ -165,25 +196,7 @@ const tenantTenantSchema:IDashAutoAdminAttribute[] = [
       inList: false
     },*/
 
-    {
-      tab: "Marketplaces",
-      label: "Marketplaces",
-      attribute: 'systemMarketplace', // para un custom component, atributo no es necesario, pero es requerido por la interfaz
-      type: String,
-      custom: true,
-      inList: false, // No se puede mostrar en el listado, porque el backend no trae el listado de imagnes en la lista
-      component: TenantMarketplaceAssociation,
-    },
-
-    {
-      tab: "Puntos de Venta",
-      label: "Puntos de Venta",
-      attribute: 'systemPointOfSale', // para un custom component, atributo no es necesario, pero es requerido por la interfaz
-      type: String,
-      custom: true,
-      inList: false, // No se puede mostrar en el listado, porque el backend no trae el listado de imagnes en la lista
-      component: TenantPointOfSaleAssociation,
-    },
+  
     // TODO, agregar settings
     {
       tab: "Configuración",
@@ -250,6 +263,74 @@ const tenantTenantSchema:IDashAutoAdminAttribute[] = [
       }
     },
 
+      {
+      tab: "Marketplaces",
+      label: "Marketplaces",
+      attribute: 'systemMarketplace', // para un custom component, atributo no es necesario, pero es requerido por la interfaz
+      type: String,
+      custom: true,
+      inList: false, // No se puede mostrar en el listado, porque el backend no trae el listado de imagnes en la lista
+      component: TenantMarketplaceAssociation,
+    },
+
+    {
+      tab: "Puntos de Venta",
+      label: "Puntos de Venta",
+      attribute: 'systemPointOfSale', // para un custom component, atributo no es necesario, pero es requerido por la interfaz
+      type: String,
+      custom: true,
+      inList: false, // No se puede mostrar en el listado, porque el backend no trae el listado de imagnes en la lista
+      component: TenantPointOfSaleAssociation,
+    },
+
+      {
+      tab: "Store Status",
+      label: "Store Status",
+      attribute: 'is_open',
+      type: String,
+      custom: true,
+      inList: false,
+      inShow: false,
+      component: TenantStoreStatus,
+    },
+    {
+      tab: "Store Schedule",
+      label: "Store Schedule",
+      attribute: 'schedule_enabled',
+      type: String,
+      custom: true,
+      inList: false,
+      inShow: false,
+      component: TenantStoreSchedule,
+    },
+
+    {
+      tab: "Alarm Settings",
+      label: "Alarm Settings",
+      attribute: 'alarm_settings',
+      type: String,
+      custom: true,
+      inList: false,
+      inShow: false,
+      component: TenantAlarmSettings,
+    },
+
+
+    {
+      tab: "Tests",
+      label: "Tests",
+      attribute: 'name', // para un custom component, atributo no es necesario, pero es requerido por la interfaz
+      type: String,
+      custom: true,
+      inList: false, // No se puede mostrar en el listado, porque el backend no trae el listado de imagnes en la lista
+      inShow: false,
+      component: TenantTests,
+      /*componentProps: {
+        endpoint: '/upload-squared-logo'
+      }*/
+    },
+
+ 
 
 /*
   {

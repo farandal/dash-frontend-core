@@ -36,7 +36,7 @@ const TenantSettingsEdit: React.FC<ITenantSettings> = ({ method, attribute, tena
     if (settingsFormats && settingsFormats.data) {
 
       const parsedSchema = settingsFormats.data
-        .filter((entry) => entry.tab !== 'colors')
+        .filter((entry) => entry.tab !== 'colors' && entry.visible !== false)
         .map((entry) => {
         const defaultValue =
           (tenant.settings && tenant.settings[entry.attribute]) ||
@@ -137,7 +137,7 @@ const TenantSettingsView: React.FC<ITenantSettings> = ({ method, attribute, tena
     if (settingFormats && tenant) {
 
       settingFormats
-        .filter((entry) => entry.tab !== 'colors')
+        .filter((entry) => entry.tab !== 'colors' && entry.visible !== false)
         .forEach((entry) => {
         const defaultValue = tenant.settings && tenant.settings.hasOwnProperty(entry.id) ? tenant.settings[entry.id] : entry?.default_value;
 
