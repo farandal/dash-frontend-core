@@ -40,14 +40,8 @@ const TenantMarketplaceAssociationView: React.FC<IDashAutoAdminCustomFieldCompon
 
     {tenant.systemMarketplaces && tenant.systemMarketplaces.length > 0 ? (
       <DataGrid
-        rows={tenant.systemMarketplaces}
+        rows={(tenant.systemMarketplaces || []).filter((r: any) => r && r.id !== undefined)}
         columns={columns}
-        initialState={{
-          pagination: {
-            paginationModel: { pageSize: 5 }
-          }
-        }}
-        pageSizeOptions={[25, 50, 100, 200, 500]}
         hideFooter={true}
         disableRowSelectionOnClick
       />

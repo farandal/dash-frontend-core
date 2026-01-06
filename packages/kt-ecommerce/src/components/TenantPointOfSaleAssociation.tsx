@@ -2,10 +2,10 @@ import { Box, Button } from '@mui/material';
 
 
 import React, { useEffect, useState } from 'react'
-import { Loading, useGetList, useRecordContext } from "react-admin";
+import { Loading, useGetList, useRecordContext, useTranslate } from "react-admin";
 
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
-import { useWatch, useController } from 'react-hook-form';
+import { useWatch, useController, useFormContext } from 'react-hook-form';
 import SearchableSelect from './SearchableSelect';
 
 import { IDashAutoAdminCustomFieldComponent } from 'dash-auto-admin';
@@ -21,107 +21,123 @@ export const TenantPointOfSaleSelector: React.FC<ITenantPointOfSaleSelector> = (
     method,
     ...props
 }) => {
-
+    const { setValue } = useFormContext();
+    const translate = useTranslate();
     const tenant: Tenant = useRecordContext();
 
-    const [toDeletesystemPointOfSale, setToDeletesystemPointOfSale] = useState([])
-    const systemPointOfSaleIds = useWatch({ name: "systemPointOfSales", defaultValue: tenant?.systemPointOfSales || [] })
+    const [toDeletesystemPointOfSale, setToDeletesystemPointOfSale] = useState<any[]>([])
+    const [resetKey, setResetKey] = useState(0)
+    const systemPointOfSaleRows = useWatch({ name: "systemPointOfSales", defaultValue: tenant?.systemPointOfSales || [] })
 
     useEffect(() => {
-        console.log(systemPointOfSaleIds);
-
-    }, [systemPointOfSaleIds])
-
+        // Initial sync of IDs if not present
+        if (tenant?.systemPointOfSales) {
+            setValue("system_point_of_sale_ids", tenant.systemPointOfSales.map((p: any) => p.id));
+        }
+    }, [tenant, setValue]);
 
     const columns: GridColDef[] = [
         { field: "id", headerName: "ID", width: 20 },
         {
             field: "name",
-            headerName: "Nombre",
+            headerName: translate('tenant.point_of_sales.nombre') || "Nombre",
             width: 300,
             editable: false,
         },
         {
             field: "class",
-            headerName: "Clase",
+            headerName: translate('tenant.point_of_sales.clase') || "Clase",
             width: 300,
             editable: false,
         }
     ]
 
-    const selected_system_point_of_sales = useController({ name: "systemPointOfSales" })
-
     const removesystemPointOfSale = () => {
-        const filtered = systemPointOfSaleIds.filter(
-            (item) => !toDeletesystemPointOfSale.includes(item.id)
+        const selection = Array.isArray(toDeletesystemPointOfSale) ? toDeletesystemPointOfSale : [];
+        if (selection.length === 0) return;
+
+        const filtered = (systemPointOfSaleRows || []).filter(
+            (item: any) => item && item.id && !selection.map(String).includes(String(item.id))
         )
-        selected_system_point_of_sales.field.onChange(filtered)
+        
+        setValue("systemPointOfSales", filtered);
+        setValue("system_point_of_sale_ids", filtered.map((p: any) => p.id));
+        setToDeletesystemPointOfSale([]);
+        // Force grid reset to clear checkboxes
+        setResetKey(prev => prev + 1);
     }
 
     return (
         <>
-                <><h2
-                    style={{
-                        fontSize: 20,
-                        fontWeight: "bold",
-                        textAlign: "center",
-                        margin: "1rem 0",
-                    }}
-                >
-                    Relacionar Puntos de venta con el Tenant
-                </h2>
+            {/*
+            <h2
+                style={{
+                    fontSize: 20,
+                    fontWeight: "bold",
+                    textAlign: "center",
+                    margin: "1rem 0",
+                }}
+            >
+                {translate('tenant.point_of_sales.title')}
+            </h2>*/
+            }
 
-                    <div style={{ margin: "1rem auto", width: "100%" }}>
-
+            <div style={{ margin: "1rem auto", width: "100%" }}>
+                <Box sx={{ display: 'flex', alignItems: 'flex-end', gap: 2, mb: 2 }}>
+                    <Box sx={{ flexGrow: 1 }}>
                         <SearchableSelect
                             resource="ecommerce/system_point_of_sale"
-                            selectLabel="Seleccione"
-                            title="Seleccione puntos de venta"
+                            selectLabel={translate('tenant.point_of_sales.select')}
+                            title={translate('tenant.point_of_sales.select_pos')}
                             isMultiple
-                            //isEmpty={tenant.systemPointOfSales ? false : true}
                             isEmpty={true}
                             defaultValues={tenant?.systemPointOfSales || []}
-                            //transformData={(data) => (data.map(data => data.id))}
                             renderText={(option) => option.name}
                             name="systemPointOfSales"
                         />
-                        <Box sx={{ height: 400, width: "100%" }}>
-                            <DataGrid
-                                rows={systemPointOfSaleIds}
-                                columns={columns}
-                                
-                                onRowSelectionModelChange={(ids) => {
-                                   
-                           /* @ts-ignore */
-                                    setToDeletesystemPointOfSale(ids);
-                                    //setToDeletesystemPointOfSale(ids.map((e) => parseInt(e as string)));
-                                  
-                                  }}
-
-                                initialState={{
-                                    pagination: {
-                                        paginationModel: {
-                                            pageSize: 25,
-                                        },
-                                    },
-                                }}
-                                pageSizeOptions={[25, 50, 100, 200, 500]}
-                                hideFooter={true}
-                                disableRowSelectionOnClick
-                            />
-                        </Box>
-                      
-                           <Button
-                           
+                    </Box>
+                    {toDeletesystemPointOfSale.length > 0 && (
+                        <Button
                             variant="outlined"
                             onClick={() => removesystemPointOfSale()}
+                            color="error"
+                            sx={{ mb: '4px' }}
                         >
-                            Borrar seleccionados
+                            {translate('tenant.point_of_sales.delete_selected')}
                         </Button>
-                    </div></>
+                    )}
+                </Box>
+                <Box sx={{ height: 400, width: "100%" }}>
+                    <DataGrid
+                        key={`pos-grid-${resetKey}`}
+                        rows={(systemPointOfSaleRows || []).filter((r: any) => r && r.id !== undefined)}
+                        columns={columns}
+                        onRowSelectionModelChange={(selectionModel: any) => {
+                            console.log('Raw POS selection model:', selectionModel);
+                            
+                            // MUI X v8 returns {type: 'include'|'exclude', ids: Set<GridRowId>}
+                            let selectionArray: any[] = [];
+                            
+                            if (Array.isArray(selectionModel)) {
+                                selectionArray = selectionModel;
+                            } else if (selectionModel && typeof selectionModel === 'object' && selectionModel.ids) {
+                                if (selectionModel.ids instanceof Set) {
+                                    selectionArray = Array.from(selectionModel.ids);
+                                } else if (Array.isArray(selectionModel.ids)) {
+                                    selectionArray = selectionModel.ids;
+                                }
+                            }
+                            
+                            console.log('POS selection changed:', selectionArray);
+                            setToDeletesystemPointOfSale(selectionArray);
+                        }}
+                        checkboxSelection
+                        disableRowSelectionOnClick
+                        hideFooter
+                    />
+                </Box>
+            </div>
         </>
-
-
     )
 }
 
@@ -129,84 +145,51 @@ export const TenantPointOfSaleSelectorCreate: React.FC<ITenantPointOfSaleSelecto
     method,
     ...props
 }) => {
+    const translate = useTranslate();
+    const { setValue } = useFormContext();
 
-
-    const [toDeletesystemPointOfSale, setToDeletesystemPointOfSale] = useState([])
-    const systemPointOfSaleIds = useWatch({ name: "systemPointOfSales", defaultValue: [] })
-
-    const { data: systemPointOfSaleIdsList, total, isLoading, error } = useGetList(
+    const { data: systemPointOfSaleList, isLoading } = useGetList(
         "ecommerce/system_point_of_sale",
-        {
-            /*pagination: false*/
-        },
+        {},
         { refetchOnWindowFocus: false}
     );
-
-    useEffect(() => {
-        console.log(systemPointOfSaleIds);
-
-    }, [systemPointOfSaleIds])
-
 
     const columns: GridColDef[] = [
         { field: "id", headerName: "ID", width: 20 },
         {
             field: "name",
-            headerName: "Nombre",
+            headerName: translate('tenant.point_of_sales.nombre') || "Nombre",
             width: 300,
             editable: false,
         },
         {
             field: "class",
-            headerName: "Clase",
+            headerName: translate('tenant.point_of_sales.clase') || "Clase",
             width: 300,
             editable: false,
         }
     ]
 
-    const selected_system_point_of_sales = useController({ name: "systemPointOfSales" })
-
-    const removesystemPointOfSale = () => {
-        const filtered = systemPointOfSaleIds.filter(
-            (item) => !toDeletesystemPointOfSale.includes(item.id)
-        )
-        selected_system_point_of_sales.field.onChange(filtered)
+    const onChange = (values: any) => {
+        setValue("system_point_of_sale_ids", values);
     }
 
-    if(!systemPointOfSaleIdsList) return <Loading/>
+    if(isLoading || !systemPointOfSaleList) return <Loading/>
+
     return (
-
-                <DataGrid
-                    rows={systemPointOfSaleIdsList}
-                    columns={columns}
-                   
-                    checkboxSelection
-                  
-                    onRowSelectionModelChange={(ids) => {
-                                   
-                 
-                          /* @ts-ignore */
-                        setToDeletesystemPointOfSale(ids)
-                      
-                      }}
-
-
-
-                    initialState={{
-                        pagination: {
-                            paginationModel: {
-                                pageSize: 25,
-                            },
-                        },
-                    }}
-                    pageSizeOptions={[25, 50, 100, 200, 500]}
-                    hideFooter={true}
-                    disableRowSelectionOnClick
-                />
-
-
+        <Box sx={{ height: 400, width: "100%" }}>
+            <DataGrid
+                rows={(systemPointOfSaleList || []).filter((r: any) => r && r.id !== undefined)}
+                columns={columns}
+                checkboxSelection
+                onRowSelectionModelChange={(ids: any) => {
+                    onChange(ids)
+                }}
+                disableRowSelectionOnClick
+                hideFooter
+            />
+        </Box>
     )
-
 }
 
 
@@ -233,19 +216,11 @@ const TenantPointOfSaleAssociationView: React.FC<IDashAutoAdminCustomFieldCompon
         }
     ]
 
-    return <Box sx={{ width: "100%" }}>
+    return <Box sx={{ width: "100%", height: 400 }}>
          {tenant.systemPointOfSales && tenant.systemPointOfSales.length > 0 ? (
         <DataGrid
-            rows={tenant.systemPointOfSales}
+            rows={(tenant.systemPointOfSales || []).filter((r: any) => r && r.id !== undefined)}
             columns={columns}
-            initialState={{
-                pagination: {
-                    paginationModel: {
-                        pageSize: 25,
-                    },
-                },
-            }}
-            pageSizeOptions={[25, 50, 100, 200, 500]}
             hideFooter={true}
             disableRowSelectionOnClick
         />
