@@ -22,6 +22,8 @@ export const KitchnTabsResources: ResourceManifest = {
     // Core system resources from dash-admin (users, roles, permissions, etc.)
     systemResources: () => import('dash-admin/src/systemResources'),
 
+    // add here storeResources, loaded from ./kt-store 
+    //storeResources: () => import('./kt-store/resources/StoreResources'),
     // ========================================================================
     // USER & PROFILE RESOURCES (from kt-ecommerce)
     // ========================================================================

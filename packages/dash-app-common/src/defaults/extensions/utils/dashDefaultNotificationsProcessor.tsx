@@ -94,9 +94,31 @@ const playAlarmPattern = async (useHighFreq: boolean): Promise<void> => {
 /**
  * Play the full digital watch alarm sequence for specified duration
  * Returns a Promise that resolves when alarm completes
+ * @param durationSeconds - Duration in seconds (default: 10)
+ * @param settings - Optional alarm settings to override defaults
  */
-export const playDashDefaultDigitalWatchAlarm = async (durationSeconds: number = ALARM_DURATION_SECONDS): Promise<void> => {
-    console.log(`🔔 Starting digital watch alarm for ${durationSeconds} seconds...`);
+export interface AlarmSettings {
+    alarmDurationSeconds?: number;
+    alarmFrequencyHigh?: number;
+    alarmFrequencyLow?: number;
+    beepDurationMs?: number;
+    beepGapMs?: number;
+    beepPatternGapMs?: number;
+}
+
+export const playDashDefaultDigitalWatchAlarm = async (
+    durationSeconds?: number,
+    settings?: AlarmSettings
+): Promise<void> => {
+    // Use provided settings or defaults
+    const duration = durationSeconds ?? settings?.alarmDurationSeconds ?? ALARM_DURATION_SECONDS;
+    const frequencyHigh = settings?.alarmFrequencyHigh ?? ALARM_FREQUENCY_HIGH;
+    const frequencyLow = settings?.alarmFrequencyLow ?? ALARM_FREQUENCY_LOW;
+    const beepDuration = settings?.beepDurationMs ?? BEEP_DURATION_MS;
+    const beepGap = settings?.beepGapMs ?? BEEP_GAP_MS;
+    const patternGap = settings?.beepPatternGapMs ?? BEEP_PATTERN_GAP_MS;
+    
+    console.log(`🔔 Starting digital watch alarm for ${duration} seconds...`);
     
     const initialized = await initializeAudio();
     if (!initialized) {
@@ -105,19 +127,32 @@ export const playDashDefaultDigitalWatchAlarm = async (durationSeconds: number =
     }
 
     const startTime = Date.now();
-    const endTime = startTime + (durationSeconds * 1000);
+    const endTime = startTime + (duration * 1000);
     let patternCount = 0;
+
+    // Custom playAlarmPattern that uses provided settings
+    const playPatternWithSettings = async (useHighFreq: boolean): Promise<void> => {
+        const freq = useHighFreq ? frequencyHigh : frequencyLow;
+        
+        // Play 3 quick beeps
+        for (let i = 0; i < 3; i++) {
+            await playOscillatorBeep(freq, beepDuration);
+            if (i < 2 && beepGap > 0) {
+                await new Promise(r => setTimeout(r, beepGap));
+            }
+        }
+    };
 
     while (Date.now() < endTime) {
         // Alternate between high and low frequency patterns
         const useHighFreq = patternCount % 2 === 0;
-        await playAlarmPattern(useHighFreq);
+        await playPatternWithSettings(useHighFreq);
         
         patternCount++;
         
         // Check if we still have time for another pattern
-        if (Date.now() < endTime) {
-            await new Promise(r => setTimeout(r, BEEP_PATTERN_GAP_MS));
+        if (Date.now() < endTime && patternGap > 0) {
+            await new Promise(r => setTimeout(r, patternGap));
         }
     }
 

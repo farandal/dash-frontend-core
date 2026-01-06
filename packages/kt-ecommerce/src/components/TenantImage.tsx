@@ -295,7 +295,13 @@ const TenantImageEdit: React.FC<TenantImageProps> = ({
   const currentImageUrl = getCurrentImageUrl();
   
   return (
-    <Card sx={{ margin: 'auto' }}>
+    <Card sx={{ margin: 'auto',
+        backgroundColor: 'transparent !important', 
+        //backgroundImage: 'none !important',
+        boxShadow: 'none !important', 
+        border: 'none'
+        
+     }}>
       <CardHeader title={attribute.label} />
       <CardContent>
         <Box display="flex" gap={3}>

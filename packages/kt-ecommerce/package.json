@@ -29,6 +29,7 @@
         "dash-auto-admin": "workspace:*",
         "dash-axios-hook": "workspace:*",
         "dash-components": "workspace:*",
+        "dash-app-common": "workspace:*",
         "dash-constants": "workspace:*",
         "dash-dialog": "workspace:*",
         "dash-modal": "workspace:*",

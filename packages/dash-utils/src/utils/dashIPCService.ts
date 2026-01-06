@@ -45,6 +45,8 @@ export interface DashIPCServiceType {
     onSubprocessOutput: (callback: (data: SubprocessOutput) => void) => void;
     windowControls: (action: 'minimize' | 'maximize' | 'close') => void;
     startDrag: () => void;
+    // Print service - calls print_service directly
+    print: (urlOrTest: string) => Promise<any>;
     // Legacy/optional methods
     send?: (channel: string, data?: any) => void;
     invoke?: (channel: string, data?: any) => Promise<any>;
