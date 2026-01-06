@@ -97,9 +97,9 @@ const DomainHeader = <U, A>({
                     <span className='dash-header-inline-title'>
                         {pageSettings.title || ''}
                     </span>
-                    <span className='dash-header-inline-subtitle'>
+                    {/*<span className='dash-header-inline-subtitle'>
                         {pageSettings.subTitle}
-                    </span>
+                    </span>*/}
                     {/* Breadcrumb Navigation - inline with title */}
                     {/*showBreadcrumbs && pageSettings.breadcrumbs && pageSettings.breadcrumbs.length > 0 && (
                         <Box className='dash-header-breadcrumbs'>

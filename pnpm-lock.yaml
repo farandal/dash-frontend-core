@@ -2617,6 +2617,9 @@ importers:
       dash-admin:
         specifier: workspace:*
         version: link:../dash-admin
+      dash-app-common:
+        specifier: workspace:*
+        version: link:../dash-app-common
       dash-auth:
         specifier: workspace:^
         version: link:../dash-auth
@@ -15410,7 +15413,7 @@ packages:
     dependencies:
       confusing-browser-globals: 1.0.11
       eslint: 9.39.1
-      eslint-plugin-import: 2.32.0(@typescript-eslint/parser@8.51.0)(eslint-import-resolver-typescript@4.4.4)(eslint@9.39.1)
+      eslint-plugin-import: 2.32.0(@typescript-eslint/parser@8.48.0)(eslint@9.39.1)
       object.assign: 4.1.7
       object.entries: 1.1.9
       semver: 6.3.1
