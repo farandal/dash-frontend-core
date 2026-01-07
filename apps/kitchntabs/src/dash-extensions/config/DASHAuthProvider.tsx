@@ -121,7 +121,7 @@ const authProvider = {
             // Return a specific URL to force React Admin to use window.location.href
             // This is crucial to break the React rendering cycle
             
-            return Promise.resolve(redirectTo || "/login");
+            return Promise.resolve(redirectTo || "/");
         //} catch (error) {
         //    console.error("error logging out")
         //    return Promise.reject(error);

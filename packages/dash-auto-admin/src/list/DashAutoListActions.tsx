@@ -1,7 +1,7 @@
-import { useStore } from 'react-admin';
+import { useRefresh, useUnselectAll, ListContext } from 'react-admin';
 import IDashAutoAdminResourceConfig from '../interfaces/IDashAutoAdminResourceConfig';
 import DashAutoListTopToolbar from './DashAutoListTopToolbar';
-import { FC } from 'react';
+import { FC, useState, useEffect } from 'react';
 
 /* TODO: currently restricted to vite env variables */
 export const getEnv = (key: string, defaultValue?:any) => {
@@ -18,9 +18,30 @@ export interface IDashAutoListActions {
 	autoFilters: any;
 	listProps: any;
 }
+
 const DashAutoListActions: FC<IDashAutoListActions> = (props) => {
 	const { filters, resourceConfig, autoFilters, listProps } = props;
-	const [collapsed, setCollapsed] = useStore('DashAutoList.collapsed', true);
+	
+	// Sanitize the resource model by replacing / with _ for localStorage compatibility
+	const sanitizedModel = resourceConfig.model.replace(/\//g, '_');
+	const storeKey = `filters.collapsed.${sanitizedModel}`;
+	
+	// Use localStorage directly instead of useStore (for Redux compatibility)
+	const [expanded, setExpandedState] = useState<boolean>(() => {
+		const stored = localStorage.getItem(storeKey);
+		return stored !== null ? JSON.parse(stored) : false;
+	});
+	
+	// Persist to localStorage whenever expanded changes
+	useEffect(() => {
+		localStorage.setItem(storeKey, JSON.stringify(expanded));
+		console.log('💾 Persisting filter state:', { storeKey, expanded });
+	}, [expanded, storeKey]);
+
+	const setExpanded = (value: boolean) => {
+		console.log('🔄 Setting expanded:', { storeKey, value });
+		setExpandedState(value);
+	};
 
 	const countFilters = resourceConfig.referenceFilters && resourceConfig.referenceFilters.length ? resourceConfig.referenceFilters.length : 0;
 
@@ -45,8 +66,8 @@ const DashAutoListActions: FC<IDashAutoListActions> = (props) => {
 			autoFilters={autoFilters}
 			filters={filters}
 			countFilters={countFilters}
-			collapsed={collapsed}
-			setCollapsed={setCollapsed}
+			expanded={expanded}
+			setExpanded={setExpanded}
 			filterCountToCollapse={FILTERS_COLLAPSE_COUNT}
 			collapsedSize={FILTERS_COLLAPSE_SIZE}
 		/>

@@ -56,8 +56,8 @@ export interface IDashAutoListTopToolbar {
     autoFilters: JSX.Element[],
     filters: ReactNode[],
     countFilters: number,
-    collapsed: boolean,
-    setCollapsed: (collapsed: boolean) => void, // Better typing
+    expanded: boolean,
+    setExpanded: (expanded: boolean) => void,
     filterCountToCollapse?: number,
     collapsedSize?: number | string,
     fabButtonSize?: string, // New optional prop for FAB button size
@@ -69,8 +69,8 @@ const DashAutoListTopToolbar: FC<IDashAutoListTopToolbar> = (props) => {
         autoFilters,
         filters,
         countFilters,
-        collapsed,
-        setCollapsed,
+        expanded,
+        setExpanded,
         filterCountToCollapse = 5,
         collapsedSize = '60px',
         fabButtonSize = '20px' // Default to 20px as requested
@@ -138,7 +138,7 @@ const DashAutoListTopToolbar: FC<IDashAutoListTopToolbar> = (props) => {
                     className='toolbar-collapse'
                     orientation='vertical'
                     collapsedSize={collapsedSize}
-                    in={collapsed}
+                    in={expanded}
                     timeout='auto'
                 >
                     <div className='toolbar-filters'>
@@ -215,7 +215,7 @@ const DashAutoListTopToolbar: FC<IDashAutoListTopToolbar> = (props) => {
                     size='small'
                     aria-label='collapse'
                     color='primary'
-                    onClick={() => setCollapsed(!collapsed)}
+                    onClick={() => setExpanded(!expanded)}
                     style={{
                         width: fabButtonSize,
                         height: fabButtonSize,
@@ -223,7 +223,7 @@ const DashAutoListTopToolbar: FC<IDashAutoListTopToolbar> = (props) => {
                     }}
                     className='toolbar-collapse-button'
                 >
-                    {collapsed ? <KeyboardArrowUp sx={{ fontSize: '1rem' }} /> : <KeyboardArrowDown sx={{ fontSize: '1rem' }} />}
+                    {expanded ? <KeyboardArrowDown sx={{ fontSize: '1rem' }} /> : <KeyboardArrowUp sx={{ fontSize: '1rem' }} />}
                 </Fab>
             ) : <></>}
 
