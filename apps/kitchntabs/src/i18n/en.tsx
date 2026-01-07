@@ -221,8 +221,10 @@ const customEn = {
                 status: 'Status',
             },
             tabs: 'Tabs',
+            kitchen: 'Kitchen',
             menu: {
                 list: 'List',
+                kitchen_active: 'Active Orders',
             },
             action: {
                 create: 'Create',

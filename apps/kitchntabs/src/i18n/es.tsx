@@ -219,8 +219,10 @@ const customEs = {
                 status: 'Estado',
             },
             tabs: 'Tabs',
+            kitchen: 'Cocina',
             menu: {
                 list: 'Lista',
+                kitchen_active: 'Órdenes Activas',
             },
             action: {
                 create: 'Crear',
