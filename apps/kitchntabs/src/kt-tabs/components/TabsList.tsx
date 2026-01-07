@@ -72,6 +72,7 @@ import TabListItem from "./Tab/TabListItem";
 import { useTabActions } from "./tab2/hooks/useTabActions";
 import { calculateServiceFee } from "./tab2/utils";
 import { useDraggableCarousel, UseDraggableCarouselOptions } from "./hooks/useDraggableCarousel";
+import { useTheme, useMediaQuery } from '@mui/material';
 
 /** Carousel configuration for TabsList - can be customized */
 const TABS_CAROUSEL_CONFIG: UseDraggableCarouselOptions = {
@@ -83,7 +84,18 @@ const TABS_CAROUSEL_CONFIG: UseDraggableCarouselOptions = {
     gap: 8,
 };
 
-const KitchenTabsList: React.FC<IDashAutoAdminDataGrid> = ({ resourceConfig }) => {
+export type ScrollMethod = 'browser_scroll' | 'dragging_scroll';
+
+interface TabsListProps extends IDashAutoAdminDataGrid {
+    scrollMethod?: ScrollMethod;
+}
+
+const KitchenTabsList: React.FC<TabsListProps> = ({ resourceConfig, scrollMethod = 'browser_scroll' }) => {
+    const theme = useTheme();
+    const isXs = useMediaQuery(theme.breakpoints.only('xs'));
+    const isSm = useMediaQuery(theme.breakpoints.only('sm'));
+    const isMd = useMediaQuery(theme.breakpoints.only('md'));
+    const isLg = useMediaQuery(theme.breakpoints.only('lg'));
     const refresh = useRefresh();
     const dataProvider = useDataProvider();
     const translate = useTranslate();
@@ -611,14 +623,93 @@ const KitchenTabsList: React.FC<IDashAutoAdminDataGrid> = ({ resourceConfig }) =
                 }
             }, [data]);
 
-            // Use the draggable carousel hook with configurable options
-            const carousel = useDraggableCarousel<ITab>(listData || [], TABS_CAROUSEL_CONFIG);
+            // Determine items per page based on screen size (for both modes)
+            const itemsPerPage = isXs ? TABS_CAROUSEL_CONFIG.itemsPerPageXs! :
+                                 isSm ? TABS_CAROUSEL_CONFIG.itemsPerPageSm! :
+                                 isMd ? TABS_CAROUSEL_CONFIG.itemsPerPageMd! :
+                                 isLg ? TABS_CAROUSEL_CONFIG.itemsPerPageLg! :
+                                 TABS_CAROUSEL_CONFIG.itemsPerPageXl!;
             
-            // Calculate item width: (100% - total gaps) / items per page
-            // Total gaps = (itemsPerPage - 1) * gap
-            const totalGaps = (carousel.itemsPerPage - 1) * carousel.gap;
-            const itemWidthCalc = `calc((100% - ${totalGaps}px) / ${carousel.itemsPerPage})`;
+            const gap = TABS_CAROUSEL_CONFIG.gap!;
+            const totalGaps = (itemsPerPage - 1) * gap;
+            const itemWidthCalc = `calc((100% - ${totalGaps}px) / ${itemsPerPage})`;
 
+            // Use draggable carousel only if scrollMethod is 'dragging_scroll'
+            const carousel = scrollMethod === 'dragging_scroll' 
+                ? useDraggableCarousel<ITab>(listData || [], TABS_CAROUSEL_CONFIG)
+                : null;
+
+            // Browser scroll mode rendering
+            if (scrollMethod === 'browser_scroll') {
+                return (
+                    <Box sx={{ 
+                        height: '100%', 
+                        display: 'flex', 
+                        flexDirection: 'column',
+                        overflow: 'hidden'
+                    }}>
+                        {/* Add the Queue Status Indicator component */}
+                        <QueueStatusIndicator queueSize={queueSize} isProcessing={isProcessing} />
+
+                        <Box
+                            sx={{
+                                display: 'flex',
+                                overflowX: 'auto',
+                                overflowY: 'hidden',
+                                gap: `${gap}px`,
+                                padding: '8px',
+                                flexGrow: 1,
+                                '&::-webkit-scrollbar': {
+                                    height: '8px',
+                                },
+                                '&::-webkit-scrollbar-track': {
+                                    backgroundColor: 'rgba(0,0,0,0.05)',
+                                    borderRadius: '4px',
+                                },
+                                '&::-webkit-scrollbar-thumb': {
+                                    backgroundColor: 'rgba(0,0,0,0.2)',
+                                    borderRadius: '4px',
+                                    '&:hover': {
+                                        backgroundColor: 'rgba(0,0,0,0.3)',
+                                    },
+                                },
+                            }}
+                        >
+                            {(listData || []).map((record: ITab) => {
+                                const nextStatus = getNextStatus(record.status);
+                                const nextStatusLabel = nextStatus ? translate(`tab.action.${nextStatus.toLowerCase()}`) : null;
+
+                                return (
+                                    <Box
+                                        key={record.id}
+                                        sx={{
+                                            flex: `0 0 ${itemWidthCalc}`,
+                                            minWidth: itemWidthCalc,
+                                            height: '100%',
+                                        }}
+                                    >
+                                        <TabListItem
+                                            record={record}
+                                            resourceConfig={resourceConfig}
+                                            statusLabel={statusLabel}
+                                            translate={translate}
+                                            onClose={(tab: ITab) => handleOpenCloseDialog(tab)}
+                                            onSimpleClose={(tab: ITab) => handleSimpleClose(tab)}
+                                            onPrint={(id: number) => printTab(id)}
+                                            onDownload={(id: number) => downloadTab(id)}
+                                            onPayment={(tab: ITab) => handleOpenPaymentDialog(tab)}
+                                            onStatusUpdate={(id: number, status: string) => queueStatusUpdate(id, status)}
+                                            removeTabFromList={removeTabFromList}
+                                        />
+                                    </Box>
+                                );
+                            })}
+                        </Box>
+                    </Box>
+                );
+            }
+
+            // Dragging scroll mode rendering (original implementation)
             return (
                 <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column', position: 'relative' }}>
                     {/* Add the Queue Status Indicator component */}
