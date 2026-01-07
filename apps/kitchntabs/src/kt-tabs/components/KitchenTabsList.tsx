@@ -1,4 +1,5 @@
 import { IDashAutoAdminCustomFieldComponent, IDashAutoAdminDataGrid } from "dash-auto-admin";
+import { useTheme, useMediaQuery } from '@mui/material';
 import { ITab } from "./interfaces/ITab";
 
 import {
@@ -33,14 +34,15 @@ import { ITabStatusChange } from "./interfaces/ITabNotificationFormat";
 import { ImagePlaceHolder as ImagePlaceHolder } from 'kt-utils';
 import TabTimerClock from "./Misc/TabTimerClock";
 import { useDraggableCarousel, UseDraggableCarouselOptions } from "./hooks/useDraggableCarousel";
+import TabListItem from "./Tab/TabListItem";
 
-/** Carousel configuration for KitchenTabsList - can be customized */
-const KITCHEN_CAROUSEL_CONFIG: UseDraggableCarouselOptions = {
+/** Carousel configuration - shared with TabsList for consistency */
+const TABS_CAROUSEL_CONFIG: UseDraggableCarouselOptions = {
     itemsPerPageXs: 2,
-    itemsPerPageSm: 4,
-    itemsPerPageMd: 4,
-    itemsPerPageLg: 6,
-    itemsPerPageXl: 8,
+    itemsPerPageSm: 2,
+    itemsPerPageMd: 3,
+    itemsPerPageLg: 4,
+    itemsPerPageXl: 6,
     gap: 8,
 };
 
@@ -102,7 +104,18 @@ const OrderProductsView: React.FC<IDashAutoAdminCustomFieldComponent> = ({ recor
 
 
 
-const KitchenTabsList: React.FC<IDashAutoAdminDataGrid> = ({ resourceConfig }) => {
+export type ScrollMethod = 'browser_scroll' | 'dragging_scroll';
+
+interface KitchenTabsListProps extends IDashAutoAdminDataGrid {
+    scrollMethod?: ScrollMethod;
+}
+
+const KitchenTabsList: React.FC<KitchenTabsListProps> = ({ resourceConfig, scrollMethod = 'browser_scroll' }) => {
+    const theme = useTheme();
+    const isXs = useMediaQuery(theme.breakpoints.only('xs'));
+    const isSm = useMediaQuery(theme.breakpoints.only('sm'));
+    const isMd = useMediaQuery(theme.breakpoints.only('md'));
+    const isLg = useMediaQuery(theme.breakpoints.only('lg'));
 
     //const { identity, isLoading: identityLoading } = useGetIdentity();
     const { user } = useAuthContext();
@@ -114,28 +127,29 @@ const KitchenTabsList: React.FC<IDashAutoAdminDataGrid> = ({ resourceConfig }) =
     // Track which tabs are currently updating their status
     const [updatingTabs, setUpdatingTabs] = useState<Set<number>>(new Set());
 
+    // Use translate function for status labels (matching TabsList)
     const [statusLabel, setStatusLabel] = useState({
-        'CREATED': 'Creado',
-        'CONFIRMED': 'Confirmado',
-        'IN_PREPARATION': 'En preparación',
-        'PREPARED': 'Preparado',
-        'DELIVERED': 'Entregado',
-        'CLOSED': 'Cerrado'
+        'CREATED': translate('tab.status.created'),
+        'CONFIRMED': translate('tab.status.confirmed'),
+        'IN_PREPARATION': translate('tab.status.in_preparation'),
+        'PREPARED': translate('tab.status.prepared'),
+        'DELIVERED': translate('tab.status.delivered'),
+        'CLOSED': translate('tab.status.closed'),
+        'CANCELLED': translate('tab.status.cancelled')
     });
-
 
     const axios = useAxios();
 
     const [update] = useUpdate();
 
     const statusLabels = {
-        'CREATED': 'Creado',
-        'CONFIRMED': 'Confirmado',
-        'IN_PREPARATION': 'En preparación',
-        'PREPARED': 'Preparado',
-        'DELIVERED': 'Entregado',
-        'CLOSED': 'Cerrado',
-        'CANCELLED': 'Cancelado'
+        'CREATED': translate('tab.status.created'),
+        'CONFIRMED': translate('tab.status.confirmed'),
+        'IN_PREPARATION': translate('tab.status.in_preparation'),
+        'PREPARED': translate('tab.status.prepared'),
+        'DELIVERED': translate('tab.status.delivered'),
+        'CLOSED': translate('tab.status.closed'),
+        'CANCELLED': translate('tab.status.cancelled')
     };
 
     const updateTabStatus = async (id: number, status: string) => {
@@ -210,13 +224,91 @@ const KitchenTabsList: React.FC<IDashAutoAdminDataGrid> = ({ resourceConfig }) =
     return <>
 
         <WithListContext render={({ isPending, data }) => {
-            // Use the draggable carousel hook with configurable options
-            const carousel = useDraggableCarousel<ITab>((data as ITab[]) || [], KITCHEN_CAROUSEL_CONFIG);
+            // Determine items per page based on screen size (for both modes)
+            const itemsPerPage = isXs ? TABS_CAROUSEL_CONFIG.itemsPerPageXs! :
+                                 isSm ? TABS_CAROUSEL_CONFIG.itemsPerPageSm! :
+                                 isMd ? TABS_CAROUSEL_CONFIG.itemsPerPageMd! :
+                                 isLg ? TABS_CAROUSEL_CONFIG.itemsPerPageLg! :
+                                 TABS_CAROUSEL_CONFIG.itemsPerPageXl!;
             
-            // Calculate item width: (100% - total gaps) / items per page
-            const totalGaps = (carousel.itemsPerPage - 1) * carousel.gap;
-            const itemWidthCalc = `calc((100% - ${totalGaps}px) / ${carousel.itemsPerPage})`;
+            const gap = TABS_CAROUSEL_CONFIG.gap!;
+            const totalGaps = (itemsPerPage - 1) * gap;
+            const itemWidthCalc = `calc((100% - ${totalGaps}px) / ${itemsPerPage})`;
 
+            // Use draggable carousel only if scrollMethod is 'dragging_scroll'
+            const carousel = scrollMethod === 'dragging_scroll' 
+                ? useDraggableCarousel<ITab>((data as ITab[]) || [], TABS_CAROUSEL_CONFIG)
+                : null;
+
+            // Browser scroll mode rendering
+            if (scrollMethod === 'browser_scroll') {
+                return (
+                    <Box sx={{ 
+                        height: '100%', 
+                        display: 'flex', 
+                        flexDirection: 'column',
+                        overflow: 'hidden'
+                    }}>
+                        <Box
+                            sx={{
+                                display: 'flex',
+                                overflowX: 'auto',
+                                overflowY: 'hidden',
+                                gap: `${gap}px`,
+                                padding: '8px',
+                                flexGrow: 1,
+                                '&::-webkit-scrollbar': {
+                                    height: '8px',
+                                },
+                                '&::-webkit-scrollbar-track': {
+                                    backgroundColor: 'rgba(0,0,0,0.05)',
+                                    borderRadius: '4px',
+                                },
+                                '&::-webkit-scrollbar-thumb': {
+                                    backgroundColor: 'rgba(0,0,0,0.2)',
+                                    borderRadius: '4px',
+                                    '&:hover': {
+                                        backgroundColor: 'rgba(0,0,0,0.3)',
+                                    },
+                                },
+                            }}
+                        >
+                            {((data as ITab[]) || []).map((record: ITab) => (
+                                <Box
+                                    key={record.id}
+                                    sx={{
+                                        flex: `0 0 ${itemWidthCalc}`,
+                                        minWidth: itemWidthCalc,
+                                        height: '100%',
+                                    }}
+                                >
+                                    <TabListItem
+                                        record={record}
+                                        resourceConfig={resourceConfig}
+                                        statusLabel={statusLabel}
+                                        translate={translate}
+                                        onClose={() => {}} // No-op for kitchen view
+                                        onPrint={() => axios.get(`tab/tab/${record.id}/print?regenerate=true`).then(() => showMessage("Orden enviada a impresión")).catch(() => showError("Error al imprimir"))}
+                                        onDownload={() => {}} // No-op for kitchen view
+                                        onPayment={() => {}} // No-op for kitchen view
+                                        onStatusUpdate={(id, status) => updateTabStatus(id, status)}
+                                        removeTabFromList={() => {}} // No-op for kitchen view
+                                        // Only show View and Print buttons for kitchen
+                                        showView={true}
+                                        showPrint={true}
+                                        showPaymentButton={false}
+                                        showCloseButton={false}
+                                        showEdit={false}
+                                        showDownload={false}
+                                    />
+                                </Box>
+                            ))}
+                        </Box>
+                    </Box>
+                );
+            }
+
+            // Dragging scroll mode rendering (original implementation)
             return (
                 <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column', position: 'relative' }}>
                     {/* Swipeable Container */}
