@@ -65,7 +65,7 @@ useEffect(() => {
         }*/
     
         await logout();
-        navigate('/login');
+        navigate('/');
     };
 
     const handleProfileRedirect = () => {
