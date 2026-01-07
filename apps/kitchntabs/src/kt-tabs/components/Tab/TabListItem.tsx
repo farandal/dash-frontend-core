@@ -34,6 +34,13 @@ interface TabListItemProps {
     onPayment: (tab: ITab) => void;
     onStatusUpdate: (id: number, status: string) => void;
     removeTabFromList: (id: number) => void;
+    // Optional props to control which buttons are shown
+    showPaymentButton?: boolean;
+    showCloseButton?: boolean;
+    showView?: boolean;
+    showEdit?: boolean;
+    showPrint?: boolean;
+    showDownload?: boolean;
 }
 
 const TabListItem = memo<TabListItemProps>(({
@@ -47,7 +54,14 @@ const TabListItem = memo<TabListItemProps>(({
     onDownload,
     onPayment,
     onStatusUpdate,
-    removeTabFromList
+    removeTabFromList,
+    // Button visibility props with defaults
+    showPaymentButton = true,
+    showCloseButton = true,
+    showView = true,
+    showEdit = true,
+    showPrint = true,
+    showDownload = true,
 }) => {
     // Add loading state
     const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
@@ -174,21 +188,33 @@ const TabListItem = memo<TabListItemProps>(({
     return (
         <Card sx={cardStyle} className="dash-tab-staff">
       
-            <Chip label={`#${String(record.id).slice(-6)}`} sx={{ position: 'absolute', top: 4, left: 4}} />                    
-
-            {/* Timer in top right corner */}
-            <Box sx={{ position: 'absolute', top: 4, right: 4, alignItems: 'center' }}>
-                {(['CONFIRMED', 'IN_PREPARATION'].includes(record.status)) && (
-                    <TabTimerClock createdAt={record.date_confirmed} />
-                )}
+            {/* New centered header with Order ID and Clock */}
+            <Box sx={{ 
+                display: 'flex', 
+                justifyContent: 'center', 
+                alignItems: 'center',
+                position: 'relative',
+                pt: 1,
+                pb: 0.5
+            }}>
+                <Chip 
+                    label={`#${String(record.id).slice(-6)}`} 
+                    sx={{ fontWeight: 'bold' }}
+                />
+                {/* Timer in top right */}
+                <Box sx={{ position: 'absolute', right: 8, top: 8 }}>
+                    {(['CONFIRMED', 'IN_PREPARATION'].includes(record.status)) && (
+                        <TabTimerClock createdAt={record.date_confirmed} />
+                    )}
+                </Box>
             </Box>
 
             <CardHeader
-                sx={{ pb: 1 }}
+                sx={{ pb: 0, pt: 0 }}
                 title={
                     <>
                         {record.order?.marketplace_info?.system_marketplace?.icon_url && (
-                            <Box sx={{ mt: 1 }}>
+                            <Box sx={{ display: 'flex', justifyContent: 'center' }}>
                                 <img 
                                     src={record.order.marketplace_info.system_marketplace.icon_url}
                                     alt={record.order.marketplace_info.system_marketplace.name} 
@@ -202,38 +228,55 @@ const TabListItem = memo<TabListItemProps>(({
             
             <CardContent sx={{ pt: 0, flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
                 <Stack spacing={1} sx={{ flex: 1, overflow: 'hidden' }}>
+                    {/* Status change button - moved to top */}
+                    {nextStatusLabel && (
+                        <Button
+                            variant="contained"
+                            size="small"
+                            fullWidth
+                            onClick={handleStatusUpdate}
+                            endIcon={!isUpdatingStatus && <ArrowForward />}
+                            disabled={isUpdatingStatus}
+                        >
+                            {isUpdatingStatus ? (
+                                <CircularProgress size={20} color="inherit" />
+                            ) : (
+                                nextStatusLabel
+                            )}
+                        </Button>
+                    )}
+
+                    {/* Status indicator chip */}
+                    {!(['CREATED'].includes(record.status)) && (
+                        <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', justifyContent: 'center' }}>
+                            <Chip
+                                label={`${statusLabel[record.status]} - ${formattedStatusDate}`}
+                                size="small"
+                                color={statusChipColor}
+                            />
+                        </Box>
+                    )}
+
                     <Box sx={{ display: 'flex', gap: 1 }}>
-                        
                         <TabActionButtonsField
                             method="list"
                             attribute={null}
                             resourceConfig={resourceConfig}
                             record={record}
                             onTabClosed={removeTabFromList}
-                            showPaymentButton={true}
-                            showCloseButton={true}
-                            showView={true}
-                            showEdit={true}
-                            showPrint={true}
-                            showDownload={true}
+                            showPaymentButton={showPaymentButton}
+                            showCloseButton={showCloseButton}
+                            showView={showView}
+                            showEdit={showEdit}
+                            showPrint={showPrint}
+                            showDownload={showDownload}
                             size="small"
                             // Pass the custom close handler
                             customCloseHandler={handleTabClose}
                         />
                     </Box>
-                
-                        {!(['CREATED'].includes(record.status)) && (
-                             <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-                            <Chip
-                                label={`${statusLabel[record.status]} - ${formattedStatusDate}`}
-                                size="small"
-                                color={statusChipColor}
-                            />
-                              </Box>
-                        )}
                   
-
-                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, flex: 1, overflow: 'auto', paddingBottom:"90px"}}>
+                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, flex: 1, overflow: 'auto', paddingBottom:"60px"}}>
                         <Typography sx={{ fontSize: '0.8rem', fontWeight: 'bold' }}>
                             {record?.note?.length > 50 ? `${record.note.slice(0, 50)}...` : record?.note}
                         </Typography>
@@ -279,21 +322,18 @@ const TabListItem = memo<TabListItemProps>(({
                         ))}
                     </Box>
                  
-                    {/* Bottom fixed section */}
+                    {/* Bottom fixed section - only price, status button moved to top */}
                     <Box sx={{ 
                         position: 'absolute',
                         bottom: 0,
                         left: 0,
                         right: 0,
-                        //bgcolor: 'background.paper',
-                        //borderTop: '1px solid #ddd',
                         p: 2
                     }}>
                         <Box sx={{ 
                             display: 'flex',
                             justifyContent: 'space-between',
-                            alignItems: 'center',
-                            mb: 2
+                            alignItems: 'center'
                         }}>
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                                 <Avatar
@@ -310,23 +350,6 @@ const TabListItem = memo<TabListItemProps>(({
                                 </Typography>
                             </Box>
                         </Box>
-
-                        {nextStatusLabel && (
-                            <Button
-                                variant="contained"
-                                size="small"
-                                fullWidth
-                                onClick={handleStatusUpdate}
-                                endIcon={!isUpdatingStatus && <ArrowForward />}
-                                disabled={isUpdatingStatus}
-                            >
-                                {isUpdatingStatus ? (
-                                    <CircularProgress size={20} color="inherit" />
-                                ) : (
-                                    nextStatusLabel
-                                )}
-                            </Button>
-                        )}
                     </Box>
                 </Stack>
             </CardContent>
