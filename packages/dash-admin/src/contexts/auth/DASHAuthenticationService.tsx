@@ -91,6 +91,21 @@ class DASHAuthenticationService {
         dashStorage.removeItem(this.REDIRECT_STORAGE_KEY);
     }
 
+    // Helper to get redirect URL from user's first role with a configured redirect
+    private getRoleRedirect(user: any): string | null {
+        const roles = user?.roles;
+        if (Array.isArray(roles) && roles.length > 0) {
+            // Return the first role's redirect if defined
+            for (const role of roles) {
+                if (role.redirect) {
+                    console.log('Found role redirect:', role.name, '->', role.redirect);
+                    return role.redirect;
+                }
+            }
+        }
+        return null;
+    }
+
     // Method to determine final redirect URL (backend takes precedence over localStorage)
     private determineRedirectUrl(backendRedirect?: string): string | null {
 
@@ -204,9 +219,10 @@ class DASHAuthenticationService {
 
                     // Only fall back to other redirects if backend didn't provide one
                     if (!finalRedirect) {
-                        // Check auth response redirect
-                        const authRedirect = auth.redirect || auth.user?.redirect || null;
-                        console.log("Auth response redirect:", authRedirect);
+                        // Check auth response redirect, then check role redirects
+                        const roleRedirect = this.getRoleRedirect(auth.user);
+                        const authRedirect = auth.redirect || auth.user?.redirect || roleRedirect || null;
+                        console.log("Auth response redirect:", authRedirect, "(role redirect:", roleRedirect, ")");
 
                         if (authRedirect) {
                             finalRedirect = authRedirect;
@@ -334,9 +350,10 @@ class DASHAuthenticationService {
             // Get complete auth data using existing token
             const { data: auth } = await this.axiosInstance.get(getEnv('APP_GETAUTH_ENDPOINT'));
 
-            // Extract redirect from backend auth response
-            const backendRedirect = auth.redirect || auth.user?.redirect || null;
-            console.log("Backend redirect found during token initialization:", backendRedirect);
+            // Extract redirect from backend auth response, including role redirects
+            const roleRedirect = this.getRoleRedirect(auth.user);
+            const backendRedirect = auth.redirect || auth.user?.redirect || roleRedirect || null;
+            console.log("Backend redirect found during token initialization:", backendRedirect, "(role redirect:", roleRedirect, ")");
 
             // Use AuthPersistenceService to save auth data
             AuthPersistenceService.saveAuth(auth);
@@ -619,9 +636,10 @@ class DASHAuthenticationService {
 
                         const auth = authResponse.data;
 
-                        // Extract redirect from backend auth response
-                        const backendRedirect = auth.redirect || auth.user?.redirect || null;
-                        console.log("Backend redirect found during app initialization:", backendRedirect);
+                        // Extract redirect from backend auth response, including role redirects
+                        const roleRedirect = this.getRoleRedirect(auth.user);
+                        const backendRedirect = auth.redirect || auth.user?.redirect || roleRedirect || null;
+                        console.log("Backend redirect found during app initialization:", backendRedirect, "(role redirect:", roleRedirect, ")");
 
                         // Update stored auth data
                         AuthPersistenceService.saveAuth(auth);

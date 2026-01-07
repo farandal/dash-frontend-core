@@ -84,12 +84,28 @@ const authProvider = {
 
                 await syncLocalStorageToDeviceStore();
 
-                // ✅ Handle redirect from backend response
-                if (redirectTo) {
-                    console.log('✅ Returning redirectTo to React Admin:', redirectTo);
-                    return Promise.resolve({ redirectTo });
+                // ✅ Handle redirect - check backend response first, then role redirects
+                let finalRedirectTo = redirectTo;
+                
+                // If no redirectTo from login response, check role redirects
+                if (!finalRedirectTo) {
+                    const roles = auth.user?.roles;
+                    if (Array.isArray(roles) && roles.length > 0) {
+                        for (const role of roles) {
+                            if (role.redirect) {
+                                finalRedirectTo = role.redirect;
+                                console.log('🎯 Using role redirect:', role.name, '->', role.redirect);
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                if (finalRedirectTo) {
+                    console.log('✅ Returning redirectTo to React Admin:', finalRedirectTo);
+                    return Promise.resolve({ redirectTo: finalRedirectTo });
                 } else {
-                    console.log('ℹ️ No redirectTo from backend, returning auth data');
+                    console.log('ℹ️ No redirectTo from backend or roles, returning auth data');
                     return Promise.resolve(auth);
                 }
 
