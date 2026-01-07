@@ -19,7 +19,15 @@ const roleSchema: IDashAutoAdminAttribute[] = [
 		attribute: 'redirect',
 		type: String,
 		inList: false,
-		//helpText: 'Ruta opcional a la que se redirige el usuario al iniciar sesión (ej: /dashboard). Debe comenzar con /',
+		fieldProps: {
+			placeholder: '/tab/kitchentab',
+		},
+		// Ensure redirect starts with /
+		validate: (value: string) => {
+			if (value && !value.startsWith('/')) {
+				throw Error('La ruta debe comenzar con /');
+			}
+		},
 	},
 	{
 		label: 'Grupo (web)',

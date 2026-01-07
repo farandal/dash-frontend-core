@@ -15,6 +15,21 @@ const roleSchemaDataGrid: IDashAutoAdminAttribute[] = [
 		// @TODO Agregar validador que no se pueda seleccionar un nivel superior
 	},
 	{
+		label: 'Redirección',
+		attribute: 'redirect',
+		type: String,
+		inList: false,
+		fieldProps: {
+			placeholder: '/tab/kitchentab',
+		},
+		// Ensure redirect starts with /
+		validate: (value: string) => {
+			if (value && !value.startsWith('/')) {
+				throw Error('La ruta debe comenzar con /');
+			}
+		},
+	},
+	{
 		label: 'Grupo (web)',
 		attribute: 'guard_name',
 		type: String,
