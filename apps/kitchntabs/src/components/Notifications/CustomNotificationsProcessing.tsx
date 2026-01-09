@@ -65,16 +65,29 @@ Example notification
 
 */
 
+import { AuthPersistenceService } from 'dash-auth';
+
 // Audio context for better browser compatibility
 let audioContext: AudioContext | null = null;
 
-// Digital watch alarm configuration
-const ALARM_DURATION_SECONDS = 10;
-const ALARM_FREQUENCY_HIGH = 4000; // High frequency like digital watch
-const ALARM_FREQUENCY_LOW = 2500;  // Alternating low frequency
-const BEEP_DURATION_MS = 100;      // Short beeps
-const BEEP_GAP_MS = 50;            // Gap between beeps
-const BEEP_PATTERN_GAP_MS = 300;   // Gap between beep patterns
+// Default digital watch alarm configuration
+const DEFAULTS = {
+    ALARM_DURATION_SECONDS: 10,
+    ALARM_FREQUENCY_HIGH: 4000,
+    ALARM_FREQUENCY_LOW: 2500,
+    BEEP_DURATION_MS: 100,
+    BEEP_GAP_MS: 50,
+    BEEP_PATTERN_GAP_MS: 300
+};
+
+interface AlarmSettings {
+    alarm_duration_seconds?: number;
+    alarm_frequency_high?: number;
+    alarm_frequency_low?: number;
+    beep_duration_ms?: number;
+    beep_gap_ms?: number;
+    beep_pattern_gap_ms?: number;
+}
 
 const initializeAudio = async (): Promise<boolean> => {
     try {
@@ -92,6 +105,24 @@ const initializeAudio = async (): Promise<boolean> => {
     } catch (error) {
         console.error('Failed to initialize audio context:', error);
         return false;
+    }
+};
+
+/**
+ * Unlock AudioContext on first user interaction
+ * required by modern browsers to allow autoplay
+ */
+export const unlockAudio = async (): Promise<void> => {
+    try {
+        if (!audioContext) {
+            audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+        }
+        if (audioContext.state === 'suspended') {
+            await audioContext.resume();
+        }
+        console.log('🔊 Audio Context unlocked/resumed:', audioContext.state);
+    } catch (e) {
+        console.error('🔊 Validate unlock:', e);
     }
 };
 
@@ -137,14 +168,19 @@ const playOscillatorBeep = (frequency: number, durationMs: number): Promise<void
  * Play a digital watch alarm pattern: beep-beep-beep (pause) beep-beep-beep
  * Alternates between high and low frequencies
  */
-const playAlarmPattern = async (useHighFreq: boolean): Promise<void> => {
-    const freq = useHighFreq ? ALARM_FREQUENCY_HIGH : ALARM_FREQUENCY_LOW;
+const playAlarmPattern = async (useHighFreq: boolean, settings: AlarmSettings): Promise<void> => {
+    const freq = useHighFreq 
+        ? (settings.alarm_frequency_high ?? DEFAULTS.ALARM_FREQUENCY_HIGH) 
+        : (settings.alarm_frequency_low ?? DEFAULTS.ALARM_FREQUENCY_LOW);
     
+    const beepDuration = settings.beep_duration_ms ?? DEFAULTS.BEEP_DURATION_MS;
+    const beepGap = settings.beep_gap_ms ?? DEFAULTS.BEEP_GAP_MS;
+
     // Play 3 quick beeps
     for (let i = 0; i < 3; i++) {
-        await playOscillatorBeep(freq, BEEP_DURATION_MS);
+        await playOscillatorBeep(freq, beepDuration);
         if (i < 2) {
-            await new Promise(r => setTimeout(r, BEEP_GAP_MS));
+            await new Promise(r => setTimeout(r, beepGap));
         }
     }
 };
@@ -153,8 +189,10 @@ const playAlarmPattern = async (useHighFreq: boolean): Promise<void> => {
  * Play the full digital watch alarm sequence for specified duration
  * Returns a Promise that resolves when alarm completes
  */
-const playDigitalWatchAlarm = async (durationSeconds: number = ALARM_DURATION_SECONDS): Promise<void> => {
-    console.log(`🔔 Starting digital watch alarm for ${durationSeconds} seconds...`);
+export const playDigitalWatchAlarm = async (settings: AlarmSettings = {}): Promise<void> => {
+    const durationSeconds = settings.alarm_duration_seconds ?? DEFAULTS.ALARM_DURATION_SECONDS;
+    
+    console.log(`🔔 Starting digital watch alarm for ${durationSeconds} seconds...`, settings);
     
     const initialized = await initializeAudio();
     if (!initialized) {
@@ -165,17 +203,19 @@ const playDigitalWatchAlarm = async (durationSeconds: number = ALARM_DURATION_SE
     const startTime = Date.now();
     const endTime = startTime + (durationSeconds * 1000);
     let patternCount = 0;
+    
+    const patternGap = settings.beep_pattern_gap_ms ?? DEFAULTS.BEEP_PATTERN_GAP_MS;
 
     while (Date.now() < endTime) {
         // Alternate between high and low frequency patterns
         const useHighFreq = patternCount % 2 === 0;
-        await playAlarmPattern(useHighFreq);
+        await playAlarmPattern(useHighFreq, settings);
         
         patternCount++;
         
         // Check if we still have time for another pattern
         if (Date.now() < endTime) {
-            await new Promise(r => setTimeout(r, BEEP_PATTERN_GAP_MS));
+            await new Promise(r => setTimeout(r, patternGap));
         }
     }
 
@@ -186,7 +226,7 @@ const playDigitalWatchAlarm = async (durationSeconds: number = ALARM_DURATION_SE
  * Legacy single beep for backwards compatibility
  */
 const playNotificationSound = async (): Promise<void> => {
-    await playOscillatorBeep(ALARM_FREQUENCY_HIGH, BEEP_DURATION_MS);
+    await playOscillatorBeep(DEFAULTS.ALARM_FREQUENCY_HIGH, DEFAULTS.BEEP_DURATION_MS);
 };
 
 export const processCustomNotification = async (notification: any): Promise<{ alarmCompleted: boolean }> => {
@@ -196,13 +236,20 @@ export const processCustomNotification = async (notification: any): Promise<{ al
     let play = false;
 
     // Play alarm sound, if notification is assistance request or order is confirmed. 
-
     if (notification?.notificationPayload?.class === "MallStoreAssistanceNotification") {
         play = true;
-      
     }
 
+    // Play alarm for confirmed orders (non-Uber, non-self-service marketplaces)
     if (isConfirmedStatus) {
+        play = true;
+    }
+    
+    // Check for explicit alarm flag in data or payload
+    // Backend sets alarm='true' for: Uber CREATED, Self-Service CREATED
+    if (notification?.data?.alarm === "true" || notification?.data?.alarm === true || 
+        notification?.notificationPayload?.alarm === "true" || notification?.notificationPayload?.alarm === true) {
+        console.log("🚨 Alarm flag set by backend - playing alarm...");
         play = true;
     }
 
@@ -210,9 +257,21 @@ export const processCustomNotification = async (notification: any): Promise<{ al
       
         console.log("🚨 Playing digital watch alarm for new order...");
         
-        // Play the digital watch alarm for 10 seconds
+        // Retrieve settings from AuthPersistenceService
+        let alarmSettings: AlarmSettings = {};
+        try {
+            const authData = AuthPersistenceService.getAuth();
+            if (authData?.auth?.tenantSettings?.alarm_settings) {
+                alarmSettings = authData.auth.tenantSettings.alarm_settings;
+                console.log("Found tenant alarm settings:", alarmSettings);
+            }
+        } catch (err) {
+            console.warn("Could not retrieve auth data for alarm settings, using defaults.", err);
+        }
+
+        // Play the digital watch alarm
         // This returns a Promise that resolves when alarm is complete
-        await playDigitalWatchAlarm(ALARM_DURATION_SECONDS);
+        await playDigitalWatchAlarm(alarmSettings);
         
         console.log("✅ Alarm sequence completed - TTS can now play");
       

@@ -44,6 +44,8 @@ const RoutingWrapper = React.lazy(() => import('dash-admin').then(module => ({ d
 const DASHAppLayout = React.lazy(() => import('dash-admin').then(module => ({ default: module.DASHAppLayout })));
 const DASHAppProviders = React.lazy(() => import('dash-admin').then(module => ({ default: module.DASHAppProviders })));
 
+
+
 interface KitchnTabsPrivateAppProps extends PropsWithChildren {
     appPath?: string;
     customResources?: IDashAutoAdminResourceConfig[] | ResourceManifest;
@@ -54,6 +56,9 @@ interface KitchnTabsPrivateAppProps extends PropsWithChildren {
     customAuthProvider?: any;
     customPublicRoutes?: any;
     customPrivateRoutes?: any;
+    customWSMessagesManager?: any;
+    dashboard?: React.ComponentType<any>;
+    customEchoProvider?: React.ComponentType<any>;
 }
 
 // Custom notification component
@@ -80,10 +85,21 @@ const KitchnTabsPrivateApp: React.FC<KitchnTabsPrivateAppProps> = ({
     customAuthProvider,
     customPublicRoutes = null,
     customPrivateRoutes = null,
+    customWSMessagesManager = null,
+    dashboard = null,
+    customEchoProvider,
     children
 }) => {
 
     const DEBUG = false;
+    
+    // Debug WS Manager injection
+    if (customWSMessagesManager) {
+        console.log('🔍 KitchnTabsPrivateApp: Using CUSTOM WS Messages Manager');
+    } else {
+        console.log('🔍 KitchnTabsPrivateApp: Using DEFAULT DASHWSMessagesManager');
+    }
+
     const envVars = useMemo(() => ({
         APP_VERSION: getEnv('APP_VERSION') || '1.0.0',
         BUILD_TIME: getEnv('BUILD_TIME') || new Date().toISOString(),
@@ -125,12 +141,6 @@ const KitchnTabsPrivateApp: React.FC<KitchnTabsPrivateAppProps> = ({
             gcTime: 1000 * 60 * 60 * 1,    // Keep in cache for 1 hour
         });*/
 
-        // Cache "ecommerce/product" for 24 hours
-        customQueryClient.setQueryDefaults(['ecommerce/product'], {
-            staleTime: 1000 * 60 * 60 * 4, // 24 hours
-            gcTime: 1000 * 60 * 60 * 4,    // Keep in cache for 24 hours
-        });
-
         // Cache "ecommerce/category" for 24 hours
         customQueryClient.setQueryDefaults(['ecommerce/category'], {
             staleTime: 1000 * 60 * 60 * 24, // 24 hours
@@ -139,6 +149,30 @@ const KitchnTabsPrivateApp: React.FC<KitchnTabsPrivateAppProps> = ({
 
         // Add more as needed for other endpoints/resources
     }, [customQueryClient]);
+
+    // Unlock audio context on first user interaction
+    useEffect(() => {
+        const handleInteraction = () => {
+            import('../components/Notifications/CustomNotificationsProcessing').then(({ unlockAudio }) => {
+                unlockAudio();
+            });
+            
+            // Remove listeners after first successful interaction
+            window.removeEventListener('click', handleInteraction);
+            window.removeEventListener('keydown', handleInteraction);
+            window.removeEventListener('touchstart', handleInteraction);
+        };
+
+        window.addEventListener('click', handleInteraction);
+        window.addEventListener('keydown', handleInteraction);
+        window.addEventListener('touchstart', handleInteraction);
+
+        return () => {
+            window.removeEventListener('click', handleInteraction);
+            window.removeEventListener('keydown', handleInteraction);
+            window.removeEventListener('touchstart', handleInteraction);
+        };
+    }, []);
 
     // Memoize theme options
     const extendedThemeOptions = useMemo(() => ({
@@ -375,12 +409,14 @@ const KitchnTabsPrivateApp: React.FC<KitchnTabsPrivateAppProps> = ({
     return (
         <Suspense fallback={<GlobalSmallLoader message="Loading admin providers..." />}>
             <DASHAppProviders
-                wsMessagesManager={DASHWSMessagesManager}
+                wsMessagesManager={customWSMessagesManager || DASHWSMessagesManager}
                 extendedThemeOptions={extendedThemeOptions}
                 dashAutoAdminComponents={dashAutoAdminComponents}
                 queryClient={customQueryClient}
                 queryPersister={localStoragePersister}
+                CustomEchoProvider={customEchoProvider}
             >
+            
                 <GlobalHook />
 
                 {useOwnRouter ? (
@@ -391,12 +427,13 @@ const KitchnTabsPrivateApp: React.FC<KitchnTabsPrivateAppProps> = ({
                             LayoutComponent={DomainAppLayout}
                         >
                             <Route
-                                path={routePath + "/*"}
+                                path={"/*"}
                                 element={
                                     <Suspense fallback={<GlobalSmallLoader message="Loading admin interface..." />}>
                                         {children}
                                         <DASHAdmin
-                                            basePath={routePath}
+                                            basePath={"/"}
+                                            dashboard={dashboard} // Pass dashboard
                                             customDataProvider={dataProvider}
                                             customAuthProvider={authProvider}
                                             customQueryClient={customQueryClient}
@@ -423,6 +460,7 @@ const KitchnTabsPrivateApp: React.FC<KitchnTabsPrivateAppProps> = ({
                                 {children}
                                 <DASHAdmin
                                     basePath={routePath}
+                                    dashboard={dashboard} // Pass dashboard
                                     customDataProvider={dataProvider}
                                     customAuthProvider={authProvider}
                                     customQueryClient={customQueryClient}

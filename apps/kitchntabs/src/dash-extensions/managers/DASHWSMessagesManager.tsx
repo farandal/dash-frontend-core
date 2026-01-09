@@ -1,3 +1,4 @@
+import { processCustomNotification } from '../../components/Notifications/CustomNotificationsProcessing';
 import { useContext, useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { Notification } from 'react-admin';
@@ -145,21 +146,27 @@ const DASHWSMessagesManager = (): ILaravelEchoManager => {
             enabled: !!tenantId && !!userId // Only enable if both tenantId and userId exist
         });
 
+
+
     useEffect(() => {
-        console.log("Private Tenant Message",event2);
+        // console.log("Private Tenant Message", event3);
         const _lastEvent = event3?.data;
-        console.log(_lastEvent);
-        setLastEvent(_lastEvent);
-      
+        if (_lastEvent) {
+             console.log('🔔 DASHWSMessagesManager: Received tenant event', _lastEvent);
+             setLastEvent(_lastEvent);
+             processCustomNotification(_lastEvent);
+        }
     }, [event3]);
 
 
     useEffect(() => {
-        console.log("Private User Message",event2);
+        // console.log("Private User Message", event2);
         const _lastEvent = event2?.data;
-        console.log(_lastEvent);
-        setLastEvent(_lastEvent);
-     
+         if (_lastEvent) {
+             console.log('🔔 DASHWSMessagesManager: Received user event', _lastEvent);
+             setLastEvent(_lastEvent);
+             processCustomNotification(_lastEvent);
+        }
     }, [event2]);
 
 
