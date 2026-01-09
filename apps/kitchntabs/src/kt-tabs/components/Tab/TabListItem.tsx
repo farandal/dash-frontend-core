@@ -15,7 +15,7 @@ import {
     Avatar,
     CircularProgress
 } from "@mui/material";
-import { ArrowForward, AccessTime, Fastfood, AttachMoney } from "@mui/icons-material";
+import { ArrowForward, AccessTime, Fastfood, AttachMoney, Person, TableBar, LocalShipping, StickyNote2 } from "@mui/icons-material";
 import { useTranslate } from 'react-admin';
 import { ITab } from '../interfaces/ITab';
 import TabTimerClock from '../Misc/TabTimerClock';
@@ -276,10 +276,62 @@ const TabListItem = memo<TabListItemProps>(({
                         />
                     </Box>
                   
+                    {/* Session/Order Info Block */}
+                    <Box sx={{ 
+                        display: 'flex', 
+                        flexDirection: 'column', 
+                        gap: 0.5, 
+                        p: 1, 
+                        backgroundColor: 'action.hover',
+                        borderRadius: 1,
+                        mb: 1
+                    }}>
+                        {/* Delivery Method */}
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                            <LocalShipping sx={{ fontSize: 16, color: 'primary.main' }} />
+                            <Typography sx={{ fontSize: '0.75rem', fontWeight: 'bold' }}>
+                                {record.delivery_method_localized || record.delivery_method || translate('tab.delivery.not_specified')}
+                            </Typography>
+                        </Box>
+                        
+                        {/* Table Number - only show if present */}
+                        {record.table_number && (
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                                <TableBar sx={{ fontSize: 16, color: 'info.main' }} />
+                                <Typography sx={{ fontSize: '0.75rem' }}>
+                                    {translate('tab.session.table')}: {record.table_number}
+                                </Typography>
+                            </Box>
+                        )}
+                        
+                        {/* Customer Name - only show if present */}
+                        {record.customer_name && (
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                                <Person sx={{ fontSize: 16, color: 'success.main' }} />
+                                <Typography sx={{ fontSize: '0.75rem' }}>
+                                    {record.customer_name}
+                                </Typography>
+                            </Box>
+                        )}
+                    </Box>
+
                     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, flex: 1, overflow: 'auto', paddingBottom:"60px"}}>
-                        <Typography sx={{ fontSize: '0.8rem', fontWeight: 'bold' }}>
-                            {record?.note?.length > 50 ? `${record.note.slice(0, 50)}...` : record?.note}
-                        </Typography>
+                        {/* Tab Note */}
+                        {record?.note && (
+                            <Box sx={{ 
+                                display: 'flex', 
+                                alignItems: 'flex-start', 
+                                gap: 0.5, 
+                                p: 1, 
+                                backgroundColor: 'warning.light',
+                                borderRadius: 1
+                            }}>
+                                <StickyNote2 sx={{ fontSize: 16, color: 'warning.dark' }} />
+                                <Typography sx={{ fontSize: '0.8rem', fontWeight: 'bold' }}>
+                                    {record?.note?.length > 50 ? `${record.note.slice(0, 50)}...` : record?.note}
+                                </Typography>
+                            </Box>
+                        )}
                         {record?.order?.items?.map((item) => (
                             <Box key={item.id} sx={{ 
                                 display: 'flex',
@@ -323,34 +375,36 @@ const TabListItem = memo<TabListItemProps>(({
                     </Box>
                  
                     {/* Bottom fixed section - only price, status button moved to top */}
-                    <Box sx={{ 
-                        position: 'absolute',
-                        bottom: 0,
-                        left: 0,
-                        right: 0,
-                        p: 2
-                    }}>
+                    {record.order ? (
                         <Box sx={{ 
-                            display: 'flex',
-                            justifyContent: 'space-between',
-                            alignItems: 'center'
+                            position: 'absolute',
+                            bottom: 0,
+                            left: 0,
+                            right: 0,
+                            p: 2
                         }}>
-                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                <Avatar
-                                    sx={{
-                                        bgcolor: record.order.is_paid ? 'success.main' : 'error.main',
-                                        width: 30,
-                                        height: 30,
-                                    }}
-                                >
-                                    <AttachMoney sx={{ color: 'white', fontSize: 24 }} />
-                                </Avatar>
-                                <Typography sx={{ fontSize: '1.2rem', fontWeight: 'bold' }}>
-                                    {formatPrice(record.order.total_amount)}
-                                </Typography>
+                            <Box sx={{ 
+                                display: 'flex',
+                                justifyContent: 'space-between',
+                                alignItems: 'center'
+                            }}>
+                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                    <Avatar
+                                        sx={{
+                                            bgcolor: record.order.is_paid ? 'success.main' : 'error.main',
+                                            width: 30,
+                                            height: 30,
+                                        }}
+                                    >
+                                        <AttachMoney sx={{ color: 'white', fontSize: 24 }} />
+                                    </Avatar>
+                                    <Typography sx={{ fontSize: '1.2rem', fontWeight: 'bold' }}>
+                                        {formatPrice(record.order.total_amount || 0)}
+                                    </Typography>
+                                </Box>
                             </Box>
                         </Box>
-                    </Box>
+                    ) : "Data Error"}
                 </Stack>
             </CardContent>
         </Card>

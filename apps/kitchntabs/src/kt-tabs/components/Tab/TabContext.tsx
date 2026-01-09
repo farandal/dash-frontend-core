@@ -8,7 +8,7 @@ import { App as CapacitorApp } from '@capacitor/app';
 
 import { TabManagerProvider } from "../contexts/TabManagerContext";
 import { ITab } from "../interfaces/ITab";
-//import { processCustomNotification } from '@app/CustomNotificationsProcessing';
+import { processCustomNotification } from '../../../components/Notifications/CustomNotificationsProcessing';
 
 
 
@@ -24,10 +24,11 @@ const TabsListProvider: React.FC<{ children: React.ReactNode }> = ({ children })
        if (
             lastEvent.model === "Domain\\App\\Models\\Tab\\Tab" &&
             (lastEvent.notificationPayload?.class === "MallSessionTabCreationNotification" ||
-            lastEvent.notificationPayload?.class === "TenantChannelMessageNotification")
+            lastEvent.notificationPayload?.class === "TenantChannelMessageNotification" || 
+            lastEvent.notificationPayload?.class === "TabCreatedNotification")
         ) {
             // Play notification sound before refresh
-            //processCustomNotification(lastEvent);
+            processCustomNotification(lastEvent);
             
             notify(lastEvent.notificationPayload?.notificationPayload?.message || lastEvent.notificationPayload?.message || "Actualización", { type: 'info' });
             refresh();
@@ -59,10 +60,11 @@ const TabsEditProvider: React.FC<{ children: React.ReactNode }> = ({ children })
             lastEvent.model === "Domain\\App\\Models\\Tab\\Tab" &&
             (lastEvent.notificationPayload?.class === "MallSessionTabCreationNotification" ||
             lastEvent.notificationPayload?.class === "TenantChannelMessageNotification" || // @deprecated
-            lastEvent.notificationPayload?.class === "TabChannelNotification")
+            lastEvent.notificationPayload?.class === "TabChannelNotification" ||
+            lastEvent.notificationPayload?.class === "TabCreatedNotification")
         ) {
             // Play notification sound before refresh
-            //processCustomNotification(lastEvent);
+            processCustomNotification(lastEvent);
            
             notify(lastEvent.notificationPayload?.notificationPayload?.message || lastEvent.notificationPayload?.message || "Actualización", { type: 'info' });
             refresh();

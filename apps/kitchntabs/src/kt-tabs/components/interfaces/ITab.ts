@@ -30,6 +30,8 @@ export interface ITab {
   status_localized: string;
   delivery_method: string;
   delivery_method_localized: string;
+  table_number: string | null;
+  customer_name?: string | null;
   note: string | null;
   sale_note_path: string | null;
   order_id: number;
