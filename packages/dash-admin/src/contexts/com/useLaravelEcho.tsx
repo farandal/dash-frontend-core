@@ -138,8 +138,8 @@ const useLaravelEcho = ({
     // For now this implementation is constrained to 2 clients, one for public and one for private only. 
     const getClientId = useCallback(() => {
         //return `${type}-${userId || 'public'}`;
-        return type
-    }, [type, userId]);
+        return `${type}-${channel || 'global'}-${userId || 'public'}`;
+    }, [type, userId, channel]);
 
     const cleanup = useCallback(() => {
         if (pingTimerRef.current) {
@@ -317,8 +317,9 @@ const useLaravelEcho = ({
                 console.log("%c📡 Socket listener unmounted!", "color: #ff6b6b; font-weight: bold;");
                 cleanup();
             }
-        };
-    }, [userId, enabled]);
+            }
+        
+    }, [userId, enabled, channel]);
 
 
 

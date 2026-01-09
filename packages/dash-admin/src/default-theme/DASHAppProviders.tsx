@@ -35,6 +35,7 @@ export interface IDomainAppProviders<U, A, R> extends React.PropsWithChildren {
     queryClient?: any
     /** Optional persister for localStorage query caching */
     queryPersister?: Persister
+    CustomEchoProvider?: React.ComponentType<any>
 }
 
 /**
@@ -69,8 +70,9 @@ const DomainAppProviders = <U, A, R>({
     extendedThemeOptions,
     dashAutoAdminComponents,
     queryClient,
-    queryPersister
 
+    queryPersister,
+    CustomEchoProvider
 }: IDomainAppProviders<U, A, R>): React.JSX.Element => {
    
     const content = (
@@ -83,15 +85,22 @@ const DomainAppProviders = <U, A, R>({
                     <DialogServiceProvider
                         component={BridgedDASHModal}
                         componentProps={{ sound: DASHAppConstants.system.UI_SOUNDS }}
+
                     ><FCMProvider>
-                        <LaravelEchoProvider manager={wsMessagesManager || WSMessagesManager}>
-                            <CacheInvalidatorContextProvider>
-                                <CacheInvalidatorListenerComponent />
-                                <ToastContainer style={{ width: '520px' }} />
-                                <DASHGlobalErrorHandler />
-                                {children}
-                            </CacheInvalidatorContextProvider>
-                        </LaravelEchoProvider>
+                        {/* Use CustomEchoProvider if provided, otherwise default to LaravelEchoProvider */}
+                        {(() => {
+                            const EchoProvider = CustomEchoProvider || LaravelEchoProvider;
+                            return (
+                                <EchoProvider manager={wsMessagesManager || WSMessagesManager}>
+                                    <CacheInvalidatorContextProvider>
+                                        <CacheInvalidatorListenerComponent />
+                                        <ToastContainer style={{ width: '520px' }} />
+                                        <DASHGlobalErrorHandler />
+                                        {children}
+                                    </CacheInvalidatorContextProvider>
+                                </EchoProvider>
+                            );
+                        })()}
                     </FCMProvider>
                     </DialogServiceProvider>
                 </ComponentRegistryProvider>

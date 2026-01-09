@@ -370,7 +370,7 @@ const AppMaterialMenu: React.FC<IAppMenuExtended> = (props) => {
 
                     }}>
 
-                    {authContext?.authenticated && <AvatarComponent />}
+                    {authContext?.authenticated && authContext.user?.id !== 'guest' && <AvatarComponent />}
                 </Box>
                 <BridgedLocalesMenuButton />
                 <DarkToggleMode />

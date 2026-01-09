@@ -19,7 +19,7 @@ export interface IRole {
 	updated_at: string
 }
 export interface IGetAuthUser {
-	tenant_id?: number;
+	tenant_id?: React.Key;
 	id: number
 	name: string
 	lastname: string

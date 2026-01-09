@@ -60,6 +60,7 @@ export interface IDASHAdmin<U, A, R, C> {
     basePath?: string;
     AdminHook?: React.ComponentType<any>;
     children?: JSX.Element;
+    dashboard?: React.ComponentType<any>;
 }
 
 import authProvider from './providers/authProvider';
@@ -246,6 +247,7 @@ const DASHAdminApp: React.FC<IDASHAdmin<unknown, unknown, unknown, unknown>> = R
         basePath,
         AdminHook = (props) => props.children,
         children,
+        dashboard,
     } = props;
 
     //Locale
@@ -355,7 +357,8 @@ const DASHAdminApp: React.FC<IDASHAdmin<unknown, unknown, unknown, unknown>> = R
         loginPage: customLoginPage,
         ...(customErrorPage && { catchAll: customErrorPage }),
         ...(Error && { error: Error }),
-    }), [customNotification, customLayout, customLoginPage, customErrorPage]);
+        dashboard,
+    }), [customNotification, customLayout, customLoginPage, customErrorPage, dashboard]);
 
     // TODO As AdminHook was added, possible to refactor and remove RADashComponent from here
     return children ? (
@@ -407,7 +410,8 @@ const DASHAdminApp: React.FC<IDASHAdmin<unknown, unknown, unknown, unknown>> = R
         prevProps.customLoginPage === nextProps.customLoginPage &&
         prevProps.customLayout === nextProps.customLayout &&
         prevProps.customDataProvider === nextProps.customDataProvider &&
-        prevProps.customAuthProvider === nextProps.customAuthProvider
+        prevProps.customAuthProvider === nextProps.customAuthProvider &&
+        prevProps.dashboard === nextProps.dashboard
     );
 });
 
