@@ -46,6 +46,25 @@ const tenantTenantSchema:IDashAutoAdminAttribute[] = [
     },
 
     {
+      tab: 'Datos',
+      label: 'Slug (URL)',
+      attribute: 'slug',
+      type: String,
+      fieldProps: {
+        placeholder: 'my-restaurant',
+        helperText: 'URL-friendly identifier for self-service kiosk. Must be lowercase, no spaces.'
+      },
+      validate: (value: string) => {
+        if (value && !/^[a-z0-9-]+$/.test(value)) {
+          throw new Error('Slug must be lowercase letters, numbers, and hyphens only');
+        }
+        if (value && value.length > 50) {
+          throw new Error('Slug cannot exceed 50 characters');
+        }
+      },
+    },
+
+    {
          tab: 'Datos',
       label: 'Descripción Corta',
       attribute: 'short_description',

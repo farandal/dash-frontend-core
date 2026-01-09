@@ -6,3 +6,7 @@ export { default as DASHGroupIcons } from './DASHGroupIcons';
 export { default as DASHLayoutSettings } from './DASHLayoutSettings';
 //export { default as DASHMallSharedRoutes } from './DASHMallSharedRoutes';
 export { default as DASHPrivateSharedRoutes } from './DASHPrivateSharedRoutes';
+
+// Self-Service Client Providers
+export { default as DASHSelfServiceClientAuthProvider } from './DASHSelfServiceClientAuthProvider';
+export { default as DASHSelfServiceClientDataProvider } from './DASHSelfServiceClientDataProvider';

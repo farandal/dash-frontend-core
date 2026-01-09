@@ -92,6 +92,8 @@ export const KitchnTabsResources: ResourceManifest = {
     // CASH COUNT RESOURCES (from kt-cashcount)
     // ========================================================================
     cashCountResource: () => import('kt-cashcount/src/resources/cashCountResource'),
+
+    selfServiceResource: () => import('./kt-selfservice/resources/selfServiceResource'),
 };
 
 export default KitchnTabsResources;

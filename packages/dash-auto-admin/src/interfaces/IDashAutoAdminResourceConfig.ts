@@ -71,8 +71,11 @@ export default interface IDashAutoAdminResourceConfig {
 	exporter?: any;
 	/** */
 	search?: boolean;
-	/** */
-	component: (
+	/** 
+	 * Custom component for rendering the resource. 
+	 * If not provided, defaults to ResourceTemplate from dash-admin.
+	 */
+	component?: (
 		resourceConfig: IDashAutoAdminResourceConfig,
 		children?: any,
 	) => ReactNode;
@@ -337,4 +340,11 @@ export default interface IDashAutoAdminResourceConfig {
 
     contextComponent?:  ({resourceConfig,mode,children}:{resourceConfig:IDashAutoAdminResourceConfig,mode?:"create" | "edit" | "list",children?:ReactNode}) => JSX.Element | ReactNode;
     editProps?: any; // TODO Map this with react admin Edit Props.
+    
+    /** 
+     * Custom configuration object for context components.
+     * Can be used to pass custom settings like API paths, storage keys, etc.
+     * The contextComponent receives this via resourceConfig.config
+     */
+    config?: Record<string, any>;
 }

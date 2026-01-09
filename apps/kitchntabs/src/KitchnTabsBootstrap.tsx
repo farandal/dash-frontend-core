@@ -3,6 +3,7 @@
  * 
  * Main bootstrap component for the KitchnTabs application.
  * This handles authentication state and renders either the public or private app.
+ * Also supports self-service kiosk mode for single restaurant ordering.
  */
 import React, { lazy, Suspense, useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
@@ -11,28 +12,120 @@ import { IAuthState, IDASHAppState, DASH_REDUX_ACTIONS } from 'dash-admin-state'
 import { ACTION_UPDATE_AUTH } from 'dash-admin-state/src/redux/reducers/Auth';
 import DASHAuthenticationService from 'dash-admin/src/contexts/auth/DASHAuthenticationService';
 import { dashStorage } from 'dash-utils';
+import { LaravelEchoProvider } from 'dash-admin/src/contexts/com/LaravelEchoContext';
+
 
 // Import resources from kt-* packages
 import { KitchnTabsResources } from './KitchnTabsResources';
+import { SelfServiceResources } from './SelfServiceResources';
 
 // Import GlobalSmallLoader from local dash-extensions
 import GlobalSmallLoader from './dash-extensions/components/GlobalSmallLoader';
 import { dashPrivateRoutes, dashPublicRoutes } from './KitchnTabsRoutes';
-import MainAppHookComponent from './contexts/MainAppHookComponent';
+import { selfServicePublicRoutes, selfServicePrivateRoutes } from './SelfServiceRoutes';
+import DASHSelfServiceWSMessagesManager from './dash-extensions/managers/DASHSelfServiceWSMessagesManager';
+
+// Lazy load self-service wrapper
+const SelfServiceClientWrapper = lazy(() => import('./components/selfservice/SelfServiceClientWrapper'));
+
+// Lazy load self-service providers
+const SelfServiceEchoProvider = lazy(() => import('./kt-selfservice/contexts/SelfServiceEchoContext').then(module => ({ default: module.SelfServiceEchoProvider })));
+const selfServiceProvidersPromise = import('./dash-extensions').then(module => ({
+
+    DASHSelfServiceClientAuthProvider: module.DASHSelfServiceClientAuthProvider,
+    DASHSelfServiceClientDataProvider: module.DASHSelfServiceClientDataProvider,
+}));
+
+// Lazy load hook components
+const MainAppHookComponent = lazy(() => import('./contexts/MainAppHookComponent'));
+const SelfServiceAppHookComponent = lazy(() => import('./kt-selfservice/contexts/SelfServiceAppHookComponent'));
+//const SelfServiceHome = lazy(() => import('./kt-selfservice/resources/SelfServiceHome'));
 
 // Lazy load the main apps
 const KitchnTabsPublicApp = lazy(() => import('./core/KitchnTabsPublicApp'));
 const KitchnTabsPrivateApp = lazy(() => import('./core/KitchnTabsPrivateApp'));
 
+
 const KitchnTabsBootstrap: React.FC = () => {
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [initializationError, setInitializationError] = useState<string | null>(null);
+    const [selfServiceProviders, setSelfServiceProviders] = useState<any>(null);
+    
+    // Track pathname in state to trigger re-render when URL changes
+    const [pathname, setPathname] = useState<string>(window.location.pathname);
 
     // Use Redux directly
     const auth: IAuthState<any, any> = useSelector((state: IDASHAppState<any, any, any>) => state.auth);
     const dispatch = useDispatch();
 
     const isAuthenticated = auth.authenticated;
+
+    // Check if URL matches a self-service session pattern (/selfservice/:sessionId)
+    const selfServiceMatch = pathname.match(/^\/selfservice\/([A-Z0-9]{5,})/i);
+    const isSelfServiceUrl = !!selfServiceMatch;
+    const sessionId = selfServiceMatch ? selfServiceMatch[1] : null;
+
+    // For self-service URLs, set authenticated=true in localStorage immediately
+    if (isSelfServiceUrl) {
+        const currentAuth = dashStorage.getItem('authenticated');
+        if (currentAuth !== 'true') {
+            console.log('🔐 KitchnTabsBootstrap: Self-service URL detected, setting guest authenticated=true');
+            dashStorage.setItem('authenticated', 'true');
+        }
+    }
+
+    console.log('🚀 KitchnTabsBootstrap: INITIAL RENDER', {
+        pathname,
+        isSelfServiceUrl,
+        sessionId,
+        isAuthenticated,
+        isLoading
+    });
+
+    // ... (rest of code)
+
+    const selfServiceAppProps = {
+        customAuthProvider: selfServiceProviders?.DASHSelfServiceClientAuthProvider,
+        customDataProvider: selfServiceProviders?.DASHSelfServiceClientDataProvider,
+        customResources: SelfServiceResources,
+        // customPublicRoutes: selfServicePublicRoutes, // Removed as per redesign
+        customPrivateRoutes: selfServicePrivateRoutes, // Keeping private routes as auth routes
+        AdminHook: () => <><SelfServiceAppHookComponent /></>,
+        customWSMessagesManager: DASHSelfServiceWSMessagesManager,
+        //dashboard: SelfServiceHome,
+        customEchoProvider: ({ manager, children }: any) => (
+            <LaravelEchoProvider manager={manager}>
+                <SelfServiceEchoProvider initialHash={sessionId} key={sessionId}>
+                    {children}
+                </SelfServiceEchoProvider>
+            </LaravelEchoProvider>
+        )
+    };
+
+    // Load self-service providers on mount
+    useEffect(() => {
+        if (isSelfServiceUrl) {
+            selfServiceProvidersPromise.then(providers => {
+                setSelfServiceProviders(providers);
+            }).catch(error => {
+                console.error('Failed to load self-service providers:', error);
+            });
+        }
+    }, [isSelfServiceUrl]);
+
+    // Listen for URL changes (popstate for back/forward)
+    useEffect(() => {
+        const handleUrlChange = () => {
+            const newPathname = window.location.pathname;
+            if (newPathname !== pathname) {
+                console.log('🔍 KitchnTabsBootstrap: URL changed from', pathname, 'to', newPathname);
+                setPathname(newPathname);
+            }
+        };
+
+        window.addEventListener('popstate', handleUrlChange);
+        return () => window.removeEventListener('popstate', handleUrlChange);
+    }, [pathname]);
 
     console.log('🔍 KitchnTabsBootstrap: Redux auth state:', {
         authenticated: auth.authenticated,
@@ -218,7 +311,6 @@ const KitchnTabsBootstrap: React.FC = () => {
                     alignItems: 'center',
                     minHeight: '100vh',
                     gap: '16px',
-                    //backgroundColor: 'var(--bodybg-primary, #121212)',
                     color: 'var(--text-color,@text-color--dark)',
                 }}
             >
@@ -245,23 +337,39 @@ const KitchnTabsBootstrap: React.FC = () => {
         );
     }
 
-    console.log('🔍 KitchnTabsBootstrap: Rendering app - isAuthenticated:', isAuthenticated);
+    console.log('🔍 KitchnTabsBootstrap: Rendering app', { isAuthenticated, isSelfServiceUrl, pathname });
 
     const privateAppProps = {
         customResources: KitchnTabsResources,
         customPublicRoutes: dashPublicRoutes,
         customPrivateRoutes: dashPrivateRoutes,
         AdminHook: () => { return <>{/*<RADashComponent />*/}<MainAppHookComponent /></> },
+        customEchoProvider: ({ manager, children }: any) => (
+            <LaravelEchoProvider manager={manager}>
+                <SelfServiceEchoProvider>
+                    {children}
+                </SelfServiceEchoProvider>
+            </LaravelEchoProvider>
+        )
     };
 
 
-    // Private props are handled by independent wrappers within the dash public app.
-    //const publicAppProps = app === "mall" ?  { customGlobalRoutes: mallClientGlobalRoutes } : { customGlobalRoutes: DASHResources }
-    console.log("isAuthenticated", isAuthenticated)
 
+    // Render based on auth state and URL pattern:
+    // - Authenticated users → KitchnTabsPrivateApp (admin)
+    // - Unauthenticated + self-service URL → SelfServiceClientWrapper + KitchnTabsPrivateApp (kiosk ordering)
+    // - Unauthenticated + non-self-service URL → KitchnTabsPublicApp (landing, login, etc.)
     return (
         <Suspense fallback={<GlobalSmallLoader message={isAuthenticated ? "Loading admin panel..." : "Loading application..."} />}>
-            {isAuthenticated ? (
+            {isSelfServiceUrl ? (
+                selfServiceProviders ? (
+                    <SelfServiceClientWrapper>
+                        <KitchnTabsPrivateApp {...selfServiceAppProps} />
+                    </SelfServiceClientWrapper>
+                ) : (
+                    <GlobalSmallLoader message="Loading self-service modules..." />
+                )
+            ) : isAuthenticated ? (
                 <KitchnTabsPrivateApp {...privateAppProps} />
             ) : (
                 <KitchnTabsPublicApp />
@@ -271,5 +379,3 @@ const KitchnTabsBootstrap: React.FC = () => {
 };
 
 export default KitchnTabsBootstrap;
-// End of file
-
