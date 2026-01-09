@@ -4,7 +4,7 @@
   "author": "Francisco Aranda <farandal@gmail.com>",
   "license": "MIT",
   "private": true,
-  "version": "1.3.4",
+  "version": "1.3.5",
   "main": "apps/kitchntabs/dist-electron/main/index.js",
   "scripts": {
     "new": "chmod +x ./new.sh && sh ./new.sh",
@@ -12,12 +12,10 @@
     "config:web:kitchntabs:production": "MODE=production CUSTOM_MODE=kitchntabs.production TARGET_TYPE=web PLATFORM=web APP_PATH=apps/kitchntabs node build_config.js",
     "config:web:kitchntabs:development": "MODE=development CUSTOM_MODE=kitchntabs.development TARGET_TYPE=web PLATFORM=web APP_PATH=apps/kitchntabs node build_config.js",
     "config:web:kitchntabs:local": "MODE=development CUSTOM_MODE=kitchntabs.local TARGET_TYPE=web PLATFORM=web APP_PATH=apps/kitchntabs node build_config.js",
-  
     "config:web:kitchntabs-mall:production": "MODE=production CUSTOM_MODE=kitchntabs.development TARGET_TYPE=web PLATFORM=web APP_PATH=apps/kitchntabs-mall node build_config.js",
     "config:web:kitchntabs-mall:development": "MODE=development CUSTOM_MODE=kitchntabs.development TARGET_TYPE=web PLATFORM=web APP_PATH=apps/kitchntabs-mall VITE_HMR_PORT=${VITE_HMR_PORT:-4438} node build_config.js",
     "config:web:kitchntabs-mall:local": "MODE=development CUSTOM_MODE=kitchntabs.local TARGET_TYPE=web PLATFORM=web APP_PATH=apps/kitchntabs-mall VITE_HMR_PORT=${VITE_HMR_PORT:-4438} node build_config.js",
     "config:web:kitchntabs-mall:ngrok": "MODE=production CUSTOM_MODE=kitchntabs.ngrok TARGET_TYPE=web PLATFORM=web APP_PATH=apps/kitchntabs-mall node build_config.js",
-    
     "config:electron:kitchntabs:production": "MODE=production CUSTOM_MODE=kitchntabs.production TARGET_TYPE=desktop PLATFORM=electron APP_PATH=apps/kitchntabs node build_config.js",
     "config:electron:kitchntabs:development": "MODE=development CUSTOM_MODE=kitchntabs.development TARGET_TYPE=desktop PLATFORM=electron APP_PATH=apps/kitchntabs node build_config.js",
     "config:android:kitchntabs:production": "MODE=production CUSTOM_MODE=kitchntabs.production TARGET_TYPE=mobile PLATFORM=android APP_PATH=apps/kitchntabs node build_config.js",
@@ -35,56 +33,39 @@
     "build": "cd apps/kitchntabs && pnpm build",
     "_WEB": "BUILD",
     "dev:web:kitchntabs:local": "pnpm config:web:kitchntabs:local && pnpm dev-kt",
-
     "kt-mall:web:local": "pnpm config:web:kitchntabs-mall:local && pnpm dev-kt-mall",
     "kt-mall:web:development": "pnpm config:web:kitchntabs-mall:development && pnpm dev-kt-mall",
     "kt-mall:web:dist:production": "pnpm config:web:kitchntabs-mall:production && pnpm prod-kt-mall",
     "kt-mall:web:dist:ngrok": "pnpm config:web:kitchntabs-mall:ngrok && pnpm prod-kt-mall",
-
     "dev:web:kt:local": "pnpm config:web:kitchntabs:local && pnpm dev",
     "dev:web:kitchntabs:development": "pnpm config:web:kitchntabs:development && pnpm dev",
     "dev:web:kitchntabs:production": "MODE=production CUSTOM_MODE=kitchntabs.production TARGET_TYPE=web PLATFORM=web APP_PATH=apps/kitchntabs VITE_DEV_PORT=3006  VITE_HMR_PORT=4438  node build_config.js && vite build -c electron.vite.config.mts && cross-env NODE_ENV=production BUILD_ENV=prod CUSTOM_MODE=kitchntabs.production PORT=3006 concurrently \"cd apps/kitchntabs && pnpm dev\"",
-    
     "build:web:kitchntabs:production": "MODE=production CUSTOM_MODE=kitchntabs.production TARGET_TYPE=web PLATFORM=web APP_PATH=apps/kitchntabs node build_config.js && vite build -c electron.vite.config.mts && cross-env NODE_ENV=production BUILD_ENV=prod CUSTOM_MODE=kitchntabs.production concurrently \"cd apps/kitchntabs && pnpm build\"",
-   
     "_ELECTRON": "BUILD",
-
     "release:full:kitchntabs:production": "pnpm release:android:kitchntabs:production && pnpm release-apk:android:kitchntabs:production && pnpm release:electron:kitchntabs-app:debian:arm64",
-
     "dev:electron:kitchntabs:development": "MODE=production CUSTOM_MODE=kitchntabs.development TARGET_TYPE=web PLATFORM=web APP_PATH=apps/kitchntabs VITE_DEV_PORT=3003  VITE_HMR_PORT=4438  node build_config.js && vite build -c electron.vite.config.mts && cross-env NODE_ENV=development BUILD_ENV=dev CUSTOM_MODE=kitchntabs.development PORT=3003 concurrently \"cd apps/kitchntabs && pnpm dev\" \"wait-on http://127.0.0.1:3003 && electron .\"",
     "dev:electron:kitchntabs:production": "pnpm config:electron:kitchntabs:production && vite build -c electron.vite.config.mts && cross-env NODE_ENV=development BUILD_ENV=dev CUSTOM_MODE=kitchntabs.production concurrently \"pnpm dev\" \"wait-on http://127.0.0.1:3006 && electron .\"",
     "dev:android:kitchntabs:development": "pnpm resources:android && cross-env MODE=development CUSTOM_MODE=kitchntabs.development TARGET_TYPE=mobile PLATFORM=android APP_PATH=apps/kitchntabs NODE_OPTIONS=--max-old-space-size=4048 node build_config.js && turbo build --filter=kitchntabs-app --no-cache && cap run android",
     "dev:android:kitchntabs:production": "pnpm resources:android && cross-env MODE=production CUSTOM_MODE=kitchntabs.production TARGET_TYPE=mobile PLATFORM=android APP_PATH=apps/kitchntabs NODE_OPTIONS=--max-old-space-size=4048 node build_config.js && turbo build --filter=kitchntabs-app --no-cache && cap run android",
-   
     "release:android:kitchntabs:development": "pnpm resources:android && pnpm config:android:kitchntabs:development && turbo build --filter=kitchntabs-app --no-cache && cap run android",
     "release:android:kitchntabs:production": "node scripts/increment-android-version.js && pnpm resources:android && pnpm config:android:kitchntabs:production && turbo build --filter=kitchntabs-app --no-cache && cap sync android && cd ./android && ./gradlew bundleRelease",
     "release-apk:android:kitchntabs:production": "pnpm resources:android && pnpm config:android:kitchntabs:production && turbo build --filter=kitchntabs-app --no-cache && cap sync android && cd ./android && ./gradlew assembleRelease",
-    
     "release:android:kitchntabs:production:test": "pnpm resources:android && pnpm config:android:kitchntabs:production && turbo build --filter=kitchntabs-app --no-cache && cap run android",
-    
     "release:android:kitchntabs-mall:development": "pnpm resources:android && pnpm config:android:kitchntabs-mall:development && turbo build --filter=kitchntabs-mall --no-cache && cap run android",
     "release:android:kitchntabs-mall:production": "pnpm resources:android && pnpm config:android:kitchntabs-mall:production && turbo build --filter=kitchntabs-mall --no-cache && cap sync android && cd ./android && ./gradlew bundleRelease",
-   
     "release:electron:kitchntabs:production": "pnpm config:electron:kitchntabs:production && node build-python-service.js && electron-icon-builder --input=./assets/logo-squared.png --output=./ && vite build -c electron.vite.config.mts && turbo build --filter=kitchntabs-app --no-cache && cross-env NODE_OPTIONS=--max-old-space-size=8096 node build-electron.js --config electron-builder.config.js",
     "release:electron:kitchntabs:production:force": "pnpm config:electron:kitchntabs:production && cross-env FORCE_PYTHON_REBUILD=true node build-python-service.js --force && electron-icon-builder --input=./assets/logo-squared.png --output=./ && vite build -c electron.vite.config.mts && turbo build --no-cache && cross-env NODE_OPTIONS=--max-old-space-size=8096 node build-electron.js --config electron-builder.config.js",
-    
     "release:electron:kitchntabs:development": "pnpm config:electron:kitchntabs:development && turbo build  --filter=kitchntabs-app  --no-cache &&  node build-python-service.js && electron-icon-builder --input=./assets/logo-squared.png --output=./ && vite build -c electron.vite.config.mts && cross-env NODE_OPTIONS=--max-old-space-size=8096 node build-electron.js --config electron-builder.config.js",
     "release:electron:kitchntabs:development:force": "pnpm config:electron:kitchntabs:development && turbo build --no-cache && cross-env FORCE_PYTHON_REBUILD=true node build-python-service.js --force && electron-icon-builder --input=./assets/logo-squared.png --output=./ && vite build -c electron.vite.config.mts && cross-env NODE_OPTIONS=--max-old-space-size=8096 node build-electron.js --config electron-builder.config.js",
-    
     "release:electron:kitchntabs-app:debian:arm64:development": "pnpm config:electron:kitchntabs:development && turbo build --filter=kitchntabs-app --no-cache && node build-python-service.js && electron-icon-builder --input=./assets/logo-squared.png --output=./ && vite build -c electron.vite.config.mts && cross-env NODE_OPTIONS=--max-old-space-size=8096 node build-electron.js --config electron-builder.config.js --linux deb --arm64",
     "release:electron:kitchntabs-app:debian:arm64": "pnpm config:electron:kitchntabs:production  && turbo build --filter=kitchntabs-app --no-cache && node build-python-service.js && electron-icon-builder --input=./assets/logo-squared.png --output=./ && vite build -c electron.vite.config.mts && cross-env NODE_OPTIONS=--max-old-space-size=8096 node build-electron.js --config electron-builder.config.js --linux deb --arm64",
-   
     "release:electron:kitchntabs-mall:debian:arm64:development": "pnpm config:electron:kitchntabs:development && turbo build --filter=kitchntabs-mall --no-cache && node build-python-service.js && electron-icon-builder --input=./assets/logo-squared.png --output=./ && vite build -c electron.vite.config.mts && cross-env NODE_OPTIONS=--max-old-space-size=8096 node build-electron.js --config electron-builder.config.js --linux deb --arm64",
     "release:electron:kitchntabs-mall:debian:arm64": "pnpm config:electron:kitchntabs:production  && turbo build --filter=kitchntabs-mall --no-cache && node build-python-service.js && electron-icon-builder --input=./assets/logo-squared.png --output=./ && vite build -c electron.vite.config.mts && cross-env NODE_OPTIONS=--max-old-space-size=8096 node build-electron.js --config electron-builder.config.js --linux deb --arm64",
-   
     "release:electron:kitchntabs:production:web": "pnpm config:electron:kitchntabs:production && turbo build",
     "release:electron:kitchntabs:production:app": "cross-env NODE_OPTIONS=--max-old-space-size=8096 node build-electron.js --config electron-builder.config.js",
     "release:electron:kitchntabs:ngrok": "pnpm config:electron:kitchntabs:development && node build-python-service.js && electron-icon-builder --input=./assets/logo-squared.png --output=./ && vite build -c electron.vite.config.mts && turbo build --no-cache && cross-env NODE_OPTIONS=--max-old-space-size=8096 node build-electron.js --config electron-builder.config.js",
-    
-      "release:electron:kitchntabs:development:win": "cross-env MODE=development CUSTOM_MODE=kitchntabs.development TARGET_TYPE=desktop PLATFORM=electron APP_PATH=apps/kitchntabs NODE_OPTIONS=--max-old-space-size=4048 node build_config.js && node build-python-service.js && electron-icon-builder --input=./assets/logo-squared.png --output=./ && vite build -c electron.vite.config.mts && turbo build --filter=kitchntabs-app  --no-cache && cross-env NODE_OPTIONS=--max-old-space-size=8096 node build-electron.js --config electron-builder.config.js",
+    "release:electron:kitchntabs:development:win": "cross-env MODE=development CUSTOM_MODE=kitchntabs.development TARGET_TYPE=desktop PLATFORM=electron APP_PATH=apps/kitchntabs NODE_OPTIONS=--max-old-space-size=4048 node build_config.js && node build-python-service.js && electron-icon-builder --input=./assets/logo-squared.png --output=./ && vite build -c electron.vite.config.mts && turbo build --filter=kitchntabs-app  --no-cache && cross-env NODE_OPTIONS=--max-old-space-size=8096 node build-electron.js --config electron-builder.config.js",
     "release:electron:kitchntabs:production:win": "cross-env MODE=production CUSTOM_MODE=kitchntabs.production TARGET_TYPE=desktop PLATFORM=electron APP_PATH=apps/kitchntabs NODE_OPTIONS=--max-old-space-size=4048 node build_config.js && node build-python-service.js && electron-icon-builder --input=./assets/logo-squared.png --output=./ && vite build -c electron.vite.config.mts && turbo build --filter=kitchntabs-app  --no-cache && cross-env NODE_OPTIONS=--max-old-space-size=8096 node build-electron.js --config electron-builder.config.js",
- 
-    
     "release:electron:kitchntabs:ngrok:web": "pnpm config:electron:kitchntabs:development && turbo build",
     "release:electron:kitchntabs:ngrok:app": "cross-env NODE_OPTIONS=--max-old-space-size=8096 node build-electron.js --config electron-builder.config.js",
     "release:electron:kitchntabs:debian": "pnpm config:electron:kitchntabs:production && node build-python-service.js && electron-icon-builder --input=./assets/logo-squared.png --output=./ && vite build -c electron.vite.config.mts && turbo build  --filter=kitchntabs-app  --no-cache && cross-env NODE_OPTIONS=--max-old-space-size=8096 node build-electron.js --config electron-builder.config.js --linux deb --armv7l --arm64",
@@ -146,8 +127,8 @@
     "@mui/x-date-pickers": "^8.10.0",
     "@reduxjs/toolkit": "^2.8.2",
     "@rooks/use-previous": "^4.11.2",
-    
     "@tanstack/react-query": "^5.84.2",
+    "@types/qrcode": "^1.5.6",
     "@types/sound-play": "^1.1.3",
     "axios": "^1.11.0",
     "clsx": "^2.1.1",
@@ -163,6 +144,7 @@
     "lodash": "^4.17.21",
     "mui-nested-menu": "^4.0.1",
     "pusher-js": "^8.4.0",
+    "qrcode": "^1.5.4",
     "ra-core": "5.10.1",
     "ra-data-simple-rest": "5.10.1",
     "ra-i18n-polyglot": "5.10.1",
@@ -240,7 +222,6 @@
     "react-router": "^7.10.0",
     "react-hook-form": "^7.54.0"
   },
-
   "pnpm": {
     "overrides": {
       "eslint": "^9.39.1",

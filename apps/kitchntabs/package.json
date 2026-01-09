@@ -38,6 +38,7 @@
     "@tanstack/query-async-storage-persister": "^5.90.15",
     "@tanstack/react-query": "latest",
     "@tanstack/react-query-persist-client": "^5.90.15",
+    "@types/qrcode.react": "^3.0.0",
     "axios": "^1.11.0",
     "clsx": "^2.1.1",
     "dash-admin": "workspace:*",
@@ -63,6 +64,7 @@
     "laravel-echo": "latest",
     "lodash": "^4.17.21",
     "pusher-js": "^8.4.0",
+    "qrcode.react": "^4.2.0",
     "ra-core": "^5.10.1",
     "ra-i18n-polyglot": "^5.10.1",
     "ra-language-spanish": "^1.0.0",
@@ -76,7 +78,8 @@
     "react-router-dom": "^7.10.0",
     "react-toastify": "latest",
     "redux": "latest",
-    "redux-persist": "latest"
+    "redux-persist": "latest",
+    "swiper": "^12.0.3"
   },
   "packageManager": "pnpm@9.15.0",
   "devDependencies": {
