@@ -211,7 +211,7 @@ const SelfServiceProductModifiersModal: React.FC = () => {
             <DialogActions sx={{ p: 2 }}>
                  <Button onClick={closeModifierModal} color="inherit">
                     {translate('ra.action.cancel')}
-                </Button>
+                </Button>@
                 <Button 
                     variant="contained" 
                     onClick={handleSubmit} 

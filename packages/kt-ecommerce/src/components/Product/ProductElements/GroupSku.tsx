@@ -21,7 +21,7 @@ export default function Grouped() {
         id="campaign-search"
         options={options.sort((a, b) => -b.firstLetter.localeCompare(a.firstLetter))}
         getOptionLabel={(option) => option.title}
-        renderInput={(params) => <TextField {...params} label="Buscar producto" className='dash-campaign-search lg'/>}
+        renderInput={(params) => <TextField {...params} label="Buscar productos..." className='dash-campaign-search lg'/>}
       />
 
       <FormGroup style={{width: '100%', marginTop: '1rem'}}>

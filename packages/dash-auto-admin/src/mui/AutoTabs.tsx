@@ -1,4 +1,4 @@
-import { Tab } from 'react-admin';
+import { Tab, useTranslate } from 'react-admin';
 import { AttributeToField } from './AttributeToField';
 import IDashAutoAdminAttribute from '../interfaces/IDashAutoAdminAttribute';
 import IDashAutoAdminFormOptions from '../interfaces/IDashAutoAdminFormOptions';
@@ -11,11 +11,13 @@ export const AutoTabs = (
 	schema: IDashAutoAdminAttribute[],
 	options?: IDashAutoAdminFormOptions,
 ) => {
+    const translate = useTranslate();
 	return groupByTabs(schema).map((groupOfAttributes) => {
 		const label = groupOfAttributes[0].tab || options?.label || '';
+        const translatedLabel = translate(`dash-auto-admin-tabs.${label}`, { _: label });
 		//   console.log("TAB", label);
 		return (
-			<Tab  key={'tab_' + label} label={label}>
+			<Tab  key={'tab_' + label} label={translatedLabel}>
               
 				{groupOfAttributes
 					.filter((attribute) => attribute?.inShow !== false)

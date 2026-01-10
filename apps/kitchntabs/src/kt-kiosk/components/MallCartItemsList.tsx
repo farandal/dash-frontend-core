@@ -212,8 +212,17 @@ export const CartItem: React.FC<CartItemProps> = ({
     }, [item.note]);
 
     // Get image URL from various possible locations (comprehensive fallback chain)
+    // Force HTTPS to avoid mixed content issues
+    const ensureHttps = (url: string | null | undefined) => {
+        if (!url) return null;
+        if (typeof url === 'string' && url.startsWith('http://')) {
+            return url.replace('http://', 'https://');
+        }
+        return url;
+    };
+
     const gallery = item.product.gallery as any;
-    const imageUrl = (item.product as any).image_url ||
+    const rawImageUrl = (item.product as any).image_url ||
                      (item.product as any).primary_image_url ||
                      gallery?.primary_image_url || 
                      gallery?.images?.[0]?.url ||
@@ -221,6 +230,8 @@ export const CartItem: React.FC<CartItemProps> = ({
                      (item.product as any).thumbnail_url ||
                      (item.product as any).image ||
                      null;
+    
+    const imageUrl = ensureHttps(rawImageUrl);
 
     // Get store/tenant name from stores list or fallback
     const getStoreName = () => {

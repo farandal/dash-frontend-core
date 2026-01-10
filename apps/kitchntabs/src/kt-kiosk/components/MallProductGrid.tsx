@@ -229,6 +229,7 @@ export const MallProductGrid: React.FC = () => {
         products,
         allProducts,
         isLoadingProducts,
+        isSearching,
         paginationMode,
         selectedStore,
         // Carousel pagination
@@ -381,12 +382,39 @@ export const MallProductGrid: React.FC = () => {
         );
     }
 
+    // Loading overlay for search/category switch (when products are already visible)
+    const showLoadingOverlay = (isLoadingProducts || isSearching) && (carouselProducts.length > 0 || allProducts.length > 0);
+    
+    const loadingOverlay = showLoadingOverlay ? (
+        <Box
+            sx={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                //backgroundColor: 'rgba(255, 255, 255, 0.6)',
+                zIndex: 10,
+                display: 'flex',
+                alignItems: 'flex-start', // Align to top for better visibility during scroll
+                justifyContent: 'center',
+                pt: 10, // Padding from top to position spinner nicely
+                backdropFilter: 'blur(5px)',
+                borderRadius: 2
+            }}
+        >
+            <CircularProgress />
+        </Box>
+    ) : null;
+
     // Horizontal pagination mode
     // Horizontal infinite scroll carousel mode
     if (paginationMode === 'horizontal') {
        
         return (
             <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column', position: 'relative' }}>
+                {loadingOverlay}
+
                 {/* Page indicator */}
                 <Box
                     sx={{
@@ -513,8 +541,11 @@ export const MallProductGrid: React.FC = () => {
                 overflow: 'auto',
                 display: 'flex',
                 flexDirection: 'column',
+                position: 'relative' // Needed for overlay
             }}
         >
+            {loadingOverlay}
+
             {/* Products counter header */}
             <Box
                 sx={{

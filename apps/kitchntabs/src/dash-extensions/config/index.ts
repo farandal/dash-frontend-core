@@ -10,3 +10,7 @@ export { default as DASHPrivateSharedRoutes } from './DASHPrivateSharedRoutes';
 // Self-Service Client Providers
 export { default as DASHSelfServiceClientAuthProvider } from './DASHSelfServiceClientAuthProvider';
 export { default as DASHSelfServiceClientDataProvider } from './DASHSelfServiceClientDataProvider';
+
+// Mall Service Client Providers
+export { default as DASHMallServiceClientAuthProvider } from './DASHMallServiceClientAuthProvider';
+export { default as DASHMallServiceClientDataProvider } from './DASHMallServiceClientDataProvider';

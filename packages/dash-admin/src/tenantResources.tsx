@@ -46,7 +46,7 @@ const tenantResources: IAppResourceConfig[] = [
     trash: true,
   
     model: 'system/user',
-    group: 'Recursos del tenant',
+    group: 'resource.groups.system_resources',
     label: 'Usuarios',
     referenceFilters: [
       // TODO: Cuando se cambia el cliente se debn mostrar sólo los CP de este filtro

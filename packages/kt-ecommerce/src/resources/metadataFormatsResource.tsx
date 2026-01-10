@@ -16,13 +16,14 @@ const metadataFormatsResource: IDashAutoAdminResourceConfig =
    roles: [DASHAppConstants.system.SYSTEM_ROLE,DASHAppConstants.system.TENANT_ROLE],
     component: ResourceTemplate,
     model: "ecommerce/metadata_format",
+    group: "resource.groups.products",
     label: "Metadata",
     schema: metadataFormatShcema,
     search: true,
     //references: [{ reference: 'roles', target: 'role', schema: rolesSchema }]
     //references: [{ reference: 'roles', target: 'id', schema: roleSchema }],
     icon: <Icon />,
-    group: "Productos",
+   
     menu: [
         {
             title: "Listado de Metadatas de producto",

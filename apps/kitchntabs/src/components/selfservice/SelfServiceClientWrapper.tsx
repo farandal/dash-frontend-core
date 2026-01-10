@@ -18,6 +18,7 @@ import { useDispatch } from 'react-redux';
 import { DASH_REDUX_ACTIONS } from 'dash-admin-state';
 import { ACTION_UPDATE_AUTH } from 'dash-admin-state/src/redux/reducers/Auth';
 import { dashStorage } from 'dash-utils';
+import { AuthPersistenceService } from 'dash-auth';
 import { MallAppMediator } from '../../kt-kiosk/components';
 import { SelfServiceEchoProvider } from '../../kt-selfservice/contexts/SelfServiceEchoContext';
 
@@ -50,18 +51,46 @@ interface ParsedUrlResult extends ParsedUrlParams {
 const parseUrlParams = (): ParsedUrlResult => {
     const pathname = window.location.pathname;
     
-    // Pattern: /selfservice/:sessionId
-    // Matches 5+ alphanumeric characters (hash) right after /selfservice/
-    const selfServiceMatch = pathname.match(/^\/selfservice\/([A-Z0-9]{5,})/i);
-    if (selfServiceMatch) {
-        const sessionBasePath = `/selfservice/${selfServiceMatch[1]}`;
-        console.log('🔍 SelfServiceClientWrapper: Parsed URL:', {
-            sessionId: selfServiceMatch[1],
+    // Pattern 1: /selfservice/:tenantSlug/s/:sessionId/*
+    // Matches /s/ followed by 5+ alphanumeric characters
+    // Example: /selfservice/my-restaurant/s/ABC12/tab
+    const fullUrlMatch = pathname.match(/\/selfservice\/[^/]+\/s\/([A-Z0-9]{5,})/i);
+    
+    if (fullUrlMatch) {
+         // Extract tenant slug
+         const slugMatch = pathname.match(/\/selfservice\/([^/]+)\/s\//i);
+         const tenantSlug = slugMatch ? slugMatch[1] : null;
+         
+         const sessionId = fullUrlMatch[1];
+         // Base path ends after the session ID
+         const sessionBasePath = pathname.split(sessionId)[0] + sessionId;
+
+         console.log('🔍 SelfServiceClientWrapper: Parsed Full URL:', {
+            tenantSlug,
+            sessionId,
+            sessionBasePath
+        });
+
+        return {
+            tenantSlug, // Resolved from URL
+            sessionId,
+            sessionBasePath
+        };
+    }
+
+    // Pattern 2: /selfservice/:sessionId/* (Short/Legacy)
+    // Matches 5+ alphanumeric characters right after /selfservice/
+    const shortUrlMatch = pathname.match(/^\/selfservice\/([A-Z0-9]{5,})/i);
+    if (shortUrlMatch) {
+        const sessionId = shortUrlMatch[1];
+        const sessionBasePath = `/selfservice/${sessionId}`;
+        console.log('🔍 SelfServiceClientWrapper: Parsed Short URL:', {
+            sessionId,
             sessionBasePath
         });
         return {
             tenantSlug: null, // Resolved from session data later
-            sessionId: selfServiceMatch[1],
+            sessionId,
             sessionBasePath
         };
     }
@@ -159,7 +188,18 @@ const SelfServiceClientWrapper: React.FC<SelfServiceClientWrapperProps> = (props
                 dashStorage.setItem('selfservice-tenant-data', JSON.stringify(data.tenant));
                 dashStorage.setItem('authenticated', 'true');
                 
-                // CRITICAL: Update Redux state with guest user for WebSocket initialization
+                // ✅ FIX: Persist tenant settings and images using AuthPersistenceService
+                // This ensures theme colors and logos are available for DashThemeProvider
+                if (data.auth) {
+                    AuthPersistenceService.saveAuth({
+                        auth: data.auth,
+                        systemValues: data.systemValues || null
+                    });
+                    
+                    console.log('💾 SelfServiceClientWrapper: Persisted tenant settings and images to localStorage');
+                }
+                
+                // CRITICAL: Update Redux state with guest user AND full auth data for theme/logo loading
                 dispatch(
                     DASH_REDUX_ACTIONS.updateAuth(ACTION_UPDATE_AUTH, {
                         user: {
@@ -167,11 +207,42 @@ const SelfServiceClientWrapper: React.FC<SelfServiceClientWrapperProps> = (props
                             fullName: 'Guest',
                             email: 'guest@kitchntabs.com',
                             avatar: null,
+                            tenant_id: data.tenant?.id, // Add tenant_id for WebSocket
                         },
                         authenticated: true,
-                        auth: { token: 'guest-token' }, // Dummy token to satisfy types
+                        auth: data.auth || { token: 'guest-token' }, // ✅ Include full auth with tenantSettings & tenantImages
                     })
                 );
+
+                // ✅ FIX: Dispatch theme settings to Redux
+                if (data.auth?.tenantSettings) {
+                    dispatch(
+                        DASH_REDUX_ACTIONS.updateThemeSettings(data.auth.tenantSettings)
+                    );
+                    console.log('🎨 SelfServiceClientWrapper: Dispatched theme settings to Redux');
+                }
+
+                // ✅ FIX: Dispatch panel settings (logos) to Redux
+                if (data.auth?.tenantImages) {
+                    const logos = {
+                        ...(data.auth.tenantImages.horizontal_logo?.original && {
+                            horizontalLogo: data.auth.tenantImages.horizontal_logo.original
+                        }),
+                        ...(data.auth.tenantImages.squared_logo?.original && {
+                            squaredLogo: data.auth.tenantImages.squared_logo.original
+                        }),
+                        ...(data.auth.tenantImages.banner?.original && {
+                            loginBackground: data.auth.tenantImages.banner.original
+                        })
+                    };
+
+                    dispatch(DASH_REDUX_ACTIONS.setPanelSettings(logos));
+                    console.log('🖼️ SelfServiceClientWrapper: Dispatched panel settings (logos) to Redux');
+                }
+
+                // ✅ FIX: Trigger theme recreation event for DashThemeProvider
+                window.dispatchEvent(new Event('DASHTRefreshTheme'));
+                console.log('🎨 SelfServiceClientWrapper: Triggered theme refresh event');
 
                 console.log('✅ SelfServiceClientWrapper: Session validated successfully:', sessionId);
                 

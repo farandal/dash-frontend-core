@@ -15,7 +15,10 @@ const ecommerceTenantResource: IDashAutoAdminResourceConfig =
     roles: [DASHAppConstants.system.TENANT_ROLE],
     component: ResourceTemplate,
     model: "tenant/tenant",
+    
+    group: "resource.groups.configuration",
     label: "resource.ecommerce.tenant_data.label",
+
     schema: tenantTenantSchema,
     drawer: true,
     drawerOptions: {
@@ -24,7 +27,7 @@ const ecommerceTenantResource: IDashAutoAdminResourceConfig =
     delete: false,
     listDeleteButton: { enabled: false },
     icon: <Icon />,
-    group: "resource.groups.configuration",
+   
     menu: [
         {
             title: "resource.ecommerce.tenant_data.menu_list",

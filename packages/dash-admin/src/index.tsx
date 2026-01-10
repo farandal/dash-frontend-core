@@ -105,3 +105,5 @@ export {
     type IResourceManifestEntry,
     type IDASHResourceLoaderConfig
 } from './resources/DASHResourceLoader';
+
+export { default as I18nBridgeContext, I18nBridgeProvider, useI18nBridge, useBridgedLocales, useBridgedChangeLocale, useBridgedLocale } from './contexts/I18nBridgeContext';

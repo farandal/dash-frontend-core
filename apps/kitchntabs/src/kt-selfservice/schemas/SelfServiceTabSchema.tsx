@@ -7,7 +7,18 @@ import SelfServiceOrderTimeline from "../components/SelfServiceOrderTimeline";
 // SelfServiceTabSchema - Kiosk-style schema for self-service orders
 const SelfServiceTabSchema: IDashAutoAdminAttribute[] = [
     // Products field with kiosk-style UI for create mode ONLY
-   
+    {
+        attribute: 'products',
+        tab: 'Productos',
+        label: 'Order',
+        type: Array,
+        inCreate: true,
+        inEdit: false,
+        inList: false,
+        inShow: false,
+        custom: true,
+        component: SelfServiceOrderCreateView,
+    },
     // View mode fields
     {
         attribute: 'status',

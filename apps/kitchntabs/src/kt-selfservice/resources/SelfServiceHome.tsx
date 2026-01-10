@@ -145,21 +145,6 @@ const SelfServiceHome: React.FC = () => {
             }}
         >
             <Container maxWidth="sm" sx={{ flex: 1, py: 4, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-                {/* Waiter illustration */}
-                <Box sx={{ textAlign: 'center', mb: 3 }}>
-                    <Box
-                        component="img"
-                        src={waiterSvg}
-                        alt="Waiter"
-                        sx={{
-                            width: '100%',
-                            maxWidth: 200,
-                            height: 'auto',
-                            mx: 'auto',
-                            display: 'block',
-                        }}
-                    />
-                </Box>
 
                 {/* Welcome text */}
                 <Box sx={{ textAlign: 'center', mb: 4 }}>
@@ -172,37 +157,61 @@ const SelfServiceHome: React.FC = () => {
                             color: 'primary.main',
                         }}
                     >
-                        {translate('selfservice.welcome.title', { _: '¡Bienvenido!' })}
+                        {translate('selfservice.welcome.title')}
                     </Typography>
                     <Typography 
                         variant="body1" 
                         color="text.secondary"
                         sx={{ maxWidth: 300, mx: 'auto' }}
                     >
-                        {translate('selfservice.welcome.subtitle', { _: 'Por favor ingresa tus datos para comenzar tu pedido' })}
+                        {translate('selfservice.welcome.subtitle')}
                     </Typography>
                 </Box>
 
-                {/* Form card */}
-                <Card 
-                    elevation={4}
-                    sx={{ 
-                        p: 3, 
-                        borderRadius: 3,
-                        background: 'rgba(255,255,255,0.95)',
-                        backdropFilter: 'blur(10px)',
-                    }}
-                >
+                {/* Form card with overlaid waiter */}
+                <Box sx={{ position: 'relative' }}>
+                    {/* Waiter illustration - Overlaid on card */}
+                    <Box
+                        component="img"
+                        src={waiterSvg}
+                        alt="Waiter"
+                        sx={{
+                            position: 'absolute',
+                            top: 0,
+                            left: 0,
+                            width: 'auto',
+                            height: '100%',
+                            maxWidth: 150,
+                            objectFit: 'cover',
+                            //objectPosition: 'top left',
+                            zIndex: 2,
+                            pointerEvents: 'none', // Allow clicks to pass through to form
+                            //display: { xs: 'none', sm: 'block' }, // Hide on very small screens
+                        }}
+                    />
+                    
+                    <Card 
+                        //elevation={4}
+                        sx={{ 
+                            p: 3,
+                            borderRadius: 3,
+                            paddingLeft:22,
+                            //background: 'rgba(255,255,255,0.95)',
+                            //backdropFilter: 'blur(10px)',
+                            position: 'relative',
+                            zIndex: 1,
+                        }}
+                    >
                     {/* Customer name */}
                     <TextField
                         autoFocus
                         fullWidth
-                        label={translate('selfservice.welcome.name_label', { _: 'Tu nombre' })}
+                        label={translate('selfservice.welcome.name_label')}
                         value={customerName}
                         onChange={(e) => setCustomerName(e.target.value)}
                         variant="outlined"
                         sx={{ mb: 3 }}
-                        placeholder={translate('selfservice.welcome.name_placeholder', { _: 'Ingresa tu nombre' })}
+                        placeholder={translate('selfservice.welcome.name_placeholder')}
                     />
 
                     {/* Delivery method toggle */}
@@ -212,7 +221,7 @@ const SelfServiceHome: React.FC = () => {
                             color="text.secondary" 
                             sx={{ mb: 1, textAlign: 'center' }}
                         >
-                            {translate('selfservice.welcome.delivery_method_label', { _: '¿Cómo deseas recibir tu pedido?' })}
+                            {translate('selfservice.welcome.delivery_method_label')}
                         </Typography>
                         <ToggleButtonGroup
                             value={deliveryMethod}
@@ -234,13 +243,13 @@ const SelfServiceHome: React.FC = () => {
                                 }
                             }}
                         >
-                            <ToggleButton value="TABLE" aria-label="table service">
+                            <ToggleButton sx={{flexWrap:'wrap'}} value="TABLE" aria-label="table service">
                                 <TableRestaurant sx={{ mr: 1 }} />
-                                {translate('selfservice.welcome.table_service', { _: 'En mi mesa' })}
+                                {translate('selfservice.welcome.table_service')}
                             </ToggleButton>
-                            <ToggleButton value="COUNTER" aria-label="counter pickup">
+                            <ToggleButton sx={{flexWrap:'wrap'}} value="COUNTER" aria-label="counter pickup">
                                 <Storefront sx={{ mr: 1 }} />
-                                {translate('selfservice.welcome.counter_pickup', { _: 'En mostrador' })}
+                                {translate('selfservice.welcome.counter_pickup')}
                             </ToggleButton>
                         </ToggleButtonGroup>
                     </Box>
@@ -258,7 +267,7 @@ const SelfServiceHome: React.FC = () => {
                             }}
                         >
                             <TextField
-                                label={translate('selfservice.welcome.table_label', { _: 'Número de mesa' })}
+                                label={translate('selfservice.welcome.table_label')}
                                 type="number"
                                 variant="outlined"
                                 size="medium"
@@ -289,7 +298,7 @@ const SelfServiceHome: React.FC = () => {
                     )}
 
                     {/* Counter pickup info */}
-                    {deliveryMethod === 'COUNTER' && (
+                    {/*deliveryMethod === 'COUNTER' && (
                         <Box 
                             sx={{ 
                                 p: 2, 
@@ -301,12 +310,10 @@ const SelfServiceHome: React.FC = () => {
                         >
                             <Storefront sx={{ fontSize: 40, color: 'primary.main', mb: 1 }} />
                             <Typography variant="body2" color="text.secondary">
-                                {translate('selfservice.welcome.counter_info', { 
-                                    _: 'Tu pedido estará listo para recoger en el mostrador. Te notificaremos cuando esté listo.' 
-                                })}
+                                {translate('selfservice.welcome.counter_info')}
                             </Typography>
                         </Box>
-                    )}
+                    )*/}
 
                     {/* Submit button */}
                     <Button
@@ -324,18 +331,17 @@ const SelfServiceHome: React.FC = () => {
                         }}
                     >
                         {hasExistingData 
-                            ? translate('selfservice.welcome.continue_button', { _: 'Continuar con mi pedido' })
-                            : translate('selfservice.welcome.start_button', { _: 'Comenzar a ordenar' })
+                            ? translate('selfservice.welcome.continue_button')
+                            : translate('selfservice.welcome.start_button')
                         }
                     </Button>
-                </Card>
+                    </Card>
+                </Box>
 
                 {/* Session info - small text at bottom */}
                 <Box sx={{ textAlign: 'center', mt: 3 }}>
                     <Typography variant="caption" color="text.secondary">
-                        {translate('selfservice.welcome.session_info', { 
-                            _: 'Sesión segura • Tus datos están protegidos' 
-                        })}
+                        {translate('selfservice.welcome.session_info')}
                     </Typography>
                 </Box>
             </Container>

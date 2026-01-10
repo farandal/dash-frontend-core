@@ -25,11 +25,14 @@ const userResource: IDashAutoAdminResourceConfig = {
   component: ResourceTemplate,
   trash: true,
   model: 'tenant/user',
-  label: 'Usuarios',
+
   schema: userSchema,
   icon: <Settings />,
-  group: 'Configuración',
- menu: [
+
+   group: "resource.groups.configuration",
+   label: "resource.ecommerce.users.label",
+
+  menu: [
             {
                 title: 'Usuarios',
                 redirect: '/tenant/user',

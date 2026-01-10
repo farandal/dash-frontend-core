@@ -1,3 +1,4 @@
+import React, { useState, useEffect } from 'react';
 import { IDashAutoAdminResourceConfig } from "dash-auto-admin";
 import { useRecordContext } from "react-admin";
 import { dashStorage } from 'dash-utils';
@@ -59,65 +60,94 @@ export const MallTabsContextV2: IDashAutoAdminResourceConfig["contextComponent"]
         ...(resourceConfig?.config || {}),
     };
     
-    // Get tenant slug for dynamic path resolution (legacy)
-    const tenantSlug = config.singleTenantMode 
-        ? dashStorage.getItem(config.tenantSlugStorageKey || 'selfservice-tenant-slug')
-        : null;
+    // State for resolved paths to handle potential delays in storage availability
+    // Initialize with safe defaults for Mall mode to avoid empty resource requests
+    const [resolvedProductsPath, setResolvedProductsPath] = useState<string>(
+        !config.singleTenantMode ? (config.productsPathTemplate || config.productsPath || DEFAULT_CONFIG.productsPath || '') : ''
+    );
+    const [resolvedCategoriesPath, setResolvedCategoriesPath] = useState<string>(
+        !config.singleTenantMode ? (config.categoriesPathTemplate || config.categoriesPath || '') : ''
+    );
+    const [isReady, setIsReady] = useState<boolean>(!config.singleTenantMode);
     
-    // Get session hash for dynamic path resolution (new approach)
-    const sessionHash = config.singleTenantMode
-        ? dashStorage.getItem(config.sessionStorageKey || 'selfservice-session-hash')
-        : null;
-    
-    // Resolve products path dynamically for single-tenant mode
-    let resolvedProductsPath = config.productsPathTemplate || config.productsPath || DEFAULT_CONFIG.productsPath || '';
-    
-    // Replace {hash} placeholder with session hash
-    if (config.singleTenantMode && resolvedProductsPath.includes('{hash}')) {
-        if (sessionHash) {
-            resolvedProductsPath = resolvedProductsPath.replace('{hash}', sessionHash);
-        } else {
-            console.warn('🔧 MallTabsContextV2: Session hash not in storage yet, waiting for auth to complete');
-            resolvedProductsPath = ''; // Will show no products until hash is available
-        }
+    // Effect to resolve paths, retrying if session hash is missing
+    useEffect(() => {
+        const resolvePaths = () => {
+            const currentSlug = config.singleTenantMode 
+                ? dashStorage.getItem(config.tenantSlugStorageKey || 'selfservice-tenant-slug')
+                : null;
+            
+            const currentHash = config.singleTenantMode
+                ? dashStorage.getItem(config.sessionStorageKey || 'selfservice-session-hash')
+                : null;
+
+            // Resolve Products Path
+            let prodPath = config.productsPathTemplate || config.productsPath || DEFAULT_CONFIG.productsPath || '';
+            
+            if (config.singleTenantMode) {
+                if (prodPath.includes('{hash}')) {
+                    if (currentHash) {
+                        prodPath = prodPath.replace('{hash}', currentHash);
+                    } else {
+                        // console.warn('🔧 MallTabsContextV2: Session hash missing, waiting...');
+                        prodPath = ''; 
+                    }
+                } else if (prodPath.includes('{tenantSlug}')) {
+                    if (currentSlug) {
+                        prodPath = prodPath.replace('{tenantSlug}', currentSlug);
+                    } else {
+                        prodPath = '';
+                    }
+                }
+            }
+            
+            setResolvedProductsPath(prodPath);
+
+            // Resolve Categories Path
+            let catPath = config.categoriesPathTemplate || config.categoriesPath || '';
+            
+            if (config.singleTenantMode) {
+                if (catPath.includes('{hash}')) {
+                    if (currentHash) {
+                        catPath = catPath.replace('{hash}', currentHash);
+                    } else {
+                        catPath = '';
+                    }
+                } else if (catPath.includes('{tenantSlug}')) {
+                    if (currentSlug) {
+                        catPath = catPath.replace('{tenantSlug}', currentSlug);
+                    } else {
+                        catPath = '';
+                    }
+                }
+            }
+            
+            setResolvedCategoriesPath(catPath);
+
+            if (prodPath) {
+                console.log('🔧 MallTabsContextV2: Resolved config', {
+                    singleTenantMode: config.singleTenantMode,
+                    productsPath: prodPath,
+                    categoriesPath: catPath,
+                    sessionStorageKey: config.sessionStorageKey,
+                    tenantSlug: currentSlug,
+                    sessionHash: currentHash ? '(present)' : '(missing)'
+                });
+                setIsReady(true);
+            }
+        };
+
+        resolvePaths();
+
+        // Retry after short delay if empty (handle race conditions)
+        const timer = setTimeout(resolvePaths, 500);
+        return () => clearTimeout(timer);
+    }, [config]); // Re-run if config changes
+
+    // Don't render until configurations are resolved to prevent empty resource errors
+    if (!isReady && config.singleTenantMode) {
+        return null;
     }
-    // Legacy: Replace {tenantSlug} placeholder with tenant slug
-    else if (config.singleTenantMode && resolvedProductsPath.includes('{tenantSlug}')) {
-        if (tenantSlug) {
-            resolvedProductsPath = resolvedProductsPath.replace('{tenantSlug}', tenantSlug);
-        } else {
-            console.warn('🔧 MallTabsContextV2: Tenant slug not in storage yet, waiting for auth to complete');
-            resolvedProductsPath = '';
-        }
-    }
-    
-    // Resolve categories path dynamically for single-tenant mode
-    let resolvedCategoriesPath = config.categoriesPathTemplate || config.categoriesPath || '';
-    
-    // Replace {hash} placeholder with session hash
-    if (config.singleTenantMode && resolvedCategoriesPath.includes('{hash}')) {
-        if (sessionHash) {
-            resolvedCategoriesPath = resolvedCategoriesPath.replace('{hash}', sessionHash);
-        } else {
-            resolvedCategoriesPath = '';
-        }
-    }
-    // Legacy: Replace {tenantSlug} placeholder with tenant slug
-    else if (config.singleTenantMode && resolvedCategoriesPath.includes('{tenantSlug}')) {
-        if (tenantSlug) {
-            resolvedCategoriesPath = resolvedCategoriesPath.replace('{tenantSlug}', tenantSlug);
-        } else {
-             resolvedCategoriesPath = '';
-        }
-    }
-    
-    console.log('🔧 MallTabsContextV2: Resolved config', {
-        singleTenantMode: config.singleTenantMode,
-        productsPath: resolvedProductsPath,
-        categoriesPath: resolvedCategoriesPath,
-        sessionStorageKey: config.sessionStorageKey,
-        tenantSlugFromStorage: tenantSlug,
-    });
 
     // For list mode, wrap with MallClientTabsProvider for notifications/tenant status tracking
     if (mode === "list") {

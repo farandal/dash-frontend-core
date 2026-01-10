@@ -100,7 +100,7 @@ export function useMallStores(
             filter: {},
         },
         {
-            enabled,
+            enabled: enabled && storesPath.length > 0,
             staleTime,
             refetchOnWindowFocus: MALL_CACHE_CONFIG.refetchOnWindowFocus,
             refetchOnMount: MALL_CACHE_CONFIG.refetchOnMount,
@@ -176,7 +176,7 @@ export function useMallCategories(
             filter: {},
         },
         {
-            enabled,
+            enabled: enabled && categoriesPath.length > 0,
             staleTime,
             refetchOnWindowFocus: MALL_CACHE_CONFIG.refetchOnWindowFocus,
             refetchOnMount: MALL_CACHE_CONFIG.refetchOnMount,
@@ -313,7 +313,7 @@ export function useMallProducts(
             filter,
         },
         {
-            enabled,
+            enabled: enabled && productsPath.length > 0,
             staleTime,
             gcTime,
         }
@@ -407,7 +407,7 @@ export function useMallProductsPage(
             filter,
         },
         {
-            enabled,
+            enabled: enabled && productsPath.length > 0,
             staleTime,
             refetchOnWindowFocus: MALL_CACHE_CONFIG.refetchOnWindowFocus,
             refetchOnMount: MALL_CACHE_CONFIG.refetchOnMount,

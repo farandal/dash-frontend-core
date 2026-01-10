@@ -8,7 +8,7 @@ import Typography from "@mui/material/Typography";
 import ButtonGroup from "@mui/material/ButtonGroup";
 import Alert from "@mui/material/Alert";
 import React, { useEffect, useState } from "react";
-import { useRefresh, WithListContext } from "react-admin";
+import { useRefresh, WithListContext, useTranslate } from "react-admin";
 import DashResourceButton from "dash-auto-admin/src/toolbar/buttons/DashResourceButton";
 import { toast } from 'react-toastify';
 import { useMallClientTabsContext } from './MallClientTabsContext';
@@ -21,16 +21,11 @@ const MallClientTabsList: React.FC<IDashAutoAdminDataGrid> = ({ resourceConfig }
     // This context subscribes to the WebSocket channel and provides lastEvent
     const { lastEvent, tenantStatusesByTab } = useMallClientTabsContext();
     const refresh = useRefresh();
+    const translate = useTranslate();
 
-    const [statusLabel] = useState({
-        'CREATED': 'Creado',
-        'CONFIRMED': 'Confirmado',
-        'IN_PREPARATION': 'En preparación',
-        'PREPARED': 'Preparado',
-        'DELIVERED': 'Entregado',
-        'CLOSED': 'Cerrado',
-        'CANCELLED': 'Cancelado'
-    });
+    const getStatusLabel = (status: string) => {
+        return translate(`tab.status.${status.toLowerCase()}`, { _: status });
+    };
 
     const showMessage = (info: string) => {
         toast.info(<>{info}</>, {
@@ -55,7 +50,9 @@ const MallClientTabsList: React.FC<IDashAutoAdminDataGrid> = ({ resourceConfig }
         // Handle tab status updates
         if ((lastEvent as any)?.model === "Domain\\App\\Models\\Tab\\Tab" && 
             lastEvent.data?.type === "tab.status") {
-            showMessage(`Se ha cambiado el estado de la orden ${lastEvent.data.old} a ${lastEvent.data.new}`);
+            const oldStatus = getStatusLabel(lastEvent.data.old);
+            const newStatus = getStatusLabel(lastEvent.data.new);
+            showMessage(translate('tab.status_change_notification', { old: oldStatus, new: newStatus }));
             refresh();
             return;
         }
@@ -84,18 +81,22 @@ const MallClientTabsList: React.FC<IDashAutoAdminDataGrid> = ({ resourceConfig }
             // Extract data from nested notificationPayload if present
             const payload = notificationPayload?.notificationPayload || eventData?.data || eventData || {};
             const tenantName = payload.tenant_name || 'El restaurante';
-            const status = payload.status || payload.new || 'actualizado';
-            showMessage(`${tenantName} ha actualizado tu orden a: ${statusLabel[status] || status}`);
+            const status = payload.status || payload.new || 'updated';
+            const statusText = getStatusLabel(status);
+            
+            // Using a generic message for now, or reuse status change if apt
+            // "Restaurant updated your order to: Status"
+            showMessage(`${tenantName}: ${statusText}`); 
             refresh();
         }
-    }, [lastEvent, refresh, statusLabel]);
+    }, [lastEvent, refresh, translate]);
 
     return (
         <WithListContext render={({ isPending, data }) => (
             <>
                 {data?.length === 0 && (
                     <Alert severity="info" sx={{ mb: { xs: 0.5, sm: 2 } }}>
-                        No tienes órdenes activas. Puedes crear una nueva orden usando el menú.
+                        {translate('mall.no_active_orders')}
                     </Alert>
                 )}
                 <Box sx={{

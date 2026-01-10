@@ -15,6 +15,7 @@ import { useSelfServiceOrderCreate } from '../contexts/SelfServiceOrderCreateCon
 import SelfServiceProductGrid from './SelfServiceProductGrid';
 import SelfServiceOrderSummaryDrawer from './SelfServiceOrderSummaryDrawer';
 import SelfServiceProductModifiersModal from './SelfServiceProductModifiersModal';
+import SelfServiceSearchBox from './SelfServiceSearchBox';
 
 interface SelfServiceOrderCreateViewProps extends IDashAutoAdminCustomFieldComponent {
     productsField?: string;
@@ -48,8 +49,8 @@ const SelfServiceOrderCreateView: React.FC<SelfServiceOrderCreateViewProps> = (p
                     bgcolor: 'background.paper'
                 }}
             >
-                {/* Search Box / Filters could go here */}
-                <Box sx={{ flex: 1 }} />
+                {/* Search Box */}
+                <SelfServiceSearchBox />
 
                 {/* Cart Button */}
                 <Button

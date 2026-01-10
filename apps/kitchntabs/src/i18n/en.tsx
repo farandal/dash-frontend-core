@@ -129,6 +129,14 @@ const customEn = {
             assistance_dialog: {
                 title: "Assistance",
                 message: "Your assistance request has been received.",
+                staff_notified: "Staff has been notified",
+                store_label: "Store",
+                customer_label: "Customer",
+                table_label: "Table",
+                estimated_time_label: "Estimated time",
+                remaining_requests_label: "Remaining requests",
+                cooldown_remaining: "Cooldown remaining",
+                close_button: "Close",
             },
         },
 
@@ -184,6 +192,7 @@ const customEn = {
             success_message: "Assistance request sent successfully.",
             error_message: "Failed to send assistance request.",
             not_available: "Assistance not available at the moment.",
+            cooldown_remaining: "Wait %{time}",
         },
         product: {
             add: "Add",
@@ -588,6 +597,9 @@ const customEn = {
         },
     },
     mall: {
+        // Orders
+        no_active_orders: "You have no active orders. You can create a new order using the menu.",
+        
         // Store Selector
         all_stores: 'All Stores',
         select_store: 'Select a store',
@@ -615,6 +627,9 @@ const customEn = {
         scroll: 'Scroll',
         prev: 'Prev',
         next: 'Next',
+        swipe_for_more: 'Swipe for more',
+        products: 'products',
+        scroll_for_more: 'Scroll for more',
 
         // Cart Summary
         cart_empty: 'Your cart is empty',
@@ -630,10 +645,16 @@ const customEn = {
         clear_cart: 'Clear Cart',
         total: 'Total',
         confirm_order: 'Confirm Order',
+        submit_order: 'Submit Order',
         submitting_order: 'Submitting...',
         continue_shopping: 'Continue Shopping',
         product_added: 'Product added to cart',
         product_added_with_name: '%{name} added to cart',
+        special_instructions: 'Special Instructions',
+        special_instructions_placeholder: 'Add notes (e.g. extra napkins)...',
+        modifiers: 'Modifiers',
+        add_to_cart: 'Add to Cart',
+        required: 'Required',
 
         // Product Grid
         all_products: 'All Products',
@@ -688,6 +709,50 @@ const customEn = {
             stores_progress: "Store Progress",
             items: "items",
         },
+    },
+
+    selfservice: {
+        welcome: {
+            title: "Welcome!",
+            subtitle: "Please enter your details to start your order",
+            name_label: "Your name",
+            name_placeholder: "Enter your name",
+            delivery_method_label: "How would you like to receive your order?",
+            table_service: "At my table",
+            counter_pickup: "At counter",
+            table_label: "Table number",
+            counter_info: "Your order will be ready for pickup at the counter. We will notify you when it's ready.",
+            continue_button: "Continue with my order",
+            start_button: "Start ordering",
+            session_info: "Secure session • Your data is protected",
+        },
+        menu: {
+            your_orders: "Your Orders",
+            new_order: "New Order",
+            order_here: "Order Here!",
+            place_order: "Place Order",
+            checkout: "Checkout",
+        },
+        timeline: {
+            title: "Order Status",
+        },
+        voucher: {
+            title: "Voucher",
+            dialog_title: "Voucher",
+            load_error: "Error loading voucher",
+            loading: "Generating voucher...",
+        },
+        notifications: {
+            title: "Notifications",
+            new_update: "New update on your order",
+            mark_all_read: "Mark all as read",
+            empty: "You have no recent notifications.",
+            empty_hint: "Order updates will appear here.",
+        },
+        settings: {
+            title: "Settings",
+            save_button: "Save Changes",
+        }
     },
 
 
@@ -1012,7 +1077,13 @@ const customEn = {
             select_pos: 'Select Points of Sale',
             delete_selected: 'Delete Selected',
         },
-    }
+    },
+        "dash-auto-admin-tabs": {
+        "Productos": "Products",
+        "Actualizaciones": "Updates",
+        "Vouchers": "Vouchers",
+        "Datos": "Data",
+    },
 };
 
 export default customEn;

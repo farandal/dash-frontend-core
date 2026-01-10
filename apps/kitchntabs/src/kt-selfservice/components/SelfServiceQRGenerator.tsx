@@ -368,9 +368,9 @@ const SelfServiceQRGenerator: React.FC = () => {
                 minHeight: 400 
             }}>
                 <CircularProgress size={60} sx={{ mb: 2 }} />
-                <Typography variant="h6" color="text.secondary">
+                {/*<Typography variant="h6" color="text.secondary">
                     Generating QR Code...
-                </Typography>
+                </Typography>*/}
             </Box>
         );
     }
@@ -381,14 +381,14 @@ const SelfServiceQRGenerator: React.FC = () => {
             
             <Typography variant="h4" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
                 <QrCodeIcon fontSize="large" />
-                Self-Service QR
+                {tenantName}
             </Typography>
             
-            {tenantName && (
+            {/*tenantName && (
                 <Typography variant="h6" color="primary" gutterBottom>
                     {tenantName}
                 </Typography>
-            )}
+            )*/}
 
             {/* QR Code Card */}
             <Card sx={{ mb: 3 }}>
@@ -411,7 +411,7 @@ const SelfServiceQRGenerator: React.FC = () => {
                                 </Typography>
                             )}
 
-                            <Stack direction="row" spacing={1} justifyContent="center" sx={{ mb: 3 }}>
+                            {/*<Stack direction="row" spacing={1} justifyContent="center" sx={{ mb: 3 }}>
                                 <Chip 
                                     label={`Session: ${sessionData.hash}`}
                                     color="primary"
@@ -423,12 +423,12 @@ const SelfServiceQRGenerator: React.FC = () => {
                                     color="success"
                                     size="medium"
                                 />
-                            </Stack>
+                            </Stack>*/}
 
                             <Divider sx={{ my: 2 }} />
 
                             <Stack direction="row" spacing={2} justifyContent="center">
-                                <Tooltip title="Copy URL">
+                                {/*<Tooltip title="Copy URL">
                                     <IconButton 
                                         onClick={copyToClipboard} 
                                         color={copied ? 'success' : 'default'}
@@ -446,7 +446,7 @@ const SelfServiceQRGenerator: React.FC = () => {
                                     <IconButton onClick={printQRCode} size="large">
                                         <PrintIcon />
                                     </IconButton>
-                                </Tooltip>
+                                </Tooltip>*/}
                             </Stack>
 
                             <Typography variant="caption" color="text.secondary" sx={{ mt: 2, display: 'block' }}>
@@ -458,7 +458,7 @@ const SelfServiceQRGenerator: React.FC = () => {
             </Card>
 
             {/* Table Number & Regenerate */}
-            <Card>
+            {/*<Card>
                 <CardContent>
                     <Typography variant="subtitle1" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                         <TableIcon />
@@ -484,7 +484,7 @@ const SelfServiceQRGenerator: React.FC = () => {
                         </Button>
                     </Box>
                 </CardContent>
-            </Card>
+            </Card>*/}
         </Box>
     );
 };

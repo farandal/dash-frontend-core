@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useAxios } from 'dash-axios-hook';
 import { dashStorage } from 'dash-utils';
+import { useRefresh } from 'react-admin';
 import type { IDashAutoAdminResourceConfig } from 'dash-auto-admin';
 import { useMallEchoBridge } from '../contexts/MallEchoBridgeContext';
 
@@ -327,6 +328,12 @@ export const MallClientTabsProvider: React.FC<MallClientTabsProviderProps> = ({
         }
     }, [sessionHash]);
 
+    // List of modes that should trigger a refresh
+    const MODES_TO_REFRESH = ['edit', 'show'];
+
+    // Hook to refresh the current view
+    const refreshView = useRefresh();
+
     // Listen for WebSocket events and refresh notifications
     useEffect(() => {
         if (!lastEvent) return;
@@ -336,22 +343,26 @@ export const MallClientTabsProvider: React.FC<MallClientTabsProviderProps> = ({
         const eventData = lastEvent.data || lastEvent;
         const notificationPayload = lastEvent.notificationPayload || eventData?.notificationPayload;
 
-        // Check if this is a mall order status update event
-        // The event can come in different formats depending on how it's dispatched
         const isMallStatusUpdate = 
+            // Standard Mall events
             lastEvent.event === 'mall_order_status_update' ||
             lastEvent.type === 'mall_order_status_update' ||
             eventData?.type === 'mall_order_status_update' ||
             eventData?.data?.type === 'mall_order_status_update' ||
             eventData?.data?.event === 'mall_order_status_update' ||
             notificationPayload?.class === 'MallSessionOrderStatusNotification' ||
-            (eventData?.model === 'Domain\\App\\Models\\Mall\\MallSession' && eventData?.type === 'mall_order_status_update');
+            (eventData?.model === 'Domain\\App\\Models\\Mall\\MallSession' && eventData?.type === 'mall_order_status_update') ||
+            // Self-Service events
+            lastEvent.event === 'selfservice_session_order_status_update' ||
+            lastEvent.type === 'selfservice_session_order_status_update' ||
+            eventData?.type === 'selfservice_session_order_status_update' ||
+            notificationPayload?.class === 'SelfServiceSessionOrderStatusNotification' ||
+            (eventData?.model === 'Domain\\App\\Models\\SelfService\\SelfServiceSession' && eventData?.type === 'selfservice_session_order_status_update');
 
         if (isMallStatusUpdate) {
             // Extract data from event - handle nested notificationPayload structure
-            // The data can be in: notificationPayload.notificationPayload, eventData.data, or eventData directly
             const payload = notificationPayload?.notificationPayload || eventData?.data || eventData || {};
-            const masterTabId = payload.master_tab_id;
+            const masterTabId = payload.master_tab_id || payload.tab_id; // Support tab_id from self-service event
             const tenantTabId = payload.tenant_tab_id;
             const tenantId = payload.tenant_id;
             const tenantName = payload.tenant_name;
@@ -366,12 +377,10 @@ export const MallClientTabsProvider: React.FC<MallClientTabsProviderProps> = ({
                     
                     // Calculate progress from notification data or fallback
                     const progress = (() => {
-                        // First try to get progress from the notification data if available
                         const notificationData = lastEvent?.data;
                         if (notificationData && (notificationData as any).progress !== undefined) {
                             return (notificationData as any).progress;
                         }
-                        // Fallback to status-based calculation
                         switch (status) {
                             case 'CREATED': return 10;
                             case 'CONFIRMED': return 25;
@@ -384,7 +393,6 @@ export const MallClientTabsProvider: React.FC<MallClientTabsProviderProps> = ({
                         }
                     })();
                     
-                    // Find and update existing tenant status or add new one
                     const existingIndex = existingStatuses.findIndex(s => s.tenant_id === tenantId);
                     
                     const newStatus: ITenantTabStatus = {
@@ -398,12 +406,10 @@ export const MallClientTabsProvider: React.FC<MallClientTabsProviderProps> = ({
                     };
                     
                     if (existingIndex >= 0) {
-                        // Update existing
                         const newStatuses = [...existingStatuses];
                         newStatuses[existingIndex] = newStatus;
                         updated[masterTabId] = newStatuses;
                     } else {
-                        // Add new
                         updated[masterTabId] = [...existingStatuses, newStatus];
                     }
                     
@@ -411,10 +417,13 @@ export const MallClientTabsProvider: React.FC<MallClientTabsProviderProps> = ({
                 });
             }
             
-            // Don't auto-refresh from API on WebSocket event - we already updated local state
-            // refreshNotifications will be called manually if needed
+            // Refresh the view if in edit/show mode to get latest data from backend
+            if (mode && MODES_TO_REFRESH.includes(mode)) {
+                //console.log('🔄 MallClientTabsContext: Refreshing view due to notification in', mode, 'mode');
+                refreshView();
+            }
         }
-    }, [lastEvent]);
+    }, [lastEvent, mode, refreshView]);
 
     // Memoize context value
     const contextValue = useMemo<IMallClientTabsContextValue>(() => ({

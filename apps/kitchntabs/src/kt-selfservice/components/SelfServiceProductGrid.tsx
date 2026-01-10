@@ -4,7 +4,7 @@ import {
     Box, 
     Grid, 
     Typography, 
-    Skeleton,
+    CircularProgress,
 } from '@mui/material';
 import { useSelfServiceOrderCreate } from '../contexts/SelfServiceOrderCreateContext';
 import SelfServiceProductCard from '../components/SelfServiceProductCard';
@@ -19,14 +19,14 @@ const SelfServiceProductGrid: React.FC = () => {
 
     if (isLoadingProducts) {
         return (
-            <Box sx={{ p: 2 }}>
-                <Grid container spacing={2}>
-                    {[...Array(6)].map((_, i) => (
-                        <Grid size={{ xs: 6, sm: 4, md: 3 }} key={i}>
-                            <Skeleton variant="rectangular" height={200} sx={{ borderRadius: 2 }} />
-                        </Grid>
-                    ))}
-                </Grid>
+            <Box sx={{ 
+                display: 'flex', 
+                justifyContent: 'center', 
+                alignItems: 'center', 
+                height: '100%',
+                minHeight: 400 
+            }}>
+                <CircularProgress size={60} thickness={4} />
             </Box>
         );
     }

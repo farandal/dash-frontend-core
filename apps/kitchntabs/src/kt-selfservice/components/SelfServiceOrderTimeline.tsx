@@ -96,14 +96,14 @@ const SelfServiceOrderTimeline: React.FC<IDashAutoAdminCustomFieldComponent> = (
             <Card variant="outlined" sx={{ borderRadius: 2 }}>
                 <CardContent>
                     <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
-                        {translate('selfservice.timeline.title', { _: 'Estado del Pedido' })}
+                        {translate('selfservice.timeline.title')}
                     </Typography>
                     
                     {currentStatus === 'CANCELLED' ? (
                          <Box sx={{ p: 2, bgcolor: '#ffebee', borderRadius: 1, display: 'flex', alignItems: 'center', gap: 1 }}>
                             <CancelIcon color="error" />
                             <Typography color="error.main" fontWeight="bold">
-                                {translate('tab.status.cancelled', { _: 'Pedido Cancelado' })}
+                                {translate('tab.status.cancelled')}
                             </Typography>
                          </Box>
                     ) : (

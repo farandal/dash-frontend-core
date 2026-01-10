@@ -11,6 +11,7 @@ import { IDashAutoAdminResourceConfig } from 'dash-auto-admin';
 import { Route } from 'react-router-dom';
 import { QrCode as QrCodeIcon } from '@mui/icons-material';
 import { ResourceTemplate } from 'dash-admin';
+import { DASHAppConstants } from 'dash-constants';
 
 // Lazy load the QR generator component
 const SelfServiceQRGenerator = React.lazy(() => 
@@ -32,7 +33,7 @@ const selfServiceResource: IDashAutoAdminResourceConfig = {
     model: 'selfservice/qr',
     label: 'Self-Service QR',
     group: 'Operaciones',
-    roles: ['*'],
+    roles: [DASHAppConstants.system.SYSTEM_ROLE,DASHAppConstants.system.TENANT_ROLE,"Staff"],
     icon: <Icon />,
     schema: selfServiceSchema,
     

@@ -128,6 +128,14 @@ const customEs = {
             assistance_dialog: {
                 title: "Asistencia",
                 message: "Tu solicitud de asistencia ha sido recibida.",
+                staff_notified: "El personal ha sido notificado",
+                store_label: "Tienda",
+                customer_label: "Cliente",
+                table_label: "Mesa",
+                estimated_time_label: "Tiempo estimado",
+                remaining_requests_label: "Solicitudes restantes",
+                cooldown_remaining: "Tiempo de espera restante",
+                close_button: "Cerrar",
             },
         },
         list: {
@@ -182,6 +190,7 @@ const customEs = {
             success_message: "Solicitud de asistencia enviada exitosamente.",
             error_message: "Error al enviar solicitud de asistencia.",
             not_available: "Asistencia no disponible en este momento.",
+            cooldown_remaining: "Espera %{time}",
         },
         product: {
             add: "Agregar",
@@ -586,6 +595,9 @@ const customEs = {
         },
     },
     mall: {
+        // Orders
+        no_active_orders: "No tienes órdenes activas. Puedes crear una nueva orden usando el menú.",
+
         // Store Selector
         all_stores: 'Todas las Tiendas',
         select_store: 'Selecciona una tienda',
@@ -613,6 +625,9 @@ const customEs = {
         scroll: 'Scroll',
         prev: 'Ant',
         next: 'Sig',
+        swipe_for_more: 'Desliza para más',
+        products: 'productos',
+        scroll_for_more: 'Desliza para más',
 
         // Cart Summary
         cart_empty: 'Tu carrito está vacío',
@@ -628,10 +643,16 @@ const customEs = {
         clear_cart: 'Limpiar Carrito',
         total: 'Total',
         confirm_order: 'Confirmar Orden',
+        submit_order: 'Enviar Pedido',
         submitting_order: 'Enviando...',
         continue_shopping: 'Continuar Comprando',
         product_added: 'Producto agregado al carrito',
         product_added_with_name: '%{name} agregado al carrito',
+        special_instructions: 'Instrucciones Especiales',
+        special_instructions_placeholder: 'Agrega notas (ej: sin mayonesa, extra servilletas)...',
+        modifiers: 'Modificadores',
+        add_to_cart: 'Agregar al Carrito',
+        required: 'Requerido',
 
         // Product Grid
         all_products: 'Todos los Productos',
@@ -686,6 +707,50 @@ const customEs = {
             stores_progress: "Progreso por Tienda",
             items: "ítems",
         },
+    },
+
+    selfservice: {
+        welcome: {
+            title: "¡Bienvenido!",
+            subtitle: "Por favor ingresa tus datos para comenzar tu pedido",
+            name_label: "Tu nombre",
+            name_placeholder: "Ingresa tu nombre",
+            delivery_method_label: "¿Cómo deseas recibir tu pedido?",
+            table_service: "En mi mesa",
+            counter_pickup: "En mostrador",
+            table_label: "Número de mesa",
+            counter_info: "Tu pedido estará listo para recoger en el mostrador. Te notificaremos cuando esté listo.",
+            continue_button: "Continuar con mi pedido",
+            start_button: "Comenzar a ordenar",
+            session_info: "Sesión segura • Tus datos están protegidos",
+        },
+        menu: {
+            your_orders: "Tus Ordenes",
+            new_order: "Nueva Orden",
+            order_here: "¡Haz tu pedido aquí!",
+            place_order: "Hacer un pedido",
+            checkout: "Ordenar",
+        },
+        timeline: {
+            title: "Estado del Pedido",
+        },
+        voucher: {
+            title: "Comprobante",
+            dialog_title: "Comprobante",
+            load_error: "Error cargando el comprobante",
+            loading: "Generando comprobante...",
+        },
+        notifications: {
+            title: "Notificaciones",
+            new_update: "Nueva actualización en su pedido",
+            mark_all_read: "Marcar todo como leído",
+            empty: "No tiene notificaciones recientes.",
+            empty_hint: "Las actualizaciones del pedido aparecerán aquí.",
+        },
+        settings: {
+            title: "Configuración",
+            save_button: "Guardar Cambios",
+        }
     },
 
 
@@ -1009,7 +1074,13 @@ const customEs = {
             select_pos: 'Seleccione puntos de venta',
             delete_selected: 'Borrar seleccionados',
         },
-    }
+    },
+        "dash-auto-admin-tabs": {
+        "Productos": "Productos",
+        "Actualizaciones": "Actualizaciones",
+        "Vouchers": "Vouchers",
+        "Datos": "Datos",
+    },
 };
 
 export default customEs;

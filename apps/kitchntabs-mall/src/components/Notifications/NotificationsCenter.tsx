@@ -203,16 +203,12 @@ const NotificationsCenter: React.FC = () => {
         const isUrgencyAlert = lastEvent.type === 'urgency-alert';
 
         if (isMallOrderUpdate) {
-            // Extract payload following the same pattern as MallSessionEchoContext
-            // The data can be in different locations depending on the event source:
-            // 1. lastEvent.data (direct from WebSocket)
-            // 2. lastEvent.notificationPayload.notificationPayload (nested Laravel notification)
-            // 3. eventData.data (another nesting level)
-            const nestedPayload = notificationPayload?.notificationPayload || eventData?.data || eventData;
-            const payload = nestedPayload?.tenant_tab_id ? nestedPayload : eventData;
+            // Extract payload following the same pattern as MallServiceAppHookComponent
+            const rawPayload = lastEvent.notificationPayload || lastEvent.data || lastEvent;
+            const payload = rawPayload?.notificationPayload || rawPayload?.data || rawPayload;
             
             // Get status - check for 'new' field (status change event) or 'status' field
-            const status = payload?.new || payload?.status || eventData?.new || eventData?.status || 'UPDATED';
+            const status = payload?.new || payload?.status || 'UPDATED';
             
             // Create unique event ID to prevent duplicates
             const eventId = `${payload?.tenant_tab_id}-${status}-${payload?.timestamp || Date.now()}`;
@@ -315,7 +311,8 @@ const NotificationsCenter: React.FC = () => {
 
     const handleNotificationClick = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorEl(event.currentTarget);
-        // Don't auto-fetch on open - only fetch if user clicks refresh
+        // Auto-fetch notifications when opening the drawer
+        refreshNotifications(true);
     };
 
     const handleClose = () => {
@@ -508,6 +505,11 @@ const NotificationsCenter: React.FC = () => {
                                 <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
                                     {notification.message}
                                 </Typography>
+                                {(notification.data?.child_order_id || notification.data?.order_id) && (
+                                    <Typography variant="caption" sx={{ display: 'block', mb: 1, color: 'text.secondary', fontFamily: 'monospace' }}>
+                                        Orden #{((notification.data?.child_order_id || notification.data?.order_id) || '').toString().slice(-6).toUpperCase()}
+                                    </Typography>
+                                )}
                                 <Box sx={{ display: 'flex', gap: 0.5, flexWrap: 'wrap', alignItems: 'center' }}>
                                     {notification.status && (
                                         <Chip 

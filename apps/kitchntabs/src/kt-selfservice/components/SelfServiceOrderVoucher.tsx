@@ -74,7 +74,7 @@ const SelfServiceOrderVoucher: React.FC<IDashAutoAdminCustomFieldComponent> = ()
             setLoading(false);
         } catch (err: any) {
             console.error('Error loading voucher PDF:', err);
-            setError(translate('selfservice.voucher.load_error', { _: 'Error al cargar el voucher' }));
+            setError(translate('selfservice.voucher.load_error'));
             setLoading(false);
         }
     }, [axios, buildDownloadUrl, record?.id, translate]);
@@ -115,7 +115,7 @@ const SelfServiceOrderVoucher: React.FC<IDashAutoAdminCustomFieldComponent> = ()
                             <PdfIcon color="error" sx={{ fontSize: 32 }} />
                             <Box>
                                 <Typography variant="subtitle1" fontWeight="bold">
-                                    {translate('selfservice.voucher.title', { _: 'Comprobante' })}
+                                    {translate('selfservice.voucher.title')}
                                 </Typography>
                                 <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.8rem' }}>
                                     #{record.id}
@@ -160,7 +160,7 @@ const SelfServiceOrderVoucher: React.FC<IDashAutoAdminCustomFieldComponent> = ()
                          <Stack direction="row" spacing={1} alignItems="center">
                             <ReceiptIcon color="primary" />
                             <Typography variant="h6">
-                                {translate('selfservice.voucher.dialog_title', { _: 'Voucher' })} #{record.id}
+                                {translate('selfservice.voucher.dialog_title')} #{record.id}
                             </Typography>
                         </Stack>
                         <IconButton onClick={handleCloseDrawer}>
@@ -173,7 +173,7 @@ const SelfServiceOrderVoucher: React.FC<IDashAutoAdminCustomFieldComponent> = ()
                             <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flex: 1, p: 4 }}>
                                 <CircularProgress size={40} sx={{ mb: 2 }} />
                                 <Typography color="text.secondary">
-                                    {translate('selfservice.voucher.loading', { _: 'Generando voucher...' })}
+                                    {translate('selfservice.voucher.loading')}
                                 </Typography>
                             </Box>
                         ) : error ? (

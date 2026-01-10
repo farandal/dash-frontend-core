@@ -473,9 +473,7 @@ const MallOrderVouchers: React.FC<IDashAutoAdminCustomFieldComponent> = ({ metho
                                     }}
                                 >
                                     <CircularProgress />
-                                    <Typography variant="body2" color="text.secondary">
-                                        Cargando voucher...
-                                    </Typography>
+                                   
                                 </Box>
                             ) : vouchers[viewingVoucherIndex].error ? (
                                 <Alert severity="warning" sx={{ m: 2 }}>

@@ -25,12 +25,12 @@ import SelfServiceTabSchemaV2 from './schemas/SelfServiceTabSchemaV2';
  */
 const SelfServiceClientAppResources: IDashAutoAdminResourceConfig[] = [
     {
-        group: "Haz tu orden aquí!",
+        group: "selfservice.menu.order_here",
         roles: ["Public"],
         component: ResourceTemplate,
         model: "tab",
         redirect: "create",
-        label: "Haz tu orden aquí!",
+        label: "selfservice.menu.order_here",
         schema: SelfServiceTabSchemaV2,
         icon: <RestaurantMenu />,
         
@@ -54,7 +54,7 @@ const SelfServiceClientAppResources: IDashAutoAdminResourceConfig[] = [
         
         // Hide create button in toolbar (we have menu actions)
         toolbarCreateButton: { enabled: false },
-        toolbarSaveButton: { props: { label: "Ordenar >", alwaysEnable: false } },
+        toolbarSaveButton: { props: { label: "selfservice.menu.checkout", alwaysEnable: false } },
         
         // Custom list component with progress bars and notifications
         dataGridComponent: SelfServiceMallListWrapper,
@@ -62,18 +62,18 @@ const SelfServiceClientAppResources: IDashAutoAdminResourceConfig[] = [
         // Menu configuration
         menu: [
             {
-                title: "Tus ordenes",
+                title: "selfservice.menu.your_orders",
                 redirect: "tab",
             },
             {
-                title: "★ Nueva Orden",
+                title: "selfservice.menu.new_order",
                 redirect: "tab/create",
             },
         ],
         
         // Main action button
         mainAction: {
-            title: "⊕ Hacer un pedido",
+            title: "selfservice.menu.place_order",
             fn: "redirect",
             mode: "create",
             redirect: "create",

@@ -1,19 +1,17 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { 
     Box, Typography, Alert, LinearProgress, List, ListItem, ListItemText, 
     Divider, Chip, IconButton, Button, Tooltip 
 } from '@mui/material';
 import { useTranslate } from 'react-admin';
 import { useAxios } from 'dash-axios-hook';
-import { toast } from 'react-toastify';
-import { useSelfServiceEcho } from '../contexts/SelfServiceEchoContext';
 import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';
 import DoneAllIcon from '@mui/icons-material/DoneAll';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import LocalShippingIcon from '@mui/icons-material/LocalShipping';
 import RestaurantIcon from '@mui/icons-material/Restaurant';
 import CheckIcon from '@mui/icons-material/Check';
-import { playDigitalWatchAlarm, unlockAudio } from '../../components/Notifications/CustomNotificationsProcessing';
 
 export interface ISelfServiceNotification {
     id: number;
@@ -36,80 +34,26 @@ const SelfServiceNotificationsCenter: React.FC<SelfServiceNotificationsCenterPro
 }) => {
     const translate = useTranslate();
     const axios = useAxios();
-    const { lastEvent } = useSelfServiceEcho();
-    const [notifications, setNotifications] = useState<ISelfServiceNotification[]>([]);
-    const [loading, setLoading] = useState<boolean>(true);
-    const [error, setError] = useState<string | null>(null);
+    const queryClient = useQueryClient();
 
-    const fetchNotifications = useCallback(async () => {
-        if (!sessionHash) return;
-        try {
-            setLoading(true);
+    const { 
+        data: notifications = [], 
+        isLoading, 
+        isRefetching,
+        error: queryError 
+    } = useQuery<ISelfServiceNotification[]>({
+        queryKey: ['selfservice', 'notifications', sessionHash],
+        queryFn: async () => {
+            if (!sessionHash) return [];
             const response = await axios.get(`/public/selfservice/${sessionHash}/notifications`);
-            if (response.data?.notifications) {
-                setNotifications(response.data.notifications);
-            }
-        } catch (err) {
-            console.error('Failed to fetch notifications', err);
-            setError('Failed to load notifications');
-        } finally {
-            setLoading(false);
-        }
-    }, [sessionHash, axios]);
+            return response.data?.notifications || [];
+        },
+        enabled: !!sessionHash,
+        staleTime: 1000 * 10, // 10 seconds
+    });
 
-    useEffect(() => {
-        fetchNotifications();
-    }, [fetchNotifications]);
-
-    // Listen for new events and refresh
-    useEffect(() => {
-        if (lastEvent?.event === 'selfservice_session_order_status_update') {
-            fetchNotifications();
-            
-            console.log('🔔 Processing event for toast:', lastEvent);
-            
-            // Try to find the message in various places
-            const message = lastEvent.message || 
-                          lastEvent.data?.message || 
-                          lastEvent.status_localized || 
-                          lastEvent.data?.status_localized ||
-                          translate('selfservice.notifications.new_update', { _: 'Nueva actualización del pedido' });
-            
-            if (message) {
-                 toast.info(message, {
-                    position: 'top-center',
-                    autoClose: 3000,
-                });
-            }
-
-            // Play alarm for delivered orders
-            const status = lastEvent.status || lastEvent.data?.status;
-            if (status === 'DELIVERED') {
-                 console.log('🔔 Order DELIVERED - Playing alarm');
-                 playDigitalWatchAlarm();
-            }
-        }
-    }, [lastEvent, fetchNotifications, translate]); // Removed notify dependency
-
-    // Unlock audio context on first user interaction (redundant backup)
-    useEffect(() => {
-        const handleInteraction = () => {
-            unlockAudio();
-            window.removeEventListener('click', handleInteraction);
-            window.removeEventListener('keydown', handleInteraction);
-            window.removeEventListener('touchstart', handleInteraction);
-        };
-
-        window.addEventListener('click', handleInteraction);
-        window.addEventListener('keydown', handleInteraction);
-        window.addEventListener('touchstart', handleInteraction);
-
-        return () => {
-            window.removeEventListener('click', handleInteraction);
-            window.removeEventListener('keydown', handleInteraction);
-            window.removeEventListener('touchstart', handleInteraction);
-        };
-    }, []);
+    const loading = isLoading && !isRefetching;
+    const error = queryError ? 'Failed to load notifications' : null;
 
     // Mark all notifications as read
     const handleMarkAllAsRead = async () => {
@@ -117,8 +61,8 @@ const SelfServiceNotificationsCenter: React.FC<SelfServiceNotificationsCenterPro
             await axios.post(`/public/selfservice/${sessionHash}/notifications/read`, {
                 mark_all: true
             });
-            // Update local state
-            setNotifications(prev => prev.map(n => ({ ...n, is_read: true })));
+            // Invalidate and refetch
+            queryClient.invalidateQueries({ queryKey: ['selfservice', 'notifications', sessionHash] });
             onNotificationsRead?.();
         } catch (err) {
             console.error('Failed to mark notifications as read', err);
@@ -131,10 +75,8 @@ const SelfServiceNotificationsCenter: React.FC<SelfServiceNotificationsCenterPro
             await axios.post(`/public/selfservice/${sessionHash}/notifications/read`, {
                 notification_ids: [notificationId]
             });
-            // Update local state
-            setNotifications(prev => prev.map(n => 
-                n.id === notificationId ? { ...n, is_read: true } : n
-            ));
+            // Invalidate and refetch
+            queryClient.invalidateQueries({ queryKey: ['selfservice', 'notifications', sessionHash] });
             onNotificationsRead?.();
         } catch (err) {
             console.error('Failed to mark notification as read', err);
@@ -230,6 +172,7 @@ const SelfServiceNotificationsCenter: React.FC<SelfServiceNotificationsCenterPro
                                 onClick={() => !notification.is_read && handleMarkAsRead(notification.id)}
                             >
                                 <ListItemText
+                                    secondaryTypographyProps={{ component: 'div' }}
                                     primary={
                                         <Box display="flex" justifyContent="space-between" alignItems="center">
                                             <Box display="flex" alignItems="center" gap={1}>
