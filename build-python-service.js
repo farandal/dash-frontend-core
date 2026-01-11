@@ -351,6 +351,70 @@ function updateElectronBuilderConfig() {
   }
 }
 
+
+
+/**
+ * Generate a hash of the Python service source files
+ * @returns {string} SHA256 hash
+ */
+function generateSourceHash() {
+  const crypto = require('crypto');
+  const hash = crypto.createHash('sha256');
+  
+  // Files and directories to include in the hash
+  const includePaths = [
+    'src',
+    'service',
+    'requirements.txt',
+    'kt_service.spec',
+    'print_service.spec',
+    'tts_service.spec',
+    'ws_service.spec',
+    'build-service.js',
+    'build-docker.js',
+    'package.json'
+  ];
+  
+  function processPath(relativePath) {
+    const fullPath = path.join(PYTHON_SERVICE_DIR, relativePath);
+    
+    if (!fs.existsSync(fullPath)) return;
+    
+    const stats = fs.statSync(fullPath);
+    
+    if (stats.isDirectory()) {
+      const files = fs.readdirSync(fullPath);
+      // Sort to ensure consistent order
+      files.sort().forEach(file => {
+        // Skip hidden files and __pycache__
+        if (file.startsWith('.') || file === '__pycache__' || file.endsWith('.pyc')) return;
+        processPath(path.join(relativePath, file));
+      });
+    } else {
+      // Update hash with file path and content
+      hash.update(relativePath);
+      hash.update(fs.readFileSync(fullPath));
+    }
+  }
+  
+  includePaths.forEach(p => processPath(p));
+  
+  return hash.digest('hex');
+}
+
+const HASH_FILE = path.join(PYTHON_SERVICE_DIR, '.build_hash');
+
+function getStoredHash() {
+  if (fs.existsSync(HASH_FILE)) {
+    return fs.readFileSync(HASH_FILE, 'utf8').trim();
+  }
+  return null;
+}
+
+function saveHash(hash) {
+  fs.writeFileSync(HASH_FILE, hash);
+}
+
 // Main function
 function main() {
   console.log('');
@@ -392,78 +456,117 @@ function main() {
   }
   console.log('');
 
+  // Check for changes
+  const currentHash = generateSourceHash();
+  const storedHash = getStoredHash();
+  let skipBuild = false;
+
+  if (!forceRebuild && currentHash === storedHash) {
+    console.log('🔍 Checking source changes...');
+    console.log('   ✅ No changes detected in Python service source.');
+    
+    // Verify artifacts exist before deciding to skip
+    let artifactsExist = true;
+    
+    if (needsLinuxArm || isLinuxBuild) {
+       if (!verifyDockerBuilds(LINUX_CROSS_COMPILE_ARCHS)) artifactsExist = false;
+    }
+    
+    if (process.platform !== 'linux' || process.arch === 'x64') {
+       if (!verifyBuild()) artifactsExist = false;
+    }
+    
+    if (artifactsExist) {
+        skipBuild = true;
+        console.log('   ⏩ Skipping rebuild (artifacts verify successfully).');
+    } else {
+        console.log('   ⚠️  Artifacts missing, forcing rebuild despite no source changes.');
+    }
+  } else {
+      if (forceRebuild) console.log('   🔄 Force rebuild enabled.');
+      else console.log('   📝 Source changes detected (or first build). Rebuilding...');
+  }
+  
   // Prepare Electron config files based on CUSTOM_MODE
   // This ensures the packaged app uses the correct network settings
+  // Always do this even if skipping python build, as frontend config might have changed
   prepareElectronConfigFiles(config.customMode);
 
   let success = true;
 
-  // For Linux ARM builds, check/build Docker binaries
-  if (needsLinuxArm || isLinuxBuild) {
-    console.log('🐧 Linux ARM build detected - checking Docker builds...\n');
-    
-    const dockerBuildsStatus = checkDockerBuilds(LINUX_CROSS_COMPILE_ARCHS, configArg);
-    
-    // Find architectures that need rebuilding (missing, incomplete, or force rebuild)
-    const archsNeedingBuild = forceRebuild 
-      ? LINUX_CROSS_COMPILE_ARCHS 
-      : LINUX_CROSS_COMPILE_ARCHS.filter(arch => !dockerBuildsStatus[arch].complete);
-    
-    if (archsNeedingBuild.length > 0) {
-      if (forceRebuild) {
-        console.log(`\n🔄 Force rebuild requested for: ${archsNeedingBuild.join(', ')}`);
-      } else {
-        console.log(`\n⚠️  Incomplete Docker builds for: ${archsNeedingBuild.join(', ')}`);
-        archsNeedingBuild.forEach(arch => {
-          const status = dockerBuildsStatus[arch];
-          if (status.missing.length > 0) {
-            console.log(`   ${arch} missing: ${status.missing.join(', ')}`);
+  if (!skipBuild) {
+      // For Linux ARM builds, check/build Docker binaries
+      if (needsLinuxArm || isLinuxBuild) {
+        console.log('🐧 Linux ARM build detected - checking Docker builds...\n');
+        
+        const dockerBuildsStatus = checkDockerBuilds(LINUX_CROSS_COMPILE_ARCHS, configArg);
+        
+        // Find architectures that need rebuilding (missing, incomplete, or force rebuild)
+        const archsNeedingBuild = forceRebuild 
+          ? LINUX_CROSS_COMPILE_ARCHS 
+          : LINUX_CROSS_COMPILE_ARCHS.filter(arch => !dockerBuildsStatus[arch].complete);
+        
+        if (archsNeedingBuild.length > 0) {
+          if (forceRebuild) {
+            console.log(`\n🔄 Force rebuild requested for: ${archsNeedingBuild.join(', ')}`);
+          } else {
+            console.log(`\n⚠️  Incomplete Docker builds for: ${archsNeedingBuild.join(', ')}`);
+            archsNeedingBuild.forEach(arch => {
+              const status = dockerBuildsStatus[arch];
+              if (status.missing.length > 0) {
+                console.log(`   ${arch} missing: ${status.missing.join(', ')}`);
+              }
+            });
           }
-        });
+          console.log('   Building with Docker (this may take 10-15 minutes per architecture)...\n');
+          
+          const dockerSuccess = buildDockerBinaries(archsNeedingBuild, configArg);
+          
+          if (!dockerSuccess) {
+            console.error('\n❌ Docker builds failed!');
+            console.error('   You can build manually with:');
+            archsNeedingBuild.forEach(arch => {
+              console.error(`   cd ../dash-python-service && pnpm build:docker:${arch}:${configArg}`);
+            });
+            // Don't exit - continue with native build for current platform
+            success = false;
+          }
+        } else {
+          console.log('\n✅ All Docker builds are up to date!');
+        }
+        
+        // Verify Docker builds
+        const dockerVerified = verifyDockerBuilds(LINUX_CROSS_COMPILE_ARCHS);
+        if (!dockerVerified) {
+          console.warn('\n⚠️  Some Docker builds are missing. Linux ARM packages may fail.');
+        }
+        console.log('');
       }
-      console.log('   Building with Docker (this may take 10-15 minutes per architecture)...\n');
-      
-      const dockerSuccess = buildDockerBinaries(archsNeedingBuild, configArg);
-      
-      if (!dockerSuccess) {
-        console.error('\n❌ Docker builds failed!');
-        console.error('   You can build manually with:');
-        archsNeedingBuild.forEach(arch => {
-          console.error(`   cd ../dash-python-service && pnpm build:docker:${arch}:${configArg}`);
-        });
-        // Don't exit - continue with native build for current platform
-        success = false;
-      }
-    } else {
-      console.log('\n✅ All Docker builds are up to date!');
-    }
-    
-    // Verify Docker builds
-    const dockerVerified = verifyDockerBuilds(LINUX_CROSS_COMPILE_ARCHS);
-    if (!dockerVerified) {
-      console.warn('\n⚠️  Some Docker builds are missing. Linux ARM packages may fail.');
-    }
-    console.log('');
-  }
 
-  // Always build native binary for current platform (macOS, Windows, or Linux x64)
-  // This is used for local development and native platform releases
-  if (process.platform !== 'linux' || process.arch === 'x64') {
-    console.log('🖥️  Building native binary for current platform...\n');
-    
-    const nativeSuccess = buildNativePythonService(config);
+      // Always build native binary for current platform (macOS, Windows, or Linux x64)
+      // This is used for local development and native platform releases
+      if (process.platform !== 'linux' || process.arch === 'x64') {
+        console.log('🖥️  Building native binary for current platform...\n');
+        
+        const nativeSuccess = buildNativePythonService(config);
 
-    if (!nativeSuccess) {
-      console.error('\n💥 Native Python service build failed!');
-      // Don't exit if we have Docker builds for Linux
-      if (!needsLinuxArm && !isLinuxBuild) {
-        process.exit(1);
+        if (!nativeSuccess) {
+          console.error('\n💥 Native Python service build failed!');
+          // Don't exit if we have Docker builds for Linux
+          if (!needsLinuxArm && !isLinuxBuild) {
+            process.exit(1);
+          }
+          success = false;
+        } else {
+          // Verify native build
+          verifyBuild();
+        }
       }
-      success = false;
-    } else {
-      // Verify native build
-      verifyBuild();
-    }
+      
+      // Save hash only if successful
+      if (success) {
+          saveHash(currentHash);
+      }
   }
 
   // Check electron-builder config
@@ -476,17 +579,9 @@ function main() {
   }
 }
 
+
 // Run
 if (require.main === module) {
   main();
 }
 
-module.exports = {
-  readBuildConfig,
-  buildNativePythonService,
-  buildDockerBinaries,
-  verifyBuild,
-  verifyDockerBuilds,
-  checkDockerBuilds,
-  getDockerConfigArg
-};

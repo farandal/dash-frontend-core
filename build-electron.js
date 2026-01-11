@@ -55,20 +55,47 @@ console.log(`📦 Running: electron-builder ${args}`);
 
 let buildSuccess = true;
 
-try {
-  execSync(`npx electron-builder ${args}`, {
-    cwd: projectDir,
-    stdio: 'inherit',
-    env: {
-      ...process.env,
-      USE_HARD_LINKS: 'false'
+  // Check for AWS_PROFILE and inject credentials if needed
+  const env = { ...process.env, USE_HARD_LINKS: 'false' };
+  
+  if (process.env.AWS_PROFILE) {
+    try {
+      console.log(`🔐 AWS_PROFILE '${process.env.AWS_PROFILE}' detected. Fetching credentials...`);
+      
+      const profile = process.env.AWS_PROFILE;
+      const getVal = (key) => {
+        try {
+          return execSync(`aws configure get ${key} --profile ${profile}`, { encoding: 'utf8' }).trim();
+        } catch (e) { return null; }
+      };
+
+      env.AWS_ACCESS_KEY_ID = getVal('aws_access_key_id');
+      env.AWS_SECRET_ACCESS_KEY = getVal('aws_secret_access_key');
+      const token = getVal('aws_session_token');
+      if (token) env.AWS_SESSION_TOKEN = token;
+
+      if (env.AWS_ACCESS_KEY_ID && env.AWS_SECRET_ACCESS_KEY) {
+        console.log('✅ AWS credentials successfully loaded from profile.');
+      } else {
+         console.warn('⚠️  Could not retrieve complete credentials from profile via CLI.');
+      }
+    } catch (error) {
+      console.warn('⚠️  Failed to load AWS credentials from profile:', error.message);
     }
-  });
-  console.log('✅ Build completed successfully!');
-} catch (error) {
-  console.error('❌ Build failed:', error.message);
-  buildSuccess = false;
-} finally {
+  }
+
+  try {
+    execSync(`npx electron-builder ${args}`, {
+      cwd: projectDir,
+      stdio: 'inherit',
+      env: env
+    });
+    console.log('✅ Build completed successfully!');
+    buildSuccess = true; // Use valid variable
+  } catch (error) {
+    console.error('❌ Build failed:', error.message);
+    buildSuccess = false; // Use valid variable
+  } finally {
   // Always restore pnpm files
   restorePnpmFiles();
 }

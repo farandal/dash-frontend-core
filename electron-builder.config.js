@@ -42,6 +42,14 @@ module.exports = {
   nodeGypRebuild: false, // Disable node-gyp rebuild
   buildDependenciesFromSource: false, // Don't build dependencies from source
   detectUpdateChannel: false,
+  publish: {
+    provider: 's3',
+    bucket: 'kitchntabs-releases',
+    region: 'us-east-2',
+    path: 'releases/',
+    acl: 'private',
+    timeout: 120000 // 2 minutes request timeout
+  },
   // Explicit electron version - required when node_modules is hidden during build
   electronVersion: '36.7.4',
   
@@ -234,7 +242,7 @@ module.exports = {
     ]
   },
   linux: {
-    icon: 'icons/png/',
+    icon: path.resolve(__dirname, 'icons/png'),
     category: 'Office',
     executableName: 'kitchntabs',
     desktop: {

@@ -5,7 +5,7 @@ import fs from "fs";
 import svgr from "vite-plugin-svgr";
 
 
-import packageJson from "./package.json" assert { type: "json" };
+import packageJson from "../../package.json" assert { type: "json" };
 
 interface IEnvVars {
   [x: string]: any;
@@ -391,7 +391,8 @@ export default ({ mode }) => {
         id.includes('node_modules/lodash') ||
         id.includes('node_modules/axios') ||
         id.includes('node_modules/query-string') ||
-        id.includes('node_modules/qs')
+        id.includes('node_modules/qs') ||
+        id.includes('node_modules/qrcode.react')
       ) {
         return 'vendor-utils';
       }
@@ -699,6 +700,7 @@ export default ({ mode }) => {
         "react-loading-overlay-ts",
         "node-match-path",
         "framer-motion",
+        "qrcode.react",
 
         // Capacitor modules - only include for mobile builds (not external)
         ...(isCapacitorBuild
