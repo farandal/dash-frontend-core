@@ -135,6 +135,9 @@ export interface IMallCategory {
     name: string;
     description?: string;
     image?: string;
+    image_url?: string;
+    image_path?: string;
+    has_image?: boolean;
     parent_id?: string | number;
     is_enabled: boolean;
     tree_index?: number;

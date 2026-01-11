@@ -240,8 +240,8 @@ export const MallCategorySelector: React.FC = () => {
                 {/* Category items - MIDDLE */}
                 {categories.map((category) => {
                     const isSelected = selectedCategory?.id === category.id && !showFeaturedOnly;
-                    // Prefer image, fall back to default icon
-                    const logoUrl = category.image;
+                    // Prefer image_url (from API), fall back to image, then default icon
+                    const logoUrl = category.image_url || category.image;
                     
                     return (
                         <Tooltip key={category.id} title={category.name} placement="right">
