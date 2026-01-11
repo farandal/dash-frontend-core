@@ -593,6 +593,17 @@ const customEs = {
             filter_period_start: 'Inicio Período (Desde)',
             filter_period_end: 'Fin Período (Hasta)',
         },
+        qr_generator: {
+            title_self_service: "Generador QR Auto-Servicio",
+            title_mall: "Generador QR Servicio Mall",
+            welcome_title: "Módulo de auto-atención",
+            welcome_subtitle: "Haga su pedido desde su teléfono!",
+            print: {
+                title: "📱 Ordena desde tu celular",
+                subtitle: "Escanea el código QR para ver el menú",
+                instructions: "Apunta tu cámara al código QR",
+            }
+        },
     },
     mall: {
         // Orders
@@ -712,7 +723,7 @@ const customEs = {
     selfservice: {
         welcome: {
             title: "¡Bienvenido!",
-            subtitle: "Por favor ingresa tus datos para comenzar tu pedido",
+            subtitle: "",
             name_label: "Tu nombre",
             name_placeholder: "Ingresa tu nombre",
             delivery_method_label: "¿Cómo deseas recibir tu pedido?",
@@ -720,8 +731,8 @@ const customEs = {
             counter_pickup: "En mostrador",
             table_label: "Número de mesa",
             counter_info: "Tu pedido estará listo para recoger en el mostrador. Te notificaremos cuando esté listo.",
-            continue_button: "Continuar con mi pedido",
-            start_button: "Comenzar a ordenar",
+            continue_button: "Continuar con mi orden",
+            start_button: "Haz tu pedido!",
             session_info: "Sesión segura • Tus datos están protegidos",
         },
         menu: {

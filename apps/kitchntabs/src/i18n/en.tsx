@@ -595,6 +595,17 @@ const customEn = {
             filter_period_start: 'Period Start (From)',
             filter_period_end: 'Period End (To)',
         },
+        qr_generator: {
+            title_self_service: "Self-Service QR Generator",
+            title_mall: "Mall Service QR Generator",
+            welcome_title: "Welcome to our self service module",
+            welcome_subtitle: "Order from your phone",
+            print: {
+                title: "📱 Order from your phone",
+                subtitle: "Scan the QR code to view the menu",
+                instructions: "Point your camera at the QR code",
+            }
+        },
     },
     mall: {
         // Orders
