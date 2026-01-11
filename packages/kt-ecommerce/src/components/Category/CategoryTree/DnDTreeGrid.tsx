@@ -32,6 +32,7 @@ interface CategoryData {
     id: number | string;
     name: string;
     is_primary?: boolean;
+    image_url?: string;
     tree_index?: number;
     subcategories?: CategoryData[];
 }
@@ -40,6 +41,7 @@ interface TreeNodeData {
     id: string;
     name: string;
     is_primary: boolean;
+    image_url?: string;
     index: number;
     children?: TreeNodeData[];
 }
@@ -91,6 +93,7 @@ const DefaultNode: React.FC<DefaultNodeProps> = (props) => {
     const name = node.data.name;
     const isSelected = node.isSelected;
     const isDragging = node.isDragging;
+    const imageUrl = node.data.image_url;
 
     const rowClassNames = [
         'row',
@@ -121,11 +124,24 @@ const DefaultNode: React.FC<DefaultNodeProps> = (props) => {
                     cursor: 'grab',
                 }} 
             />
-            <div style={{ marginRight: '8px' }}>
-                {isFolder ? (
-                    node.isOpen ? <FolderOpenIcon fontSize="small" /> : <FolderIcon fontSize="small" />
+            <div style={{ marginRight: '8px', display: 'flex', alignItems: 'center' }}>
+                {imageUrl ? (
+                    <img 
+                        src={imageUrl} 
+                        alt={name}
+                        style={{ 
+                            width: '24px', 
+                            height: '24px', 
+                            objectFit: 'contain',
+                            borderRadius: '4px'
+                        }} 
+                    />
                 ) : (
-                    <InsertDriveFileIcon fontSize="small" />
+                    isFolder ? (
+                        node.isOpen ? <FolderOpenIcon fontSize="small" /> : <FolderIcon fontSize="small" />
+                    ) : (
+                        <InsertDriveFileIcon fontSize="small" />
+                    )
                 )}
             </div>
             <Typography
@@ -245,6 +261,7 @@ const DnDTreeGrid: React.FC<{ data: CategoryData[]; onEdit: any; onDelete: any }
                 id: categoryId,
                 name: category.name,
                 is_primary: category.is_primary || false,
+                image_url: category.image_url,
                 index: category.tree_index ?? (parentIndex + idx),
                 children: category.subcategories && category.subcategories.length > 0
                     ? convertToTreeFormat(category.subcategories, (parentIndex + idx) * 100)
@@ -269,6 +286,7 @@ const DnDTreeGrid: React.FC<{ data: CategoryData[]; onEdit: any; onDelete: any }
                 id: finalId,
                 name: node.name,
                 is_primary: node.is_primary,
+                image_url: node.image_url,
                 tree_index: idx, // Use the current position in the array as the index
                 subcategories: node.children && node.children.length > 0
                     ? convertFromTreeFormat(node.children)
@@ -354,7 +372,7 @@ useEffect(() => {
     const handleEditClick = (e: React.MouseEvent, node: any) => {
         e.stopPropagation();
         onEdit(e, null, {
-            id: isNaN(parseInt(node.id)) ? node.id : parseInt(node.id),
+            id: node.id,
             name: node.data.name,
             is_primary: node.data.is_primary,
             tree_index: node.data.index
@@ -364,7 +382,7 @@ useEffect(() => {
     const handleDeleteClick = (e: React.MouseEvent, node: any) => {
         e.stopPropagation();
         onDelete(e, null, {
-            id: isNaN(parseInt(node.id)) ? node.id : parseInt(node.id),
+            id: node.id,
             name: node.data.name,
             is_primary: node.data.is_primary,
             tree_index: node.data.index

@@ -35,8 +35,21 @@ interface IOptionForOutputCategoryMapping {
 import CategoryMapper from "../components/Category/CategoryMapper";
 import CategoryOutputMapper from "../components/Category/CategoryOutputMapper";
 import { IDashAutoAdminAttribute } from "dash-auto-admin";
+import CategoryIcon from "../components/Category/CategoryIcon";
+import CategoryIconList from "../components/Category/CategoryIconList";
 
 const categorySchema: IDashAutoAdminAttribute[] = [
+
+  {
+    attribute: 'image_url',
+    label: 'Icono',
+    type: "custom",
+    component: CategoryIconList,
+    inList: true,
+    inEdit: false,
+    inCreate: false,
+    inShow: false
+  },
 
   {
     attribute: 'name',
@@ -48,6 +61,23 @@ const categorySchema: IDashAutoAdminAttribute[] = [
     attribute: 'is_primary',
     label: 'Principal',
     type: Boolean
+  },
+
+  {
+    attribute: 'is_internal',
+    label: 'Interno',
+    type: Boolean
+  },
+
+  {
+    attribute: "image",
+    listAttribute: 'image_url',
+    type: String,
+    custom: true,
+    component: CategoryIcon,
+    inList: false,
+    label: "Icono",
+    processor: "File"
   },
 
   /* {

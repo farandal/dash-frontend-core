@@ -83,6 +83,7 @@ const categoryResource: IDashAutoAdminResourceConfig =
 
     saveButtonAlwaysEnabled: true,
     processErrors: false,
+    isFormData: true,
 }
 
 export default categoryResource;
