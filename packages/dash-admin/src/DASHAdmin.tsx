@@ -27,6 +27,7 @@ import { dashStorage } from 'dash-utils';
 import { CustomRoutes, AdminUI, AdminContext, AdminUIProps } from 'react-admin';
 import I18nBridgeSetter from './contexts/I18nBridgeSetter';
 import I18nReduxSync from './contexts/I18nReduxSync';
+import DASHAuthenticationService from './contexts/auth/DASHAuthenticationService';
 
 export interface IAppResourceGroupsIcon {
     [x: string]: JSX.Element;
@@ -222,6 +223,43 @@ const AsyncResources: React.FC<IAsyncResources> = React.memo((props) => {
 
 
 
+
+
+// Helper component to handle auth redirects via Router
+const RedirectListener = () => {
+    const navigate = useNavigate();
+
+    // Check for pending redirect on mount (handles race condition)
+    React.useEffect(() => {
+        const pendingRedirect = DASHAuthenticationService.getPendingRedirect();
+        if (pendingRedirect) {
+            console.log('🔄 PrivateRedirectListener: Found persisted pending redirect:', pendingRedirect);
+            DASHAuthenticationService.clearPendingRedirect();
+            const cleanRedirect = pendingRedirect.startsWith('#') ? pendingRedirect.substring(1) : pendingRedirect;
+            navigate(cleanRedirect);
+        }
+    }, [navigate]);
+
+    React.useEffect(() => {
+        const handleRedirect = (event: CustomEvent) => {
+            const { to } = event.detail;
+            if (to) {
+                //debugger;
+                console.log('🔄 PrivateRedirectListener: Navigating to', to);
+                // Remove hash if present, as useNavigate handles it based on Router type
+                const path = to.startsWith('#') ? to.substring(1) : to;
+                navigate(path);
+            }
+        };
+    
+        window.addEventListener('auth:redirect', handleRedirect as EventListener);
+        return () => window.removeEventListener('auth:redirect', handleRedirect as EventListener);
+    }, [navigate]);
+
+    return null;
+};
+
+
 const DASHAdminApp: React.FC<IDASHAdmin<unknown, unknown, unknown, unknown>> = React.memo((props) => {
     const {
         customLoginPage = MyLoginPage,
@@ -313,6 +351,9 @@ const DASHAdminApp: React.FC<IDASHAdmin<unknown, unknown, unknown, unknown>> = R
         }
     }, [authenticated, user, resources, children]);
 
+
+    
+
     /* Sets the application auth and no auth custom routes */
     //const getCustomAuthRoutes = useCallback(() => customAuthRoutes ?? [], [customAuthRoutes]);
     //const getCustomRoutes = useCallback(() => customRoutes ?? [], [customRoutes]);
@@ -370,6 +411,7 @@ const DASHAdminApp: React.FC<IDASHAdmin<unknown, unknown, unknown, unknown>> = R
                 <I18nReduxSync locale={ReactLocale} />
                 <I18nBridgeSetter />
                 <AdminHook />
+                <RedirectListener />
                 <AdminUI {...adminUIProps}>
                     {children}
                 </AdminUI>
@@ -386,6 +428,7 @@ const DASHAdminApp: React.FC<IDASHAdmin<unknown, unknown, unknown, unknown>> = R
                 <I18nReduxSync locale={ReactLocale} />
                 <I18nBridgeSetter />
                 <AdminHook />
+                <RedirectListener />
                 <AsyncResources
                     {...adminUIProps}
                     resources={resources}

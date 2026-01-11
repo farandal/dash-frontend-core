@@ -232,7 +232,7 @@ const DashAutoDrawer: React.FC<IDashAutoDrawer> = ({
                     <AutoEdit
                         isDrawer={true}
                         toolbar={<DrawerToolbar />}
-                        id={Number(resource_id)}
+                        id={resource_id}
                         resourceConfig={{ ...resourceConfig, formGroupMode: (resourceConfig.formGroupMode === 'tabs' || !resourceConfig.formGroupMode ? 'groups' : resourceConfig.formGroupMode) }}
                         //schema={resourceConfig.schema}
                         beforeSubmit={beforeSubmit}

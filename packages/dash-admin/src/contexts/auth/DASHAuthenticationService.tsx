@@ -57,16 +57,41 @@ class DASHAuthenticationService {
         // Check if this looks like a Windows file path (common in Electron)
         // e.g., "/C:/Program Files/..." or "C:/..." or file:// URLs
         const isWindowsFilePath = /^\/[A-Za-z]:\/|^[A-Za-z]:\/|^file:\/\//i.test(url);
+
+        // Check if we are in an Electron/HashRouter environment
+        const isElectron = window.location.protocol === 'file:' || 
+                          getEnv('IS_ELECTRON') === 'true' || 
+                          getEnv('IS_ELECTRON') === true;
+
+        // Fix for Electron: If it is a file:// URL (or Windows path) AND contains a hash, 
+        // implies we want to preserve the internal route (e.g. file:///.../index.html#/dashboard)
+        if (isWindowsFilePath || url.includes('index.html')) {
+            if (url.includes('#')) {
+                const parts = url.split('#');
+                if (parts.length > 1 && parts[1]) {
+                    const route = parts[1];
+                    console.log('Detected file/electron path with hash, extracting route:', route);
+                    return '#' + route;
+                }
+            }
+        }
         
         if (isWindowsFilePath) {
-            console.log('Detected Windows file path in redirect, resetting to /');
-            return '/';
+            console.log('Detected Windows file path in redirect, resetting to #/');
+            return '#/';
         }
         
         // Check for common Electron file patterns
         if (url.includes('/resources/app/') || url.includes('/dist/index.html') || url.includes('Program Files')) {
-            console.log('Detected Electron app path in redirect, resetting to /');
-            return '/';
+            console.log('Detected Electron app path in redirect, resetting to #/');
+            return '#/';
+        }
+
+        // If we are in Electron and the URL is a standard path (e.g. /selfservice/qr) without a hash,
+        // force the hash prefix so HashRouter handles it correctly.
+        if (isElectron && url.startsWith('/') && !url.startsWith('#')) {
+             console.log('Detected Electron environment with standard path, adding hash prefix:', url);
+             return '#' + url;
         }
         
         return url;
@@ -117,7 +142,9 @@ class DASHAuthenticationService {
             //this.clearPendingRedirect();
             val = backendRedirect;
             this.setPendingRedirect(val);
-            return val;
+            
+            // Return the sanitized URL that was just set
+            return this.getPendingRedirect();
         }
 
         // Fall back to localStorage redirect
@@ -126,17 +153,15 @@ class DASHAuthenticationService {
             console.log('Using localStorage redirect:', localStorageRedirect);
             //this.clearPendingRedirect();
             val = localStorageRedirect;
-            this.setPendingRedirect(val);
-            return val;
+            this.setPendingRedirect(val); // Ensure it's sanitized if it wasn't
+            return this.getPendingRedirect();
         }
 
         val = getEnv("APP_DEFAULT_REDIRECT");
 
         this.setPendingRedirect(val);
 
-        return val;
-
-
+        return this.getPendingRedirect();
     }
 
     // Update the login method to dispatch to Redux directly
