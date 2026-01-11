@@ -58,6 +58,27 @@ contextBridge.exposeInMainWorld('DashIPCService', {
   
   // ==================== END SERVICE METHODS ====================
   
+  // ==================== AUTO UPDATE METHODS ====================
+  
+  checkUpdate: () => ipcRenderer.invoke('check-update'),
+  startDownload: () => ipcRenderer.invoke('start-download'),
+  quitAndInstall: () => ipcRenderer.invoke('quit-and-install'),
+
+  onUpdateAvailable: (callback: any) => {
+    ipcRenderer.on('update-can-available', (event, arg) => callback(arg));
+  },
+  onDownloadProgress: (callback: any) => {
+    ipcRenderer.on('download-progress', (event, arg) => callback(arg));
+  },
+  onUpdateDownloaded: (callback: any) => {
+    ipcRenderer.on('update-downloaded', (event, arg) => callback(arg));
+  },
+  onUpdateError: (callback: any) => {
+    ipcRenderer.on('update-error', (event, arg) => callback(arg));
+  },
+
+  // ==================== END AUTO UPDATE METHODS ====================
+
   onPythonOutput: (callback: any) => {
     ipcRenderer.on('python-output', (event, data) => callback(data));
   },

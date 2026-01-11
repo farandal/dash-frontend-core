@@ -339,6 +339,7 @@ app.requestSingleInstanceLock();
 
 let token;
 let channel;
+
 app.on("second-instance", (event, commandLine, workingDirectory) => {
   // Someone tried to run a second instance, let's focus our window.
   if (win) {
@@ -714,7 +715,7 @@ const startPythonProcess = async (t: string, c: string) => {
 
     // Handle process output
     pythonProcess.stdout.on("data", outputFunction);
-    pythonProcess.stderr.on("data", (data) => {
+    pythonProcess.stderr.on("data", (data:any) => {
       const stderr = data.toString();
       log.error(`> ${stderr}`);
       
@@ -735,7 +736,7 @@ const startPythonProcess = async (t: string, c: string) => {
     });
 
     // Update event handlers for process termination
-    pythonProcess.on("close", (code) => {
+    pythonProcess.on("close", (code:any) => {
       log.info(`Python process exited with code ${code}`);
       
       // Show notification based on exit code
@@ -939,7 +940,11 @@ async function createWindow() {
       
     //icon: join(process.env.VITE_PUBLIC, "favicon.ico"),
 
-    
+   
+    kiosk: process.platform === 'linux' || process.argv.includes('--kiosk'),
+    fullscreen: process.platform === 'linux' || process.argv.includes('--fullscreen'),
+    autoHideMenuBar: true,
+
     
     webPreferences: {
       preload: path.join(__dirname, '../preload/index.js'),
@@ -1504,7 +1509,7 @@ app.whenReady().then(createWindow);
 
 
 // First, add a helper function to get the correct icon path
-function getIconPath(iconName) {
+function getIconPath(iconName:any) {
     // For packaged app, use the resources directory
     if (app.isPackaged) {
       return path.join(
