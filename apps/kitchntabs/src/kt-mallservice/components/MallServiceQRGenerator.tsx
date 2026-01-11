@@ -8,9 +8,9 @@
  * 
  * Adapted from kitchntabs-mall/src/kt-mall/components/MallQRGenerator.tsx
  */
-import { FC, useContext, useEffect, useState, useCallback } from 'react';
+import { FC, useContext, useEffect, useState, useCallback, useRef } from 'react';
 import { useParams } from 'react-router-dom';
-import { QRCodeSVG } from 'qrcode.react';
+import { QRCodeSVG, QRCodeCanvas } from 'qrcode.react';
 import { 
     Box, 
     Card, 
@@ -24,6 +24,10 @@ import {
     Tooltip,
     Stack,
     Divider,
+    Paper,
+    Grid,
+    useMediaQuery,
+    useTheme,
 } from '@mui/material';
 import {
     QrCode as QrCodeIcon,
@@ -34,7 +38,7 @@ import {
     TableRestaurant as TableIcon,
     CheckCircle as CheckCircleIcon,
 } from '@mui/icons-material';
-import { useNotify, Title } from 'react-admin';
+import { useNotify, Title, useTranslate } from 'react-admin';
 import { useAxios } from 'dash-axios-hook';
 import { AuthPersistenceService } from 'dash-auth';
 import { LaravelEchoContext } from 'dash-admin/src/contexts/com/LaravelEchoContext';
@@ -52,9 +56,17 @@ interface SessionResponse {
     message?: string;
 }
 
+const ENABLE_DOWNLOAD = false;
+const ENABLE_PRINT = false;
+const ENABLE_REGENERATE = false;
+const ENABLE_COPY_URL = false;
+
 const MallServiceQRGenerator: FC<MallQRGeneratorProps> = () => {
     const notify = useNotify();
+    const translate = useTranslate();
     const axios = useAxios();
+    const theme = useTheme();
+    const isXl = useMediaQuery(theme.breakpoints.up('xl'));
     
     // Get mallSlug from route params (fallback option)
     const { mallSlug: routeMallSlug } = useParams<{ mallSlug: string }>();
@@ -67,6 +79,8 @@ const MallServiceQRGenerator: FC<MallQRGeneratorProps> = () => {
     const [mallName, setMallName] = useState<string>('');
     const [tableNumber, setTableNumber] = useState<string>('');
     const [copied, setCopied] = useState(false);
+    const [horizontalLogo, setHorizontalLogo] = useState<string>('');
+    const canvasRef = useRef<HTMLCanvasElement>(null);
 
     // Use global LaravelEchoContext for QR refresh
     const { lastEvent } = useContext(LaravelEchoContext);
@@ -88,20 +102,16 @@ const MallServiceQRGenerator: FC<MallQRGeneratorProps> = () => {
         return { slug: null, name: '' };
     };
 
+    // Helper to get QR Code Data URL from the hidden canvas
+    const getQRCodeDataURL = useCallback(() => {
+        if (!canvasRef.current) return '';
+        return canvasRef.current.toDataURL('image/png');
+    }, []);
+
     // Get the frontend URL from environment or fallback to current browser URL
     const getFrontendUrl = (): string => {
         const envUrl = DASHAdminSystemConstants.system.FRONTEND_URL;
-
-        if (envUrl) {
-            return envUrl;
-        }
-
-        // Fallback to current browser URL (origin)
-        if (typeof window !== 'undefined') {
-            return window.location.origin;
-        }
-
-        return '';
+        return envUrl || (typeof window !== 'undefined' ? window.location.origin : '');
     };
 
     // Get mall slug - prioritize auth user's managed_mall, then route params
@@ -219,6 +229,10 @@ const MallServiceQRGenerator: FC<MallQRGeneratorProps> = () => {
             setMallSlug(slug);
             setMallName(name);
 
+            const storedAuth = AuthPersistenceService.getAuth();
+            const logo = storedAuth?.auth?.tenantImages?.horizontal_logo?.original || '';
+            setHorizontalLogo(logo);
+
             const hash = await retrieveSession(slug);
             if (hash) {
                 setSessionId(hash);
@@ -245,7 +259,8 @@ const MallServiceQRGenerator: FC<MallQRGeneratorProps> = () => {
 
     // Print QR code
     const printQRCode = () => {
-        if (!sessionId) return;
+        const dataUrl = getQRCodeDataURL();
+        if (!dataUrl || !sessionId) return;
 
         const printWindow = window.open('', '_blank');
         if (!printWindow) {
@@ -259,7 +274,7 @@ const MallServiceQRGenerator: FC<MallQRGeneratorProps> = () => {
             <!DOCTYPE html>
             <html>
             <head>
-                <title>Mall QR Code - ${mallName || mallSlug}</title>
+                <title>${translate('resource.qr_generator.title_mall')} - ${mallName || mallSlug}</title>
                 <style>
                     body {
                         font-family: Arial, sans-serif;
@@ -313,11 +328,11 @@ const MallServiceQRGenerator: FC<MallQRGeneratorProps> = () => {
             </head>
             <body>
                 <div class="container">
-                    <div class="title">📱 Ordena desde tu celular</div>
+                    <div class="title">${translate('resource.qr_generator.print.title')}</div>
                     <div class="mall-name">${mallName || mallSlug}</div>
-                    <div class="subtitle">Escanea el código QR para ver el menú</div>
+                    <div class="subtitle">${translate('resource.qr_generator.print.subtitle')}</div>
                     <div class="qr-code">
-                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=280x280&data=${encodeURIComponent(qrUrl)}" alt="QR Code" />
+                        <img src="${dataUrl}" alt="QR Code" />
                     </div>
                     <div class="session-id">${sessionId}</div>
                 </div>
@@ -338,7 +353,7 @@ const MallServiceQRGenerator: FC<MallQRGeneratorProps> = () => {
     if (loading && !sessionId) {
         return (
             <Box sx={{ p: 3, maxWidth: 600, margin: '0 auto' }}>
-                <Title title="Mall Service QR Generator" />
+                <Title title={translate('resource.qr_generator.title_mall')} />
                 <Card sx={{
                     justifyContent: "center",
                     display: "flex",
@@ -360,7 +375,7 @@ const MallServiceQRGenerator: FC<MallQRGeneratorProps> = () => {
     if (error && !sessionId) {
         return (
             <Box sx={{ p: 3, maxWidth: 600, margin: '0 auto' }}>
-                <Title title="Mall Service QR Generator" />
+                <Title title={translate('resource.qr_generator.title_mall')} />
                 <Alert severity="error" sx={{ mb: 2 }}>
                     {error}
                 </Alert>
@@ -373,94 +388,131 @@ const MallServiceQRGenerator: FC<MallQRGeneratorProps> = () => {
 
     // Show QR code if session is available
     return (
-        <Box sx={{ p: 3, maxWidth: 600, margin: '0 auto' }}>
-            <Title title="Mall Service QR Generator" />
+        <Box sx={{ 
+            p: 3, 
+            maxWidth: isXl ? '100%' : 600, 
+            margin: '0 auto',
+            minHeight: isXl ? '80vh' : 'auto',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center'
+        }}>
+            <Title title={translate('resource.qr_generator.title_mall')} />
 
-            <Typography variant="h4" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-                <QrCodeIcon fontSize="large" />
-                {mallName || mallSlug || 'Mall QR'}
-            </Typography>
-
-            {/* QR Code Card */}
-            <Card sx={{ mb: 3 }}>
-                <CardContent sx={{ textAlign: 'center', py: 4 }}>
-                    {sessionId && (
-                        <>
-                            <Box sx={{ 
-                                p: 2, 
-                                display: 'inline-block', 
-                                mb: 3, 
-                                bgcolor: 'white',
-                                borderRadius: 2,
-                                boxShadow: 2
-                            }}>
-                                <QRCodeSVG
-                                    value={constructQRUrl(sessionId)}
-                                    size={size}
-                                    level="H"
+            <Grid container spacing={4} alignItems="center" justifyContent="center">
+                {/* Information Column (Left on XL, Top on others) */}
+                <Grid item xs={12} xl={8}>
+                    <Stack spacing={3} alignItems={isXl ? "flex-start" : "center"} textAlign={isXl ? "left" : "center"}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                            <QrCodeIcon sx={{ fontSize: isXl ? 60 : 40, color: 'primary.main' }} />
+                            <Typography variant={isXl ? "h2" : "h4"} fontWeight="bold">
+                                {translate('resource.qr_generator.welcome_title')}
+                            </Typography>
+                        </Box>
+                        
+                        <Typography variant={isXl ? "h4" : "h6"} color="text.secondary">
+                            {translate('resource.qr_generator.welcome_subtitle')}
+                        </Typography>
+                        
+                        {isXl && horizontalLogo && (
+                            <Box sx={{ mt: 4, maxWidth: 400 }}>
+                                <img 
+                                    src={horizontalLogo} 
+                                    alt={mallName || 'Mall'} 
+                                    style={{ width: '100%', height: 'auto', objectFit: 'contain' }} 
                                 />
                             </Box>
+                        )}
+                    </Stack>
+                </Grid>
 
-                            <Divider sx={{ my: 2 }} />
+                {/* QR Code Column (Right on XL, Bottom on others) */}
+                <Grid item xs={12} xl={4}>
+                    <Card sx={{ 
+                        borderRadius: 4, 
+                        boxShadow: 10,
+                        overflow: 'hidden',
+                        backgroundColor: 'white'
+                    }}>
+                        <CardContent sx={{ textAlign: 'center', p: 4 }}>
+                            {sessionId && (
+                                <Stack spacing={3}>
+                                    <Paper elevation={0} sx={{ 
+                                        p: 2, 
+                                        display: 'inline-block', 
+                                        bgcolor: 'white',
+                                        border: '1px solid',
+                                        borderColor: 'divider',
+                                        borderRadius: 2
+                                    }}>
+                                        <QRCodeSVG
+                                            value={constructQRUrl(sessionId)}
+                                            size={isXl ? 400 : 350}
+                                            level="H"
+                                        />
+                                        {/* Hidden canvas for image generation (printing) */}
+                                        <Box sx={{ display: 'none' }}>
+                                            <QRCodeCanvas
+                                                ref={canvasRef}
+                                                value={constructQRUrl(sessionId)}
+                                                size={1024} // High resolution for printing
+                                                level="H"
+                                            />
+                                        </Box>
+                                    </Paper>
 
-                            {/*<Stack direction="row" spacing={2} justifyContent="center" sx={{ mb: 2 }}>
-                                <Tooltip title="Copy URL">
-                                    <IconButton 
-                                        onClick={copyToClipboard} 
-                                        color={copied ? 'success' : 'default'}
-                                        size="large"
-                                    >
-                                        {copied ? <CheckCircleIcon /> : <CopyIcon />}
-                                    </IconButton>
-                                </Tooltip>
-                                <Tooltip title="Print">
-                                    <IconButton onClick={printQRCode} size="large">
-                                        <PrintIcon />
-                                    </IconButton>
-                                </Tooltip>
-                                <Tooltip title="Generate New">
-                                    <IconButton onClick={retrieveNewSession} size="large" disabled={loading}>
-                                        {loading ? <CircularProgress size={24} /> : <RefreshIcon />}
-                                    </IconButton>
-                                </Tooltip>
-                            </Stack>*/}
+                                    {!isXl && horizontalLogo && (
+                                        <Box sx={{ maxWidth: 200, margin: '0 auto' }}>
+                                            <img 
+                                                src={horizontalLogo} 
+                                                alt={mallName || 'Mall'} 
+                                                style={{ width: '100%', height: 'auto', objectFit: 'contain' }} 
+                                            />
+                                        </Box>
+                                    )}
 
-                            <Typography variant="caption" color="text.secondary" sx={{ display: 'block' }}>
-                                {constructQRUrl(sessionId)}
-                            </Typography>
-                        </>
-                    )}
-                </CardContent>
-            </Card>
+                                    <Divider />
 
-            {/* Table Number & Regenerate */}
-            {/*<Card>
-                <CardContent>
-                    <Typography variant="subtitle1" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <TableIcon />
-                        Generate for Specific Table
-                    </Typography>
-                    
-                    <Box sx={{ display: 'flex', gap: 2, alignItems: 'flex-end' }}>
-                        <TextField
-                            label="Table Number (Optional)"
-                            value={tableNumber}
-                            onChange={(e) => setTableNumber(e.target.value)}
-                            placeholder="1, 2, Patio-A, etc."
-                            size="small"
-                            sx={{ flex: 1 }}
-                        />
-                        <Button
-                            variant="contained"
-                            onClick={retrieveNewSession}
-                            disabled={loading}
-                            startIcon={loading ? <CircularProgress size={20} /> : <RefreshIcon />}
-                        >
-                            {loading ? 'Generating...' : 'Generate New'}
-                        </Button>
-                    </Box>
-                </CardContent>
-            </Card>*/}
+                                    <Typography variant="caption" sx={{ wordBreak: 'break-all' }}>
+                                        {constructQRUrl(sessionId)}
+                                    </Typography>
+                                    
+                                    <Stack direction="row" spacing={1} justifyContent="center" sx={{ mt: 2 }}>
+                                        {ENABLE_COPY_URL && (
+                                            <Tooltip title="Copy URL">
+                                                <IconButton onClick={copyToClipboard} color={copied ? 'success' : 'default'}>
+                                                    {copied ? <CheckCircleIcon /> : <CopyIcon />}
+                                                </IconButton>
+                                            </Tooltip>
+                                        )}
+                                        {ENABLE_PRINT && (
+                                            <Tooltip title="Print">
+                                                <IconButton onClick={printQRCode}>
+                                                    <PrintIcon />
+                                                </IconButton>
+                                            </Tooltip>
+                                        )}
+                                        {ENABLE_DOWNLOAD && (
+                                            <Tooltip title="Download">
+                                                <IconButton disabled>
+                                                    <DownloadIcon />
+                                                </IconButton>
+                                            </Tooltip>
+                                        )}
+                                        {ENABLE_REGENERATE && (
+                                            <Tooltip title="Regenerate">
+                                                <IconButton onClick={retrieveNewSession} disabled={loading}>
+                                                    {loading ? <CircularProgress size={24} /> : <RefreshIcon />}
+                                                </IconButton>
+                                            </Tooltip>
+                                        )}
+                                    </Stack>
+                                </Stack>
+                            )}
+                        </CardContent>
+                    </Card>
+                </Grid>
+            </Grid>
         </Box>
     );
 };

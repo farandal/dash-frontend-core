@@ -33,7 +33,8 @@ const selfServiceResource: IDashAutoAdminResourceConfig = {
     model: 'selfservice/qr',
     label: 'Self-Service QR',
     group: 'Operaciones',
-    roles: [DASHAppConstants.system.SYSTEM_ROLE,DASHAppConstants.system.TENANT_ROLE,"Staff"],
+    //roles: [DASHAppConstants.system.SYSTEM_ROLE,DASHAppConstants.system.TENANT_ROLE,"Staff"],
+    roles: [DASHAppConstants.system.TENANT_ROLE,"Tenant-Service"],
     icon: <Icon />,
     schema: selfServiceSchema,
     

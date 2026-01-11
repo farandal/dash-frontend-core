@@ -33,7 +33,7 @@ const mallServiceResource: IDashAutoAdminResourceConfig = {
     model: 'mall/qr',
     label: 'Mall-Service QR',
     group: 'Operaciones',
-    roles: ["Mall"],
+    roles: ["Mall-Service"],
     icon: <Icon />,
     schema: [],
     

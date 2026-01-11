@@ -110,7 +110,7 @@ const SelfServiceHome: React.FC = () => {
     };
 
     const handleSubmit = () => {
-        if (!isFormValid()) return;
+        //if (!isFormValid()) return;
 
         // Save to storage
         dashStorage.setItem('orderData', {
@@ -135,16 +135,13 @@ const SelfServiceHome: React.FC = () => {
     return (
         <Box
             sx={{
-                minHeight: '100vh',
+                //minHeight: '100vh',
                 display: 'flex',
                 flexDirection: 'column',
-                background: `linear-gradient(135deg, 
-                    ${alpha('#1976d2', 0.1)} 0%, 
-                    ${alpha('#42a5f5', 0.05)} 50%,
-                    ${alpha('#90caf9', 0.1)} 100%)`,
+             
             }}
         >
-            <Container maxWidth="sm" sx={{ flex: 1, py: 4, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+            <Container maxWidth="sm" sx={{ flex: 1, /* py: 4,*/ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
 
                 {/* Welcome text */}
                 <Box sx={{ textAlign: 'center', mb: 4 }}>
@@ -193,7 +190,7 @@ const SelfServiceHome: React.FC = () => {
                     <Card 
                         //elevation={4}
                         sx={{ 
-                            p: 3,
+                            p: 1,
                             borderRadius: 3,
                             paddingLeft:22,
                             //background: 'rgba(255,255,255,0.95)',
@@ -215,7 +212,7 @@ const SelfServiceHome: React.FC = () => {
                     />
 
                     {/* Delivery method toggle */}
-                    <Box sx={{ mb: 3 }}>
+                    <Box >
                         <Typography 
                             variant="body2" 
                             color="text.secondary" 
@@ -260,10 +257,10 @@ const SelfServiceHome: React.FC = () => {
                             variant="outlined"
                             sx={{ 
                                 p: 2, 
-                                mb: 3,
+                                //mb: 3,
                                 display: 'flex',
                                 alignItems: 'center',
-                                gap: 2,
+                                //gap: 2,
                             }}
                         >
                             <TextField
@@ -316,12 +313,15 @@ const SelfServiceHome: React.FC = () => {
                     )*/}
 
                     {/* Submit button */}
-                    <Button
+                  
+                    </Card>
+
+                      <Button
                         fullWidth
                         variant="contained"
                         size="large"
                         onClick={handleSubmit}
-                        disabled={!isFormValid()}
+                        //disabled={!isFormValid()}
                         endIcon={<ArrowForward />}
                         sx={{
                             py: 1.5,
@@ -335,7 +335,7 @@ const SelfServiceHome: React.FC = () => {
                             : translate('selfservice.welcome.start_button')
                         }
                     </Button>
-                    </Card>
+
                 </Box>
 
                 {/* Session info - small text at bottom */}

@@ -6,7 +6,7 @@
  * 
  * Listens to WebSocket events to auto-refresh QR code when a session is activated.
  */
-import React, { useState, useCallback, useEffect, useContext } from 'react';
+import React, { useState, useCallback, useEffect, useContext, useRef } from 'react';
 import {
     Box,
     Card,
@@ -22,6 +22,9 @@ import {
     Divider,
     Chip,
     Stack,
+    Grid,
+    useMediaQuery,
+    useTheme,
 } from '@mui/material';
 import {
     QrCode as QrCodeIcon,
@@ -32,12 +35,13 @@ import {
     TableRestaurant as TableIcon,
     CheckCircle as CheckCircleIcon,
 } from '@mui/icons-material';
-import { useNotify, Title } from 'react-admin';
+import { useNotify, Title, useTranslate } from 'react-admin';
 import { useAxios } from 'dash-axios-hook';
-import QRCode from 'qrcode';
+import { QRCodeSVG, QRCodeCanvas } from 'qrcode.react';
 import { AuthPersistenceService } from 'dash-auth';
 // import { useSelfServiceEcho } from '../contexts/SelfServiceEchoContext';
 import { LaravelEchoContext } from 'dash-admin/src/contexts/com/LaravelEchoContext';
+import { DASHAdminSystemConstants } from 'dash-constants';
 
 interface SessionData {
     hash: string;
@@ -46,18 +50,27 @@ interface SessionData {
     table_number?: string;
 }
 
+const ENABLE_DOWNLOAD = false;
+const ENABLE_PRINT = false;
+const ENABLE_REGENERATE = false;
+const ENABLE_COPY_URL = false;
+
 const SelfServiceQRGenerator: React.FC = () => {
     const notify = useNotify();
+    const translate = useTranslate();
     const axios = useAxios();
+    const theme = useTheme();
+    const isXl = useMediaQuery(theme.breakpoints.up('xl'));
     
     // State
     const [tableNumber, setTableNumber] = useState('');
     const [sessionData, setSessionData] = useState<SessionData | null>(null);
-    const [qrCodeDataUrl, setQrCodeDataUrl] = useState<string>('');
     const [isLoading, setIsLoading] = useState(true);
+    const canvasRef = useRef<HTMLCanvasElement>(null);
     const [copied, setCopied] = useState(false);
     const [tenantSlug, setTenantSlug] = useState<string>('');
     const [tenantName, setTenantName] = useState<string>('');
+    const [horizontalLogo, setHorizontalLogo] = useState<string>('');
     const [error, setError] = useState<string | null>(null);
 
     // Use global LaravelEchoContext for QR refresh (listening to Tenant channel)
@@ -87,6 +100,9 @@ const SelfServiceQRGenerator: React.FC = () => {
 
                 setTenantSlug(slug);
                 setTenantName(name);
+
+                const logo = storedAuth?.auth?.tenantImages?.horizontal_logo?.original || '';
+                setHorizontalLogo(logo);
                 
                 // Auto-generate a session immediately
                 await createSession(slug);
@@ -102,28 +118,16 @@ const SelfServiceQRGenerator: React.FC = () => {
 
     // Get the base URL for the self-service kiosk
     const getKioskUrl = useCallback((hash: string, slug: string = tenantSlug) => {
-        const baseUrl = window.location.origin;
+        const envUrl = DASHAdminSystemConstants.system.FRONTEND_URL;
+        const baseUrl = envUrl || window.location.origin;
         return `${baseUrl}/selfservice/${hash}`;
     }, [tenantSlug]);
 
-    // Generate QR code image from URL
-    const generateQRCodeImage = useCallback(async (url: string) => {
-        try {
-            const dataUrl = await QRCode.toDataURL(url, {
-                width: 350,
-                margin: 2,
-                color: {
-                    dark: '#000000',
-                    light: '#FFFFFF',
-                },
-                errorCorrectionLevel: 'M',
-            });
-            setQrCodeDataUrl(dataUrl);
-        } catch (error) {
-            console.error('Error generating QR code:', error);
-            notify('Error generating QR code', { type: 'error' });
-        }
-    }, [notify]);
+    // Helper to get QR Code Data URL from the hidden canvas
+    const getQRCodeDataURL = useCallback(() => {
+        if (!canvasRef.current) return '';
+        return canvasRef.current.toDataURL('image/png');
+    }, []);
 
     // Create a new session
     const createSession = useCallback(async (slug: string = tenantSlug) => {
@@ -147,8 +151,8 @@ const SelfServiceQRGenerator: React.FC = () => {
             // setSessionHash(data.hash); // REMOVED: Private app should NOT subscribe to public channel
 
             // Generate QR code for this session
-            const kioskUrl = getKioskUrl(data.hash, slug);
-            await generateQRCodeImage(kioskUrl);
+            // const kioskUrl = getKioskUrl(data.hash, slug);
+            // await generateQRCodeImage(kioskUrl);
 
             notify('QR Code generated successfully!', { type: 'success' });
         } catch (error: any) {
@@ -159,7 +163,7 @@ const SelfServiceQRGenerator: React.FC = () => {
         } finally {
             setIsLoading(false);
         }
-    }, [axios, tableNumber, tenantSlug, getKioskUrl, generateQRCodeImage, notify]);
+    }, [axios, tableNumber, tenantSlug, getKioskUrl, notify]);
 
     // React to WebSocket events for QR code refresh
     useEffect(() => {
@@ -224,17 +228,19 @@ const SelfServiceQRGenerator: React.FC = () => {
 
     // Download QR code as PNG
     const downloadQRCode = useCallback(() => {
-        if (!qrCodeDataUrl || !sessionData) return;
+        const dataUrl = getQRCodeDataURL();
+        if (!dataUrl || !sessionData) return;
 
         const link = document.createElement('a');
         link.download = `selfservice-qr-${tenantSlug}-${sessionData.hash}.png`;
-        link.href = qrCodeDataUrl;
+        link.href = dataUrl;
         link.click();
-    }, [qrCodeDataUrl, sessionData, tenantSlug]);
+    }, [getQRCodeDataURL, sessionData, tenantSlug]);
 
     // Print QR code
     const printQRCode = useCallback(() => {
-        if (!qrCodeDataUrl || !sessionData) return;
+        const dataUrl = getQRCodeDataURL();
+        if (!dataUrl || !sessionData) return;
 
         const printWindow = window.open('', '_blank');
         if (!printWindow) {
@@ -248,7 +254,7 @@ const SelfServiceQRGenerator: React.FC = () => {
             <!DOCTYPE html>
             <html>
             <head>
-                <title>Self-Service QR Code - ${tenantName}</title>
+                <title>${translate('resource.qr_generator.title_self_service')} - ${tenantName}</title>
                 <style>
                     body {
                         font-family: Arial, sans-serif;
@@ -315,18 +321,19 @@ const SelfServiceQRGenerator: React.FC = () => {
                     }
                 </style>
             </head>
+            </head>
             <body>
                 <div class="container">
-                    <div class="title">📱 Ordena desde tu celular</div>
+                    <div class="title">${translate('resource.qr_generator.print.title')}</div>
                     <div class="tenant-name">${tenantName}</div>
-                    <div class="subtitle">Escanea el código QR para ver el menú</div>
-                    ${sessionData.table_number ? `<div class="table-number">Mesa ${sessionData.table_number}</div>` : ''}
+                    <div class="subtitle">${translate('resource.qr_generator.print.subtitle')}</div>
+                    ${sessionData.table_number ? `<div class="table-number">${translate('resource.qr_generator.table')} ${sessionData.table_number}</div>` : ''}
                     <div class="qr-code">
-                        <img src="${qrCodeDataUrl}" alt="QR Code" />
+                        <img src="${dataUrl}" alt="QR Code" />
                     </div>
                     <div class="session-id">${sessionData.hash}</div>
                     <div class="instructions">
-                        Apunta tu cámara al código QR
+                        ${translate('resource.qr_generator.print.instructions')}
                     </div>
                 </div>
                 <script>
@@ -339,13 +346,13 @@ const SelfServiceQRGenerator: React.FC = () => {
             </html>
         `);
         printWindow.document.close();
-    }, [qrCodeDataUrl, sessionData, tenantName, getKioskUrl, notify]);
+    }, [getQRCodeDataURL, sessionData, tenantName, getKioskUrl, notify]);
 
     // Error state
     if (error && !sessionData) {
         return (
             <Box sx={{ p: 3, maxWidth: 600, margin: '0 auto' }}>
-                <Title title="Self-Service QR Generator" />
+                <Title title={translate('resource.qr_generator.title_self_service')} />
                 <Alert severity="error" sx={{ mb: 2 }}>
                     {error}
                 </Alert>
@@ -376,115 +383,140 @@ const SelfServiceQRGenerator: React.FC = () => {
     }
 
     return (
-        <Box sx={{ p: 3, maxWidth: 600, margin: '0 auto' }}>
-            <Title title="Self-Service QR Generator" />
+        <Box sx={{ 
+            p: 3, 
+            maxWidth: isXl ? '100%' : 600, 
+            margin: '0 auto',
+            minHeight: isXl ? '80vh' : 'auto',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center'
+        }}>
+            <Title title={translate('resource.qr_generator.title_self_service')} />
             
-            <Typography variant="h4" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
-                <QrCodeIcon fontSize="large" />
-                {tenantName}
-            </Typography>
-            
-            {/*tenantName && (
-                <Typography variant="h6" color="primary" gutterBottom>
-                    {tenantName}
-                </Typography>
-            )*/}
-
-            {/* QR Code Card */}
-            <Card sx={{ mb: 3 }}>
-                <CardContent sx={{ textAlign: 'center', py: 4 }}>
-                    {qrCodeDataUrl && (
-                        <Paper elevation={3} sx={{ p: 2, display: 'inline-block', mb: 3, bgcolor: 'white' }}>
-                            <img 
-                                src={qrCodeDataUrl} 
-                                alt="QR Code" 
-                                style={{ maxWidth: '100%', height: 'auto', display: 'block' }}
-                            />
-                        </Paper>
-                    )}
-
-                    {sessionData && (
-                        <>
-                            {sessionData.table_number && (
-                                <Typography variant="h4" color="primary" gutterBottom>
-                                    Mesa {sessionData.table_number}
-                                </Typography>
-                            )}
-
-                            {/*<Stack direction="row" spacing={1} justifyContent="center" sx={{ mb: 3 }}>
-                                <Chip 
-                                    label={`Session: ${sessionData.hash}`}
-                                    color="primary"
-                                    variant="outlined"
-                                    size="medium"
-                                />
-                                <Chip 
-                                    label={sessionData.status}
-                                    color="success"
-                                    size="medium"
-                                />
-                            </Stack>*/}
-
-                            <Divider sx={{ my: 2 }} />
-
-                            <Stack direction="row" spacing={2} justifyContent="center">
-                                {/*<Tooltip title="Copy URL">
-                                    <IconButton 
-                                        onClick={copyToClipboard} 
-                                        color={copied ? 'success' : 'default'}
-                                        size="large"
-                                    >
-                                        {copied ? <CheckCircleIcon /> : <CopyIcon />}
-                                    </IconButton>
-                                </Tooltip>
-                                <Tooltip title="Download PNG">
-                                    <IconButton onClick={downloadQRCode} size="large">
-                                        <DownloadIcon />
-                                    </IconButton>
-                                </Tooltip>
-                                <Tooltip title="Print">
-                                    <IconButton onClick={printQRCode} size="large">
-                                        <PrintIcon />
-                                    </IconButton>
-                                </Tooltip>*/}
-                            </Stack>
-
-                            <Typography variant="caption" color="text.secondary" sx={{ mt: 2, display: 'block' }}>
-                                {getKioskUrl(sessionData.hash)}
+            <Grid container spacing={4} alignItems="center" justifyContent="center">
+                {/* Information Column (Left on XL, Top on others) */}
+                <Grid item xs={12} xl={8}>
+                    <Stack spacing={3} alignItems={isXl ? "flex-start" : "center"} textAlign={isXl ? "left" : "center"}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                            <QrCodeIcon sx={{ fontSize: isXl ? 60 : 40, color: 'primary.main' }} />
+                            <Typography variant={isXl ? "h2" : "h4"} fontWeight="bold">
+                                {translate('resource.qr_generator.welcome_title')}
                             </Typography>
-                        </>
-                    )}
-                </CardContent>
-            </Card>
+                        </Box>
+                        
+                        <Typography variant={isXl ? "h4" : "h6"} color="text.secondary">
+                            {translate('resource.qr_generator.welcome_subtitle')}
+                        </Typography>
+                        
+                        {isXl && horizontalLogo && (
+                            <Box sx={{ mt: 4, maxWidth: 400 }}>
+                                <img 
+                                    src={horizontalLogo} 
+                                    alt={tenantName} 
+                                    style={{ width: '100%', height: 'auto', objectFit: 'contain' }} 
+                                />
+                            </Box>
+                        )}
+                    </Stack>
+                </Grid>
 
-            {/* Table Number & Regenerate */}
-            {/*<Card>
-                <CardContent>
-                    <Typography variant="subtitle1" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <TableIcon />
-                        Generate for Specific Table
-                    </Typography>
-                    
-                    <Box sx={{ display: 'flex', gap: 2, alignItems: 'flex-end' }}>
-                        <TextField
-                            label="Table Number (Optional)"
-                            value={tableNumber}
-                            onChange={(e) => setTableNumber(e.target.value)}
-                            placeholder="1, 2, Patio-A, etc."
-                            size="small"
-                            sx={{ flex: 1 }}
-                        />
-                        <Button
-                            variant="contained"
-                            onClick={regenerateSession}
-                            disabled={isLoading}
-                            startIcon={isLoading ? <CircularProgress size={20} /> : <RefreshIcon />}
-                        >
-                            {isLoading ? 'Generating...' : 'Generate New'}
-                        </Button>
-                    </Box>
-                </CardContent>
-            </Card>*/}
+                {/* QR Code Column (Right on XL, Bottom on others) */}
+                <Grid item xs={12} xl={4}>
+                    <Card sx={{ 
+                        borderRadius: 4, 
+                        boxShadow: 10,
+                        overflow: 'hidden',
+                        backgroundColor: 'white'
+                    }}>
+                        <CardContent sx={{ textAlign: 'center', p: 4 }}>
+                            {sessionData && (
+                                <Stack spacing={3}>
+                                    {sessionData.table_number && (
+                                        <Typography variant="h3" color="primary" fontWeight="bold">
+                                            {translate('Table')} {sessionData.table_number}
+                                        </Typography>
+                                    )}
+
+                                    <Paper elevation={0} sx={{ 
+                                        p: 2, 
+                                        display: 'inline-block', 
+                                        bgcolor: 'white',
+                                        border: '1px solid',
+                                        borderColor: 'divider',
+                                        borderRadius: 2
+                                    }}>
+                                        <QRCodeSVG 
+                                            value={getKioskUrl(sessionData.hash)}
+                                            size={isXl ? 400 : 320}
+                                            level="M"
+                                            includeMargin={true}
+                                        />
+                                        {/* Hidden canvas for image generation (printing/downloading) */}
+                                        <Box sx={{ display: 'none' }}>
+                                            <QRCodeCanvas
+                                                ref={canvasRef}
+                                                value={getKioskUrl(sessionData.hash)}
+                                                size={1024} // High resolution for printing
+                                                level="M"
+                                                includeMargin={true}
+                                            />
+                                        </Box>
+                                    </Paper>
+
+                         
+                                    <Stack direction="row" spacing={1} justifyContent="center" >
+                                         <Typography variant="caption"  sx={{ wordBreak: 'break-all' }}>
+                                        {getKioskUrl(sessionData.hash)}
+                                    </Typography>
+                                        {ENABLE_COPY_URL && (
+                                            <Tooltip title="Copy URL">
+                                                <IconButton onClick={copyToClipboard} color={copied ? 'success' : 'default'}>
+                                                    {copied ? <CheckCircleIcon /> : <CopyIcon />}
+                                                </IconButton>
+                                            </Tooltip>
+                                        )}
+                                        {ENABLE_PRINT && (
+                                            <Tooltip title="Print">
+                                                <IconButton onClick={printQRCode}>
+                                                    <PrintIcon />
+                                                </IconButton>
+                                            </Tooltip>
+                                        )}
+                                        {ENABLE_DOWNLOAD && (
+                                            <Tooltip title="Download">
+                                                <IconButton onClick={downloadQRCode}>
+                                                    <DownloadIcon />
+                                                </IconButton>
+                                            </Tooltip>
+                                        )}
+                                        {ENABLE_REGENERATE && (
+                                            <Tooltip title="Regenerate">
+                                                <IconButton onClick={regenerateSession}>
+                                                    <RefreshIcon />
+                                                </IconButton>
+                                            </Tooltip>
+                                        )}
+                                    </Stack>
+
+                                     {!isXl && horizontalLogo && (
+                                        <Box sx={{ margin: '0 auto' }}>
+                                            <img 
+                                                src={horizontalLogo} 
+                                                alt={tenantName} 
+                                                style={{ width: '100%', height: 'auto', objectFit: 'contain' }} 
+                                            />
+                                        </Box>
+                                    )}
+                                </Stack>
+                            )}
+                        </CardContent>
+                    </Card>
+
+                      
+                                    
+                </Grid>
+            </Grid>
         </Box>
     );
 };
