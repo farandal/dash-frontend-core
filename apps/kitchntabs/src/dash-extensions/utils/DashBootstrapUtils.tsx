@@ -132,6 +132,12 @@ export const useAppInitialization = () => {
 
                     await syncLocalStorageToDeviceStore();
                     setInitializationError(null);
+
+                    if (initResult.redirectAfterLogin) {
+                        console.log('🔄 Bootstrap: Emitting auth:redirect event', initResult.redirectAfterLogin);
+                        const event = new CustomEvent('auth:redirect', { detail: { to: initResult.redirectAfterLogin } });
+                        window.dispatchEvent(event);
+                    }
                 } else {
                     console.log('ℹ️ Bootstrap: No valid authentication found');
 
@@ -155,6 +161,12 @@ export const useAppInitialization = () => {
                                 );
                                 await syncLocalStorageToDeviceStore();
                                 setInitializationError(null);
+
+                                if (tokenInitResult.redirectAfterLogin) {
+                                    console.log('🔄 Bootstrap: Emitting auth:redirect event', tokenInitResult.redirectAfterLogin);
+                                    const event = new CustomEvent('auth:redirect', { detail: { to: tokenInitResult.redirectAfterLogin } });
+                                    window.dispatchEvent(event);
+                                }
                             } else {
                                 console.log('❌ Bootstrap: Token initialization failed:', tokenInitResult.error);
                                 setInitializationError(null);

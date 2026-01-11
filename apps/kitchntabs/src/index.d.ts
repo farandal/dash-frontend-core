@@ -17,7 +17,16 @@ interface Window {
         delete: (key: string) => Promise<void>;
     };
     DashIPCService?: {
-        action: (action: string) => void;
-        speak: (text: string) => void;
+        action: (action: string, payload?: any) => void;
+        speak: (text: string | { message: string; lang?: string }) => void;
+        
+        // Auto-update methods
+        checkUpdate: () => Promise<any>;
+        startDownload: () => Promise<any>;
+        quitAndInstall: () => Promise<void>;
+        onUpdateAvailable: (callback: (arg: any) => void) => void;
+        onDownloadProgress: (callback: (info: any) => void) => void;
+        onUpdateDownloaded: (callback: (info: any) => void) => void;
+        onUpdateError: (callback: (error: any) => void) => void;
     };
 }

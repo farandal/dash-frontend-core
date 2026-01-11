@@ -188,13 +188,39 @@ const AppComponent = React.lazy<React.FC>(() => {
 
 applyPlatformBodyClasses();
 
+//const version = import.meta.env.VITE_APP_VERSION;
+// Using process.env as defined in vite.config.mts
+const version = process.env.VITE_APP_VERSION;
+
+const VersionOverlay = () => (
+    <div style={{
+        position: 'fixed',
+        bottom: '10px',
+        right: '10px',
+        color: 'white',
+        fontSize: '12px',
+        padding: '5px',
+        zIndex: 9999,
+        pointerEvents: 'none',
+        fontFamily: 'Montserrat, sans-serif'
+    }}>
+        v{version}
+    </div>
+);
+
 // Render with Redux Provider at the top level
 root.render(
     <CustomErrorBoundary>
         <Provider store={store}>
             <AppWrapper>
-                <React.Suspense fallback={<GlobalSmallLoader />}>
+                <React.Suspense fallback={
+                    <>
+                        <GlobalSmallLoader />
+                 
+                    </>
+                }>
                     <AppComponent />
+                           <VersionOverlay />
                 </React.Suspense>
             </AppWrapper>
         </Provider>

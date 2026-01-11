@@ -21,6 +21,7 @@ import {
 
 // Import GlobalSmallLoader from local dash-extensions
 import GlobalSmallLoader from './dash-extensions/components/GlobalSmallLoader';
+import { ElectronUpdateNotification } from './dash-extensions/components/ElectronUpdateNotification';
 
 // Lazy load the main apps
 const KitchnTabsPublicApp = lazy(() => import('./core/KitchnTabsPublicApp'));
@@ -147,17 +148,20 @@ const KitchnTabsBootstrap: React.FC = () => {
     // - Authenticated users → PrivateAppLoader (lazy loads admin resources)
     // - Unauthenticated + non-session URL → KitchnTabsPublicApp (landing, login, etc.)
     return (
-        <Suspense fallback={<GlobalSmallLoader message={isAuthenticated ? "Loading admin panel..." : "Loading application..."} />}>
-            {isMallUrl ? (
-                <MallServiceAppLoader sessionId={mallSessionId} mallSlug={mallSlug} />
-            ) : isSelfServiceUrl ? (
-                <SelfServiceAppLoader sessionId={sessionId} />
-            ) : isAuthenticated ? (
-                <PrivateAppLoader />
-            ) : (
-                <KitchnTabsPublicApp />
-            )}
-        </Suspense>
+        <>
+            <ElectronUpdateNotification />
+            <Suspense fallback={<GlobalSmallLoader message={isAuthenticated ? "Loading admin panel..." : "Loading application..."} />}>
+                {isMallUrl ? (
+                    <MallServiceAppLoader sessionId={mallSessionId} mallSlug={mallSlug} />
+                ) : isSelfServiceUrl ? (
+                    <SelfServiceAppLoader sessionId={sessionId} />
+                ) : isAuthenticated ? (
+                    <PrivateAppLoader />
+                ) : (
+                    <KitchnTabsPublicApp />
+                )}
+            </Suspense>
+        </>
     );
 };
 

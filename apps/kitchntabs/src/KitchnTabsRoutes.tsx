@@ -18,6 +18,8 @@ const SignUp = React.lazy(() => import('kt-pages/src/pages/Account/SignUp'));
 const SignUpSuccess = React.lazy(() => import('kt-pages/src/pages/Account/SignUpSuccess'));
 const Legal = React.lazy(() => import('kt-pages/src/pages/Static/Legal'));
 
+
+
 // Shared routes factory function
 
 export const dashSharedRoutes = () => [

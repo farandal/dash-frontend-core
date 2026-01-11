@@ -5,7 +5,7 @@
  * Uses kt-* packages for all domain-specific functionality.
  */
 import React, { useMemo, useCallback, useEffect, Suspense, useState, PropsWithChildren } from 'react';
-import { BrowserRouter, HashRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, HashRouter, Routes, Route, useNavigate } from 'react-router-dom';
 import { QueryClient } from '@tanstack/react-query';
 import polyglotI18nProvider from 'ra-i18n-polyglot';
 import { createAsyncStoragePersister } from '@tanstack/query-async-storage-persister';
@@ -43,8 +43,6 @@ const AnimatedRoutesWrapper = React.lazy(() => import('dash-admin').then(module 
 const RoutingWrapper = React.lazy(() => import('dash-admin').then(module => ({ default: module.RoutingWrapper })));
 const DASHAppLayout = React.lazy(() => import('dash-admin').then(module => ({ default: module.DASHAppLayout })));
 const DASHAppProviders = React.lazy(() => import('dash-admin').then(module => ({ default: module.DASHAppProviders })));
-
-
 
 interface KitchnTabsPrivateAppProps extends PropsWithChildren {
     appPath?: string;
