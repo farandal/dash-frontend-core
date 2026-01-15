@@ -1,11 +1,11 @@
-@mobile_header_height: 50px;
+@mobile_header_height: 64px;
 @mobile_header_gutter: 40px; // This is the space to left for the android header bar, the clock etc to be shown. 
 
 //Corrections:
 // Bug: somne android navigations bars does not allow the save button to be visible on screen 
 // e.g class on problematic device : ua-mozilla-5-0-linux-android-10-k-applewebkit-537-36-khtml-like-gecko-samsungbrowser-29-0-chrome-136-0- touch-device
 .touch-device .RaToolbar-mobileToolbar {
-    bottom: @mobile_header_height + @mobile_header_gutter !important;
+    bottom: calc(var(--sidebar-horizontal-height, @mobile_header_height) + @mobile_header_gutter) !important;
 }
 
 /*
@@ -302,7 +302,8 @@
         display: flex;
         // flex-wrap: wrap;
         align-items: center;
-        padding: 5px 0px 14px 20px;
+        //padding: 5px 0px 14px 20px;+
+        //padding: 5px;
         margin-right: 0px;
 
         .dash-header-subheader {
@@ -454,7 +455,7 @@
 
 
 .auto-admin-grouped-form {
-    margin-bottom: @mobile_header_height;
+    margin-bottom:  var(--sidebar-horizontal-height,@mobile_header_height);
 }
 
 
@@ -466,7 +467,7 @@
 
 
     .dash-app-layout .dash-layout-content .dash-app-module {
-        height: calc(100% - @mobile_header_height);
+        height: calc(100% -  var(--sidebar-horizontal-height,@mobile_header_height));
         display: flex;
     }
 
@@ -475,8 +476,8 @@
 
     #dash-app-layout>div.dash-app-layout-content.MuiBox-root>div.dash-layout-content.MuiBox-root {
         //HEADER SIZE IN MOBILE
-        margin-top: calc(@mobile_header_height);
-        height: calc( 100vh - @mobile_header_height ) ;
+        margin-top: calc( var(--sidebar-horizontal-height,@mobile_header_height));
+        height: calc( 100vh -  var(--sidebar-horizontal-height,@mobile_header_height) ) ;
         //padding-bottom: 40px;
         //margin-bottom: 40px;
         // Fade out effect at the bottom with 30px gradient
@@ -487,24 +488,25 @@
     .webview,
     .android {
         #dash-app-layout>div.dash-app-layout-content.MuiBox-root>div.dash-layout-content.MuiBox-root {
-            margin-top: calc(@mobile_header_height + @mobile_header_gutter);
+            margin-top: calc(var(--sidebar-horizontal-height, 64px) + 40px);
         }
     }
 
     .dash-app-layout .dash-layout-content .dash-app-module .dash-module-box-content {
-        padding-bottom: @mobile_header_height;
+        padding-bottom: var(--sidebar-horizontal-height,@mobile_header_height);
     }
 
     .android #dash-app-layout>div.dash-app-layout-content.MuiBox-root>div.dash-layout-content.MuiBox-root {
         //margin-top: 80px;
         //height: 100%;
         //padding-bottom: 80px;
-        margin-top: @mobile_header_height +  @mobile_header_gutter ;
+     
+        margin-top: calc(var(--sidebar-horizontal-height, @mobile_header_height) + @mobile_header_gutter);
         height: 100vh;
-    }
+    }    
 
     .android .dash-app-layout .dash-layout-content .dash-app-module {
-        height: calc(100% - ( @mobile_header_height + @mobile_header_gutter ));
+        height: calc(100% - var(--sidebar-horizontal-height, @mobile_header_height) + @mobile_header_gutter);
         display: flex;
     }
 
@@ -525,7 +527,7 @@
     body[class*="android"] {
 
         .auto-admin-grouped-form {
-            margin-bottom: calc(@mobile_header_height + 15px);
+            margin-bottom: calc( var(--sidebar-horizontal-height,@mobile_header_height) + 15px);
             height:100vh;
         }
 
@@ -566,7 +568,7 @@
     &-img {
         margin: 5px 0;
         width: 45px;
-        height: @mobile_header_height;
+        height:  var(--sidebar-horizontal-height,@mobile_header_height);
 
         img {
             width: 100%;
@@ -726,7 +728,7 @@
         .dash-header-container {
             flex-direction: column;
             flex-flow: nowrap;
-            padding: 0;
+            //padding: 0;
             //height: @mobile_header_height;
 
             @media (max-width:@mq-sm) {
