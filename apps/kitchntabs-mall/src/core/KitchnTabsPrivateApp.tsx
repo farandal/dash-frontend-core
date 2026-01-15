@@ -237,11 +237,11 @@ const KitchnTabsPrivateApp: React.FC<KitchnTabsPrivateAppProps> = ({
 
     // Domain App Layout wrapper
     const DomainAppLayout = useCallback((props: any) => {
-        const { themeComponent, children: c } = props;
+        const { ThemeComponent, children: c } = props;
 
         return (
             <Suspense fallback={<GlobalSmallLoader message="Loading layout..." />}>
-                <DASHAppLayout themeComponent={themeComponent}>
+                <DASHAppLayout ThemeComponent={ThemeComponent}>
                     <Suspense fallback={<GlobalSmallLoader message="Loading content..." />}>
                         {c}
                     </Suspense>

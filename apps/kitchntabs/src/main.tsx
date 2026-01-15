@@ -79,8 +79,26 @@ const root = createRoot(rootElement);
 
 const tenantImages = AuthPersistenceService.getTenantImages();
 
+// Get platform info for sidebar position
+//const isMobile = JSON.parse(import.meta.env.VITE_IS_MOBILE || 'false');
+//const defaultSidebarPosition = isMobile ? 'bottom' : 'left';
+
+// Helper to get CSS variable value from :root
+const getCssVariable = (varName: string, defaultValue: number): number => {
+    const value = getComputedStyle(document.documentElement).getPropertyValue(varName).trim();
+    const parsed = parseInt(value, 10);
+    return isNaN(parsed) ? defaultValue : parsed;
+};
+
 // Create initial app state for Redux
 const getDefaultAppCommon = () => {
+    // Read sidebar dimensions from CSS variables (defined in styles.less)
+    const sidebarLargeWidth = getCssVariable('--sidebar-large-width', 255);
+    const sidebarSmallWidth = getCssVariable('--sidebar-small-width', 64);
+    const sidebarHorizontalHeight = getCssVariable('--sidebar-horizontal-height', 120);
+    const logoMaxWidth = getCssVariable('--logo-max-width', 200);
+    const logoMaxHeight = getCssVariable('--logo-max-height', 60);
+
     return {
         ...defaultCommon,
         appPath: '/',
@@ -94,6 +112,18 @@ const getDefaultAppCommon = () => {
             horizontalLogo: tenantImages?.horizontal_logo?.original || horizontalLogo,
             squaredLogo: tenantImages?.squared_logo?.original || squaredLogo,
             loginBackground: tenantImages?.banner?.original || LoginBackground,
+            sidebarPosition: 'left',
+            secondarySidebarPosition: 'left',
+            // Sidebar sizing (from CSS variables)
+            sidebarLargeWidth,
+            sidebarSmallWidth,
+            sidebarHorizontalHeight,
+            // Logo sizing (from CSS variables)
+            logoMaxWidth,
+            logoMaxHeight,
+            // Padding configuration (in pixels, derived from sidebar sizes)
+            paddingHorizontal: sidebarLargeWidth,
+            paddingVertical: sidebarHorizontalHeight,
         },
     };
 };
@@ -190,6 +220,7 @@ applyPlatformBodyClasses();
 
 //const version = import.meta.env.VITE_APP_VERSION;
 // Using process.env as defined in vite.config.mts
+// @ts-ignore
 const version = process.env.VITE_APP_VERSION;
 
 const VersionOverlay = () => (
