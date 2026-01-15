@@ -24,10 +24,11 @@ export const unsetComponentState = (componentId: string) => ({
   componentId,
 });
 
-export const setHeaderComponent = (headerToolBar: FC) => {
+export const setHeaderComponent = (headerToolBar: FC, headerToolBarReplace?: boolean) => {
   return {
     type: SET_HEADER_COMPONENTS,
     headerToolBar,
+    headerToolBarReplace: headerToolBarReplace ?? false,
   };
 };
 

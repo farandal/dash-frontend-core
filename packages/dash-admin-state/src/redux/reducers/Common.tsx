@@ -57,6 +57,7 @@ const CommonReducer = (
 			return {
 				...state,
 				headerToolBar: action.headerToolBar,
+				headerToolBarReplace: action.headerToolBarReplace ?? state.headerToolBarReplace,
 			};
 
 		case SET_PANEL_SETTINGS:

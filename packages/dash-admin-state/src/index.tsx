@@ -25,6 +25,7 @@ export {
   usePageState,
   useResourcesState,
   useLogoSettings,
+  usePanelSettings,
   useThemeState,
   useNavigationState
 } from './hooks/DashAdminStateSelectors';

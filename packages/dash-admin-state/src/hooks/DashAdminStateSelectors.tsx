@@ -86,9 +86,31 @@ export const useLogoSettings = <U, A>() => {
   const { panelSettings } = useCommonState<U, A>();
 
   return useMemo(() => ({
-    horizontalLogo: panelSettings?.horizontalLogo || <>🖥 DASH.</>,
-    squaredLogo: panelSettings?.squaredLogo || <>🖥..</>,
+    horizontalLogo: panelSettings?.horizontalLogo || <></>,
+    squaredLogo: panelSettings?.squaredLogo || <></>,
     loginBackground: panelSettings?.loginBackground,
+  }), [panelSettings]);
+};
+
+// Memoized hook for sidebar/panel settings (dimensions, position, padding)
+export const usePanelSettings = <U, A>() => {
+  const { panelSettings } = useCommonState<U, A>();
+
+  return useMemo(() => ({
+    // Sidebar position: 'left' | 'right' | 'top' | 'bottom'
+    sidebarPosition: panelSettings?.sidebarPosition || 'left',
+    // Sidebar dimensions
+    sidebarLargeWidth: panelSettings?.sidebarLargeWidth || 255,
+    sidebarSmallWidth: panelSettings?.sidebarSmallWidth || 60,
+    sidebarHorizontalHeight: panelSettings?.sidebarHorizontalHeight || 120,
+    // Logo dimensions
+    logoMaxWidth: panelSettings?.logoMaxWidth || 200,
+    logoMaxHeight: panelSettings?.logoMaxHeight || 60,
+    // Padding configuration
+    paddingHorizontal: panelSettings?.paddingHorizontal || 255,
+    paddingVertical: panelSettings?.paddingVertical || 120,
+    // App name
+    appName: panelSettings?.appName || 'DASH',
   }), [panelSettings]);
 };
 

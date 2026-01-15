@@ -18,6 +18,7 @@ export interface ICommonState {
 	pathname: string;
 	componentsState?: {[x: string]: any}; // Changed from array to object
 	headerToolBar?: FC;
+	headerToolBarReplace?: boolean;
 	panelSettings?: {[x: string]: any};
 }
 
