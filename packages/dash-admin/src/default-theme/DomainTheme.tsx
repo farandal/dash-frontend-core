@@ -5,7 +5,7 @@ import React from 'react';
 
 export interface IDomainTheme<U = any, A = any> extends PropsWithChildren {
     menuComponent?: JSX.Element;
-    headerToolBar: JSX.Element;
+    headerToolBar?: JSX.Element;
     footerComponent?: JSX.Element;
 }
 
@@ -38,19 +38,19 @@ const DomainTheme = <U, A>({
 
     return (
         <div id={'dash-app-layout'} className={'dash-app-layout'}>
-            <AppSidebarMaterial 
-                className={'dash-app-layout-sidebar'}
-               
-            />
+            {menuComponent === undefined ? (
+                <AppSidebarMaterial 
+                    className={'dash-app-layout-sidebar'}
+                />
+            ) : menuComponent}
             <Box
                 className={'dash-app-layout-content'}
-       
             >
                 {headerToolBar}
                 <MemoizedContent>
                     {children}
                 </MemoizedContent>
-                <MemoizedFooter footerComponent={footerComponent} />
+                {footerComponent && <MemoizedFooter footerComponent={footerComponent} />}
             </Box>
         </div>
     );

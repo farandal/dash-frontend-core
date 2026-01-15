@@ -83,13 +83,13 @@ const DomainHeader = <U, A>({
         NavEventManager.toggleExpanded();
     };
   
-    const HeaderComponentInline = () => { 
+   const HeaderComponentInline = () => { 
 
         
      
     return (
         <Box
-            className={pageSettings.title || HeaderToolBar ? "dash-header-content" : ""}
+            className={pageSettings.title ? "dash-header-content" : ""}
             sx={{ /*display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%'*/ }}
         >
             {pageSettings.title ? (
@@ -109,29 +109,24 @@ const DomainHeader = <U, A>({
                 </Box>
             ) : null}
 
-            {HeaderToolBar ? (
-                <Box
-                    className='dash-header-items'
-                    sx={{ display: 'flex', alignItems: 'center', marginLeft: 'auto' }}
-                >
-                    <HeaderToolBar />
-                </Box>
-            ) : null}
+            {/* HeaderToolBar moved to SidebarActions */}
         </Box>
     );
        
     }
 
     return (
-        <div className='dash-header'>
-            <div className='dash-header-container'>
+         <Box component={'div'} className='dash-header'>
+              <Box component={'div'} className='dash-header-container'>
 
-                <Box className='dash-header-subheader' sx={{ display: { xs: 'flex', sm: 'flex', md: 'none' }, alignItems: 'center', gap: 1 }}>
+                <Box className='dash-header-subheader' sx={{ display: { xs: 'flex', sm: 'flex', md: 'none' }, alignItems: 'center'}}>
                     {/* Burger icon - always visible, opens/closes drawer */}
+              
                     <IconButton 
                         className='dash-header-burger-toggler' 
                         onClick={() => onToggleExpandedNav()}
                         sx={{ 
+                           m: 1,
                             padding: '8px',
                             borderRadius: '8px',
                             backgroundColor: 'rgba(0,0,0,0.04)',
@@ -158,10 +153,9 @@ const DomainHeader = <U, A>({
             
                     <HeaderComponentInline />
                    
-                
-
-            </div>
-        </div>
+        
+            </Box>
+        </Box>
     );
 };
 

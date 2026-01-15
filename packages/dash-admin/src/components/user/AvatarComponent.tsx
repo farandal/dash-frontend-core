@@ -14,7 +14,11 @@ import { useRedirect } from 'react-admin';
 import { useNavigate } from 'react-router-dom';
 import { NavEventManager } from '../../utils/navEvents';
 
-const AvatarComponent: React.FC = (_props) => {
+interface AvatarComponentProps {
+    sidebarPosition?: 'left' | 'right' | 'top' | 'bottom';
+}
+
+const AvatarComponent: React.FC<AvatarComponentProps> = ({ sidebarPosition = 'left' }) => {
     const { user, logout, authenticated } = useAuthContext();
     const windowSize = useWindowSize();
 
@@ -75,13 +79,15 @@ useEffect(() => {
     };
 
     const calculateMenuPosition = () => {
-        if (avatarRef.current && windowSize.width) {
+        if (avatarRef.current && windowSize.width && windowSize.height) {
             const rect = avatarRef.current.getBoundingClientRect();
             const menuWidth = 230; // minWidth from styles
+            const menuHeight = 120; // approximate menu height
             
             let left = rect.left + window.scrollX;
+            let top = rect.top + window.scrollY;
             
-            // Ensure menu doesn't go off-screen using windowSize
+            // Ensure menu doesn't go off-screen horizontally
             if (left + menuWidth > windowSize.width) {
                 left = windowSize.width - menuWidth - 10; // 10px margin
             }
@@ -89,8 +95,13 @@ useEffect(() => {
                 left = 10; // 10px margin
             }
             
+            // For bottom sidebar position, open menu above the avatar
+            if (sidebarPosition === 'bottom') {
+                top = rect.top + window.scrollY - menuHeight - 10; // Open above
+            }
+            
             setMenuPosition({ 
-                top: rect.top + window.scrollY, 
+                top: top, 
                 left: left + 40
             });
         }

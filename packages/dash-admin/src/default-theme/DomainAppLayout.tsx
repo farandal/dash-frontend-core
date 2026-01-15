@@ -7,7 +7,7 @@ import { Box } from '@mui/material';
 import { IAppLayout } from '../layout/AppLayout';
 import { DASH_REDUX_ACTIONS, IDASHAppState, IBreadcrumbItem } from 'dash-admin-state';
 
-import DomainTheme from './DomainTheme';
+import DomainTheme, { IDomainTheme } from './DomainTheme';
 import DomainHeader from './DomainHeader';
 import { BreadcrumbsManager } from '../components/navigation';
 
@@ -15,22 +15,26 @@ import { IDashAutoAdminResourceConfig } from 'dash-auto-admin';
 import { DASHAdminSystemConstants } from 'dash-constants';
 
 export interface IDomainAppLayout<U = any, A = any> extends IAppLayout {
-  themeComponent?: React.JSX.Element;
+  ThemeComponent?: React.ComponentType<IDomainTheme<any, any>>;
   /** Whether to show breadcrumb navigation */
   showBreadcrumbs?: boolean;
   /** Custom label map for breadcrumb segments */
   breadcrumbLabelMap?: Record<string, string>;
   /** Whether to include home in breadcrumbs */
   breadcrumbIncludeHome?: boolean;
+  CustomDomainHeader?: React.JSX.Element;
+  CustomDomainFooter?: React.JSX.Element;
 }
 
 const DomainAppLayout = <U, A>(props: IDomainAppLayout<U, A>): React.JSX.Element => {
   const { 
-    themeComponent, 
+    ThemeComponent, 
     children,
     showBreadcrumbs = true,
     breadcrumbLabelMap,
     breadcrumbIncludeHome = false,
+    CustomDomainHeader,
+    CustomDomainFooter,
   } = props;
 
   const dispatch = useDispatch();
@@ -125,8 +129,19 @@ const DomainAppLayout = <U, A>(props: IDomainAppLayout<U, A>): React.JSX.Element
     }
   }, [resourceConfig, groupIcons, dispatch]);
 
-  if (themeComponent) {
-    return <>{themeComponent}</>;
+  const headerToolBar = CustomDomainHeader || <DomainHeader showBreadcrumbs={showBreadcrumbs} />;
+
+  if (ThemeComponent) {
+    return (
+      <BreadcrumbsManager 
+        labelMap={breadcrumbLabelMap}
+        includeHome={breadcrumbIncludeHome}
+      >
+        <ThemeComponent  headerToolBar={headerToolBar} footerComponent={CustomDomainFooter}>
+          {children}
+        </ThemeComponent>
+      </BreadcrumbsManager>
+    );
   }
 
     return (
@@ -134,11 +149,8 @@ const DomainAppLayout = <U, A>(props: IDomainAppLayout<U, A>): React.JSX.Element
         labelMap={breadcrumbLabelMap}
         includeHome={breadcrumbIncludeHome}
       >
-        <DomainTheme headerToolBar={<DomainHeader showBreadcrumbs={showBreadcrumbs} />}>
+        <DomainTheme headerToolBar={headerToolBar} footerComponent={CustomDomainFooter}>
             {children}
-            <Box sx={{ mb: 3 }}>
-                <div className='dash-layout-footer-content'></div>
-            </Box>
         </DomainTheme>
       </BreadcrumbsManager>
     );
@@ -148,7 +160,7 @@ const DomainAppLayout = <U, A>(props: IDomainAppLayout<U, A>): React.JSX.Element
 /*export default React.memo(DomainAppLayout, (prevProps, nextProps) => {
   return (
     prevProps.children === nextProps.children &&
-    prevProps.themeComponent === nextProps.themeComponent
+    prevProps.ThemeComponent === nextProps.ThemeComponent
   );
 });*/
 export default DomainAppLayout;

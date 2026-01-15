@@ -42,9 +42,9 @@ const isElectron = (): boolean => {
  */
 export const createDashDefaultDomainAppLayout = () => {
     const DashDefaultDomainAppLayout = <U, A>(props: IDomainAppLayout<U, A>): React.JSX.Element => {
-        const { themeComponent, children } = props;
+        const { ThemeComponent, children } = props;
         return (
-            <DASHAppLayout themeComponent={themeComponent}>
+            <DASHAppLayout ThemeComponent={ThemeComponent}>
                 {children}
             </DASHAppLayout>
         );
@@ -59,7 +59,7 @@ export const createDashDefaultDomainAppLayout = () => {
  */
 export const createDashDefaultDomainAppLayoutWithIPC = () => {
     const DashDefaultDomainAppLayout = <U, A>(props: IDomainAppLayout<U, A>): React.JSX.Element => {
-        const { themeComponent, children } = props;
+        const { ThemeComponent, children } = props;
         const inElectron = isElectron();
 
         const LayoutContent = inElectron ? (
@@ -73,7 +73,7 @@ export const createDashDefaultDomainAppLayoutWithIPC = () => {
         );
 
         return (
-            <DASHAppLayout themeComponent={themeComponent}>
+            <DASHAppLayout ThemeComponent={ThemeComponent}>
                 {LayoutContent}
             </DASHAppLayout>
         );
@@ -87,9 +87,9 @@ export const createDashDefaultDomainAppLayoutWithIPC = () => {
  */
 export const useDashDefaultDomainAppLayout = () => {
     return useCallback(<U, A>(props: IDomainAppLayout<U, A>): React.JSX.Element => {
-        const { themeComponent, children } = props;
+        const { ThemeComponent, children } = props;
         return (
-            <DASHAppLayout themeComponent={themeComponent}>
+            <DASHAppLayout ThemeComponent={ThemeComponent}>
                 {children}
             </DASHAppLayout>
         );
@@ -103,7 +103,7 @@ export const useDashDefaultDomainAppLayoutWithIPC = () => {
     const inElectron = isElectron();
     
     return useCallback(<U, A>(props: IDomainAppLayout<U, A>): React.JSX.Element => {
-        const { themeComponent, children } = props;
+        const { ThemeComponent, children } = props;
 
         const LayoutContent = inElectron ? (
             <Suspense fallback={<DashDefaultLayoutLoadingFallback />}>
@@ -116,7 +116,7 @@ export const useDashDefaultDomainAppLayoutWithIPC = () => {
         );
 
         return (
-            <DASHAppLayout themeComponent={themeComponent}>
+            <DASHAppLayout ThemeComponent={ThemeComponent}>
                 {LayoutContent}
             </DASHAppLayout>
         );

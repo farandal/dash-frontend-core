@@ -158,16 +158,15 @@ const AsyncResources: React.FC<IAsyncResources> = React.memo((props) => {
             ) : null}
 
             {(authenticated) ? getCustomAuthRoutes()
-                .filter(route => !route.props['data-layout']?.toString().includes('no-layout'))
+                .filter(route => !route.props?.['data-layout']?.toString().includes('no-layout'))
                 .map((route, index) => createRouteFromProps(route, route.key || `auth-route-${index}`)) : null}
 
             {getCustomRoutes()
                 .filter(route => {
-                    /* @ts-ignore */
-                    if ((authenticated) && getCustomAuthRoutes().some(authRoute => authRoute.props.path === route.props.path)) {
+                    if ((authenticated) && getCustomAuthRoutes().some(authRoute => authRoute.props?.path === route.props?.path)) {
                         return false
                     }
-                    return !route.props['data-layout']?.toString().includes('no-layout')
+                    return !route.props?.['data-layout']?.toString().includes('no-layout')
                 })
                 .map((route, index) => createRouteFromProps(route, route.key || `custom-route-${index}`))}
         </CustomRoutes>
@@ -176,17 +175,16 @@ const AsyncResources: React.FC<IAsyncResources> = React.memo((props) => {
     const memoizedNoLayoutRoutes = useMemo(() => (
         <CustomRoutes noLayout>
             {authenticated ? getCustomAuthRoutes()
-                .filter(route => route.props['data-layout']?.toString().includes('no-layout'))
+                .filter(route => route.props?.['data-layout']?.toString().includes('no-layout'))
                 .map((route, index) => createRouteFromProps(route, route.key || `auth-no-layout-${index}`)) : null}
 
             {getCustomRoutes()
                 .filter(route => {
                     /* TODO interface authRoute */
-                    /* @ts-ignore */
-                    if (authenticated && getCustomAuthRoutes().some(authRoute => authRoute.props.path === route.props.path)) {
+                    if (authenticated && getCustomAuthRoutes().some(authRoute => authRoute.props?.path === route.props?.path)) {
                         return false
                     }
-                    return route.props['data-layout']?.toString().includes('no-layout')
+                    return route.props?.['data-layout']?.toString().includes('no-layout')
                 })
                 .map((route, index) => createRouteFromProps(route, route.key || `custom-no-layout-${index}`))}
         </CustomRoutes>
@@ -384,7 +382,7 @@ const DASHAdminApp: React.FC<IDASHAdmin<unknown, unknown, unknown, unknown>> = R
     const adminContextProps = {
         dataProvider: customDataProvider || dataProvider,
         i18nProvider: customI18nProvider || i18nProvider,
-        authProvider: customAuthProvider || authProvider,
+        ...(customAuthProvider !== null && { authProvider:  customAuthProvider || authProvider }),
         ...(customThemeConfig ? { theme: customThemeConfig } : { theme: themeOptions }),
         ...(customQueryClient && { queryClient: customQueryClient as QueryClient }),
         ...(history && { history: history }),
