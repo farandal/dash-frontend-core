@@ -1,5 +1,6 @@
 import { IDashAutoAdminResourceConfig } from "dash-auto-admin";
 import { JSX } from "react";
+import { SidebarPosition } from "../AppSidebarMaterial";
 
 export interface IAppMenu {
 	//hasDashboard: boolean;
@@ -10,6 +11,7 @@ export interface IAppMenu {
 	showDrawer?: boolean;
 	navSize: "small" | "large";
     navExpanded: boolean;
+	sidebarPosition?: SidebarPosition;
 	[key: string]: any;
 }
 
@@ -33,4 +35,5 @@ export interface ICollapsableSidebarMenu {
 	navExpanded: boolean;
 	navSize: "small" | "large";
 	level: number;
+	sidebarPosition?: SidebarPosition;
 }

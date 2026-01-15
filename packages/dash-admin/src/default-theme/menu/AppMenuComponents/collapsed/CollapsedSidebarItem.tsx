@@ -1,6 +1,5 @@
 import { FC, PropsWithChildren, useEffect, useRef, useState } from 'react';
 import { IMenuItem } from '../interfaces';
-import ReactDOM from 'react-dom';
 import {
     ListItemButton,
     ListItemButtonProps,
@@ -13,12 +12,16 @@ import { IPageState, DASH_REDUX_ACTIONS } from 'dash-admin-state';
 import { useDispatch } from 'react-redux';
 import isCurrentPath from '../../../../hooks/isCurrentPath';
 import { NavEventManager } from '../../../../utils/navEvents';
+import { SidebarPosition } from '../../AppSidebarMaterial';
+import { FORCE_CLICK_OPEN, SUBMENU_SCROLL_THRESHOLD } from '../submenuConstants';
+import SubmenuPortal from '../SubmenuPortal';
 
 export interface ICollapsedSidebarItem {
     item: IMenuItem;
     navSize: 'large' | 'small';
     navExpanded: boolean;
     level: number;
+    sidebarPosition?: SidebarPosition;
 }
 
 export interface ISidebarItem extends ListItemButtonProps, PropsWithChildren {
@@ -101,13 +104,12 @@ const SidebarItem: FC<ISidebarItem> = (props) => {
     );
 };
 
-const SUBMENU_SCROLL_THRESHOLD = 10; // You can change this value as needed
-
 const CollapsedSidebarItem = ({
     item,
     navSize,
     navExpanded,
-    level
+    level,
+    sidebarPosition = "left"
 }: ICollapsedSidebarItem) => {
     const hovering = useRef<boolean>(false);
     const timeoutDuration = 20;
@@ -178,57 +180,15 @@ const CollapsedSidebarItem = ({
         }, 100);
     };
 
-    // Calculate submenu position and style based on number of children
-    let submenuStyle: React.CSSProperties = {};
-    let submenuPosition: { top?: number; left?: number } = {};
-
-    const renderAtTop = item.children && item.children.length > SUBMENU_SCROLL_THRESHOLD;
-
-    if (renderAtTop) {
-        submenuStyle = {
-            zIndex: 10000,
-            position: 'fixed',
-            top: 0,
-            left: 58, // adjust as needed for your sidebar width
-            maxHeight: '100vh',
-            overflowY: 'auto',
-            width: '260px',
-            background: '#fff',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
-            borderRadius: 4,
-        };
-    } else {
-        // Position next to the sidebar item
-        if (itemRef.current) {
-            const rect = itemRef.current.getBoundingClientRect();
-            submenuPosition = {
-                top: rect.top,
-                left: rect.right,
-            };
-        }
-        submenuStyle = {
-            zIndex: 10000,
-            position: 'fixed',
-            top: submenuPosition.top || 0,
-            left: submenuPosition.left || 58,
-            maxHeight: '80vh',
-            overflowY: 'auto',
-            width: '260px',
-            background: '#fff',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
-            borderRadius: 4,
-        };
-    }
-
     return hasChildren ? (
         <>
             <div ref={itemRef}>
                 <SidebarItem
                     aria-owns={open ? 'menu-' + item.key : undefined}
                     aria-haspopup='true'
-                    onMouseEnter={!webView ? openMenuOnHover: null}
-                    onMouseLeave={closeMenu}
-                    onClick={webView ? openMenuOnClick : null}
+                    onMouseEnter={!webView && !FORCE_CLICK_OPEN ? openMenuOnHover : null}
+                    onMouseLeave={!FORCE_CLICK_OPEN ? closeMenu : null}
+                    onClick={webView || FORCE_CLICK_OPEN ? openMenuOnClick : null}
                     item={item}
                     showText={false}
                     navSize={navSize}
@@ -236,39 +196,39 @@ const CollapsedSidebarItem = ({
                     level={level}
                     hasChildren={hasChildren}
                 >
-                    {open && ReactDOM.createPortal(
-                        <div
-                            className="sidebar-collapsed-menu"
-                            style={submenuStyle}
+                    <SubmenuPortal
+                        open={open}
+                        itemRef={itemRef}
+                        sidebarPosition={sidebarPosition}
+                        childrenCount={item.children?.length || 0}
+                        className="sidebar-collapsed-menu"
+                    >
+                        <ul
+                            id={'menu-' + item.key}
+                            key={'menu-' + item.key}
+                            className={`dropdown ${open ? 'show' : ''}`}
+                            style={{
+                                margin: 0,
+                                padding: 0,
+                                listStyle: 'none',
+                            }}
                         >
-                            <ul
-                                id={'menu-' + item.key}
-                                key={'menu-' + item.key}
-                                className={`dropdown ${open ? 'show' : ''}`}
-                                style={{
-                                    margin: 0,
-                                    padding: 0,
-                                    listStyle: 'none',
-                                }}
-                            >
-                                {item.children?.map((item, index) => {
-                                    return (
-                                        <SidebarItem
-                                            navSize={navSize}
-                                            navExpanded={navExpanded}
-                                            level={level + 1}
-                                            item={item}
-                                            key={index}
-                                            hasChildren={item.children && item.children.length > 0}
-                                            onClick={(e) => handleSubmenuItemClick(e, item)}
-                                            onTouchStart={(e) => e.stopPropagation()}
-                                        />
-                                    );
-                                })}
-                            </ul>
-                        </div>,
-                        document.body
-                    )}
+                            {item.children?.map((item, index) => {
+                                return (
+                                    <SidebarItem
+                                        navSize={navSize}
+                                        navExpanded={navExpanded}
+                                        level={level + 1}
+                                        item={item}
+                                        key={index}
+                                        hasChildren={item.children && item.children.length > 0}
+                                        onClick={(e) => handleSubmenuItemClick(e, item)}
+                                        onTouchStart={(e) => e.stopPropagation()}
+                                    />
+                                );
+                            })}
+                        </ul>
+                    </SubmenuPortal>
                 </SidebarItem>
             </div>
         </>

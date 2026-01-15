@@ -25,13 +25,37 @@ const selectLayoutSettings = (state: IDASHAppState<any, any, IDashAutoAdminResou
 const selectPanelSettings = (state: IDASHAppState<any, any, IDashAutoAdminResourceConfig>) => 
     state.common.panelSettings;
 
-const AppSidebarMaterial = (props) => {
+// Sidebar position type
+export type SidebarPosition = "left" | "top" | "bottom" | "right";
+
+// Component props interface
+export interface AppSidebarMaterialProps {
+    className?: string;
+    sidebarPosition?: SidebarPosition;
+   
+}
+
+const AppSidebarMaterial: React.FC<AppSidebarMaterialProps> = (props) => {
+    const { sidebarPosition: propSidebarPosition} = props;
     const location = useLocation();
     const dispatch = useDispatch();
+    const theme = useTheme();
+    const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
+    const isMediumOrSmaller = useMediaQuery(theme.breakpoints.down('md')); // For sidebar position switching
 
     // Only subscribe to layout settings - nav state is handled by AppSidebarMaterial
     const layoutState = useSelector(selectLayoutSettings, isEqual);
     const panelSettings = useSelector(selectPanelSettings);
+
+    // Get primary and secondary sidebar positions from Redux panelSettings
+    const primarySidebarPosition: SidebarPosition = propSidebarPosition || panelSettings?.sidebarPosition || 'left';
+    const secondarySidebarPosition: SidebarPosition = panelSettings?.secondarySidebarPosition || 'left';
+
+    // Use secondary position on medium or smaller screens (for burger menu behavior)
+    const sidebarPosition: SidebarPosition = isMediumOrSmaller ? secondarySidebarPosition : primarySidebarPosition;
+
+    // Check if position is horizontal (top/bottom) - these don't expand/collapse
+    const isHorizontalPosition = sidebarPosition === "top" || sidebarPosition === "bottom";
 
     const {
         navStyle,
@@ -176,18 +200,20 @@ const AppSidebarMaterial = (props) => {
 
     const windowSize = useWindowSize();
 
-    // Update parent layout className whenever local nav state changes
+    // Update parent layout className whenever local nav state or position changes
     React.useEffect(() => {
         const layoutElement = document.getElementById('dash-app-layout');
         if (layoutElement) {
             // Remove existing nav-related classes
             layoutElement.classList.remove('expanded', 'collapsed', 'small', 'large');
+            layoutElement.classList.remove('sidebar-position-left', 'sidebar-position-right', 'sidebar-position-top', 'sidebar-position-bottom');
             
             // Add current state classes
             layoutElement.classList.add(localNavExpanded ? 'expanded' : 'collapsed');
             layoutElement.classList.add(localNavSize);
+            layoutElement.classList.add(`sidebar-position-${sidebarPosition}`);
         }
-    }, [localNavExpanded, localNavSize]);
+    }, [localNavExpanded, localNavSize, sidebarPosition]);
 
     const toggleDrawer = (e) => {
         e.preventDefault();
@@ -197,21 +223,22 @@ const AppSidebarMaterial = (props) => {
         // Redux will be synced only on location changes
     };
 
-    const theme = useTheme();
-    const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
+    // isSmallScreen and theme are already declared at the top of the component
     const isLargeScreen = useMediaQuery(theme.breakpoints.up('lg'));
 
     // Track previous breakpoint states to detect changes
     const [prevIsSmall, setPrevIsSmall] = useState<boolean | null>(null);
     const [prevIsLarge, setPrevIsLarge] = useState<boolean | null>(null);
+    const [prevIsMediumOrSmaller, setPrevIsMediumOrSmaller] = useState<boolean | null>(null);
 
     React.useEffect(() => {
         // Initial load - set initial values
-        if (prevIsSmall === null || prevIsLarge === null) {
-            const initialNavSize = isSmallScreen ? "small" : "large";
+        if (prevIsSmall === null || prevIsLarge === null || prevIsMediumOrSmaller === null) {
+            const initialNavSize = isMediumOrSmaller ? "small" : "large";
             setLocalNavSize(initialNavSize);
             
-            if (isSmallScreen) {
+            if (isMediumOrSmaller) {
+                // Start collapsed when in secondary sidebar mode
                 setLocalNavExpanded(false);
             } else if (isLargeScreen) {
                 setLocalNavExpanded(true);
@@ -219,13 +246,27 @@ const AppSidebarMaterial = (props) => {
             
             setPrevIsSmall(isSmallScreen);
             setPrevIsLarge(isLargeScreen);
+            setPrevIsMediumOrSmaller(isMediumOrSmaller);
             return;
+        }
+        
+        // Check if we crossed the medium breakpoint (sidebar position switch)
+        if (prevIsMediumOrSmaller !== isMediumOrSmaller) {
+            setLocalNavSize(isMediumOrSmaller ? "small" : "large");
+            
+            if (isMediumOrSmaller) {
+                // Crossed into medium or smaller screen - collapse nav
+                setLocalNavExpanded(false);
+            } else {
+                // Crossed into larger screen - expand nav
+                setLocalNavExpanded(true);
+            }
+            
+            setPrevIsMediumOrSmaller(isMediumOrSmaller);
         }
         
         // Check if we crossed the small breakpoint
         if (prevIsSmall !== isSmallScreen) {
-            setLocalNavSize(isSmallScreen ? "small" : "large");
-            
             if (isSmallScreen) {
                 // Crossed into small screen - collapse nav
                 setLocalNavExpanded(false);
@@ -236,8 +277,8 @@ const AppSidebarMaterial = (props) => {
         
         // Check if we crossed the large breakpoint
         if (prevIsLarge !== isLargeScreen) {
-            if (isLargeScreen) {
-                // Crossed into large screen - expand nav
+            if (isLargeScreen && !isMediumOrSmaller) {
+                // Only expand when crossing into large AND not in secondary mode
                 setLocalNavExpanded(true);
             }
             
@@ -245,9 +286,13 @@ const AppSidebarMaterial = (props) => {
         }
         // 🎯 NO Redux dispatch here - only local state updates
         // Redux will be synced only on location changes
-    }, [isSmallScreen, isLargeScreen, prevIsSmall, prevIsLarge]);
+    }, [isSmallScreen, isLargeScreen, isMediumOrSmaller, prevIsSmall, prevIsLarge, prevIsMediumOrSmaller]);
 
-    const drawerOpen = localNavSize === "large" || (localNavSize === "small" && localNavExpanded);
+    // For horizontal positions (top/bottom), always use expanded/large. For vertical (left/right), use local state.
+    const effectiveNavExpanded = isHorizontalPosition ? true : localNavExpanded;
+    const effectiveNavSize = isHorizontalPosition ? "large" : localNavSize;
+
+    const drawerOpen = effectiveNavSize === "large" || (effectiveNavSize === "small" && effectiveNavExpanded);
     const drawerClassName = `sidebar-drawer`;
     
     return (
@@ -255,8 +300,10 @@ const AppSidebarMaterial = (props) => {
           
             <MuiDrawer
                 variant={localNavSize === "small" ? 'temporary' : 'permanent'}
+                anchor={sidebarPosition}
                 open={drawerOpen}
                 className={drawerClassName}
+                data-sidebar-position={sidebarPosition}
                 onClose={() => {
                     if (localNavSize === "small") {
                         setLocalNavExpanded(false);
@@ -268,16 +315,17 @@ const AppSidebarMaterial = (props) => {
                 }}
             >
                 <AppMaterialMenu 
-                    navSize={localNavSize} 
-                    navExpanded={localNavExpanded}
+                    navSize={effectiveNavSize} 
+                    navExpanded={effectiveNavExpanded}
                     logos={logos}
-                    onToggleDrawer={toggleDrawer}
+                    onToggleDrawer={isHorizontalPosition ? undefined : toggleDrawer}
+                    sidebarPosition={sidebarPosition}
                 />
             </MuiDrawer>
         </Box>
     );
 };
 
-AppSidebarMaterial.whyDidYouRender = true;
+//AppSidebarMaterial.whyDidYouRender = true;
 
 export default AppSidebarMaterial;

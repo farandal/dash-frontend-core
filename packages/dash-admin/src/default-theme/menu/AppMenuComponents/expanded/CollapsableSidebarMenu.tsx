@@ -1,6 +1,6 @@
 import { ICollapsableSidebarMenu } from '../interfaces';
 import { useDispatch } from 'react-redux';
-import { memo, useEffect, useState } from 'react';
+import { memo, useEffect, useState, useRef } from 'react';
 import isCurrentPath from '../../../../hooks/isCurrentPath';
 import { useLocation, useNavigate } from 'react-router';
 import {
@@ -20,15 +20,31 @@ import clickSound from '@app/assets/sounds/click2.mp3?string';
 import { IPageState, DASH_REDUX_ACTIONS } from 'dash-admin-state';
 import {DASHAppConstants} from 'dash-constants';
 import { NavEventManager } from '../../../../utils/navEvents';
+import { FORCE_CLICK_OPEN } from '../submenuConstants';
+import SubmenuPortal from '../SubmenuPortal';
 
 const CollapsableSidebarMenu = ({
   item,
   navExpanded,
   navSize,
-  level
+  level,
+  sidebarPosition = "left"
 }: ICollapsableSidebarMenu) => {
   const loc = useLocation();
   const dispatch = useDispatch();
+  const itemRef = useRef<HTMLDivElement>(null);
+  const isHorizontal = sidebarPosition === "top" || sidebarPosition === "bottom";
+  
+  // Detect if running in mobile webview or android
+  const [webView, setWebView] = useState<boolean>(false);
+  
+  useEffect(() => {
+    if (document.body.classList.contains('webview') || document.body.classList.contains('android')) {
+      setWebView(true);
+    } else {
+      setWebView(false);
+    }
+  }, []);
 
   const [isCurrent, setCurrent] = useState(isCurrentPath(loc.pathname, item));
 
@@ -96,7 +112,7 @@ const CollapsableSidebarMenu = ({
     }
   };
 
-  // Handle opening submenu - notify others to close
+  // Handle opening submenu - notify others to close (for click mode)
   const handleOpenSubmenu = () => {
     const newState = !localOpen;
     setLocalOpen(newState);
@@ -107,68 +123,147 @@ const CollapsableSidebarMenu = ({
     }
   };
 
+  // Hover handlers for horizontal mode (desktop only)
+  const handleMouseEnter = () => {
+    if (isHorizontal && !webView && !FORCE_CLICK_OPEN) {
+      NavEventManager.notifySubmenuOpened(submenuKey);
+      setLocalOpen(true);
+    }
+  };
+
+  const handleMouseLeave = () => {
+    if (isHorizontal && !webView && !FORCE_CLICK_OPEN) {
+      setLocalOpen(false);
+    }
+  };
+
+  // Calculate dropdown position based on sidebar position
+  const getDropdownPosition = () => {
+    if (!itemRef.current) return {};
+    const rect = itemRef.current.getBoundingClientRect();
+    
+    switch (sidebarPosition) {
+      case "top":
+        return { top: rect.bottom + 10, left: rect.left };
+      case "bottom":
+        return { bottom: window.innerHeight - rect.top + 4, left: rect.left };
+      case "right":
+        // For right sidebar, submenu opens to the left of the menu item
+        return { top: rect.top, right: window.innerWidth - rect.left + 4 };
+      case "left":
+      default:
+        // For left sidebar, submenu opens to the right of the menu item
+        return { top: rect.top, left: rect.right + 4 };
+    }
+  };
+
+  // Submenu content - shared between portal and inline rendering
+  const submenuContent = (
+    <List className={'sidebar-list-sub'} disablePadding>
+      {item.children?.map((childItem, index) =>
+        childItem ? (
+          childItem.children ? (
+            <CollapsableSidebarMenu
+              navExpanded={navExpanded}
+              navSize={navSize}
+              item={childItem}
+              key={index}
+              level={level + 1}
+              sidebarPosition={sidebarPosition}
+            />
+          ) : (
+            <SidebarItem
+              level={level}
+              navExpanded={navExpanded}
+              navSize={navSize}
+              showIcon={false}
+              item={childItem}
+              key={index}
+            />
+          )
+        ) : null,
+      )}
+    </List>
+  );
+
   return (
     <>
-      <ListItemButton
-        selected={localOpen}
-        className={'sidebar-list-menu-item'}
-        onClick={(e) => {
-          // Only handle click if it's not on the expand icon
-          if (!(e.target as HTMLElement).closest('.expand-icon')) {
-            playClick();
-            handleOpenSubmenu();
-            
-            if (!isCurrentPath(loc.pathname, item)) {
-              updatePageState();
-              navigate(item.to || item.model);
-            }
-          }
-        }}
+      <div 
+        ref={itemRef} 
+        style={{ display: isHorizontal ? 'inline-flex' : 'block' }}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
       >
-        <ListItemIcon>{item.icon && item.icon}</ListItemIcon>
-        {/* Este es el submenu con la barra lateral expandida */}
-        {navExpanded && (
-          <ListItemText
-            disableTypography
-            primary={<Typography>{item.label}</Typography>}
-          />
-        )}
-        {navExpanded && (
-          <div onClick={handleExpandClick}>
-            {localOpen ? 
-              <ExpandLessOutlinedIcon className='expand-icon less' /> : 
-              <ExpandMoreOutlinedIcon className='expand-icon more' />
+        <ListItemButton
+          selected={localOpen}
+          className={'sidebar-list-menu-item'}
+          sx={isHorizontal ? { 
+            flexShrink: 0, 
+            whiteSpace: 'nowrap',
+            paddingX: 2,
+          } : undefined}
+          onClick={(e) => {
+            // Only handle click if it's not on the expand icon
+            if (!(e.target as HTMLElement).closest('.expand-icon')) {
+              playClick();
+              // For horizontal mode, only handle click on mobile/webview/FORCE_CLICK_OPEN (desktop uses hover)
+              if (!isHorizontal || webView || FORCE_CLICK_OPEN) {
+                handleOpenSubmenu();
+              }
+              
+              if (!isCurrentPath(loc.pathname, item)) {
+                updatePageState();
+                navigate(item.to || item.model);
+              }
             }
-          </div>
-        )}
-      </ListItemButton>
-      {navExpanded && (
-        <Collapse in={localOpen} timeout='auto'>
-          <List className={'sidebar-list-sub'} disablePadding>
-            {item.children?.map((item, index) =>
-              item ? (
-                item.children ? (
-                  <CollapsableSidebarMenu
-                    navExpanded={navExpanded}
-                    navSize={navSize}
-                    item={item}
-                    key={index}
-                    level={level + 1}
-                  />
-                ) : (
-                  <SidebarItem
-                    level={level}
-                    navExpanded={navExpanded}
-                    navSize={navSize}
-                    showIcon={false}
-                    item={item}
-                    key={index}
-                  />
-                )
-              ) : null,
-            )}
-          </List>
+          }}
+        >
+          <ListItemIcon>{item.icon && item.icon}</ListItemIcon>
+          {/* Este es el submenu con la barra lateral expandida */}
+          {navExpanded && (
+            <ListItemText
+              disableTypography
+              primary={<Typography>{item.label}</Typography>}
+            />
+          )}
+          {navExpanded && (
+            <div onClick={handleExpandClick}>
+              {/* For bottom position, invert icons since submenu opens upward */}
+              {sidebarPosition === "bottom" ? (
+                localOpen ? 
+                  <ExpandMoreOutlinedIcon className='expand-icon more' /> : 
+                  <ExpandLessOutlinedIcon className='expand-icon less' />
+              ) : (
+                localOpen ? 
+                  <ExpandLessOutlinedIcon className='expand-icon less' /> : 
+                  <ExpandMoreOutlinedIcon className='expand-icon more' />
+              )}
+            </div>
+          )}
+        </ListItemButton>
+      </div>
+      
+      {/* Portal submenu for all positions */}
+      {/* Vertical mode (Left/Right) - Inline Expansion using Collapse */}
+      {!isHorizontal && (
+        <Collapse in={localOpen} timeout="auto" unmountOnExit>
+          {submenuContent}
         </Collapse>
+      )}
+
+      {/* Horizontal mode (Top/Bottom) - Portal Dropdown */}
+      {isHorizontal && (
+        <SubmenuPortal
+          open={navExpanded && localOpen}
+          itemRef={itemRef}
+          sidebarPosition={sidebarPosition}
+          childrenCount={item.children?.length || 0}
+          className="sidebar-submenu-portal"
+          onMouseEnter={() => !webView && !FORCE_CLICK_OPEN && setLocalOpen(true)}
+          onMouseLeave={() => !webView && !FORCE_CLICK_OPEN && setLocalOpen(false)}
+        >
+          {submenuContent}
+        </SubmenuPortal>
       )}
     </>
   );

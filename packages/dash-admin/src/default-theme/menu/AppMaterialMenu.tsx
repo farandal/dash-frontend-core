@@ -15,7 +15,7 @@ import SidebarItemCollapse from './AppMenuComponents/expanded/CollapsableSidebar
 import CollapsedSidebarItems from './AppMenuComponents/collapsed/CollapsedSidebarItems';
 import { IDashAutoAdminResourceConfig } from 'dash-auto-admin';
 
-import { IDASHAppState } from 'dash-admin-state';
+import { IDASHAppState, usePanelSettings } from 'dash-admin-state';
 import checkRole from '../../helpers/checkRole';
 import { slugify } from '../../utils/slugify';
 // Direct imports to avoid circular barrel imports
@@ -27,12 +27,14 @@ import Scrollbar from '../../components/scrollbar/Scrollbar';
 import { AuthPersistenceService } from 'dash-auth';
 import { useAuthContext } from '../../contexts/auth/AuthContext';
 import DarkToggleMode from '../../components/menu/DarkToggleMode';
-import { useLocales, useLocaleState, useI18nProvider, useTranslate } from 'react-admin';
-
-import { useI18nBridge, useBridgedLocales } from '../../contexts/I18nBridgeContext';
+// Use I18nBridgeContext exclusively
+import { useI18nBridge } from '../../contexts/I18nBridgeContext';
 import BridgedLocalesMenuButton from '../../components/i18n/BridgedLocalesMenuButton';
 
 import { dashStorage } from 'dash-utils';
+import SidebarActions from './SidebarActions';
+import { useNavigate } from 'react-router';
+
 // Update the interface to include new props
 interface IAppMenuExtended extends IAppMenu {
     logos?: {
@@ -40,19 +42,35 @@ interface IAppMenuExtended extends IAppMenu {
         squaredLogo: React.ReactNode;
     };
     onToggleDrawer?: (e: React.MouseEvent) => void;
+
 }
 
 // Group icons
-const GenerateItems: React.FC<{ items: IMenuItem[]; navExpanded: boolean, navSize: "large" | "small", level: number }> = ({
+const GenerateItems: React.FC<{ items: IMenuItem[]; navExpanded: boolean, navSize: "large" | "small", level: number, sidebarPosition?: "left" | "top" | "bottom" | "right", translate: (key: string, options?: any) => string }> = ({
     items,
     navExpanded,
     navSize,
-    level
+    level,
+    sidebarPosition = "left",
+    translate
 }) => {
+    const isHorizontal = sidebarPosition === "top" || sidebarPosition === "bottom";
+    
     return items &&
         <>
             {navExpanded && navSize === "large" ? (
-                <List className={'sidebar-list'} component='nav'>
+                <List 
+                    className={'sidebar-list'} 
+                    component='nav'
+                    sx={isHorizontal ? {
+                        display: 'flex',
+                        flexDirection: 'row',
+                        flexWrap: 'nowrap',
+                        alignItems: 'center',
+                        padding: 0,
+                        margin: 0,
+                    } : undefined}
+                >
                     {items.map((item, index) => {
                         return item.children && item.children.length ? (
                             <SidebarItemCollapse
@@ -61,6 +79,7 @@ const GenerateItems: React.FC<{ items: IMenuItem[]; navExpanded: boolean, navSiz
                                 item={item}
                                 key={index}
                                 level={level + 1}
+                                sidebarPosition={sidebarPosition}
                             />
                         ) : (
 
@@ -69,7 +88,7 @@ const GenerateItems: React.FC<{ items: IMenuItem[]; navExpanded: boolean, navSiz
                     })}
                 </List>
             ) : (
-                <CollapsedSidebarItems level={level} items={items} navExpanded={navExpanded} navSize={navSize} />
+                <CollapsedSidebarItems level={level} items={items} navExpanded={navExpanded} navSize={navSize} sidebarPosition={sidebarPosition} />
             )}
         </>
 
@@ -77,46 +96,44 @@ const GenerateItems: React.FC<{ items: IMenuItem[]; navExpanded: boolean, navSiz
 
 
 
-const AppMaterialMenu: React.FC<IAppMenuExtended> = (props) => {
+const AppMaterialMenu: React.FC<IAppMenuExtended> = props => {
 
     const DEBUG = true;
-    const { menu, debug, navExpanded, navSize, logos, onToggleDrawer } = props;
+    const { menu, debug, navExpanded, navSize, logos, onToggleDrawer, sidebarPosition: propSidebarPosition } = props;
+    const navigate = useNavigate();
     const theme = useTheme();
-    const raTranslate = useTranslate();
     const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
+    const isMediumScreen = useMediaQuery(theme.breakpoints.down('md')); // For logo switching
 
-    // Get i18n from both React Admin context and Bridge context
-    // The bridge context has the real i18nProvider from AdminContext
-    const i18nProviderFromRA = useI18nProvider();
-    const { i18nProvider: bridgedI18nProvider, locale: bridgedLocale } = useI18nBridge();
-    const bridgedLocales = useBridgedLocales();
-    const raLocales = useLocales();
-    const [raLocale] = useLocaleState();
+    // Get panel settings from Redux (includes dimensions, padding, but NOT sidebarPosition - that comes from prop)
+    const { sidebarLargeWidth, sidebarSmallWidth, sidebarHorizontalHeight, logoMaxWidth, logoMaxHeight } = usePanelSettings();
     
-    // Default to bridged locale if available, effectively overriding RA's state which might be stale/disconnected
-    const currentLocale = bridgedLocale || raLocale;
+    // Use sidebarPosition from prop (which is responsive from AppSidebarMaterial) with fallback to 'left'
+    const sidebarPosition = propSidebarPosition || 'left';
 
-    // Use bridged locales if available, otherwise fall back to React Admin's
-    const availableLocales = bridgedLocales.length > 0 ? bridgedLocales : raLocales;
-
-    // CRITICAL FIX: Use bridged translate if available, since AppMaterialMenu 
-    // is outside AdminContext and useTranslate() returns a default provider
+    // Get i18n from Bridge context exclusively
+    const { i18nProvider, locale: currentLocale } = useI18nBridge();
+    
+    // Use bridged translate
     const translate = React.useCallback((key: string, options?: any) => {
-        // Try bridged provider first (has the real translations)
-        if (bridgedI18nProvider?.translate) {
-            const result = bridgedI18nProvider.translate(key, options);
-            return result;
+        // Safety check for non-string keys
+        if (typeof key !== 'string') {
+            return key;
         }
-        // Fall back to react-admin's translate (may not work if outside context)
-        return raTranslate(key, options);
-    }, [bridgedI18nProvider, raTranslate]);
+        // Use bridged provider
+        if (i18nProvider?.translate) {
+            try {
+                return i18nProvider.translate(key, options);
+            } catch (e) {
+                console.warn('Translation error:', e);
+                return key;
+            }
+        }
+        return key;
+    }, [i18nProvider]);
 
     useEffect(() => {
-        DEBUG && console.log('🌐 AppMaterialMenu: React Admin i18nProvider:', i18nProviderFromRA);
-        DEBUG && console.log('🌐 AppMaterialMenu: Bridged i18nProvider:', bridgedI18nProvider);
-        DEBUG && console.log('🌐 AppMaterialMenu: bridgedLocales:', bridgedLocales);
-        DEBUG && console.log('🌐 AppMaterialMenu: raLocales (useLocales):', raLocales);
-        DEBUG && console.log('🌐 AppMaterialMenu: Final availableLocales:', availableLocales);
+        DEBUG && console.log('🌐 AppMaterialMenu: Bridged i18nProvider:', i18nProvider);
         DEBUG && console.log('🌐 AppMaterialMenu: currentLocale:', currentLocale);
 
         // Enhanced debug: test translate with various keys
@@ -129,10 +146,8 @@ const AppMaterialMenu: React.FC<IAppMenuExtended> = (props) => {
             // Test nested resource keys
             'resource.groups.products': translate('resource.groups.products'),
             'resource.system.tenants.label': translate('resource.system.tenants.label'),
-            // Direct provider test
-            'bridgedProvider.resource.groups.products': bridgedI18nProvider?.translate?.('resource.groups.products') || 'N/A (not bridged yet)',
         });
-    }, [i18nProviderFromRA, bridgedI18nProvider, bridgedLocales, raLocales, availableLocales, currentLocale, translate]);
+    }, [i18nProvider, currentLocale, translate]);
 
     //const resources = useResourceDefinitions()
 
@@ -144,13 +159,13 @@ const AppMaterialMenu: React.FC<IAppMenuExtended> = (props) => {
 
 
     // State for tenant logos
-    const [tenantLogos, setTenantLogos] = React.useState<{
+   /* const [tenantLogos, setTenantLogos] = React.useState<{
         horizontalLogo: string | null;
         squaredLogo: string | null;
     }>({
         horizontalLogo: null,
         squaredLogo: null
-    });
+    });*/
 
     const resources = useSelector(
         (
@@ -163,13 +178,17 @@ const AppMaterialMenu: React.FC<IAppMenuExtended> = (props) => {
         },
     );
 
+    const panelSettings = useSelector((state: any) => state.common.panelSettings);
+    const horizontalLogo = panelSettings?.horizontalLogo;
+     const squaredLogo = panelSettings?.squaredLogo;
+
     const groupIcons = useSelector(
         (state: IDASHAppState<any, any, IDashAutoAdminResourceConfig>) =>
             state.settings.groupIcons
     );
 
     // Load tenant logos from AuthPersistenceService
-    useEffect(() => {
+    /*useEffect(() => {
         const tenantImages = AuthPersistenceService.getTenantImages();
         DEBUG && console.log('AppMaterialMenu Loaded: loading tenant images:', tenantImages);
         if (tenantImages) {
@@ -197,7 +216,7 @@ const AppMaterialMenu: React.FC<IAppMenuExtended> = (props) => {
 
 
 
-    }, []);
+    }, []);*/
 
     useEffect(() => {
         // Don't process resources if permissions haven't been loaded yet and not in debug mode
@@ -250,8 +269,9 @@ const AppMaterialMenu: React.FC<IAppMenuExtended> = (props) => {
                     console.log('translating resource label:', resource.label, translate(resource.label));
 
                     // Add more debug info
-                    const currentLocale = i18nProviderFromRA?.getLocale?.() || 'unknown';
-                    const messages = i18nProviderFromRA?.getMessages?.(currentLocale) || {};
+                    // Use optional chaining carefully since i18nProvider might be null
+                    const currentLocale = i18nProvider?.getLocale?.() || 'unknown';
+                    const messages = i18nProvider?.getMessages?.(currentLocale) || {};
                     const hasKey = messages[resource.label] !== undefined;
 
                     console.log('🌐 Translation debug:', {
@@ -301,22 +321,24 @@ const AppMaterialMenu: React.FC<IAppMenuExtended> = (props) => {
         });
         DEBUG && console.log("MENU ITEMS", _items);
         setItems(_items);
-    }, [resources, debug, authContext?.user, translate, bridgedI18nProvider, currentLocale]); // Include translate, bridgedI18nProvider and currentLocale to rebuild menu when translations change
+    }, [resources, debug, authContext?.user, translate, i18nProvider, currentLocale]); // Include translate, i18nProvider and currentLocale to rebuild menu when translations change
+
+    const isHorizontal = sidebarPosition === "top" || sidebarPosition === "bottom";
 
     return <>
         <Box className='sidebar-header'
 
             sx={{
                 display: 'flex',
-                flexDirection: navExpanded && navSize === 'large' ? 'row' : 'column',
-                //alignItems: navExpanded && navSize === 'large' ? 'center' : 'flex-start'
+                flexDirection: isHorizontal ? 'row' : (navExpanded && navSize === 'large' ? 'row' : 'column'),
+                alignItems: isHorizontal ? 'center' : undefined,
             }
 
             }>
 
             <Box sx={{
                 paddingRight: '5px',
-                borderRight: navExpanded && navSize === 'large' ? '1px solid rgba(0, 0, 0, 0.12)' : 'none',
+                //borderRight: navExpanded && navSize === 'large' ? '1px solid rgba(0, 0, 0, 0.12)' : 'none',
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
@@ -327,7 +349,7 @@ const AppMaterialMenu: React.FC<IAppMenuExtended> = (props) => {
                     sx={{
                         display: 'flex',
                         alignItems: 'center',
-                        gap: 1,
+                        //gap: 1,
                         flexDirection: 'column',
 
                     }}>
@@ -337,6 +359,7 @@ const AppMaterialMenu: React.FC<IAppMenuExtended> = (props) => {
                             className='dash-sidebar-burger-toggler'
                             onClick={onToggleDrawer}
                             sx={{
+                                m:1,
                                 padding: '8px',
                                 borderRadius: '8px',
                                 backgroundColor: 'rgba(255,255,255,0.1)',
@@ -355,25 +378,24 @@ const AppMaterialMenu: React.FC<IAppMenuExtended> = (props) => {
                         </IconButton>
                     )}
                     {!(navExpanded && navSize === 'large') && !isSmallScreen && <TenantAvatarComponent
-                        imageUrl={tenantLogos.squaredLogo}
-                        size={60}
+                        navExpanded={navExpanded}
+                        navSize={navSize}
+                        imageUrl={isMediumScreen || sidebarPosition === "left" || sidebarPosition === "right" ? squaredLogo : horizontalLogo}
+                        maxWidth={logoMaxWidth}
+                        maxHeight={isHorizontal ? sidebarHorizontalHeight : logoMaxHeight}
+                        sidebarSmallWidth={sidebarSmallWidth}
                         alt="Tenant Logo"
+                        sidebarPosition={sidebarPosition}
+                        onClick={() => navigate('/')}
                     />}
                 </Box>
 
-                <Box
-                    sx={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: 1,
-                        flexDirection: navExpanded ? 'column-reverse' : 'column',
 
-                    }}>
+                {(sidebarPosition === "left" || sidebarPosition === "right") && (
+                    <SidebarActions sidebarPosition={sidebarPosition} navExpanded={navExpanded} />
+                )}
 
-                    {authContext?.authenticated && authContext.user?.id !== 'guest' && <AvatarComponent />}
-                </Box>
-                <BridgedLocalesMenuButton />
-                <DarkToggleMode />
+
             </Box>
 
             {navExpanded && navSize === 'large' && <Box
@@ -388,9 +410,16 @@ const AppMaterialMenu: React.FC<IAppMenuExtended> = (props) => {
             >
 
                 <TenantAvatarComponent
-                    imageUrl={tenantLogos.squaredLogo}
-                    size={200}
+                navExpanded={navExpanded}
+                navSize={navSize}
+
+                    imageUrl={isMediumScreen || sidebarPosition === "left" || sidebarPosition === "right" ? squaredLogo : horizontalLogo}
+                    maxWidth={logoMaxWidth}
+                    maxHeight={isHorizontal ? sidebarHorizontalHeight : logoMaxHeight}
+                     sidebarSmallWidth={sidebarSmallWidth}
                     alt="Tenant Logo"
+                    sidebarPosition={sidebarPosition}
+                    onClick={() => navigate('/')}
                 />
 
 
@@ -400,17 +429,38 @@ const AppMaterialMenu: React.FC<IAppMenuExtended> = (props) => {
 
         </Box>
 
+        {/* For horizontal mode (top/bottom), use a simple Box instead of Scrollbar 
+            since react-custom-scrollbars creates nested divs that break flex layout */}
+        {(sidebarPosition === "top" || sidebarPosition === "bottom") ? (
+            <Box
+                className="dash-layout-sider-scrollbar horizontal-mode"
+                sx={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    overflowX: 'auto',
+                    overflowY: 'hidden',
+                    flex: 1,
+                    height: '100%',
+                    alignItems: 'center',
+                }}
+            >
+                <GenerateItems items={items} navExpanded={navExpanded} navSize={navSize} level={0} sidebarPosition={sidebarPosition} translate={translate} />
+            </Box>
+        ) : (
+            <Scrollbar
+                //autoHide={true}
+                //autoHideTimeout={1000}
+                //autoHideDuration={200}
+                className={'dash-layout-sider-scrollbar'}
+            >
+                <GenerateItems items={items} navExpanded={navExpanded} navSize={navSize} level={0} sidebarPosition={sidebarPosition} translate={translate} />
+            </Scrollbar>
+        )}
 
+         {(sidebarPosition === "top" || sidebarPosition === "bottom") && (
+            <SidebarActions sidebarPosition={sidebarPosition} navExpanded={navExpanded} />
+         )}
 
-
-        <Scrollbar
-            //autoHide={true}
-            //autoHideTimeout={1000}
-            //autoHideDuration={200}
-            className={'dash-layout-sider-scrollbar'}
-        >
-            <GenerateItems items={items} navExpanded={navExpanded} navSize={navSize} level={0} />
-        </Scrollbar>
 
     </>
 
