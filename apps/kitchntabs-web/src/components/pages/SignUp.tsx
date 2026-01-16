@@ -116,14 +116,14 @@ interface SubscriptionPlan {
 
 interface SignUpFormData {
     email: string;
-    clientname: string;
-    public_id: string;
+    public_name: string; // Business name
+    public_id: string;   // RUT
     name: string;
     lastname: string;
     password: string;
-    confirm_password: string;
+    password_confirmation: string;
     phone: string;
-    selected_plan_id?: number;
+    plan_id?: number;
     'g-recaptcha-response'?: string;
 }
 
@@ -242,42 +242,45 @@ const SignUpPage = (props) => {
 
             // Validate plan selection
             if (!selectedPlan) {
-                setError('selected_plan_id', {
+                setError('plan_id', {
                     type: 'required',
                     message: signUpDict.planRequired
                 });
                 return;
             }
 
-            if (data.clientname) {
-                const bracketed_name = 'client[name]';
-                data[bracketed_name] = data.clientname;
-                delete data.clientname;
-            }
-
-            // Add selected plan
-            data.selected_plan_id = selectedPlan;
+            // Prepare data for trial/register endpoint
+            const submitData = {
+                email: data.email,
+                public_id: data.public_id,
+                public_name: data.public_name,
+                name: data.name,
+                lastname: data.lastname,
+                password: data.password,
+                password_confirmation: data.password_confirmation,
+                phone: data.phone,
+                plan_id: selectedPlan,
+            };
 
             if (enableRecaptcha) {
                 const recaptchaValue =
                     recaptchaRef.current && recaptchaRef.current.getValue
                         ? recaptchaRef.current.getValue()
                         : recpatcha;
-                data['g-recaptcha-response'] = recaptchaValue;
+                submitData['g-recaptcha-response'] = recaptchaValue;
             }
 
-            const response = await axios.post('/auth/user/signup', data, {
-                headers: { 'Content-Type': 'multipart/form-data' },
-            });
+            const response = await axios.post('/trial/register', submitData);
 
-            if (response.status >= 200) {
+            if (response.status >= 200 && response.status < 300) {
                 notify(signUpDict.accountCreatedSuccess, { type: 'success' });
                 
-                // Redirect to a success page or login
+                // Redirect to verification pending page
                 navigate('/signup-success', { 
                     state: { 
                         email: data.email, 
-                        planName: plans.find(p => p.id === selectedPlan)?.name 
+                        planName: plans.find(p => p.id === selectedPlan)?.name,
+                        message: response.data?.message || signUpDict.accountCreatedSuccess
                     } 
                 });
             } else {
@@ -293,18 +296,15 @@ const SignUpPage = (props) => {
             if (error.response?.data?.errors) {
                 const errors = error.response.data.errors;
                 for (const key in errors) {
-                    if (key === 'client.name') {
-                        setError('clientname', {
-                            type: 'custom',
-                            message: dict.get(errors[key], true),
-                        });
-                    } else {
-                        setError(key as keyof SignUpFormData, { 
-                            type: 'custom', 
-                            message: dict.get(errors[key], true) 
-                        });
-                    }
+                    // Map backend field names to frontend form fields
+                    const formKey = key === 'public_name' ? 'public_name' : key;
+                    setError(formKey as keyof SignUpFormData, { 
+                        type: 'custom', 
+                        message: Array.isArray(errors[key]) ? errors[key][0] : errors[key]
+                    });
                 }
+            } else if (error.response?.data?.message) {
+                notify(error.response.data.message, { type: 'error' });
             } else {
                 notify(signUpDict.registrationError, { type: 'error' });
             }
@@ -546,9 +546,9 @@ const SignUpPage = (props) => {
                             </Grid>
                         )}
                         
-                        {errors.selected_plan_id && (
+                        {errors.plan_id && (
                             <Alert severity="error" sx={{ mt: 2 }}>
-                                {errors.selected_plan_id.message}
+                                {errors.plan_id.message}
                             </Alert>
                         )}
                     </FormControl>
@@ -557,7 +557,7 @@ const SignUpPage = (props) => {
                 {/* User Information Form - Constrained to 50% width on large screens */}
                 <Box
                     sx={{
-                        width: { xs: '100%', lg: '50%' },
+                        width: { xs: '100%' },
                         ml: { lg: 0 },
                         mr: { lg: 'auto' }
                     }}
@@ -607,11 +607,11 @@ const SignUpPage = (props) => {
                             required
                             fullWidth
                             className='dash-app-form-item-input'
-                            {...register('clientname', {
+                            {...register('public_name', {
                                 required: signUpDict.businessNameRequired
                             })}
-                            error={!!errors.clientname}
-                            helperText={errors.clientname?.message}
+                            error={!!errors.public_name}
+                            helperText={errors.public_name?.message}
                             sx={{
                                 '& .MuiInputBase-root': {
                                     fontSize: { xs: '0.875rem', sm: '1rem' }
@@ -722,15 +722,15 @@ const SignUpPage = (props) => {
                                     fullWidth
                                     className='dash-app-form-item-input'
                                     type='password'
-                                    {...register('confirm_password', {
+                                    {...register('password_confirmation', {
                                         required: signUpDict.confirmPasswordRequired,
                                         validate: (value) => {
                                             const password = form.getValues('password');
                                             return value === password || signUpDict.passwordsDoNotMatch;
                                         }
                                     })}
-                                    error={!!errors.confirm_password}
-                                    helperText={errors.confirm_password?.message}
+                                    error={!!errors.password_confirmation}
+                                    helperText={errors.password_confirmation?.message}
                                     sx={{
                                         '& .MuiInputBase-root': {
                                             fontSize: { xs: '0.875rem', sm: '1rem' }
