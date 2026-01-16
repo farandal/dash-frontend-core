@@ -51,15 +51,7 @@ const KitchnTabsSharedRoutes = () => [
             </Suspense>
         }
     />,
-    <Route
-        key="signup"
-        path='/signup'
-        element={
-            <Suspense fallback={<GlobalSmallLoader />}>
-                <SignUp />
-            </Suspense>
-        }
-    />,
+   
     <Route
         key="signup-success"
         path='/signup-success'
@@ -94,15 +86,6 @@ const KitchnTabsSharedRoutes = () => [
         element={
             <Suspense fallback={<GlobalSmallLoader />}>
                 {<ChangePassword />}
-            </Suspense>
-        }
-    />,
-    <Route
-        key={'verify'}
-        path='verify'
-        element={
-            <Suspense fallback={<GlobalSmallLoader />}>
-                {<VerifyAccount />}
             </Suspense>
         }
     />,

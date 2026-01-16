@@ -1277,6 +1277,58 @@ const customEs = {
                 }
             }
         }
+    },
+    signup: {
+        title: "Crea Tu Cuenta",
+        accountInformation: "Información de la Cuenta",
+        
+        // Form fields
+        email: "Correo Electrónico",
+        businessName: "Nombre de la Empresa",
+        firstName: "Nombre",
+        lastName: "Apellido",
+        password: "Contraseña",
+        confirmPassword: "Confirmar Contraseña",
+        contactPhone: "Teléfono de Contacto",
+        rut: "RUT",
+        
+        // Buttons and actions
+        continueWithGoogle: "Continuar con Google",
+        connecting: "Conectando...",
+        createAccountStartTrial: "Crear Cuenta e Iniciar Prueba",
+        creatingAccount: "Creando Cuenta...",
+        cancel: "Cancelar",
+        
+        // Messages
+        orSignUpWithEmail: "o regístrate con correo electrónico",
+        termsOfService: "Términos de Servicio",
+        privacyPolicy: "Política de Privacidad",
+        byCreatingAccount: "Al crear una cuenta, aceptas nuestros",
+        and: "y",
+        
+        // Validation messages
+        emailRequired: "El correo electrónico es obligatorio",
+        invalidEmail: "Dirección de correo electrónico inválida",
+        businessNameRequired: "El nombre de la empresa es obligatorio",
+        rutRequired: "El RUT es obligatorio",
+        invalidRut: "RUT inválido",
+        firstNameRequired: "El nombre es obligatorio",
+        lastNameRequired: "El apellido es obligatorio",
+        passwordRequired: "La contraseña es obligatoria",
+        passwordMinLength: "La contraseña debe tener al menos 8 caracteres",
+        confirmPasswordRequired: "Por favor confirma tu contraseña",
+        passwordsDoNotMatch: "Las contraseñas no coinciden",
+        phoneRequired: "El número de teléfono es obligatorio",
+        
+        // Success and error messages
+        accountCreatedSuccess: "¡Bienvenido! Te has suscrito al periodo de prueba de 30 días de KitchnTabs. Por favor revisa tu correo electrónico para verificar tu cuenta.",
+        errorOccurred: "Ocurrió un error, por favor intenta de nuevo",
+        registrationError: "Ocurrió un error durante el registro",
+        googleSignupDisabled: "El registro con Google está actualmente deshabilitado",
+        googleAuthError: "Error con la autenticación de Google",
+        
+        // Dialog titles
+        error: "Error"
     }
 };
 

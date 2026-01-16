@@ -1279,7 +1279,58 @@ const customEn = {
                     description: "Progressively incorporates digital payments, marketplace integration, inventory control and logistics."
                 }
             }
-        }
+    },
+    signup: {
+        title: "Create Your Account",
+        accountInformation: "Account Information",
+        
+        // Form fields
+        email: "Email",
+        businessName: "Business Name",
+        firstName: "First Name",
+        lastName: "Last Name",
+        password: "Password",
+        confirmPassword: "Confirm Password",
+        contactPhone: "Contact Phone",
+        rut: "RUT",
+        
+        // Buttons and actions
+        continueWithGoogle: "Continue with Google",
+        connecting: "Connecting...",
+        createAccountStartTrial: "Create Account & Start Trial",
+        creatingAccount: "Creating Account...",
+        cancel: "Cancel",
+        
+        // Messages
+        orSignUpWithEmail: "or sign up with email",
+        termsOfService: "Terms of Service",
+        privacyPolicy: "Privacy Policy",
+        byCreatingAccount: "By creating an account, you agree to our",
+        and: "and",
+        
+        // Validation messages
+        emailRequired: "Email is required",
+        invalidEmail: "Invalid email address",
+        businessNameRequired: "Business name is required",
+        rutRequired: "RUT is required",
+        invalidRut: "Invalid RUT",
+        firstNameRequired: "First name is required",
+        lastNameRequired: "Last name is required",
+        passwordRequired: "Password is required",
+        passwordMinLength: "Password must be at least 8 characters",
+        confirmPasswordRequired: "Please confirm your password",
+        passwordsDoNotMatch: "Passwords do not match",
+        phoneRequired: "Phone number is required",
+        
+        // Success and error messages
+        accountCreatedSuccess: "Welcome! You have subscribed to KitchnTabs 30-day free trial. Please check your email to verify your account.",
+        errorOccurred: "An error occurred, please try again",
+        registrationError: "An error occurred during registration",
+        googleSignupDisabled: "Google signup is currently disabled",
+        googleAuthError: "Error with Google authentication",
+        
+        // Dialog titles
+        error: "Error"
     }
 };
 

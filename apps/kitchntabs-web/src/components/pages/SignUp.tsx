@@ -3,23 +3,15 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import Button from '@mui/material/Button';
 import { useNavigate } from 'react-router-dom';
-import { useNotify } from 'react-admin';
+import { useNotify, useTranslate } from 'react-admin';
 import ReCAPTCHA from 'react-google-recaptcha';
 import { GoogleLogin, GoogleOAuthProvider, CredentialResponse } from '@react-oauth/google';
 import { 
     Grid, 
     IconButton, 
     TextField, 
-    Card, 
-    CardContent, 
     Typography, 
     Box,
-    Chip,
-    Radio,
-    RadioGroup,
-    FormControlLabel,
-    FormControl,
-    FormLabel,
     Divider,
     Alert,
     useTheme,
@@ -27,8 +19,6 @@ import {
     CircularProgress
 } from '@mui/material';
 import HomeIcon from '@mui/icons-material/Home';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import GoogleIcon from '@mui/icons-material/Google';
 
 import { DASH_REDUX_ACTIONS, IDASHAppState } from 'dash-admin-state';
 import DictionaryContext from 'dash-admin/src/contexts/dictionary/DictionaryContext';
@@ -36,85 +26,6 @@ import { useAxios } from 'dash-axios-hook';
 import { useDialog } from 'dash-dialog';
 import {DASHAdminSystemConstants} from 'dash-constants';
 import { RutValidator } from 'dash-admin/src/utils/validators';
-import { IDashAutoAdminResourceConfig } from 'dash-auto-admin';
-
-// Dictionary for translations
-const signUpDict = {
-    // Main titles and headers
-    "createYourAccount": "Crea Tu Cuenta",
-    "chooseYourPlan": "Elige Tu Plan",
-    "accountInformation": "Información de la Cuenta",
-    
-    // Form fields
-    "email": "Correo Electrónico",
-    "businessName": "Nombre de la Empresa",
-    "firstName": "Nombre",
-    "lastName": "Apellido",
-    "password": "Contraseña",
-    "confirmPassword": "Confirmar Contraseña",
-    "contactPhone": "Teléfono de Contacto",
-    
-    // Buttons and actions
-    "continueWithGoogle": "Continuar con Google",
-    "connecting": "Conectando...",
-    "createAccountStartTrial": "Crear Cuenta e Iniciar Prueba",
-    "creatingAccount": "Creando Cuenta...",
-    "cancel": "Cancelar",
-    
-    // Plan related
-    "features": "Características",
-    "loadingPlans": "Cargando planes...",
-    "month": "mes",
-    "year": "año",
-    "freeTrialDays": "días de prueba gratis",
-    "noTrialPeriod": "Sin período de prueba",
-    "moreFeatures": "características más",
-    
-    // Messages and notifications
-    "orSignUpWithEmail": "o regístrate con correo electrónico",
-    "termsOfService": "Términos de Servicio",
-    "privacyPolicy": "Política de Privacidad",
-    "byCreatingAccount": "Al crear una cuenta, aceptas nuestros",
-    "and": "y",
-    
-    // Validation messages
-    "emailRequired": "El correo electrónico es obligatorio",
-    "invalidEmail": "Dirección de correo electrónico inválida",
-    "businessNameRequired": "El nombre de la empresa es obligatorio",
-    "rutRequired": "El RUT es obligatorio",
-    "invalidRut": "RUT inválido",
-    "firstNameRequired": "El nombre es obligatorio",
-    "lastNameRequired": "El apellido es obligatorio",
-    "passwordRequired": "La contraseña es obligatoria",
-    "passwordMinLength": "La contraseña debe tener al menos 8 caracteres",
-    "confirmPasswordRequired": "Por favor confirma tu contraseña",
-    "passwordsDoNotMatch": "Las contraseñas no coinciden",
-    "phoneRequired": "El número de teléfono es obligatorio",
-    "planRequired": "Por favor selecciona un plan de suscripción",
-    
-    // Success and error messages
-    "accountCreatedSuccess": "¡Cuenta creada exitosamente! Por favor revisa tu correo electrónico para verificar tu cuenta.",
-    "errorOccurred": "Ocurrió un error, por favor intenta de nuevo",
-    "registrationError": "Ocurrió un error durante el registro",
-    "plansLoadError": "Error al cargar los planes de suscripción",
-    "googleSignupDisabled": "El registro con Google está actualmente deshabilitado",
-    "googleAuthError": "Error con la autenticación de Google",
-    
-    // Dialog and error titles
-    "error": "Error"
-};
-
-interface SubscriptionPlan {
-    id: number;
-    name: string;
-    slug: string;
-    description: string;
-    price: number;
-    billing_cycle: 'monthly' | 'yearly';
-    features: string[];
-    is_active: boolean;
-    trial_days: number;
-}
 
 interface SignUpFormData {
     email: string;
@@ -125,7 +36,6 @@ interface SignUpFormData {
     password: string;
     password_confirmation: string;
     phone: string;
-    plan_id?: number;
     'g-recaptcha-response'?: string;
 }
 
@@ -136,6 +46,7 @@ interface SignUpFormData {
 const SignUpPage = (props) => {
 
     const {panelSettings} = props;
+    const translate = useTranslate();
 
     const enableRecaptcha: boolean = DASHAdminSystemConstants.system.RECAPTCHA_ENABLED;
     const enableGoogleSignup: boolean = DASHAdminSystemConstants.system.GOOGLE_SIGNUP !== false;
@@ -189,7 +100,7 @@ const SignUpPage = (props) => {
      */
     const handleGoogleSuccess = async (credentialResponse: CredentialResponse) => {
         if (!enableGoogleSignup) {
-            notify(signUpDict.googleSignupDisabled, { type: 'warning' });
+            notify(translate('signup.googleSignupDisabled'), { type: 'warning' });
             return;
         }
 
@@ -203,7 +114,7 @@ const SignUpPage = (props) => {
             });
 
             if (response.data?.success) {
-                notify(signUpDict.accountCreatedSuccess, { type: 'success' });
+                notify(translate('signup.accountCreatedSuccess'), { type: 'success' });
                 
                 // If user already exists, redirect to login
                 if (response.data?.existing_user) {
@@ -218,16 +129,16 @@ const SignUpPage = (props) => {
                     navigate('/signup-success', { 
                         state: { 
                             email: response.data.email, 
-                            message: response.data.message || signUpDict.accountCreatedSuccess
+                            message: response.data.message || translate('signup.accountCreatedSuccess')
                         } 
                     });
                 }
             } else {
-                notify(response.data?.message || signUpDict.googleAuthError, { type: 'error' });
+                notify(response.data?.message || translate('signup.googleAuthError'), { type: 'error' });
             }
         } catch (error: any) {
             console.error('Google authentication error:', error);
-            notify(error.response?.data?.message || signUpDict.googleAuthError, { type: 'error' });
+            notify(error.response?.data?.message || translate('signup.googleAuthError'), { type: 'error' });
         } finally {
             setGoogleAuthLoading(false);
         }
@@ -238,7 +149,7 @@ const SignUpPage = (props) => {
      */
     const handleGoogleError = () => {
         console.error('Google OAuth failed');
-        notify(signUpDict.googleAuthError, { type: 'error' });
+        notify(translate('signup.googleAuthError'), { type: 'error' });
     };
 
     async function onSubmit(data: SignUpFormData) {
@@ -269,20 +180,20 @@ const SignUpPage = (props) => {
             const response = await axios.post('/trial/register', submitData);
 
             if (response.status >= 200 && response.status < 300) {
-                notify(signUpDict.accountCreatedSuccess, { type: 'success' });
+                notify(translate('signup.accountCreatedSuccess'), { type: 'success' });
                 
                 // Redirect to verification pending page
                 navigate('/signup-success', { 
                     state: { 
                         email: data.email, 
-                        message: response.data?.message || signUpDict.accountCreatedSuccess
+                        message: response.data?.message || translate('signup.accountCreatedSuccess')
                     } 
                 });
             } else {
                 dialog({
                     variant: 'danger',
-                    title: signUpDict.error,
-                    content: signUpDict.errorOccurred,
+                    title: translate('signup.error'),
+                    content: translate('signup.errorOccurred'),
                 });
             }
         } catch (error: any) {
@@ -301,7 +212,7 @@ const SignUpPage = (props) => {
             } else if (error.response?.data?.message) {
                 notify(error.response.data.message, { type: 'error' });
             } else {
-                notify(signUpDict.registrationError, { type: 'error' });
+                notify(translate('signup.registrationError'), { type: 'error' });
             }
         } finally {
             setLoading(false);
@@ -334,7 +245,7 @@ const SignUpPage = (props) => {
                             fontWeight: 'bold'
                         }}
                     >
-                        {signUpDict.createYourAccount}
+                        {translate('signup.title')}
                     </Typography>
                 </Box>
 
@@ -354,7 +265,7 @@ const SignUpPage = (props) => {
                                 {googleAuthLoading ? (
                                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                                         <CircularProgress size={24} />
-                                        <Typography>{signUpDict.connecting}</Typography>
+                                        <Typography>{translate('signup.connecting')}</Typography>
                                     </Box>
                                 ) : (
                                     <GoogleLogin
@@ -372,7 +283,7 @@ const SignUpPage = (props) => {
 
                         <Divider sx={{ my: { xs: 2, sm: 3 } }}>
                             <Typography variant="body2" color="textSecondary">
-                                {signUpDict.orSignUpWithEmail}
+                                {translate('signup.orSignUpWithEmail')}
                             </Typography>
                         </Divider>
                     </>
@@ -396,20 +307,20 @@ const SignUpPage = (props) => {
                             fontWeight: 'medium'
                         }}
                     >
-                        {signUpDict.accountInformation}
+                        {translate('signup.accountInformation')}
                     </Typography>
 
                     <div className='dash-app-form-item'>
                         <TextField
-                            placeholder={signUpDict.email}
-                            label={signUpDict.email}
+                            placeholder={translate('signup.email')}
+                            label={translate('signup.email')}
                             required
                             fullWidth
                             {...register('email', {
-                                required: signUpDict.emailRequired,
+                                required: translate('signup.email')Required,
                                 pattern: {
                                     value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                                    message: signUpDict.invalidEmail
+                                    message: translate('signup.invalidEmail')
                                 }
                             })}
                             inputProps={{ type: 'email'}}
@@ -426,13 +337,13 @@ const SignUpPage = (props) => {
 
                     <div className='dash-app-form-item'>
                         <TextField
-                            placeholder={signUpDict.businessName}
-                            label={signUpDict.businessName}
+                            placeholder={translate('signup.businessName')}
+                            label={translate('signup.businessName')}
                             required
                             fullWidth
                             className='dash-app-form-item-input'
                             {...register('public_name', {
-                                required: signUpDict.businessNameRequired
+                                required: translate('signup.businessName')Required
                             })}
                             error={!!errors.public_name}
                             helperText={errors.public_name?.message}
@@ -453,10 +364,10 @@ const SignUpPage = (props) => {
                             className='dash-app-form-item-input'
                             {...register('public_id', { 
                                 validate: RutValidator,
-                                required: signUpDict.rutRequired
+                                required: translate('signup.rutRequired')
                             })}
                             error={!!errors.public_id}
-                            helperText={errors.public_id?.message || (errors.public_id ? signUpDict.invalidRut : '')}
+                            helperText={errors.public_id?.message || (errors.public_id ? translate('signup.invalidRut') : '')}
                             sx={{
                                 '& .MuiInputBase-root': {
                                     fontSize: { xs: '0.875rem', sm: '1rem' }
@@ -469,13 +380,13 @@ const SignUpPage = (props) => {
                         <Grid size={{ xs: 12, sm: 6 }}>
                             <div className='dash-app-form-item'>
                                 <TextField
-                                    placeholder={signUpDict.firstName}
-                                    label={signUpDict.firstName}
+                                    placeholder={translate('signup.firstName')}
+                                    label={translate('signup.firstName')}
                                     required
                                     fullWidth
                                     className='dash-app-form-item-input'
                                     {...register('name', {
-                                        required: signUpDict.firstNameRequired
+                                        required: translate('signup.firstName')Required
                                     })}
                                     error={!!errors.name}
                                     helperText={errors.name?.message}
@@ -490,13 +401,13 @@ const SignUpPage = (props) => {
                         <Grid size={{ xs: 12, sm: 6 }}>
                             <div className='dash-app-form-item'>
                                 <TextField
-                                    placeholder={signUpDict.lastName}
-                                    label={signUpDict.lastName}
+                                    placeholder={translate('signup.lastName')}
+                                    label={translate('signup.lastName')}
                                     required
                                     fullWidth
                                     className='dash-app-form-item-input'
                                     {...register('lastname', {
-                                        required: signUpDict.lastNameRequired
+                                        required: translate('signup.lastName')Required
                                     })}
                                     error={!!errors.lastname}
                                     helperText={errors.lastname?.message}
@@ -514,17 +425,17 @@ const SignUpPage = (props) => {
                         <Grid size={{ xs: 12, sm: 6 }}>
                             <div className='dash-app-form-item'>
                                 <TextField
-                                    placeholder={signUpDict.password}
-                                    label={signUpDict.password}
+                                    placeholder={translate('signup.password')}
+                                    label={translate('signup.password')}
                                     required
                                     fullWidth
                                     type='password'
                                     className='dash-app-form-item-input'
                                     {...register('password', {
-                                        required: signUpDict.passwordRequired,
+                                        required: translate('signup.password')Required,
                                         minLength: {
                                             value: 8,
-                                            message: signUpDict.passwordMinLength
+                                            message: translate('signup.password')MinLength
                                         }
                                     })}
                                     error={!!errors.password}
@@ -540,17 +451,17 @@ const SignUpPage = (props) => {
                         <Grid size={{ xs: 12, sm: 6 }}>
                             <div className='dash-app-form-item'>
                                 <TextField
-                                    placeholder={signUpDict.confirmPassword}
-                                    label={signUpDict.confirmPassword}
+                                    placeholder={translate('signup.confirmPassword')}
+                                    label={translate('signup.confirmPassword')}
                                     required
                                     fullWidth
                                     className='dash-app-form-item-input'
                                     type='password'
                                     {...register('password_confirmation', {
-                                        required: signUpDict.confirmPasswordRequired,
+                                        required: translate('signup.confirmPassword')Required,
                                         validate: (value) => {
                                             const password = form.getValues('password');
-                                            return value === password || signUpDict.passwordsDoNotMatch;
+                                            return value === password || translate('signup.password')sDoNotMatch;
                                         }
                                     })}
                                     error={!!errors.password_confirmation}
@@ -567,13 +478,13 @@ const SignUpPage = (props) => {
 
                     <div className='dash-app-form-item'>
                         <TextField
-                            label={signUpDict.contactPhone}
+                            label={translate('signup.contactPhone')}
                             required
                             fullWidth
                             placeholder='+569 1234 5678'
                             className='dash-app-form-item-input'
                             {...register('phone', {
-                                required: signUpDict.phoneRequired
+                                required: translate('signup.phoneRequired')
                             })}
                             error={!!errors.phone}
                             helperText={errors.phone?.message}
@@ -622,7 +533,7 @@ const SignUpPage = (props) => {
                     {/* Submit Buttons */}
                     <div className='dash-app-form-item mb-0'>
                         <Button
-                            disabled={(!recpatcha && enableRecaptcha) || loading || !selectedPlan}
+                            disabled={(!recpatcha && enableRecaptcha) || loading}
                             type='submit'
                             fullWidth
                             variant={'contained'}
@@ -634,7 +545,7 @@ const SignUpPage = (props) => {
                                 fontWeight: 'bold'
                             }}
                         >
-                            {loading ? signUpDict.creatingAccount : signUpDict.createAccountStartTrial}
+                            {loading ? translate('signup.creatingAccount') : translate('signup.createAccountStartTrial')}
                         </Button>
                     </div>
 
@@ -649,7 +560,7 @@ const SignUpPage = (props) => {
                                 fontSize: { xs: '0.875rem', sm: '1rem' }
                             }}
                         >
-                            {signUpDict.cancel}
+                            {translate('signup.cancel')}
                         </Button>
                     </div>
 
@@ -665,7 +576,7 @@ const SignUpPage = (props) => {
                                 px: { xs: 1, sm: 0 }
                             }}
                         >
-                            {signUpDict.byCreatingAccount}{' '}
+                            {translate('signup.byCreatingAccount')}{' '}
                             <Button 
                                 variant="text" 
                                 size="small" 
@@ -678,9 +589,9 @@ const SignUpPage = (props) => {
                                     textDecoration: 'underline'
                                 }}
                             >
-                                {signUpDict.termsOfService}
+                                {translate('signup.termsOfService')}
                             </Button>
-                            {' '}{signUpDict.and}{' '}
+                            {' '}{translate('signup.and')}{' '}
                             <Button 
                                 variant="text" 
                                 size="small" 
@@ -693,7 +604,7 @@ const SignUpPage = (props) => {
                                     textDecoration: 'underline'
                                 }}
                             >
-                                {signUpDict.privacyPolicy}
+                                {translate('signup.privacyPolicy')}
                             </Button>
                         </Typography>
                     </Box>
