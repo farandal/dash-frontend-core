@@ -5,6 +5,7 @@ import Button from '@mui/material/Button';
 import { useNavigate } from 'react-router-dom';
 import { useNotify } from 'react-admin';
 import ReCAPTCHA from 'react-google-recaptcha';
+import { GoogleLogin, GoogleOAuthProvider, CredentialResponse } from '@react-oauth/google';
 import { 
     Grid, 
     IconButton, 
@@ -22,7 +23,8 @@ import {
     Divider,
     Alert,
     useTheme,
-    useMediaQuery
+    useMediaQuery,
+    CircularProgress
 } from '@mui/material';
 import HomeIcon from '@mui/icons-material/Home';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
@@ -213,7 +215,13 @@ const SignUpPage = (props) => {
         clearErrors('selected_plan_id');
     };
 
-    const handleGoogleSignUp = async () => {
+    const googleClientId: string = DASHAdminSystemConstants.system.GOOGLE_CLIENT_ID;
+
+    /**
+     * Handle successful Google OAuth login
+     * Sends credential to backend for verification and trial registration
+     */
+    const handleGoogleSuccess = async (credentialResponse: CredentialResponse) => {
         if (!enableGoogleSignup) {
             notify(signUpDict.googleSignupDisabled, { type: 'warning' });
             return;
@@ -222,17 +230,51 @@ const SignUpPage = (props) => {
         try {
             setGoogleAuthLoading(true);
             
-            // Initialize Google OAuth flow
-            // This would typically redirect to Google's OAuth endpoint
-            const googleAuthUrl = DASHAdminSystemConstants.system.API_URL+`/api/auth/google/redirect?signup=true&plan_id=${selectedPlan || ''}`;
-            window.location.href = googleAuthUrl;
-            
-        } catch (error) {
+            // Send credential to backend for verification
+            const response = await axios.post('/auth/google/authenticate', {
+                credential: credentialResponse.credential,
+                plan_id: selectedPlan,
+                signup: true,
+            });
+
+            if (response.data?.success) {
+                notify(signUpDict.accountCreatedSuccess, { type: 'success' });
+                
+                // If user already exists, redirect to login
+                if (response.data?.existing_user) {
+                    navigate('/login', {
+                        state: { 
+                            email: response.data.email,
+                            message: 'Account exists. Please login.'
+                        }
+                    });
+                } else {
+                    // New user - redirect to success page
+                    navigate('/signup-success', { 
+                        state: { 
+                            email: response.data.email, 
+                            planName: plans.find(p => p.id === selectedPlan)?.name,
+                            message: response.data.message || signUpDict.accountCreatedSuccess
+                        } 
+                    });
+                }
+            } else {
+                notify(response.data?.message || signUpDict.googleAuthError, { type: 'error' });
+            }
+        } catch (error: any) {
             console.error('Google authentication error:', error);
-            notify(signUpDict.googleAuthError, { type: 'error' });
+            notify(error.response?.data?.message || signUpDict.googleAuthError, { type: 'error' });
         } finally {
             setGoogleAuthLoading(false);
         }
+    };
+
+    /**
+     * Handle Google OAuth error
+     */
+    const handleGoogleError = () => {
+        console.error('Google OAuth failed');
+        notify(signUpDict.googleAuthError, { type: 'error' });
     };
 
     async function onSubmit(data: SignUpFormData) {
@@ -321,7 +363,8 @@ const SignUpPage = (props) => {
         return trialDays > 0 ? `${trialDays} ${signUpDict.freeTrialDays}` : signUpDict.noTrialPeriod;
     };
 
-    return (
+    // Wrap content conditionally with GoogleOAuthProvider
+    const formContent = (
             <form onSubmit={handleSubmit(onSubmit)} className='dash-app-login-form'>
                 <Box sx={{ 
                     display: 'flex', 
@@ -350,24 +393,36 @@ const SignUpPage = (props) => {
                     </Typography>
                 </Box>
 
-                {/* Google Sign Up Button - Only show if enabled */}
-                {enableGoogleSignup && (
+                {/* Google Sign Up Button - Only show if enabled and client ID configured */}
+                {enableGoogleSignup && googleClientId && (
                     <>
                         <div className='dash-app-form-item'>
-                            <Button
-                                fullWidth
-                                variant="outlined"
-                                startIcon={<GoogleIcon />}
-                                onClick={handleGoogleSignUp}
-                                disabled={googleAuthLoading || !selectedPlan}
-                                size="large"
+                            <Box 
                                 sx={{ 
-                                    py: { xs: 1.5, sm: 2 },
-                                    fontSize: { xs: '0.875rem', sm: '1rem' }
+                                    display: 'flex', 
+                                    justifyContent: 'center',
+                                    width: '100%',
+                                    minHeight: 50,
+                                    position: 'relative'
                                 }}
                             >
-                                {googleAuthLoading ? signUpDict.connecting : signUpDict.continueWithGoogle}
-                            </Button>
+                                {googleAuthLoading ? (
+                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                                        <CircularProgress size={24} />
+                                        <Typography>{signUpDict.connecting}</Typography>
+                                    </Box>
+                                ) : (
+                                    <GoogleLogin
+                                        onSuccess={handleGoogleSuccess}
+                                        onError={handleGoogleError}
+                                        size="large"
+                                        width={isMobile ? "300" : "400"}
+                                        text="signup_with"
+                                        shape="rectangular"
+                                        logo_alignment="left"
+                                    />
+                                )}
+                            </Box>
                         </div>
 
                         <Divider sx={{ my: { xs: 2, sm: 3 } }}>
@@ -877,7 +932,17 @@ const SignUpPage = (props) => {
             </form>
   
     );
+
+    // If Google client ID is configured, wrap with OAuth provider
+    if (googleClientId) {
+        return (
+            <GoogleOAuthProvider clientId={googleClientId}>
+                {formContent}
+            </GoogleOAuthProvider>
+        );
+    }
+
+    return formContent;
 };
 
 export default SignUpPage;
-

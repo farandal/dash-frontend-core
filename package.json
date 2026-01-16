@@ -14,9 +14,7 @@
     "config:web:kitchntabs:local": "MODE=development CUSTOM_MODE=kitchntabs.local TARGET_TYPE=web PLATFORM=web APP_PATH=apps/kitchntabs node build_config.js",
     "config:web:kitchntabs-mall:production": "MODE=production CUSTOM_MODE=kitchntabs.development TARGET_TYPE=web PLATFORM=web APP_PATH=apps/kitchntabs-mall node build_config.js",
     "config:web:kitchntabs-mall:development": "MODE=development CUSTOM_MODE=kitchntabs.development TARGET_TYPE=web PLATFORM=web APP_PATH=apps/kitchntabs-mall VITE_HMR_PORT=${VITE_HMR_PORT:-4438} node build_config.js",
-   
     "config:web:kitchntabs-web:development": "MODE=development CUSTOM_MODE=kitchntabs.development TARGET_TYPE=web PLATFORM=web APP_PATH=apps/kitchntabs-web VITE_HMR_PORT=${VITE_HMR_PORT:-4438} node build_config.js",
-
     "config:web:kitchntabs-mall:local": "MODE=development CUSTOM_MODE=kitchntabs.local TARGET_TYPE=web PLATFORM=web APP_PATH=apps/kitchntabs-mall VITE_HMR_PORT=${VITE_HMR_PORT:-4438} node build_config.js",
     "config:web:kitchntabs-mall:ngrok": "MODE=production CUSTOM_MODE=kitchntabs.ngrok TARGET_TYPE=web PLATFORM=web APP_PATH=apps/kitchntabs-mall node build_config.js",
     "config:electron:kitchntabs:production": "MODE=production CUSTOM_MODE=kitchntabs.production TARGET_TYPE=desktop PLATFORM=electron APP_PATH=apps/kitchntabs node build_config.js",
@@ -43,10 +41,8 @@
     "kt-mall:web:dist:production": "pnpm config:web:kitchntabs-mall:production && pnpm prod-kt-mall",
     "kt-mall:web:dist:ngrok": "pnpm config:web:kitchntabs-mall:ngrok && pnpm prod-kt-mall",
     "dev:web:kt:local": "pnpm config:web:kitchntabs:local && pnpm dev",
-    
     "dev:web:kitchntabs-web:development": "pnpm config:web:kitchntabs-web:development && pnpm dev-kt-web",
     "build:web:kitchntabs-web:production": "pnpm config:web:kitchntabs-web:development && pnpm prod-kt-web",
-
     "dev:web:kitchntabs:development": "pnpm config:web:kitchntabs:development && pnpm dev",
     "dev:web:kitchntabs:production": "MODE=production CUSTOM_MODE=kitchntabs.production TARGET_TYPE=web PLATFORM=web APP_PATH=apps/kitchntabs VITE_DEV_PORT=3006  VITE_HMR_PORT=4438  node build_config.js && vite build -c electron.vite.config.mts && cross-env NODE_ENV=production BUILD_ENV=prod CUSTOM_MODE=kitchntabs.production PORT=3006 concurrently \"cd apps/kitchntabs && pnpm dev\"",
     "build:web:kitchntabs:production": "MODE=production CUSTOM_MODE=kitchntabs.production TARGET_TYPE=web PLATFORM=web APP_PATH=apps/kitchntabs node build_config.js && vite build -c electron.vite.config.mts && cross-env NODE_ENV=production BUILD_ENV=prod CUSTOM_MODE=kitchntabs.production concurrently \"cd apps/kitchntabs && pnpm build\"",
@@ -134,6 +130,7 @@
     "@mui/icons-material": "^7.3.1",
     "@mui/utils": "^7.3.1",
     "@mui/x-date-pickers": "^8.10.0",
+    "@react-oauth/google": "^0.13.4",
     "@reduxjs/toolkit": "^2.8.2",
     "@rooks/use-previous": "^4.11.2",
     "@tanstack/react-query": "^5.84.2",

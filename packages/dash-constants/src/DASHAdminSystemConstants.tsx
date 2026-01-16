@@ -57,6 +57,7 @@ const system = {
   PAGE_TRANSITIONS: false,
 
   GOOGLE_SIGNUP: JSON.parse(getEnv('APP_GOOGLE_SIGNUP')) || false,
+  GOOGLE_CLIENT_ID: getEnv('APP_GOOGLE_CLIENT_ID') || '',
   RECAPTCHA_ENABLED: JSON.parse(getEnv('APP_RECAPTCHA_ENABLED')) || false,
   RECAPTCHA_TOKEN: getEnv('APP_RECAPTCHA_TOKEN') || 'UNSET',
 
