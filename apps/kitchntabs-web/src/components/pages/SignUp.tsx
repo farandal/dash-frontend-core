@@ -141,10 +141,7 @@ const SignUpPage = (props) => {
     const enableGoogleSignup: boolean = DASHAdminSystemConstants.system.GOOGLE_SIGNUP !== false;
     const recaptchaRef = createRef<ReCAPTCHA>();
     const [recpatcha, setRecaptcha] = useState(null);
-    const [plans, setPlans] = useState<SubscriptionPlan[]>([]);
-    const [selectedPlan, setSelectedPlan] = useState<number | null>(null);
     const [loading, setLoading] = useState(false);
-    const [plansLoading, setPlansLoading] = useState(true);
     const [googleAuthLoading, setGoogleAuthLoading] = useState(false);
 
     // Add responsive breakpoints
@@ -176,31 +173,6 @@ const SignUpPage = (props) => {
         setRecaptcha(value);
     };
 
-    // Load subscription plans
-    useEffect(() => {
-        const loadPlans = async () => {
-            try {
-                setPlansLoading(true);
-                const response = await axios.get('/subscription-plans');
-                if (response.data?.data) {
-                    setPlans(response.data.data);
-                    // Auto-select first plan if available
-                    if (response.data.data.length > 0) {
-                        setSelectedPlan(response.data.data[0].id);
-                        setValue('selected_plan_id', response.data.data[0].id);
-                    }
-                }
-            } catch (error) {
-                console.error('Error loading subscription plans:', error);
-                notify(signUpDict.plansLoadError, { type: 'warning' });
-            } finally {
-                setPlansLoading(false);
-            }
-        };
-
-        loadPlans();
-    }, []);
-
     useEffect(() => {
         dispatch(
             DASH_REDUX_ACTIONS.updatePage({
@@ -208,12 +180,6 @@ const SignUpPage = (props) => {
             }),
         );
     }, []);
-
-    const handlePlanSelection = (planId: number) => {
-        setSelectedPlan(planId);
-        setValue('selected_plan_id', planId);
-        clearErrors('selected_plan_id');
-    };
 
     const googleClientId: string = DASHAdminSystemConstants.system.GOOGLE_CLIENT_ID;
 
@@ -233,7 +199,6 @@ const SignUpPage = (props) => {
             // Send credential to backend for verification
             const response = await axios.post('/auth/google/authenticate', {
                 credential: credentialResponse.credential,
-                plan_id: selectedPlan,
                 signup: true,
             });
 
@@ -253,7 +218,6 @@ const SignUpPage = (props) => {
                     navigate('/signup-success', { 
                         state: { 
                             email: response.data.email, 
-                            planName: plans.find(p => p.id === selectedPlan)?.name,
                             message: response.data.message || signUpDict.accountCreatedSuccess
                         } 
                     });
@@ -282,15 +246,6 @@ const SignUpPage = (props) => {
             setLoading(true);
             clearErrors();
 
-            // Validate plan selection
-            if (!selectedPlan) {
-                setError('plan_id', {
-                    type: 'required',
-                    message: signUpDict.planRequired
-                });
-                return;
-            }
-
             // Prepare data for trial/register endpoint
             const submitData = {
                 email: data.email,
@@ -301,7 +256,6 @@ const SignUpPage = (props) => {
                 password: data.password,
                 password_confirmation: data.password_confirmation,
                 phone: data.phone,
-                plan_id: selectedPlan,
             };
 
             if (enableRecaptcha) {
@@ -321,7 +275,6 @@ const SignUpPage = (props) => {
                 navigate('/signup-success', { 
                     state: { 
                         email: data.email, 
-                        planName: plans.find(p => p.id === selectedPlan)?.name,
                         message: response.data?.message || signUpDict.accountCreatedSuccess
                     } 
                 });
@@ -354,14 +307,6 @@ const SignUpPage = (props) => {
             setLoading(false);
         }
     }
-
-    const formatPrice = (price: number, billingCycle: string) => {
-        return `${price.toFixed(2)}/${billingCycle === 'monthly' ? signUpDict.month : signUpDict.year}`;
-    };
-
-    const getTrialText = (trialDays: number) => {
-        return trialDays > 0 ? `${trialDays} ${signUpDict.freeTrialDays}` : signUpDict.noTrialPeriod;
-    };
 
     // Wrap content conditionally with GoogleOAuthProvider
     const formContent = (
@@ -433,183 +378,7 @@ const SignUpPage = (props) => {
                     </>
                 )}
 
-                {/* Subscription Plans Selection */}
-                <div className='dash-app-form-item'>
-                    <FormControl component="fieldset" fullWidth>
-                        <FormLabel component="legend">
-                            <Typography 
-                                variant={isMobile ? "h6" : "h5"} 
-                                gutterBottom
-                                sx={{ 
-                                    fontSize: { xs: '1.25rem', sm: '1.5rem' },
-                                    fontWeight: 'medium',
-                                    mb: { xs: 2, sm: 3 }
-                                }}
-                            >
-                                {signUpDict.chooseYourPlan}
-                            </Typography>
-                        </FormLabel>
-                        
-                        {plansLoading ? (
-                            <Box display="flex" justifyContent="center" p={2}>
-                                <Typography>{signUpDict.loadingPlans}</Typography>
-                            </Box>
-                        ) : (
-                            <Grid container spacing={{ xs: 2, sm: 2, md: 3 }}>
-                                {plans.map((plan) => (
-                                    <Grid 
-                                        key={plan.id}
-                                        size={{ 
-                                            xs: 12, 
-                                            sm: plans.length === 1 ? 12 : 6, 
-                                            md: plans.length <= 2 ? 6 : 4 
-                                        }}
-                                    >
-                                        <Card 
-                                            variant={selectedPlan === plan.id ? "outlined" : "elevation"}
-                                            sx={{ 
-                                                cursor: 'pointer',
-                                                border: selectedPlan === plan.id ? 2 : 1,
-                                                borderColor: selectedPlan === plan.id ? 'primary.main' : 'divider',
-                                                '&:hover': {
-                                                    borderColor: 'primary.main',
-                                                    transform: 'translateY(-2px)',
-                                                    transition: 'all 0.2s ease-in-out'
-                                                },
-                                                height: '100%',
-                                                display: 'flex',
-                                                flexDirection: 'column',
-                                                width: '100%'
-                                            }}
-                                            onClick={() => handlePlanSelection(plan.id)}
-                                        >
-                                            <CardContent sx={{ 
-                                                flexGrow: 1, 
-                                                display: 'flex', 
-                                                flexDirection: 'column',
-                                                p: { xs: 2, sm: 3 }
-                                            }}>
-                                                <Box display="flex" alignItems="center" mb={2}>
-                                                    <Typography 
-                                                        variant={isMobile ? "h6" : "h5"} 
-                                                        component="div"
-                                                        sx={{ 
-                                                            fontSize: { xs: '1.1rem', sm: '1.25rem' },
-                                                            fontWeight: 'bold'
-                                                        }}
-                                                    >
-                                                        {plan.name}
-                                                    </Typography>
-                                                    {selectedPlan === plan.id && (
-                                                        <CheckCircleIcon 
-                                                            color="primary" 
-                                                            sx={{ ml: 'auto', fontSize: { xs: 20, sm: 24 } }} 
-                                                        />
-                                                    )}
-                                                </Box>
-                                                
-                                                <Typography 
-                                                    variant={isMobile ? "h5" : "h4"} 
-                                                    color="primary" 
-                                                    gutterBottom
-                                                    sx={{ 
-                                                        fontSize: { xs: '1.5rem', sm: '2rem' },
-                                                        fontWeight: 'bold'
-                                                    }}
-                                                >
-                                                    ${formatPrice(plan.price, plan.billing_cycle)}
-                                                </Typography>
-                                                
-                                                <Chip 
-                                                    label={getTrialText(plan.trial_days)}
-                                                    color="secondary"
-                                                    size={isMobile ? "small" : "medium"}
-                                                    sx={{
-                                                        mb: 2,
-                                                        alignSelf: 'flex-start',
-                                                        fontSize: { xs: '0.75rem', sm: '0.875rem' }
-                                                    }}
-                                                />
-                                                
-                                                <Typography 
-                                                    variant="body2" 
-                                                    color="textSecondary" 
-                                                    paragraph
-                                                    sx={{ 
-                                                        fontSize: { xs: '0.875rem', sm: '1rem' },
-                                                        lineHeight: 1.5,
-                                                        mb: 2
-                                                    }}
-                                                >
-                                                    {plan.description}
-                                                </Typography>
-                                                
-                                                {plan.features && plan.features.length > 0 && (
-                                                    <Box sx={{ mt: 'auto' }}>
-                                                        <Typography 
-                                                            variant="subtitle2" 
-                                                            gutterBottom
-                                                            sx={{ 
-                                                                fontSize: { xs: '0.875rem', sm: '1rem' },
-                                                                fontWeight: 'medium'
-                                                            }}
-                                                        >
-                                                            {signUpDict.features}:
-                                                        </Typography>
-                                                        {plan.features.slice(0, isMobile ? 2 : 3).map((feature, index) => (
-                                                            <Typography 
-                                                                key={index} 
-                                                                variant="body2" 
-                                                                color="textSecondary"
-                                                                sx={{ 
-                                                                    display: 'flex', 
-                                                                    alignItems: 'flex-start', 
-                                                                    mb: 0.5,
-                                                                    fontSize: { xs: '0.8rem', sm: '0.875rem' }
-                                                                }}
-                                                            >
-                                                                <CheckCircleIcon 
-                                                                    sx={{ 
-                                                                        fontSize: { xs: 14, sm: 16 }, 
-                                                                        mr: 1, 
-                                                                        color: 'success.main',
-                                                                        mt: 0.1,
-                                                                        flexShrink: 0
-                                                                    }} 
-                                                                />
-                                                                {feature}
-                                                            </Typography>
-                                                        ))}
-                                                        {plan.features.length > (isMobile ? 2 : 3) && (
-                                                            <Typography 
-                                                                variant="body2" 
-                                                                color="primary"
-                                                                sx={{ 
-                                                                    fontSize: { xs: '0.8rem', sm: '0.875rem' },
-                                                                    fontWeight: 'medium'
-                                                                }}
-                                                            >
-                                                                +{plan.features.length - (isMobile ? 2 : 3)} {signUpDict.moreFeatures}
-                                                            </Typography>
-                                                        )}
-                                                    </Box>
-                                                )}
-                                            </CardContent>
-                                        </Card>
-                                    </Grid>
-                                ))}
-                            </Grid>
-                        )}
-                        
-                        {errors.plan_id && (
-                            <Alert severity="error" sx={{ mt: 2 }}>
-                                {errors.plan_id.message}
-                            </Alert>
-                        )}
-                    </FormControl>
-                </div>
-
-                {/* User Information Form - Constrained to 50% width on large screens */}
+                {/* User Information Form */}
                 <Box
                     sx={{
                         width: { xs: '100%' },
@@ -621,7 +390,7 @@ const SignUpPage = (props) => {
                         variant={isMobile ? "h6" : "h5"} 
                         gutterBottom 
                         sx={{ 
-                            mt: { xs: 3, sm: 4 },
+                            mt: { xs: 1, sm: 2 },
                             mb: { xs: 2, sm: 3 },
                             fontSize: { xs: '1.25rem', sm: '1.5rem' },
                             fontWeight: 'medium'
