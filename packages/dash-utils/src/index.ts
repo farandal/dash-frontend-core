@@ -195,3 +195,5 @@ export {
     DefaultLoadFailedComponent,
     type LazyAppLoaderConfig
 } from './components/LazyAppLoader';
+
+export { priceFormatter } from "./utils/priceFormatter";

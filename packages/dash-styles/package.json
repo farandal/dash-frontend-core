@@ -22,5 +22,8 @@
   "dependencies": {
     "@mui/utils": "latest",
     "react-admin": "5.10.1"
+  },
+  "peerDependencies": {
+    "antd": ">=5.0.0"
   }
 }
