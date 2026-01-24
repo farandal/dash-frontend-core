@@ -1,31 +1,31 @@
-//@btn-bg: linear-gradient(101.98deg, var(--primary-color, @primary-color) 0%, var(--primary-contrast, @primary-contrast) 111.65%);
-//@btn-color: var(--text-color, @text-color);
+//@btn-bg: linear-gradient(101.98deg, var(--primary-color) 0%, var(--primary-contrast) 111.65%);
+//@btn-color: var(--text-color);
 
-//@btn-tertiary-bg: var(--primary-color, @primary-color);
-//@btn-tertiary-color: var(--text-contrast, @text-contrast);
+//@btn-tertiary-bg: var(--primary-color);
+//@btn-tertiary-color: var(--text-contrast);
 
-//@btn-error-bg: var(--alert-error-bg, @alert-error-bg);
-//@btn-error-color: var(--text-contrast, @text-contrast);
+//@btn-error-bg: var(--alert-error-bg);
+//@btn-error-color: var(--text-contrast);
 
 
 
 
 .MuiButton-root{
-    //background: var(--component-bg, @component-bg);
-    border: 1px solid var(--component-border, @component-border);
+    //background: var(--component-bg);
+    border: 1px solid var(--component-border);
     //border-radius: 8px !important;
     font-family: 'Montserrat' !important;
     font-style: normal !important;
     font-weight: 400 !important;
     font-size: 16px !important;
     line-height: 24px !important;
-    //color: var(--text-color, @text-color);
+    //color: var(--text-color);
     transition: all .4s;
     text-transform: unset !important;
     > span{
         display: inline-flex;
         align-items: center;
-        //color: var(--component-text, @component-text);
+        //color: var(--component-text);
         svg{
             margin-right: 9.75px;
         }
@@ -34,22 +34,22 @@
         //border: 1px solid transparent;
        //background-color:  linear-gradient(101.98deg, var(--primary-main) 0%, var(--secondary-main) 111.65%);
 
-        //color: var(--btn-color, @btn-color);
+        //color: var(--btn-color);
         > span{
-            color: var(--btn-color, @btn-color);
+            color: var(--btn-color);
             svg{
                 filter: brightness(0) invert(1);
             }
         }
     }
     &.MuiButton-outlinedPrimary{
-        //border: 1px solid var(--component-border, @component-border);
-        //background: var(--component-bg, @component-bg);
-        //color: var(--component-text, @component-text);
-        //background: var(--btn-secondary-bg, @btn-secondary-bg);
-        color: var(--highlight-color, @highlight-color);
+        //border: 1px solid var(--component-border);
+        //background: var(--component-bg);
+        //color: var(--component-text);
+        //background: var(--btn-secondary-bg);
+        color: var(--highlight-color);
         > span{
-            //color: var(--component-text, @component-text);
+            //color: var(--component-text);
             svg {
                 filter: brightness(0) invert(1);
             }
@@ -103,7 +103,7 @@
 
     &-detail{
         &-link{
-            background-color: var(--primary-color, @primary-color) !important;
+            background-color: var(--primary-color) !important;
             border-radius: 4px !important;
             height: 28px !important;
             justify-content: center !important;
@@ -111,7 +111,7 @@
             width: 28px !important;
             svg{
                 path{
-                    fill: var(--text-contrast, @text-contrast);
+                    fill: var(--text-contrast);
                 }
             }
         }

@@ -3,12 +3,12 @@
     font-weight: 800;
     font-size: 20px;
     line-height: 22px;
-    color: var(--heading-color, @heading-color);
+    color: var(--heading-color);
 }
 
 .card-subtitle{
     display: block;
-    color: var(--text-contrast, @text-contrast);
+    color: var(--text-contrast);
     font-style: normal;
     font-weight: 700;
     font-size: 16px;
@@ -21,7 +21,7 @@
     font-weight: 400;
     font-size: 14px;
     line-height: 22px;
-    color: var(--text-color, @text-color);
+    color: var(--text-color);
 }
 
 .dash-card{
@@ -32,7 +32,7 @@
         flex-wrap: wrap;
         align-items: center;
         padding: 15px;
-        background: var(--component-bg, @component-bg);
+        background: var(--component-bg);
         border-radius: 5px;
         box-shadow: 0 0 5px 2px rgba(0, 0, 0, 0.02);
         .ant-tag{
@@ -78,7 +78,7 @@
         }
 
         &.blue{
-            background-color: var(--alert-info-bg, @alert-info-bg) !important;
+            background-color: var(--alert-info-bg) !important;
         }
         &.empty{
             background-color: transparent !important;
@@ -86,7 +86,7 @@
 
         .ant-progress-text{
             font-size: 12px;
-            color: var(--text-contrast, @text-contrast);
+            color: var(--text-contrast);
             opacity: .54;
         }
 
@@ -113,16 +113,16 @@
     }
     &-step{
         padding: 0;
-        background: var(--component-bg, @component-bg);
+        background: var(--component-bg);
         border-radius: 10px;
         margin-bottom: 20px;
         .ant-card-body{
             padding: 0;
-            background: var(--component-bg, @component-bg);
+            background: var(--component-bg);
         }
     }
     &-content{
-        background: var(--component-bg, @component-bg);
+        background: var(--component-bg);
         padding: 14px 24px;
         display: grid;
         grid-template-columns: 14px 1fr;
@@ -138,7 +138,7 @@
             content: "";
             display: block;
             width: 2px;
-            background-color: var(--primary-color, @primary-color);
+            background-color: var(--primary-color);
             margin: 0 auto;
         }
         svg{
@@ -165,7 +165,7 @@
             font-weight: 400;
             font-size: 14px;
             line-height: 22px;
-            color: var(--component-text, @component-text);
+            color: var(--component-text);
             margin-bottom: 0;
         }
 
@@ -191,7 +191,7 @@
 }
 /*
 .dash-widget-white {
-    background: var(--component-bg, @component-bg) !important;
+    background: var(--component-bg) !important;
     border-radius: 12px !important;
     box-shadow: unset !important;
     padding: 1rem !important;
@@ -199,7 +199,7 @@
 }
 
 .dash-widget, .dash-card-content, .dash-module{
-    background: var(--module-bg, @module-bg);
+    background: var(--module-bg);
     border-radius: 12px !important;
     box-shadow: unset !important;
     //padding:1rem;
@@ -209,7 +209,7 @@
 .dash-widget, .dash-widget-white {
     .MuiCardHeader-root{
         padding: 16px 22.37px 16px 24px;
-        border-bottom: 1px solid var(--component-border-split, @component-border-split);
+        border-bottom: 1px solid var(--component-border-split);
         align-items: center;
         .MuiTypography-root{
             font-family: 'Montserrat';
@@ -217,7 +217,7 @@
             font-weight: 600;
             font-size: 14px;
             line-height: 22px;
-            color: var(--heading-color, @heading-color);
+            color: var(--heading-color);
         }
         .MuiCardHeader-action{
             display: flex;
@@ -226,7 +226,7 @@
             align-self: center;
             margin: 0;
             .MuiSvgIcon-root{
-                color: var(--primary-color, @primary-color);
+                color: var(--primary-color);
                 width: 16px;
                 height: 16px;
             }
@@ -236,11 +236,11 @@
                 height: 40px;
                 padding: 0;
                 border-radius: 4px !important;
-                color: var(--btn-color, @btn-color);
+                color: var(--btn-color);
                 svg{
-                    color: var(--primary-color, @primary-color);
+                    color: var(--primary-color);
                     path{
-                        fill: var(--primary-color, @primary-color);
+                        fill: var(--primary-color);
                     }
                 }
             }
@@ -252,17 +252,17 @@
         font-weight: 400;
         font-size: 20px;
         line-height: 22px;
-        color: var(--primary-color, @primary-color);
+        color: var(--primary-color);
     }
 
     &.dash-widget-inner{
-        background-color: var(--component-bg, @component-bg) !important;
+        background-color: var(--component-bg) !important;
         .MuiCardHeader-root{
             display: inline-flex;
             align-items: center;
             width: 100%;
             min-height: 56px;
-            border-bottom: 1px solid var(--component-border-split, @component-border-split);
+            border-bottom: 1px solid var(--component-border-split);
             padding: 8px 12px;
         }
         .MuiCardContent-root{
@@ -272,25 +272,25 @@
             font-weight: 600;
             font-size: 14px;
             line-height: 22px;
-            color: var(--primary-color, @primary-color);
+            color: var(--primary-color);
         }
     }
 }
 
 .dash-widget-inner{
     padding: 0 !important;
-    background-color: var(--component-bg, @component-bg);
-    border: 1px solid var(--component-border-base, @component-border-base);
+    background-color: var(--component-bg);
+    border: 1px solid var(--component-border-base);
     border-radius: 10px !important;
     box-shadow: unset !important;
     .ant-card-head, .ant-card-body{
-        background-color: var(--component-bg, @component-bg);
+        background-color: var(--component-bg);
     }
 }
 
 .dash-widget-purple {
     .dash-widget, .dash-card-content{
-        background: var(--component-hover-bg, @component-hover-bg) !important;
+        background: var(--component-hover-bg) !important;
     }
     span {
         font-size: 3rem;
@@ -306,7 +306,7 @@
 
 .dash-card-profile{
     .MuiGrid-item{
-        border-right: 1px solid var(--component-border-split, @component-border-split);
+        border-right: 1px solid var(--component-border-split);
         &:last-child{
             border-right: unset;
         }
@@ -317,7 +317,7 @@
 
 
     .dash-profile-name {
-      color: @highlight-color;
+      color: var(--highlight-color);
     }
 .dash-profile-img{
     width: 130px;
@@ -325,7 +325,7 @@
     position: relative;
     margin: 0 auto 2rem;
 
-    background-color: var(--primary-color, @primary-color);
+    background-color: var(--primary-color);
     img{
         width: 100%;
         height: 100%;

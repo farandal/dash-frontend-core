@@ -23,6 +23,8 @@ import successSound from './assets/success.mp3';
 /* @ts-ignore Eslint not capable to find path to resource */
 import infoSound from './assets/modalInfo.mp3';
 
+import "./styles/modal.less"
+
 import { useTranslate } from 'react-admin';
 
 import IAppDialogProps from 'dash-dialog/src/IAppDialogProps';
@@ -34,32 +36,30 @@ const Icon:React.FC<IIcon> = (props) => {
 	const { children, variant } = props;
 
 	switch (variant) {
-		case 'info':
-			return <>
-				<div className='dash-modal-img'>
-					<InfoIcon />
-				</div>
-				{children && <div className='dash-modal-title'>{children}</div>}
-			</>;
 
 		case 'success':
 			return <>
-				<div className='dash-modal-img'>
+					<div className={`dash-modal-img dash-modal-img-${variant}`}>
 					<CheckCircleIcon />
 				</div>
 				{children && <div className='dash-modal-title'>{children}</div>}
 			</>;
-
 		case 'danger':
 			return <>
-				<div className='dash-modal-img'>
+					<div className={`dash-modal-img dash-modal-img-${variant}`}>
 					<ErrorIcon />
 				</div>
 				{children && <div className='dash-modal-title'>{children}</div>}
 
 		</>;
-
-		case 'default':
+        case 'info':
+        case 'default':
+			return <>
+				<div className={`dash-modal-img dash-modal-img-${variant}`}>
+					<InfoIcon />
+				</div>
+				{children && <div className='dash-modal-title'>{children}</div>}
+			</>;
 		default:
 			return children ? <div className='dash-modal-title'>{children}</div> : <></>;
 
@@ -172,7 +172,7 @@ const DASHModal: React.FC<IAppDialogProps> = (props) => {
 	return <Dialog
 		{...rest}
 		onClose={handleOnClose}
-		className={(className ? className : '') + 'dash-modal-' + variant}
+		className={`${className ? className + ' ' : ''}dash-modal-${variant}`}
 		open={isModalOpen}
 	>
 		<DialogTitle id='alert-dialog-title'>

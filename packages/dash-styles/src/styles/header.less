@@ -5,7 +5,7 @@
 // Bug: somne android navigations bars does not allow the save button to be visible on screen 
 // e.g class on problematic device : ua-mozilla-5-0-linux-android-10-k-applewebkit-537-36-khtml-like-gecko-samsungbrowser-29-0-chrome-136-0- touch-device
 .touch-device .RaToolbar-mobileToolbar {
-    bottom: calc(var(--sidebar-horizontal-height, @mobile_header_height) + @mobile_header_gutter) !important;
+    bottom: calc(var(--sidebar-horizontal-height) + @mobile_header_gutter) !important;
 }
 
 /*
@@ -140,10 +140,10 @@
 // }
 
 // .ant-menu-submenu-popup{
-//     background: var(--sidebar-bg, @sidebar-bg);
+//     background: var(--sidebar-bg);
 //     .ant-menu-sub.ant-menu .ant-menu-item{
 //         &:hover{
-//             background-color: var(--sidebar-bg-hover, @sidebar-bg-hover);
+//             background-color: var(--sidebar-bg-hover);
 //         }
 //     }
 // }
@@ -165,7 +165,7 @@
     //                 height: auto;
     //                 margin: 0;
     //                 padding: 25px 19px;
-    //                 background-color: var(--highlight-color, @highlight-color);
+    //                 background-color: var(--highlight-color);
     //                 &-action{
     //                     display: flex;
     //                     align-items: center;
@@ -220,7 +220,7 @@
     //                         font-weight: 700;
     //                         font-size: 14px;
     //                         line-height: 24px;
-    //                         color: var(--highlight-color, @highlight-color);
+    //                         color: var(--highlight-color);
     //                         margin-left: 0;
     //                     }
     //                     .dash-page-header-heading-sub-title{
@@ -250,12 +250,12 @@
     //                         width: 100%;
     //                         height: 40px;
 
-    //                         border: 1px solid var(--highlight-color, @highlight-color);
+    //                         border: 1px solid var(--highlight-color);
     //                         border-radius: 8px;
     //                         &:hover{
-    //                             border-color: var(--highlight-color, @highlight-color);
-    //                             background-color: var(--highlight-color, @highlight-color);
-    //                             color: var(--primary-color, @primary-color);
+    //                             border-color: var(--highlight-color);
+    //                             background-color: var(--highlight-color);
+    //                             color: var(--primary-color);
     //                         }
     //                         &.hide-sm{
     //                             display: none;
@@ -274,7 +274,7 @@
     //     }
     // }
     // .ant-layout{
-    //     background-color: var(--highlight-color, @highlight-color) !important;
+    //     background-color: var(--highlight-color) !important;
     // }
 }
 
@@ -325,8 +325,8 @@
                 margin: 2px;
 
                 svg {
-                    fill: var(--highlight-color, @highlight-color);
-                    color: var(--highlight-color, @highlight-color);
+                    fill: var(--highlight-color);
+                    color: var(--highlight-color);
                     width: 23.5px;
                     height: 24.88px;
                     object-fit: contain;
@@ -337,13 +337,13 @@
                 }
 
                 .dash-header-user-avatar {
-                    background-color: var(--highlight-color, @highlight-color);
+                    background-color: var(--highlight-color);
                     width: 64px;
                     height: 64px;
                     display: flex;
                     align-items: center;
                     justify-content: center;
-                    background: var(--primary-color, @primary-color);
+                    background: var(--primary-color);
 
                 }
 
@@ -353,8 +353,13 @@
         .dash-header-content {
             width: 100%;
             //height: 65px;
-            margin-right: 5px;
-            margin-left: 5px;
+            
+            margin-right: 8px;
+            margin-left: 8px;
+            margin-top: 8px;
+            padding: 8px 0px;
+
+
             //max-width: calc(100% - 84px);
             display: flex;
             flex-wrap: wrap;
@@ -364,7 +369,10 @@
             flex: 1;
             border-radius: 8px;
             //justify-content: space-between;
-            background: linear-gradient(90deg, var(--primary-color, @primary-color) 0%, var(--primary-contrast, @primary-contrast) 100%);
+            //background: linear-gradient(90deg, var(--primary-color) 0%, var(--primary-contrast) 100%);
+
+            background: linear-gradient(90deg, var(--primary-color) 0%, var(--primary-contrast) 100%);
+
 
             @media (max-width: @mq-sm) {
                 background: none;
@@ -403,17 +411,17 @@
                     width: auto;
                     height: auto;
                     background: transparent;
-                    border: 1px solid var(--highlight-color, @highlight-color);
+                    border: 1px solid var(--highlight-color);
                     border-radius: 8px;
 
                     font-style: normal;
                     font-weight: 600;
                     font-size: 16px;
                     line-height: 24px;
-                    color: var(--highlight-color, @highlight-color);
+                    color: var(--highlight-color);
 
                     >span {
-                        color: var(--highlight-color, @highlight-color);
+                        color: var(--highlight-color);
 
                     }
 
@@ -422,12 +430,12 @@
                     }
 
                     &:hover {
-                        border-color: var(--highlight-color, @highlight-color);
-                        background-color: var(--highlight-color, @highlight-color);
-                        color: var(--primary-color, @primary-color);
+                        border-color: var(--highlight-color);
+                        background-color: var(--highlight-color);
+                        color: var(--primary-color);
 
                         >span {
-                            color: var(--primary-color, @primary-color);
+                            color: var(--primary-color);
                         }
                     }
                 }
@@ -455,7 +463,7 @@
 
 
 .auto-admin-grouped-form {
-    margin-bottom:  var(--sidebar-horizontal-height,@mobile_header_height);
+    margin-bottom:  var(--sidebar-horizontal-height);
 }
 
 
@@ -467,7 +475,7 @@
 
 
     .dash-app-layout .dash-layout-content .dash-app-module {
-        height: calc(100% -  var(--sidebar-horizontal-height,@mobile_header_height));
+        height: calc(100% -  var(--sidebar-horizontal-height));
         display: flex;
     }
 
@@ -476,8 +484,8 @@
 
     #dash-app-layout>div.dash-app-layout-content.MuiBox-root>div.dash-layout-content.MuiBox-root {
         //HEADER SIZE IN MOBILE
-        margin-top: calc( var(--sidebar-horizontal-height,@mobile_header_height));
-        height: calc( 100vh -  var(--sidebar-horizontal-height,@mobile_header_height) ) ;
+        margin-top: calc( var(--sidebar-horizontal-height));
+        height: calc( 100vh -  var(--sidebar-horizontal-height) ) ;
         //padding-bottom: 40px;
         //margin-bottom: 40px;
         // Fade out effect at the bottom with 30px gradient
@@ -493,7 +501,7 @@
     }
 
     .dash-app-layout .dash-layout-content .dash-app-module .dash-module-box-content {
-        padding-bottom: var(--sidebar-horizontal-height,@mobile_header_height);
+        padding-bottom: var(--sidebar-horizontal-height);
     }
 
     .android #dash-app-layout>div.dash-app-layout-content.MuiBox-root>div.dash-layout-content.MuiBox-root {
@@ -501,12 +509,12 @@
         //height: 100%;
         //padding-bottom: 80px;
      
-        margin-top: calc(var(--sidebar-horizontal-height, @mobile_header_height) + @mobile_header_gutter);
+        margin-top: calc(var(--sidebar-horizontal-height) + @mobile_header_gutter);
         height: 100vh;
     }    
 
     .android .dash-app-layout .dash-layout-content .dash-app-module {
-        height: calc(100% - var(--sidebar-horizontal-height, @mobile_header_height) + @mobile_header_gutter);
+        height: calc(100% - var(--sidebar-horizontal-height) + @mobile_header_gutter);
         display: flex;
     }
 
@@ -527,7 +535,7 @@
     body[class*="android"] {
 
         .auto-admin-grouped-form {
-            margin-bottom: calc( var(--sidebar-horizontal-height,@mobile_header_height) + 15px);
+            margin-bottom: calc( var(--sidebar-horizontal-height) + 15px);
             height:100vh;
         }
 
@@ -568,7 +576,7 @@
     &-img {
         margin: 5px 0;
         width: 45px;
-        height:  var(--sidebar-horizontal-height,@mobile_header_height);
+        height:  var(--sidebar-horizontal-height);
 
         img {
             width: 100%;
@@ -584,7 +592,7 @@
         font-weight: 700;
         //font-size: 18px;
         line-height: 0.9;
-        color: var(--text-header, @text-header);
+        color: var(--text-header);
         // padding-left: 15px;
 
         &::after {
@@ -598,7 +606,7 @@
         font-weight: 500;
         //font-size: 14px;
         line-height: 22px;
-        color: var(--text-header, @text-header);
+        color: var(--text-header);
 
         overflow: visible;
         //margin-left: 12px;
@@ -643,7 +651,7 @@
         &--active {
             .dash-breadcrumb-label {
                 font-weight: 500;
-                color: var(--text-header, @text-header);
+                color: var(--text-header);
             }
         }
     }
@@ -682,12 +690,12 @@
 
         &:hover {
             .dash-breadcrumb-label {
-                color: var(--text-header, @text-header);
+                color: var(--text-header);
                 text-decoration: underline;
             }
 
             .dash-breadcrumb-icon {
-                color: var(--text-header, @text-header);
+                color: var(--text-header);
             }
         }
     }
@@ -714,7 +722,7 @@
 }
 
 /*
-@media (max-width: var(--mq-sm, @mq-sm)) {
+@media (max-width: var(--mq-sm)) {
   .dash-header-inline {
     display: contents;
   }
@@ -732,7 +740,7 @@
             //height: @mobile_header_height;
 
             @media (max-width:@mq-sm) {
-                background-color: var(--primary-color, @primary-color);
+                background-color: var(--primary-color);
             }
 
             .dash-header {
@@ -819,7 +827,7 @@
                             font-weight: 700;
                             font-size: 14px;
                             line-height: 24px;
-                            color: var(--highlight-color, @highlight-color);
+                            color: var(--highlight-color);
                             margin-left: 0;
                         }
 
@@ -850,13 +858,13 @@
                             width: 100%;
                             height: @mobile_header_height;
 
-                            border: 1px solid var(--highlight-color, @highlight-color);
+                            border: 1px solid var(--highlight-color);
                             border-radius: 8px;
 
                             &:hover {
-                                border-color: var(--highlight-color, @highlight-color);
-                                background-color: var(--highlight-color, @highlight-color);
-                                color: var(--primary-color, @primary-color);
+                                border-color: var(--highlight-color);
+                                background-color: var(--highlight-color);
+                                color: var(--primary-color);
                             }
 
                             &.hide-sm {

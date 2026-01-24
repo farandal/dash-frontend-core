@@ -17,7 +17,7 @@
     &-horizontal-nav{
         display: flex;
         flex-wrap: unset;
-        //border-bottom: 1px solid var(--component-border-base, @component-border-base);
+        //border-bottom: 1px solid var(--component-border-base);
         position: relative;
         padding-top: 4px;
         margin: 0;
@@ -32,7 +32,7 @@
                 align-items: center;
                 justify-content: center;
 
-                border: 1px solid var(--component-border-split, @component-border-split);
+                border: 1px solid var(--component-border-split);
                 border-top-left-radius: 8px;
                 border-top-right-radius: 8px;
                 margin: 0 .75rem 0 0;
@@ -44,7 +44,7 @@
                 font-size: 14px;
                 font-weight: 700;
                 text-align: center;
-                color: var(--text-light, @text-light) !important;
+                color: var(--text-light) !important;
                 text-decoration: none !important;
                 position: relative;
 
@@ -56,16 +56,16 @@
 
            /* &:hover{
                 .dash-link{
-                    color: var(--text-color, @text-color) !important;
+                    color: var(--text-color) !important;
                 }
             }*/
             &.active{
                 .dash-link{
 
-                     background-color: var(--tab-selected-bg, @tab-selected-bg);
-                    //background-color: var(--component-active-bg, @component-active-bg);
-                    border-color: var(--primary-color, @primary-color);
-                    border-bottom: 2px solid var(--component-active-bg, @component-active-bg);
+                     background-color: var(--tab-selected-bg);
+                    //background-color: var(--component-active-bg);
+                    border-color: var(--primary-color);
+                    border-bottom: 2px solid var(--component-active-bg);
                     z-index: 1;
                     //transform: translateY(1px);
                 }
@@ -88,7 +88,7 @@
 
 
 .dash-module-top button {
-    background-color:  var(--primary-color, @primary-color);
+    background-color:  var(--primary-color);
     z-index: 5;
 }
 
@@ -120,7 +120,7 @@
       overflow-y: hidden;
   }
   .MuiTabs-root{
-    border-top: 1px solid var(--component-border-base, @component-border-base);
+    border-top: 1px solid var(--component-border-base);
       .MuiTab-root{
           display: -moz-box;
           display: -webkit-box;

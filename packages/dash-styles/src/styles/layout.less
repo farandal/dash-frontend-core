@@ -70,11 +70,11 @@ body, #root {
  /* Sidebar width overrides */
  .small.expanded .sidebar-drawer .MuiPaper-root,
  .large.collapsed .sidebar-drawer .MuiPaper-root {
-   width: var(--sidebar-small-width, @sidebar-small-width);
+   width: var(--sidebar-small-width);
  }
  
  .large.expanded .sidebar-drawer .MuiPaper-root {
-   width: var(--sidebar-large-width, @sidebar-large-width);
+   width: var(--sidebar-large-width);
  }
  
  /* -----------------------------------------------------------------------------
@@ -159,40 +159,40 @@ body, #root {
  // Left sidebar position - collapsed
  .dash-app-layout.collapsed.large.sidebar-position-left {
    .dash-header-container {
-     padding-left: var(--sidebar-small-width, @sidebar-small-width);
+     padding-left: var(--sidebar-small-width);
    }
    .dash-layout-content, .dash-theme-content {
-     padding-left: var(--sidebar-small-width, @sidebar-small-width);
+     padding-left: var(--sidebar-small-width);
    }
  }
 
  // Left sidebar position - expanded
  .dash-app-layout.expanded.large.sidebar-position-left {
    .dash-header-container {
-     padding-left: var(--sidebar-large-width, @sidebar-large-width);
+     padding-left: var(--sidebar-large-width);
    }
    .dash-layout-content, .dash-theme-content {
-     padding-left: var(--sidebar-large-width, @sidebar-large-width);
+     padding-left: var(--sidebar-large-width);
    }
  }
 
  // Right sidebar position - collapsed
  .dash-app-layout.collapsed.large.sidebar-position-right {
    .dash-header-container {
-     padding-right: var(--sidebar-small-width, @sidebar-small-width);
+     padding-right: var(--sidebar-small-width);
    }
    .dash-layout-content, .dash-theme-content {
-     padding-right: var(--sidebar-small-width, @sidebar-small-width);
+     padding-right: var(--sidebar-small-width);
    }
  }
 
  // Right sidebar position - expanded
  .dash-app-layout.expanded.large.sidebar-position-right {
    .dash-header-container {
-     padding-right: var(--sidebar-large-width, @sidebar-large-width);
+     padding-right: var(--sidebar-large-width);
    }
    .dash-layout-content, .dash-theme-content {
-     padding-right: var(--sidebar-large-width, @sidebar-large-width);
+     padding-right: var(--sidebar-large-width);
    }
  }
 
@@ -289,7 +289,8 @@ body, #root {
    padding-inline: 15px;
  }
  */
- 
+ /*
  .auto-admin-grouped-form {
      padding: 0 !important;
  }
+*/

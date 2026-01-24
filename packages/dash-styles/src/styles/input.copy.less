@@ -9,8 +9,8 @@ input:-webkit-autofill:active {
   transition: background-color 5000s ease-in-out 0s;
   /*-webkit-text-fill-color: var(--text-color) !important;
   -webkit-box-shadow: 0 0 0px 1px var(--component-bg) inset !important;*/
-  background-color: var(--component-bg);
-  border-color: var(--component-border);
+  background-color: var(--component-bg) !important;
+  border-color: var(--component-border) !important;
 }
 
 
@@ -20,11 +20,11 @@ input:-webkit-autofill:active {
 
 // Material-UI Input Base styling
 .MuiInputBase-colorPrimary {
-  color: var(--text-color);
+  color: var(--text-color) !important;
 
   fieldset {
     border-radius: 6px;
-    border-color: var(--component-border);
+    border-color: var(--component-border) !important;
     border-width: 1px !important;
     box-shadow: 2px 2px var(--component-shadow);
     transition: all 0.4s;
@@ -39,7 +39,7 @@ input:-webkit-autofill:active {
     font-weight: 400;
     font-size: 16px;
     line-height: 24px;
-     color: var(--text-color);
+     color: var(--text-color)  !important;
 
     // Placeholder styling for all browsers
     &::placeholder,
@@ -47,19 +47,19 @@ input:-webkit-autofill:active {
     &::-moz-placeholder,
     &:-ms-input-placeholder,
     &::-ms-input-placeholder {
-      color: var(--text-light);
-      //opacity: 0.7 !important;
+      //color: var(--text-light) !important;
+      opacity: 0.7 !important;
     }
 
     // Focus state
     &:focus {
-       color: var(--text-color);
+       color: var(--text-color)  !important;
     }
 
     // Disabled state
     &:disabled {
-       color: var(--text-color);
-      background-color: var(--disabled-bg);
+       color: var(--text-color)  !important;
+      background-color: var(--disabled-bg) !important;
     }
   }
 
@@ -72,7 +72,7 @@ input:-webkit-autofill:active {
   // Focus state
   &.Mui-focused {
     fieldset {
-      border-color: var(--primary-color);
+      border-color: var(--primary-color) !important;
       border-width: 2px !important;
     }
   }
@@ -80,41 +80,41 @@ input:-webkit-autofill:active {
   // Error state
   &.Mui-error {
     fieldset {
-      border-color: var(--error-color);
+      border-color: var(--error-color) !important;
     }
   }
 
   // Disabled state
   &.Mui-disabled {
     fieldset {
-      border-color: var(--disabled-border);
+      border-color: var(--disabled-border) !important;
     }
   }
 }
 
 .dash-app-form-item-input label {
-    color: var(--text-color);
+    color: var(--text-color) !important;
 }
 // Form label styling
 .MuiFormLabel-root {
-  color: var(--text-color) ;
+  color: var(--text-color) !important;
 
   &.Mui-focused {
-    color: var(--primary-color);
+    color: var(--primary-color) !important;
   }
 
   &.Mui-disabled {
-    color: var(--disabled-color);
+    color: var(--disabled-color) !important;
   }
 
   &.Mui-error {
-    color: var(--error-color);
+    color: var(--error-color) !important;
   }
 }
 
 .MuiFormLabel-colorPrimary {
   &.Mui-focused {
-    color: var(--primary-color);
+    color: var(--primary-color) !important;
   }
 }
 
@@ -128,7 +128,7 @@ input:-webkit-autofill:active {
     font-weight: 400;
     font-size: 14px;
     line-height: 22px;
-    color: var(--text-color);
+    color: var(--text-color) !important;
   }
 
   > .MuiInputBase-root {
@@ -159,26 +159,26 @@ input:-webkit-autofill:active {
     font-weight: 400;
     font-size: 16px;
     line-height: 24px;
-    //color: var(--text-light);
+    color: var(--text-light)  !important;;
   }
 }
 
 // Checkbox styling
 .MuiCheckbox-root {
-  color: var(--primary-color);
+  color: var(--primary-color) !important;
 
   &.Mui-checked {
-    color: var(--primary-color);
+    color: var(--primary-color) !important;
   }
 
   &.Mui-disabled {
-    color: var(--disabled-color);
+    color: var(--disabled-color) !important;
   }
 }
 
 // Form label asterisk (required field indicator)
 .MuiFormLabel-asterisk {
-  color: var(--error-color);
+  color: var(--error-color) !important;
 }
 
 // Form control label text
@@ -188,7 +188,7 @@ input:-webkit-autofill:active {
   font-weight: 400;
   font-size: 14px;
   line-height: 22px;
-  color: var(--text-color);
+  color: var(--text-color)  !important;;
 }
 
 // Theme-specific overrides for placeholder colors
@@ -200,8 +200,8 @@ input:-webkit-autofill:active {
       &::-moz-placeholder,
       &:-ms-input-placeholder,
       &::-ms-input-placeholder {
-        color: var(--text-color);
-        //opacity: 0.6 !important;
+        color: var(--text-color) !important;
+        opacity: 0.6 !important;
       }
     }
   }
@@ -215,8 +215,8 @@ input:-webkit-autofill:active {
       &::-moz-placeholder,
       &:-ms-input-placeholder,
       &::-ms-input-placeholder {
-        color: var(--text-light);
-        //opacity: 0.7 !important;
+        color: var(--text-color) !important;
+        opacity: 0.7 !important;
       }
     }
   }

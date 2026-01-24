@@ -1,11 +1,11 @@
-.framed-layout{
+/*.framed-layout{
     .dash-app-login{
         &-wrapper{
             min-height: calc(100vh - 85px);
         }
 
     }
-}
+}*/
 
 .dash-app-layout.w50 {
   .dash-app-login{
@@ -20,15 +20,15 @@
 .dash-app-login{
     &-wrapper{
         width: 100%;
-        min-height: 100vh;
+        //min-height: 100vh;
         //height: 100vh;
         display: flex;
         flex-wrap: wrap;
 
         // Override MUI Container centering - align form to left
-        > .MuiContainer-root {
+        /*> .MuiContainer-root {
             margin-left: 0;
-        }
+        }*/
     }
     &-content, &-back{
         display: flex;
@@ -51,7 +51,7 @@
 
         .dash-app-login,  .dash-app-login-form {
             a {
-              color: var(--highlight-color, @highlight-color);
+              color: var(--highlight-color);
             }
 
             &-logo{
@@ -59,30 +59,30 @@
             }
 
            /* .MuiTypography-root {
-              color:  var(--text-color,@text-color);
+              color:  var(--text-color);
             }
 
             .MuiInputLabel-root {
-              color:  var(--text-color,@text-color);
+              color:  var(--text-color);
             }
 */
             .MuiPaper-root {
-               background-color: var(--module-bg, @module-bg);
-               border-color: var(--module-border, @module-border);
+               background-color: var(--module-bg);
+               border-color: var(--module-border);
             }
 
             &-form{
-               width: 90%;
+               //width: 90%;
                flex-direction: column;
                 .MuiInputBase-root{
                     min-height:45px;
                     margin-bottom: 20px;
 
-                    color: var(--text-header--light, @text-header) !important;
+                    color: var(--text-header--light) !important;
 
                     fieldset {
                         border-radius: 33px;
-                        border-color: var(--text-header--light, @text-header) !important;
+                        border-color: var(--text-header--light) !important;
 
                         border-width: 1px;
                         box-shadow: 2px 2px var(--component-shadow, 0 2px 4px rgba(0, 0, 0, 0.1));
@@ -90,27 +90,27 @@
                     }
 
                    /* legend span {
-                        -webkit-text-fill-color: var(--text-color,@text-color--dark) !important;
+                        -webkit-text-fill-color: var(--text-color) !important;
                     }*/
 
                     input:-webkit-autofill, input:-webkit-autofill:hover, input:-webkit-autofill:focus, input:-webkit-autofill:active {
-                      -webkit-text-fill-color: var(--text-color,@text-color--dark) !important;
+                      -webkit-text-fill-color: var(--text-color) !important;
                     }
 
 
                 }
                   .MuiInputLabel-shrink {
-                          color: var(--text-header--light, @text-header) !important;
+                          color: var(--text-header--light) !important;
                   }
 
                   .MuiLink-button {
-                    color: var(--text-header--light, @text-header) !important;
+                    color: var(--text-header--light) !important;
                   }
 
                   .MuiButtonBase-root {
-                    color:  var(--primary-contrast, @primary-contrast);
+                    color:  var(--primary-contrast);
                     font-weight: bolder;
-                    background-color: var(--highlight-color, @highlight-color);
+                    background-color: var(--highlight-color);
 
 
 
@@ -123,7 +123,7 @@
                       font-weight: 900;
                       font-size: 24px;
                       line-height: 34px;
-                      color: var(--highlight-color, @highlight-color);
+                      color: var(--highlight-color);
                       //color: white;
 
                   }
@@ -149,8 +149,8 @@
             height: 100vh;
             right: 0;
             top: 0;
-            background: var(--primary-color, @primary-color);
-            background: linear-gradient(130.87deg, var(--primary-color, @primary-color) 4.81%, var(--primary-contrast, @primary-contrast) 107.52%);
+            background: var(--primary-color);
+            background: linear-gradient(130.87deg, var(--primary-color) 4.81%, var(--primary-contrast) 107.52%);
             border-radius: 40px 0 0 40px;
             position: absolute;
             z-index: -1;
@@ -203,16 +203,16 @@
  .framed-layout .dash-app-login, .dash-app-login{
         &-wrapper{
             flex-direction: column;
-            min-height: 100vh;
+            //min-height: 100vh;
 
             // Override MUI Container for small screens - full width centered
             > .MuiContainer-root {
                 //margin-left: auto;
                 //margin-right: auto;
-                max-width: 100%;
-                width: 100%;
-                padding-left: 16px;
-                padding-right: 16px;
+                ////max-width: 100%;
+                ////width: 100%;
+                //padding-left: 16px;
+                //padding-right: 16px;
             }
         }
         &-content, &-back{
@@ -297,7 +297,7 @@
                         font-weight: 900;
                         font-size: 20px;
                         line-height: 30px;
-                        color: var(--heading-color, @heading-color);
+                        color: var(--heading-color);
                     }
                     &-item{
                         display: flex;
@@ -312,7 +312,7 @@
                         font-weight: 400;
                         font-size: 14px;
                         line-height: 22px;
-                        color: var(--text-color, @text-color);
+                        color: var(--text-color);
                     }
                     &-input{
                         width: 100%;
