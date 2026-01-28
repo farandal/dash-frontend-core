@@ -26,6 +26,8 @@ export interface IMenuItem {
 	children?: IMenuItem[];
 	type?: 'group';
 	selected?: boolean;
+	/** When true, this menu item is a simple navigation link (not a react-admin resource) */
+	menuOnly?: boolean;
 }
 
 export interface ICollapsableSidebarMenu {

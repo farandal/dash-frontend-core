@@ -42,7 +42,6 @@ interface IAppMenuExtended extends IAppMenu {
         squaredLogo: React.ReactNode;
     };
     onToggleDrawer?: (e: React.MouseEvent) => void;
-
 }
 
 // Group icons
@@ -95,7 +94,6 @@ const GenerateItems: React.FC<{ items: IMenuItem[]; navExpanded: boolean, navSiz
 };
 
 
-
 const AppMaterialMenu: React.FC<IAppMenuExtended> = props => {
 
     const DEBUG = true;
@@ -106,7 +104,7 @@ const AppMaterialMenu: React.FC<IAppMenuExtended> = props => {
     const isMediumScreen = useMediaQuery(theme.breakpoints.down('md')); // For logo switching
 
     // Get panel settings from Redux (includes dimensions, padding, but NOT sidebarPosition - that comes from prop)
-    const { sidebarLargeWidth, sidebarSmallWidth, sidebarHorizontalHeight, logoMaxWidth, logoMaxHeight } = usePanelSettings();
+    const { sidebarLargeWidth, sidebarSmallWidth, sidebarHorizontalHeight, logoVerticalMaxWidth, logoVerticalMaxHeight, logoHorizontalMaxWidth, logoHorizontalMaxHeight } = usePanelSettings();
     
     // Use sidebarPosition from prop (which is responsive from AppSidebarMaterial) with fallback to 'left'
     const sidebarPosition = propSidebarPosition || 'left';
@@ -178,6 +176,25 @@ const AppMaterialMenu: React.FC<IAppMenuExtended> = props => {
         },
     );
 
+    // Track resource changes for debugging
+    const prevResourcesRef = React.useRef<any[]>(null);
+    React.useEffect(() => {
+        const prevResources = prevResourcesRef.current;
+        const prevModels = Array.isArray(prevResources) ? prevResources.map((r: any) => r.model) : [];
+        const newModels = Array.isArray(resources) ? resources.map((r: any) => r.model) : [];
+        const added = newModels.filter(m => !prevModels.includes(m));
+        const removed = prevModels.filter(m => !newModels.includes(m));
+        console.log('📊 AppMaterialMenu: Resources from Redux', {
+            isSameRef: prevResources === resources,
+            prevCount: prevResources?.length || 0,
+            newCount: resources?.length || 0,
+            added: added.length > 0 ? added : 'none',
+            removed: removed.length > 0 ? removed : 'none',
+            allModels: newModels,
+        });
+        prevResourcesRef.current = resources;
+    }, [resources]);
+
     const panelSettings = useSelector((state: any) => state.common.panelSettings);
     const horizontalLogo = panelSettings?.horizontalLogo;
      const squaredLogo = panelSettings?.squaredLogo;
@@ -221,24 +238,26 @@ const AppMaterialMenu: React.FC<IAppMenuExtended> = props => {
     useEffect(() => {
         // Don't process resources if permissions haven't been loaded yet and not in debug mode
 
-
+        // Get user roles, defaulting to ["Public"] for unauthenticated users
+        const userRoles = authContext?.user?.roles 
+            ? authContext.user.roles.flatMap(role => role.name) 
+            : ["Public"];
 
         const groups = [
             ...new Set(
-                resources.map((resource) => resource.group).filter((x) => x !== null),
+                resources
+                    .map((resource) => resource.group)
+                    .filter((x) => x !== null && x !== undefined && x !== ''),
             ),
         ];
         //group resources belonging to the group
         const groupedResources = new Object();
         groups.forEach((group) => {
             groupedResources[group as string] = resources.filter((resource) => {
-                if (debug === true) {
-                    return resource.group === group;
-                }
-
+               
                 //console.log(resource.group + " | ", resource.label + " | ", permissions, resource.roles, checkRole(permissions, resource.roles));
                 /* @ts-ignore */
-                return (resource.group === group && checkRole(authContext.user?.roles ? authContext.user?.roles?.flatMap(role => role.name) : ["Public"] || [], resource.roles));
+                return (resource.group === group && checkRole(userRoles, resource.roles));
             });
         });
         const _items: IMenuItem[] = [];
@@ -283,26 +302,39 @@ const AppMaterialMenu: React.FC<IAppMenuExtended> = props => {
                         translateResult: translate(resource.label)
                     });
 
+                    // For menuOnly resources, use redirect or path directly as the navigation target
+                    // For regular resources, build the path from model + optional redirect
+                    const buildMenuPath = () => {
+                        if (resource.menuOnly) {
+                            // menuOnly: use redirect, path, or fallback to model
+                            return resource.redirect || resource.path || `/${resource.model}`;
+                        }
+                        // Regular resource: existing logic
+                        if (resource?.redirect?.startsWith('/')) {
+                            return resource.redirect;
+                        }
+                        if (resource?.redirect) {
+                            return `/${resource.model}/${resource.redirect}`.replace(/\/+/g, '/');
+                        }
+                        return `/${resource.model}`.replace(/\/+/g, '/');
+                    };
 
                     return {
-                        label: translate(resource.label),
+                        label: translate(resource.label, { _: resource.label }),
                         key: resource.label,
-                        to: resource?.redirect?.startsWith('/')
-                            ? resource.redirect
-                            : resource?.redirect
-                                ? `/${resource.model}/${resource.redirect}`.replace(/\/+/g, '/')
-                                : `/${resource.model}`.replace(/\/+/g, '/'),
+                        to: buildMenuPath(),
                         icon: resource.icon,
                         group: slugify(group[0].group),
                         model: resource.model,
-                        txtLabel: translate(resource.label),
+                        menuOnly: resource.menuOnly,
+                        txtLabel: translate(resource.label, { _: resource.label }),
                     };
                 });
 
             // Generate path relative to BrowserRouter basename (don't prepend currentAppPath)
             // React Router's Link components will automatically prepend the basename
             const _item: IMenuItem = {
-                label: translate(group[0].group),
+                label: translate(group[0].group, { _: group[0].group }),
                 key: slugify(group[0].group),
                 icon: group[0].icon || groupIcons[group[0].group],
                 group: slugify(group[0].group),
@@ -312,12 +344,44 @@ const AppMaterialMenu: React.FC<IAppMenuExtended> = props => {
                     : group[0].redirect
                         ? `/${group[0].model}/${group[0].redirect}`.replace(/\/+/g, '/')
                         : `/${group[0].model}`.replace(/\/+/g, '/'),
-                txtLabel: translate(group[0].group),
+                txtLabel: translate(group[0].group, { _: group[0].group }),
                 ...(_childrens && _childrens.length > 1 && { children: _children }) as any
             };
 
             _items.push(_item);
 
+        });
+        
+        // Add ungrouped resources as top-level items
+        const ungroupedResources = resources.filter((resource) => {
+            const hasGroup = resource.group !== null && resource.group !== undefined && resource.group !== '';
+            return !hasGroup && checkRole(userRoles, resource.roles) && resource.hidden !== true;
+        });
+
+        ungroupedResources.forEach((resource) => {
+            const buildMenuPath = () => {
+                if (resource.menuOnly) {
+                    return resource.redirect || resource.path || `/${resource.model}`;
+                }
+                if (resource?.redirect?.startsWith('/')) {
+                    return resource.redirect;
+                }
+                if (resource?.redirect) {
+                    return `/${resource.model}/${resource.redirect}`.replace(/\/+/g, '/');
+                }
+                return `/${resource.model}`.replace(/\/+/g, '/');
+            };
+
+            _items.push({
+                label: translate(resource.label, { _: resource.label }),
+                key: resource.label || resource.model,
+                to: buildMenuPath(),
+                icon: resource.icon,
+                group: null,
+                model: resource.model,
+                menuOnly: resource.menuOnly,
+                txtLabel: translate(resource.label, { _: resource.label }),
+            });
         });
         DEBUG && console.log("MENU ITEMS", _items);
         setItems(_items);
@@ -356,9 +420,12 @@ const AppMaterialMenu: React.FC<IAppMenuExtended> = props => {
                     {/* Toggle icon - burger for mobile, arrows for desktop */}
                     {onToggleDrawer && (
                         <IconButton
-                            className='dash-sidebar-burger-toggler'
+                            className='dash-icon-button-color dash-icon-button-bg'
                             onClick={onToggleDrawer}
                             sx={{
+                                m:1
+                            }}
+                            /*sx={{
                                 m:1,
                                 padding: '8px',
                                 borderRadius: '8px',
@@ -366,7 +433,8 @@ const AppMaterialMenu: React.FC<IAppMenuExtended> = props => {
                                 '&:hover': {
                                     backgroundColor: 'rgba(255,255,255,0.2)',
                                 }
-                            }}
+                            }}*/
+                            
                         >
                             {navSize === 'small' ? (
                                 <MenuOpenIcon sx={{ fontSize: 28, transform: 'scaleX(-1)' }} />
@@ -381,8 +449,8 @@ const AppMaterialMenu: React.FC<IAppMenuExtended> = props => {
                         navExpanded={navExpanded}
                         navSize={navSize}
                         imageUrl={isMediumScreen || sidebarPosition === "left" || sidebarPosition === "right" ? squaredLogo : horizontalLogo}
-                        maxWidth={logoMaxWidth}
-                        maxHeight={isHorizontal ? sidebarHorizontalHeight : logoMaxHeight}
+                        maxWidth={isHorizontal ? logoHorizontalMaxWidth : logoVerticalMaxWidth}
+                        maxHeight={isHorizontal ? logoHorizontalMaxHeight : logoVerticalMaxHeight}
                         sidebarSmallWidth={sidebarSmallWidth}
                         alt="Tenant Logo"
                         sidebarPosition={sidebarPosition}
@@ -414,8 +482,8 @@ const AppMaterialMenu: React.FC<IAppMenuExtended> = props => {
                 navSize={navSize}
 
                     imageUrl={isMediumScreen || sidebarPosition === "left" || sidebarPosition === "right" ? squaredLogo : horizontalLogo}
-                    maxWidth={logoMaxWidth}
-                    maxHeight={isHorizontal ? sidebarHorizontalHeight : logoMaxHeight}
+                    maxWidth={isHorizontal ? logoHorizontalMaxWidth : logoVerticalMaxWidth}
+                    maxHeight={isHorizontal ? logoHorizontalMaxHeight : logoVerticalMaxHeight}
                      sidebarSmallWidth={sidebarSmallWidth}
                     alt="Tenant Logo"
                     sidebarPosition={sidebarPosition}

@@ -47,7 +47,7 @@ export interface IDASHAdmin<U, A, R, C> {
     customAuthProvider?: any;
     customI18nProvider?: any;
     useCoreResources?: boolean;
-    customProfilePage?: JSX.Element | false;
+    //customProfilePage?: JSX.Element | false;
     customRecoverPassword?: JSX.Element | false;
     customChangePassword?: JSX.Element | false;
     customVerifyAccount?: JSX.Element | false;
@@ -97,7 +97,7 @@ import { DASHAdminSystemConstants } from 'dash-constants';
 interface IAsyncResources extends AdminUIProps {
     resources: any;
     locale: any;
-    customProfilePage?: JSX.Element | false;
+    //customProfilePage?: JSX.Element | false;
     customAuthRoutes?: React.ReactElement[];
     customRoutes?: React.ReactElement[];
 }
@@ -114,7 +114,7 @@ const AsyncResources: React.FC<IAsyncResources> = React.memo((props) => {
     const {
         resources: res,
         locale,
-        customProfilePage,
+        //customProfilePage,
         customAuthRoutes = [],
         customRoutes = [],
         ...rest
@@ -149,13 +149,13 @@ const AsyncResources: React.FC<IAsyncResources> = React.memo((props) => {
     // Memoize custom routes
     const memoizedCustomRoutes = useMemo(() => (
         <CustomRoutes>
-            {(authenticated) && customProfilePage !== false ? (
+            {/*(authenticated) && customProfilePage !== false ? (
                 <Route
                     key={'/profile'}
                     path='/profile'
                     element={customProfilePage || <Profile />}
                 />
-            ) : null}
+            ) : null*/}
 
             {(authenticated) ? getCustomAuthRoutes()
                 .filter(route => !route.props?.['data-layout']?.toString().includes('no-layout'))
@@ -170,7 +170,7 @@ const AsyncResources: React.FC<IAsyncResources> = React.memo((props) => {
                 })
                 .map((route, index) => createRouteFromProps(route, route.key || `custom-route-${index}`))}
         </CustomRoutes>
-    ), [authenticated, customProfilePage, getCustomAuthRoutes, getCustomRoutes]);
+    ), [authenticated, /*customProfilePage,*/ getCustomAuthRoutes, getCustomRoutes]);
 
     const memoizedNoLayoutRoutes = useMemo(() => (
         <CustomRoutes noLayout>
@@ -214,7 +214,7 @@ const AsyncResources: React.FC<IAsyncResources> = React.memo((props) => {
         prevProps.notification === nextProps.notification &&
         prevProps.catchAll === nextProps.catchAll &&
         prevProps.error === nextProps.error &&
-        prevProps.customProfilePage === nextProps.customProfilePage &&
+        //prevProps.customProfilePage === nextProps.customProfilePage &&
         prevProps.customAuthRoutes === nextProps.customAuthRoutes &&
         prevProps.customRoutes === nextProps.customRoutes;
 });
@@ -269,7 +269,7 @@ const DASHAdminApp: React.FC<IDASHAdmin<unknown, unknown, unknown, unknown>> = R
         customI18nProvider,
         customResources,
         useCoreResources = true,
-        customProfilePage,
+        //customProfilePage = Profile,
         customRecoverPassword,
         customChangePassword,
         customVerifyAccount,
@@ -310,8 +310,19 @@ const DASHAdminApp: React.FC<IDASHAdmin<unknown, unknown, unknown, unknown>> = R
                     : [...coreResources, ...customResources]
                 : coreResources
             : [];
+        console.log('📊 DASHAdmin.calculateResources:', {
+            count: _resources.length,
+            useCoreResources,
+            hasChildren: !!children,
+            hasCustomResources: !!customResources,
+            customResourcesCount: Array.isArray(customResources) ? customResources.length : 0,
+            models: _resources.map((r: any) => r.model).filter(Boolean),
+        });
         if (_resources && _resources.length > 0) {
+            console.log('📤 DASHAdmin: Dispatching', _resources.length, 'resources to Redux');
             dispatch<any>(setResources(_resources));
+        } else {
+            console.warn('⚠️ DASHAdmin.calculateResources: No resources to dispatch!');
         }
     }, [children, customResources, useCoreResources, dispatch]);
 
@@ -321,10 +332,13 @@ const DASHAdminApp: React.FC<IDASHAdmin<unknown, unknown, unknown, unknown>> = R
     }, [authenticated, calculateResources]);*/
 
     React.useEffect(() => {
+        console.log('🔄 DASHAdmin: calculateResources effect triggered (deps: [calculateResources])');
         calculateResources();
-    }, []);
+    }, [calculateResources]);
+
     /** When the redux resources are updated, store them in an ES6 Class */
     React.useEffect(() => {
+        console.log('📊 DASHAdmin: Redux resources updated -', resources?.length, 'items, models:', resources?.map((r: any) => r.model).filter(Boolean));
         DASHStorageClass.resources = resources;
     }, [resources]);
 
@@ -431,7 +445,7 @@ const DASHAdminApp: React.FC<IDASHAdmin<unknown, unknown, unknown, unknown>> = R
                     {...adminUIProps}
                     resources={resources}
                     locale={ReactLocale}
-                    customProfilePage={customProfilePage}
+                    //customProfilePage={customProfilePage}
                     customAuthRoutes={customAuthRoutes}
                     customRoutes={customRoutes}
                 />
@@ -452,7 +466,10 @@ const DASHAdminApp: React.FC<IDASHAdmin<unknown, unknown, unknown, unknown>> = R
         prevProps.customLayout === nextProps.customLayout &&
         prevProps.customDataProvider === nextProps.customDataProvider &&
         prevProps.customAuthProvider === nextProps.customAuthProvider &&
-        prevProps.dashboard === nextProps.dashboard
+        prevProps.dashboard === nextProps.dashboard &&
+       // prevProps.customProfilePage === nextProps.customProfilePage &&
+        prevProps.customAuthRoutes === nextProps.customAuthRoutes &&
+        prevProps.customRoutes === nextProps.customRoutes
     );
 });
 

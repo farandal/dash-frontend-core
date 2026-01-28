@@ -8,6 +8,7 @@ import BridgedLocalesMenuButton from '../../components/i18n/BridgedLocalesMenuBu
 import DarkToggleMode from '../../components/menu/DarkToggleMode';
 import { useAuthContext } from '../../contexts/auth/AuthContext';
 import { SidebarPosition } from './AppSidebarMaterial';
+import LangSwitcher from '../../components/i18n/LangSwitcher';
 
 export interface SidebarActionsProps {
     sidebarPosition?: SidebarPosition;
@@ -45,26 +46,34 @@ const SidebarActions: React.FC<SidebarActionsProps> = ({
                 display: 'flex',
                 alignItems: 'center',
                 gap: 1,
-                flexDirection: isHorizontal ? 'row' : (navExpanded ? 'column-reverse' : 'column'),
-                ...(isHorizontal && {
+                //flexDirection: isHorizontal ? 'row' : (navExpanded ? 'column-reverse' : 'column'),
+                
+                ...(isHorizontal ? {
                     marginLeft: 'auto',
                     flexShrink: 0,
                     paddingRight: 2,
-                }),
+                    flexDirection: navExpanded ? 'row-reverse' : 'row'
+                }:
+                {
+                   
+                    flexShrink: 0,
+                    flexDirection: navExpanded ? 'column' : 'column'
+                }
+                ),
             }}
         >
               {authContext?.authenticated && authContext.user?.id !== 'guest' && (
                         <AvatarComponent sidebarPosition={sidebarPosition} />
                     )}    
 
-            {headerToolBarReplace ? (
+            {HeaderToolBar && headerToolBarReplace ? (
                 // Replace mode: Only render the custom HeaderToolBar
                 <HeaderToolBar />
             ) : (
                 // Default mode: Render all actions
                 <>            
-                    <HeaderToolBar />
-                    <BridgedLocalesMenuButton />
+                    {HeaderToolBar && <HeaderToolBar />}
+                    {authContext?.authenticated ? <BridgedLocalesMenuButton /> :  <LangSwitcher />}
                     <DarkToggleMode />
                 </>
             )}

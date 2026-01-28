@@ -126,7 +126,7 @@ const ResourceMenu: React.FC<IResourceMenu> = (props) => {
                             </DashResourceButton>*/}
 
 
-                            {(resourceConfig.toolbarCreateButton?.enabled !== false) && !location.pathname.endsWith('/create') && <DashResourceButton
+                            {(resourceConfig.create !== false) && !location.pathname.endsWith('/create') && <DashResourceButton
                                 size='small'    
                                 resourceConfig={resourceConfig}
                                 label={translateLabel(resourceConfig.mainAction.title)}

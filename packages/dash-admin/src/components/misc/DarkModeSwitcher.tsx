@@ -36,7 +36,7 @@ const dashThemeType = useSelector((state: IDASHAppState<any, any, any>) =>
   }
 
   return (
-    <div className='dash-theme-avatar' onClick={onClick}>
+    <div  onClick={onClick}>
    
      <DashThemeHelperProvider>
       <Avatar 
@@ -47,7 +47,7 @@ const dashThemeType = useSelector((state: IDASHAppState<any, any, any>) =>
           height: '30px',
           minHeight: '30px'
         }}
-        className='dash-theme-avatar-icon'
+       className='dash-icon-button-color dash-icon-button-bg'
       >
         {isDark ? <LightMode /> : <DarkMode />}
       </Avatar>

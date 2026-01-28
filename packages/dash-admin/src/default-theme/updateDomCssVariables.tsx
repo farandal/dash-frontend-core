@@ -37,6 +37,39 @@ function getAllCSSVariableNames(styleSheets: StyleSheetList = document.styleShee
     return Array.from(cssVars);
 }
 
+/**
+ * Read CSS variables from all stylesheets EXCEPT the dynamic theme style element.
+ * This gives us the "static" compiled LESS/CSS defaults, unaffected by our own dynamic overrides.
+ */
+function getStaticCssVariables(): Record<string, string> {
+    const result: Record<string, string> = {};
+    for (let i = 0; i < document.styleSheets.length; i++) {
+        const sheet = document.styleSheets[i];
+        const ownerNode = sheet.ownerNode as HTMLElement;
+        // Skip our dynamic theme style element to avoid reading back our own values
+        if (ownerNode?.id === 'dash-theme-variables') continue;
+        try {
+            const rules = (sheet as CSSStyleSheet).cssRules;
+            if (!rules) continue;
+            for (let j = 0; j < rules.length; j++) {
+                const rule = rules[j];
+                if ('selectorText' in rule && (rule as CSSStyleRule).selectorText === ':root') {
+                    const style = (rule as CSSStyleRule).style;
+                    for (let k = 0; k < style.length; k++) {
+                        const name = style[k];
+                        if (name.startsWith('--')) {
+                            result[name] = style.getPropertyValue(name).trim();
+                        }
+                    }
+                }
+            }
+        } catch {
+            continue;
+        }
+    }
+    return result;
+}
+
 export const updateDomCssVariables = (
     theme: string,
     colors?: { [x: string]: string },
@@ -60,18 +93,19 @@ export const updateDomCssVariables = (
         //"framed_layout-bg--dark",
     ];
 
-    // Find the style element by id before creating a new one
+    // Find or create the style element
     let themeStyleElement = document.getElementById('dash-theme-variables') as HTMLStyleElement | null;
 
     if (!themeStyleElement) {
         themeStyleElement = document.createElement('style');
         themeStyleElement.id = 'dash-theme-variables';
-        if (document.head.firstChild) {
-            document.head.insertBefore(themeStyleElement, document.head.firstChild);
-        } else {
-            document.head.appendChild(themeStyleElement);
-        }
     }
+
+    // CRITICAL FIX: Always ensure the style element is at the END of <head>
+    // for highest CSS cascade priority. This ensures our dynamic tenant colors
+    // override the static compiled LESS/CSS defaults.
+    // appendChild on an already-attached element moves it to the new position.
+    document.head.appendChild(themeStyleElement);
 
     let styleString = '';
 
@@ -79,22 +113,30 @@ export const updateDomCssVariables = (
         styleString += `--${key}: ${value}; `;
     });
 
-    // Collect all keys to set (from colors or fallback to DOM)
+    // When no colors provided, read from static stylesheets (excluding our dynamic style)
+    // to get compiled LESS defaults instead of reading back our own previous values.
+    const staticVars = colors ? undefined : getStaticCssVariables();
+
+    // Collect all keys to set (from colors or fallback to static stylesheets)
     const allKeys = new Set<string>();
     if (colors) {
         Object.keys(colors).forEach(k => allKeys.add(k));
     } else {
-        // Use getAllCSSVariableNames to get all CSS variable names from the DOM
-        const cssVarNames = getAllCSSVariableNames();
-        cssVarNames.forEach(name => {
+        // Use static CSS variables (from compiled LESS, NOT our dynamic style)
+        Object.keys(staticVars!).forEach(name => {
             allKeys.add(name.slice(2)); // remove leading '--'
         });
     }
     logKeys.forEach(k => allKeys.add(k));
 
     allKeys.forEach(key => {
+        // Get value: prefer colors param, then static vars, then computed DOM
         let value = colors?.[key];
+        if (!value && staticVars) {
+            value = staticVars[`--${key}`];
+        }
         if (!value) value = getCssVarFromDom(key);
+
         if (value) {
             // Only add the variable if it doesn't end with a theme suffix OR matches the current theme
             // This prevents variables for other themes from being included
@@ -113,7 +155,11 @@ export const updateDomCssVariables = (
         // Only set baseKey for the current theme
         if (key.endsWith(themeSuffix)) {
             const baseKey = key.slice(0, -themeSuffix.length);
-            let baseValue = colors?.[key] || getCssVarFromDom(key);
+            let baseValue = colors?.[key];
+            if (!baseValue && staticVars) {
+                baseValue = staticVars[`--${key}`];
+            }
+            if (!baseValue) baseValue = getCssVarFromDom(key);
             if (baseValue) {
                 styleString += `--${baseKey}: ${baseValue}; `;
                 if (logKeys.includes(`${baseKey}${themeSuffix}`)) {

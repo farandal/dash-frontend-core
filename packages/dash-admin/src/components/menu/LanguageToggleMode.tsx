@@ -67,7 +67,10 @@ const LanguageToggleMode = () => {
 
   return (
     <>
-      <div className='dash-language-avatar' onClick={handleClick}>
+      <div 
+     
+      onClick={handleClick}
+      >
         <DashThemeHelperProvider>
           <Avatar 
             sizes='small'
@@ -77,7 +80,7 @@ const LanguageToggleMode = () => {
               height: '30px',
               minHeight: '30px'
             }}
-            className='dash-language-avatar-icon'
+             className='dash-icon-button-color dash-icon-button-bg'
           >
             <span style={{ fontSize: '1.2rem' }}>{currentLocale.icon}</span>
           </Avatar>

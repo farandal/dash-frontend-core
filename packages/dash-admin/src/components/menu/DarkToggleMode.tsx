@@ -38,7 +38,7 @@ const DarkToggleMode = () => {
   
   return (
     <>
-     <div className='dash-theme-avatar' onClick={onClick}>
+     <div  onClick={onClick}>
    
      <DashThemeHelperProvider>
       <Avatar 
@@ -49,7 +49,7 @@ const DarkToggleMode = () => {
           height: '30px',
           minHeight: '30px'
         }}
-        className='dash-theme-avatar-icon'
+       className='dash-icon-button-color dash-icon-button-bg'
       >
         {darkMode ? <LightMode /> : <DarkMode />}
       </Avatar>

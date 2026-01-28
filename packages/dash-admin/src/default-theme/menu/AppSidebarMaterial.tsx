@@ -67,7 +67,7 @@ const AppSidebarMaterial: React.FC<AppSidebarMaterialProps> = (props) => {
     // Local state for nav - initialize from localStorage for persistence
     const [localNavExpanded, setLocalNavExpanded] = useState(() => {
         const stored = dashStorage.getItem('dashNavExpanded');
-        return stored !== null ? stored === 'true' : true;
+        return stored !== null ? stored === 'true' : false;
     });
     const [localNavSize, setLocalNavSize] = useState<"small" | "large">(() => {
         const stored = dashStorage.getItem('dashNavSize');
@@ -234,14 +234,22 @@ const AppSidebarMaterial: React.FC<AppSidebarMaterialProps> = (props) => {
     React.useEffect(() => {
         // Initial load - set initial values
         if (prevIsSmall === null || prevIsLarge === null || prevIsMediumOrSmaller === null) {
-            const initialNavSize = isMediumOrSmaller ? "small" : "large";
-            setLocalNavSize(initialNavSize);
-            
+            // On small/medium screens, ALWAYS force small+collapsed regardless of stored prefs.
+            // This ensures the sidebar never appears as a permanent drawer on mobile.
             if (isMediumOrSmaller) {
-                // Start collapsed when in secondary sidebar mode
+                setLocalNavSize("small");
                 setLocalNavExpanded(false);
-            } else if (isLargeScreen) {
-                setLocalNavExpanded(true);
+            } else {
+                // Large screen: respect stored preferences or apply defaults
+                const hasStoredNavSize = dashStorage.getItem('dashNavSize') !== null;
+                const hasStoredNavExpanded = dashStorage.getItem('dashNavExpanded') !== null;
+
+                if (!hasStoredNavSize) {
+                    setLocalNavSize("large");
+                }
+                if (!hasStoredNavExpanded) {
+                    setLocalNavExpanded(isLargeScreen);
+                }
             }
             
             setPrevIsSmall(isSmallScreen);

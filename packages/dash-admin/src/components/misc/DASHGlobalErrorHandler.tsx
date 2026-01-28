@@ -22,24 +22,55 @@ const _checkError = (errorData: any): IDashGlobalError => {
         const processedError = errorData as IDashAutoAdminBackendError;
         
         let errorMessage = processedError.message || "";
+
         
         // Add status-specific context if needed
         if (processedError.status >= 400 && processedError.status < 499) {
             switch (processedError.status) {
                 case 401:
-                    errorMessage = 'No estás autenticado: ' + errorMessage;
+                    errorMessage = '🚫 ' + errorMessage;
                     break;
                 case 403:
-                    errorMessage = 'No tienes permiso: ' + errorMessage;
+                    errorMessage = '🔒 ' + errorMessage;
                     break;
                 case 404:
-                    errorMessage = 'Recurso no encontrado: ' + errorMessage;
+                    errorMessage = '❌ ' + errorMessage;
                     break;
                 case 422:
-                    errorMessage = 'Error de validación: ' + errorMessage;
+                    errorMessage = '⚠ ' + errorMessage;
                     break;
             }
         }
+
+        try {
+            if (errorData?.originalError?.response?.data?.errors) {
+                const validationErrors = errorData.originalError.response.data.errors;
+                let errorMessages: string[] = [];
+
+                if (Array.isArray(validationErrors)) {
+                    errorMessages = validationErrors.map(err => String(err));
+                } else if (typeof validationErrors === 'object' && validationErrors !== null) {
+                    Object.values(validationErrors).forEach((value: any) => {
+                        if (typeof value === 'string') {
+                            errorMessages.push(value);
+                        } else if (Array.isArray(value)) {
+                            errorMessages.push(value.join(', '));
+                        } else if (typeof value === 'object' && value !== null) {
+                            errorMessages.push(JSON.stringify(value));
+                        }
+                    });
+                } else if (typeof validationErrors === 'string') {
+                    errorMessages.push(validationErrors);
+                }
+
+                if (errorMessages.length > 0) {
+                    errorMessage += ' ' + errorMessages.join(', ');
+                }
+            }
+        } catch (e) {
+            console.error('error parsing validation errors', e);
+        }
+
         
         return {
             status: processedError.status,
@@ -53,10 +84,10 @@ const _checkError = (errorData: any): IDashGlobalError => {
     
     let _extra = "";
     if (e.status >= 400 && e.status < 499) {
-        if (e.status === 401) _extra = 'No estás autenticado';
-        if (e.status === 403) _extra = 'No tienes permiso para acceder a este recurso';
-        if (e.status === 404) _extra = 'El recurso solicitado no fue encontrado';
-        if (e.status === 422) _extra = 'Error de validación';
+        if (e.status === 401) _extra = '🚫 ';
+        if (e.status === 403) _extra = '🔒 ';
+        if (e.status === 404) _extra = '❌ ';
+        if (e.status === 422) _extra = '⚠ ';
 
         e = {
             status: e.status,

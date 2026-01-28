@@ -1,10 +1,11 @@
 import * as React from 'react';
 import { MouseEvent, useState, useRef, useEffect } from 'react';
-import { useLocaleState, useLocales } from 'react-admin';
 import { Avatar, useMediaQuery, useTheme } from '@mui/material';
 import LanguageIcon from '@mui/icons-material/Translate';
 import ReactDOM from 'react-dom';
 import { useWindowSize } from 'dash-utils';
+import { useLocales, useLocaleState } from '../../hooks/usePolyglotTranslation';
+import { useBridgedChangeLocale } from '../../contexts/I18nBridgeContext';
 const DefaultIcon = <LanguageIcon />;
 
 export interface LanguageSwitcherButtonProps {
@@ -12,11 +13,13 @@ export interface LanguageSwitcherButtonProps {
     languages?: { locale: string; name: string }[];
 }
 
-const LanguageSwitcher = (props: LanguageSwitcherButtonProps) => {
+const LangSwitcher = (props: LanguageSwitcherButtonProps) => {
     const { icon = DefaultIcon, languages: languagesProp } = props;
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+    
     const languages = useLocales({ locales: languagesProp });
     const [locale, setLocale] = useLocaleState();
+    const changeBridgedLocale = useBridgedChangeLocale();
 
     const theme = useTheme();
     const isSmallScreen = useMediaQuery(theme.breakpoints.down('md'));
@@ -41,8 +44,10 @@ const LanguageSwitcher = (props: LanguageSwitcherButtonProps) => {
         return language ? language.name : '';
     };
 
-    const changeLocale = (locale: string) => (): void => {
-        setLocale(locale);
+    const changeLocale = (newLocale: string) => (): void => {
+        setLocale(newLocale);
+        // Also update the bridge context so components like AppMaterialMenu re-render
+        changeBridgedLocale(newLocale);
         setOpen(false);
     };
 
@@ -135,7 +140,7 @@ const LanguageSwitcher = (props: LanguageSwitcherButtonProps) => {
         <>
             <div
                 ref={avatarRef}
-              
+               
                 {... !webView ? { 
                     onMouseEnter: handleLanguageMouseEnter, 
                     onMouseLeave: handleMouseLeave 
@@ -151,7 +156,7 @@ const LanguageSwitcher = (props: LanguageSwitcherButtonProps) => {
                         height: '30px',
                         minHeight: '30px'
                     }}
-                     className='dash-icon-button-color dash-icon-button-bg'
+                  className='dash-icon-button-color dash-icon-button-bg'
                 >
                     {getNameForLocale(locale).substring(0, 2).toUpperCase()}
                 </Avatar>
@@ -196,4 +201,4 @@ const LanguageSwitcher = (props: LanguageSwitcherButtonProps) => {
     );
 };
 
-export default LanguageSwitcher;
+export default LangSwitcher;
