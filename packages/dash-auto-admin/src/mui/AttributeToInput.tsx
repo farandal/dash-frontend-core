@@ -419,7 +419,7 @@ const AttributeToInput = (
                         source={input.attribute}
                         {...input.componentProps}
                     >
-                        <SingleFieldList>
+                        <SingleFieldList {...input.fieldProps}>
                             <ChipField source={sourceName} />
                         </SingleFieldList>
                     </ReferenceArrayInput>
@@ -434,6 +434,7 @@ const AttributeToInput = (
                         key={index}
                         label={input.label}
                         source={input.attribute}
+                        {...input.componentProps}
                     >
                         <SimpleFormIterator>
                             {inputTypeArray.map((attribute, idx) =>
@@ -503,6 +504,7 @@ const AttributeToInput = (
                                 input.fieldProps.onChange(e);
                             }
                         }}
+                        {...input.componentProps}
                     />
                 </FunctionFieldWrapper>
             );

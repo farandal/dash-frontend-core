@@ -13,7 +13,7 @@ import {
 	ToolbarExportButton,
 	ToolbarListButton,
 } from './toolbar/buttons/ToolbarButtons';
-import { ReactNode } from 'react';
+import { ReactNode, useMemo } from 'react';
 import React from 'react';
 
 const DashAutoShow: React.FC<IAutoShow> = ({
@@ -23,6 +23,11 @@ const DashAutoShow: React.FC<IAutoShow> = ({
 	locale,
 	...props
 }) => {
+
+	// 🔧 Add contextComponent support for view/show mode (matching DashAutoTabbedForm pattern)
+	const ContextComponent = useMemo(() => {
+		return resourceConfig.contextComponent || (({children}: {children: ReactNode}) => <>{children}</>);
+	}, [resourceConfig.contextComponent]);
 
 	const topToolbarActions = () => {
 		
@@ -66,11 +71,13 @@ const DashAutoShow: React.FC<IAutoShow> = ({
 					),
 				}}
 			>
-				{resourceConfig.showComponent(resourceConfig)}
-				{resourceConfig.references &&
-					resourceConfig.references.map((reference) =>
-						DashAutoReferenceTab(reference),
-					)}
+				<ContextComponent mode="view" resourceConfig={resourceConfig}>
+					{resourceConfig.showComponent(resourceConfig)}
+					{resourceConfig.references &&
+						resourceConfig.references.map((reference) =>
+							DashAutoReferenceTab(reference),
+						)}
+				</ContextComponent>
 			</Show>
 		);
 	}
@@ -93,11 +100,13 @@ const DashAutoShow: React.FC<IAutoShow> = ({
 					),
 				}}
 			>
-				{DashAutoTabs(resourceConfig, { mode: 'view', locale })}
-				{resourceConfig.references &&
-					resourceConfig.references.map((reference) =>
-						DashAutoReferenceTab(reference),
-					)}
+				<ContextComponent mode="view" resourceConfig={resourceConfig}>
+					{DashAutoTabs(resourceConfig, { mode: 'view', locale })}
+					{resourceConfig.references &&
+						resourceConfig.references.map((reference) =>
+							DashAutoReferenceTab(reference),
+						)}
+				</ContextComponent>
 			</Show>
 		);
 	}
@@ -120,11 +129,13 @@ const DashAutoShow: React.FC<IAutoShow> = ({
 					),
 				}}
 			>
-				{AutoGroup(resourceConfig, { mode: 'view', locale })}
-				{resourceConfig.references &&
-					resourceConfig.references.map((reference) =>
-						DashAutoReferenceTab(reference),
-					)}
+				<ContextComponent mode="view" resourceConfig={resourceConfig}>
+					{AutoGroup(resourceConfig, { mode: 'view', locale })}
+					{resourceConfig.references &&
+						resourceConfig.references.map((reference) =>
+							DashAutoReferenceTab(reference),
+						)}
+				</ContextComponent>
 			</Show>
 		);
 	}
@@ -147,11 +158,13 @@ const DashAutoShow: React.FC<IAutoShow> = ({
 					),
 				}}
 			>
-				{AutoLayout(resourceConfig, { mode: 'view', locale })}
-				{resourceConfig.references &&
-					resourceConfig.references.map((reference) =>
-						DashAutoReferenceTab(reference),
-					)}
+				<ContextComponent mode="view" resourceConfig={resourceConfig}>
+					{AutoLayout(resourceConfig, { mode: 'view', locale })}
+					{resourceConfig.references &&
+						resourceConfig.references.map((reference) =>
+							DashAutoReferenceTab(reference),
+						)}
+				</ContextComponent>
 			</Show>
 		);
 	}
@@ -173,11 +186,13 @@ const DashAutoShow: React.FC<IAutoShow> = ({
 				),
 			}}
 		>
-			{DashAutoTabs(resourceConfig, { mode: 'view', locale })}
-			{resourceConfig.references &&
-				resourceConfig.references.map((reference) =>
-					DashAutoReferenceTab(reference),
-				)}
+			<ContextComponent mode="view" resourceConfig={resourceConfig}>
+				{DashAutoTabs(resourceConfig, { mode: 'view', locale })}
+				{resourceConfig.references &&
+					resourceConfig.references.map((reference) =>
+						DashAutoReferenceTab(reference),
+					)}
+			</ContextComponent>
 		</Show>
 	);
 };

@@ -10,7 +10,8 @@ import IDashAutoAdminCustomFieldComponent from './IDashAutoAdminCustomFieldCompo
 import { IDashAutoDrawerPublicProps } from '../DashAutoDrawer';
 import React, { FC, JSX, ReactNode, ReactPortal } from 'react';
 
-import type { PaginationProps, ListProps, DatagridProps } from 'react-admin';
+//import type { PaginationProps, ListProps, DatagridProps } from 'react-admin';
+import { ListProps } from 'react-admin/src';
 import { Datagrid } from 'react-admin';
 
 import { IDashAutoLayoutRenderFunction } from '../DashAutoLayout';
@@ -32,6 +33,15 @@ export default interface IDashAutoAdminResourceConfig {
     redirect?: string;
     hidden?: boolean;
     resourceMenuDisabled?: boolean;
+    /** 
+     * When true, this resource is only used for menu navigation (redirect links).
+     * It will not register a react-admin resource or CRUD routes.
+     * Use `redirect` to specify the target URL, which can be:
+     * - An absolute path starting with "/" (e.g., "/plans")
+     * - A relative path (e.g., "create") which becomes "/{model}/create"
+     * - An external URL
+     */
+    menuOnly?: boolean;
     /** if not path is provided, model will be used as default */
     path?: string;
     /** */
@@ -180,7 +190,7 @@ export default interface IDashAutoAdminResourceConfig {
 	 */
 	dataGridWrapper?: (props: any) => React.ReactElement;
 	/** ListProps extends Partial<ListProps> from React Admin. */
-	listProps?: any;
+	listProps?: Partial<ListProps>;
 	/** Pagination is an optional component that aims to replace the default Pagination component that extends React Admin PaginationProps. */
 	Pagination?: FC<any>;
 	/** */
@@ -338,7 +348,7 @@ export default interface IDashAutoAdminResourceConfig {
     recordRepresentation?: string;
     syncTabsWithLocation?: boolean;
 
-    contextComponent?:  ({resourceConfig,mode,children}:{resourceConfig:IDashAutoAdminResourceConfig,mode?:"create" | "edit" | "list",children?:ReactNode}) => JSX.Element | ReactNode;
+    contextComponent?:  ({resourceConfig,mode,children}:{resourceConfig:IDashAutoAdminResourceConfig,mode?:"create" | "edit" | "list" | "view",children?:ReactNode}) => JSX.Element | ReactNode;
     editProps?: any; // TODO Map this with react admin Edit Props.
     
     /** 

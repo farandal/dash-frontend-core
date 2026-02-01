@@ -77,14 +77,15 @@ const refreshAccessToken = async (axiosInstance: any): Promise<string | null> =>
 // Function to handle logout
 const handleLogout = () => {
 	console.log('[Axios] Logging out due to authentication failure');
-	
+	debugger;
 	// Clear all auth data
-	dashStorage.removeItem('token');
-	dashStorage.removeItem('refreshToken');
-	dashStorage.removeItem('authenticated');
-	dashStorage.removeItem('user');
-	dashStorage.removeItem('roles');
-	
+	//dashStorage.removeItem('token');
+	//dashStorage.removeItem('refreshToken');
+	//dashStorage.removeItem('authenticated');
+	//dashStorage.removeItem('user');
+	//dashStorage.removeItem('roles');
+    dashStorage.clear();
+	localStorage.clear();
 	// Dispatch logout event for the app to handle
 	window.dispatchEvent(new CustomEvent('auth:logout', { 
 		detail: { reason: 'token_refresh_failed' } 
@@ -121,6 +122,13 @@ export const initAxios = (
 		if (token !== undefined && token !== 'undefined') {
 			config.headers.Authorization = 'Bearer ' + token;
 		}
+
+		// Inject X-Tenant-Id header when tenant impersonation is active
+		const activeTenantId = dashStorage.getItem('active_tenant_id');
+		if (activeTenantId) {
+			config.headers['X-Tenant-Id'] = activeTenantId;
+		}
+
 		return config;
 	});
 

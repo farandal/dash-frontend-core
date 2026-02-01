@@ -103,9 +103,12 @@ export const usePanelSettings = <U, A>() => {
     sidebarLargeWidth: panelSettings?.sidebarLargeWidth || 255,
     sidebarSmallWidth: panelSettings?.sidebarSmallWidth || 60,
     sidebarHorizontalHeight: panelSettings?.sidebarHorizontalHeight || 120,
-    // Logo dimensions
-    logoMaxWidth: panelSettings?.logoMaxWidth || 200,
-    logoMaxHeight: panelSettings?.logoMaxHeight || 60,
+    // Logo dimensions for vertical sidebar (left/right)
+    logoVerticalMaxWidth: panelSettings?.logoVerticalMaxWidth || 130,
+    logoVerticalMaxHeight: panelSettings?.logoVerticalMaxHeight || 130,
+    // Logo dimensions for horizontal sidebar (top/bottom)
+    logoHorizontalMaxWidth: panelSettings?.logoHorizontalMaxWidth || 200,
+    logoHorizontalMaxHeight: panelSettings?.logoHorizontalMaxHeight || 60,
     // Padding configuration
     paddingHorizontal: panelSettings?.paddingHorizontal || 255,
     paddingVertical: panelSettings?.paddingVertical || 120,

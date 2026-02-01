@@ -295,9 +295,19 @@ export const loadResourcesFromManifest = async (
     );
 
     // Flatten and filter out failed imports
-    const resources = imports
+    const allResources = imports
         .filter((mod): mod is IDashAutoAdminResourceConfig | IDashAutoAdminResourceConfig[] => mod !== null)
         .flatMap(mod => Array.isArray(mod) ? mod : [mod]);
+
+    // Deduplicate by model, keeping the LAST occurrence (so overrides win)
+    // Resources loaded later in the manifest override earlier ones with the same model
+    const resourceMap = new Map<string, IDashAutoAdminResourceConfig>();
+    for (const resource of allResources) {
+        if (resource.model) {
+            resourceMap.set(resource.model, resource);
+        }
+    }
+    const resources = Array.from(resourceMap.values());
 
     // Cache the results
     resourceCache.set(manifest, resources);

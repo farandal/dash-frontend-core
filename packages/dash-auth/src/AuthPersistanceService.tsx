@@ -19,11 +19,15 @@ export class AuthPersistenceService {
       // Separately save tenant images for persistence across logout
       if (authData.auth?.tenantImages) {
         dashStorage.setItem(this.TENANT_IMAGES_KEY, JSON.stringify(authData.auth.tenantImages));
+      } else {
+        dashStorage.removeItem(this.TENANT_IMAGES_KEY);
       }
 
       // Separately save tenant settings for persistence across logout
       if (authData.auth?.tenantSettings) {
         dashStorage.setItem(this.TENANT_SETTINGS_KEY, JSON.stringify(authData.auth.tenantSettings));
+      } else {
+        dashStorage.removeItem(this.TENANT_SETTINGS_KEY);
       }
 
       // Separately save system values for persistence across logout
@@ -191,6 +195,22 @@ static setTenantSettings(settings: any): void {
         dashStorage.setItem(this.TENANT_SETTINGS_KEY, JSON.stringify(settings));
     } catch (error) {
         console.error('Failed to set tenant settings:', error);
+    }
+}
+
+static clearTenantSettings(): void {
+    try {
+        dashStorage.removeItem(this.TENANT_SETTINGS_KEY);
+    } catch (error) {
+        console.error('Failed to clear tenant settings:', error);
+    }
+}
+
+static clearTenantImages(): void {
+    try {
+        dashStorage.removeItem(this.TENANT_IMAGES_KEY);
+    } catch (error) {
+        console.error('Failed to clear tenant images:', error);
     }
 }
 

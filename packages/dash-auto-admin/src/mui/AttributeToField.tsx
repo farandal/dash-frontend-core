@@ -61,6 +61,8 @@ export const AttributeToField = (
 		return { custom: true, type: "component", component: () => <>No component for {type}</> };
 	};
 
+   
+
 	const ComponentWrapper =
 		resourceConfig?.fieldWrapper &&
 		typeof resourceConfig.fieldWrapper === 'function'
@@ -243,6 +245,7 @@ export const AttributeToField = (
 						label={input.label}
 						source={input.listAttribute ? input.listAttribute : input.attribute}
 						map={inputType}
+                        
 					/>
 				</ComponentWrapper>
 			);
@@ -281,8 +284,9 @@ export const AttributeToField = (
 								input.listAttribute ? input.listAttribute : input.attribute
 							}
 							reference={reference}
+                            {...input.componentProps}
 						>
-							<SingleFieldList>
+							<SingleFieldList {...input.fieldProps}>
 								<ChipField source={sourceName} />
 							</SingleFieldList>
 						</ReferenceArrayField>
@@ -301,6 +305,7 @@ export const AttributeToField = (
 					sortable={sortableField}
 					source={input.listAttribute ? input.listAttribute : input.attribute}
                     resourceConfig={resourceConfig}
+                     {...input.componentProps}
 				>
 					<>
 						<ArrayField
@@ -313,6 +318,7 @@ export const AttributeToField = (
 							source={
 								input.listAttribute ? input.listAttribute : input.attribute
 							}
+                            {...input.fieldProps}
 						>
 							<Datagrid>
 								{inputTypeArray.map((attribute, idx) =>
@@ -361,7 +367,8 @@ export const AttributeToField = (
 				label: input.label,
 				link: 'show',
 				source: input.listAttribute ? input.listAttribute : input.attribute,
-				reference: reference
+				reference: reference,
+                ...input.componentProps
 			}			
 			
 			return <ComponentWrapper
@@ -391,13 +398,16 @@ export const AttributeToField = (
 			}),
 			label: input.label,
 			source: input.listAttribute ? input.listAttribute : input.attribute,
-			reference: reference
+			reference: reference,
+          
 		}
+       
 		return (
 			<ComponentWrapper {...componentWrapperProps} >
 			{/* @ts-ignore - Record type compatibility */}
 			<ReferenceArrayField {...componentProps} >
-                <SingleFieldList>
+                
+                <SingleFieldList {...input.fieldProps}>
 					<ChipField source={sourceName} />
 				</SingleFieldList>
             </ReferenceArrayField>	

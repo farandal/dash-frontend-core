@@ -99,7 +99,17 @@ class DASHAuthenticationService {
 
     // Method to set pending redirect URL
     setPendingRedirect(url: string): void {
+        // Guard: Skip if redirect is root path (causes infinite redirect loops)
+        if (!url || url === '/' || url === '#/' || url === '#') {
+            console.log('Skipping pending redirect for root path:', url);
+            return;
+        }
         const sanitizedUrl = this.sanitizeRedirectUrl(url);
+        // Double-check sanitized URL isn't root either
+        if (sanitizedUrl === '/' || sanitizedUrl === '#/' || sanitizedUrl === '#') {
+            console.log('Skipping pending redirect for sanitized root path:', sanitizedUrl);
+            return;
+        }
         console.log('Setting pending redirect:', url, '→', sanitizedUrl);
         dashStorage.setItem(this.REDIRECT_STORAGE_KEY, sanitizedUrl);
     }
@@ -132,36 +142,35 @@ class DASHAuthenticationService {
     }
 
     // Method to determine final redirect URL (backend takes precedence over localStorage)
-    private determineRedirectUrl(backendRedirect?: string): string | null {
+    // persistRedirect: if true, saves to storage (use during login). If false, just returns the value (use during app init).
+    private determineRedirectUrl(backendRedirect?: string, persistRedirect: boolean = true): string | null {
 
         let val = null;
         // Backend redirect takes precedence
         if (backendRedirect) {
-            console.log('Using backend redirect:', backendRedirect);
-            // Clear any pending localStorage redirect since backend provided one
-            //this.clearPendingRedirect();
+            console.log('Using backend redirect:', backendRedirect, '(persist:', persistRedirect, ')');
             val = backendRedirect;
-            this.setPendingRedirect(val);
-            
-            // Return the sanitized URL that was just set
-            return this.getPendingRedirect();
+            if (persistRedirect) {
+                this.setPendingRedirect(val);
+                return this.getPendingRedirect();
+            }
+            return this.sanitizeRedirectUrl(val);
         }
 
         // Fall back to localStorage redirect
         const localStorageRedirect = this.getPendingRedirect();
         if (localStorageRedirect) {
             console.log('Using localStorage redirect:', localStorageRedirect);
-            //this.clearPendingRedirect();
-            val = localStorageRedirect;
-            this.setPendingRedirect(val); // Ensure it's sanitized if it wasn't
-            return this.getPendingRedirect();
+            return localStorageRedirect;
         }
 
         val = getEnv("APP_DEFAULT_REDIRECT");
+        if (persistRedirect) {
+            this.setPendingRedirect(val);
+            return this.getPendingRedirect();
+        }
 
-        this.setPendingRedirect(val);
-
-        return this.getPendingRedirect();
+        return this.sanitizeRedirectUrl(val);
     }
 
     // Update the login method to dispatch to Redux directly
@@ -267,6 +276,11 @@ class DASHAuthenticationService {
                     const languageCode = auth.auth?.tenantSettings?.primary_language_code || auth.user?.preferences?.locale;
                     if (languageCode) {
                         localStorage.setItem('dash-user-locale', languageCode);
+                        // Dispatch event to trigger I18nBridgeContext locale change
+                        window.dispatchEvent(new CustomEvent('dash:locale-change', { 
+                            detail: { locale: languageCode } 
+                        }));
+                        console.log('🌐 DASHAuthService: Dispatched locale change event:', languageCode);
                     }
 
                     // Set basic localStorage for react-admin compatibility
@@ -428,8 +442,8 @@ class DASHAuthenticationService {
 
             console.log('Auth initialized successfully from existing token');
              await syncLocalStorageToDeviceStore();
-            // Determine final redirect URL (backend takes precedence)
-            const redirectAfterLogin = this.determineRedirectUrl(backendRedirect);
+            // Determine final redirect URL - don't persist during token init (only during actual login)
+            const redirectAfterLogin = this.determineRedirectUrl(backendRedirect, false);
 
             return {
                 success: true,
@@ -673,6 +687,11 @@ class DASHAuthenticationService {
                         const languageCode = auth.auth?.tenantSettings?.primary_language_code || auth.user?.preferences?.locale;
                         if (languageCode) {
                             localStorage.setItem('dash-user-locale', languageCode);
+                            // Dispatch event to trigger I18nBridgeContext locale change
+                            window.dispatchEvent(new CustomEvent('dash:locale-change', { 
+                                detail: { locale: languageCode } 
+                            }));
+                            console.log('🌐 DASHAuthService: Dispatched locale change event (app init):', languageCode);
                         }
 
                         // Update localStorage with fresh data
@@ -717,7 +736,8 @@ class DASHAuthenticationService {
                         );
 
                         // Determine final redirect URL (backend takes precedence)
-                        const redirectAfterLogin = this.determineRedirectUrl(backendRedirect);
+                        // Don't persist redirect during app init - only during actual login
+                        const redirectAfterLogin = this.determineRedirectUrl(backendRedirect, false);
 
                         console.log('Auth data refreshed successfully');
 
@@ -751,7 +771,8 @@ class DASHAuthenticationService {
                         );
 
                         // Still check for localStorage redirect as fallback
-                        const redirectAfterLogin = this.determineRedirectUrl();
+                        // Don't persist redirect during app init - only during actual login
+                        const redirectAfterLogin = this.determineRedirectUrl(undefined, false);
 
                         await syncLocalStorageToDeviceStore();
 
@@ -780,7 +801,8 @@ class DASHAuthenticationService {
                     );
 
                     // Still check for pending redirect even if not refreshing auth
-                    const redirectAfterLogin = this.determineRedirectUrl();
+                    // Don't persist redirect during app init - only during actual login
+                    const redirectAfterLogin = this.determineRedirectUrl(undefined, false);
 
                     await syncLocalStorageToDeviceStore();
 

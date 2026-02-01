@@ -6,11 +6,6 @@ import { AxiosError } from 'axios';
 import DASHStorageClass from '../classes/DASHStorageClass';
 import { getCookie } from '../utils';
 import { cacheInvalidatorHash } from '../utils/cache/CacheInvalidatorContext';
-Object.defineProperty(Boolean.prototype, 'toInt', {
-	value: function () {
-		return this & 1;
-	},
-});
 
 /**
  * Retrieves the resource configuration for the specified model.

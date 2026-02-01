@@ -365,6 +365,8 @@ const DASHLightWeightLogin: React.FC<DASHLightWeightLoginProps> = (props) => {
     };
 
     // Initialize app authentication on component mount
+    // NOTE: This only sets the authenticated state. It does NOT navigate.
+    // Navigation only happens after actual login or via DASHAdmin's PrivateRedirectListener.
     useEffect(() => {
         const initializeAuth = async () => {
             try {
@@ -375,9 +377,9 @@ const DASHLightWeightLogin: React.FC<DASHLightWeightLoginProps> = (props) => {
                     console.log('App authentication initialized successfully');
                     setAuthenticated(true);
                     setLoggedIn(true);
-                    
+                    // NOTE: We do NOT navigate here. Info only.
                     if (initResponse.redirectAfterLogin) {
-                        console.log('Redirect found during initialization:', initResponse.redirectAfterLogin);
+                        console.log('Role redirect available:', initResponse.redirectAfterLogin, '(not navigating during init)');
                     }
                 } else {
                     console.log('App authentication initialization failed or no valid auth found');

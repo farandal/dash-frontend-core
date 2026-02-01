@@ -37,6 +37,7 @@ import { useDialog } from 'dash-dialog';
 import { DASHAdminSystemConstants } from 'dash-constants';
 import { RutValidator } from 'dash-admin/src/utils/validators';
 import FullLayoutMarkup from 'dash-admin/src/default-theme/FullLayoutMarkup';
+import { priceFormatter } from 'dash-utils';
 
 interface SubscriptionPlan {
     id: number;
@@ -240,7 +241,7 @@ const DefaultSignUpPage: React.FC<DefaultSignUpPageProps> = (props) => {
     }
 
     const formatPrice = (price: number, billingCycle: string) => {
-        return `${price.toFixed(2)}/${billingCycle === 'monthly' ? 'mo' : 'yr'}`;
+        return `${priceFormatter(price, 'USD')}/${billingCycle === 'monthly' ? 'mo' : 'yr'}`;
     };
 
     const getTrialText = (trialDays: number) => {

@@ -36,6 +36,17 @@ export const ComponentRegistryProvider: React.FC<ComponentRegistryProviderProps>
     ...customComponents,
   });
 
+  // Sync internal state when customComponents prop changes
+  // (e.g. after async component loading completes on remount)
+  React.useEffect(() => {
+    if (customComponents && Object.keys(customComponents).length > 0) {
+      setComponents(prev => ({
+        ...prev,
+        ...customComponents,
+      }));
+    }
+  }, [customComponents]);
+
   const registerComponent = React.useCallback((type: string, component: React.FC<IDashAutoAdminCustomFieldComponent>) => {
     setComponents(prev => ({
       ...prev,

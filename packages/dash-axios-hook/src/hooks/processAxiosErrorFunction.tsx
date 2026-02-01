@@ -1,6 +1,7 @@
 import { AxiosError } from 'axios';
 import { IDashAutoAdminBackendError,IDashAutoAdminDefaultBackendStructure } from '../interfaces/IDashAutoAdminBackendError';
 
+
 const processAxiosError = (error:AxiosError<IDashAutoAdminDefaultBackendStructure>,resource?:string,method:string='update') => {
 
   if(!resource) resource = ""
@@ -22,6 +23,8 @@ const processAxiosError = (error:AxiosError<IDashAutoAdminDefaultBackendStructur
   };
 
   if (error.response?.data?.errors) {
+
+   
       // Format Laravel validation errors for React Admin
       const validationErrors = error.response.data.errors;
       Object.keys(validationErrors).forEach(field => {
