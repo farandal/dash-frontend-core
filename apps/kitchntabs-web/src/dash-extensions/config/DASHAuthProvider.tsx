@@ -63,6 +63,11 @@ const authProvider = {
                 // Use AuthPersistenceService to save auth data
                 AuthPersistenceService.saveAuth(auth);
                 
+                // Persist tenancy_id for tenancy admin users
+                if (auth.systemValues?.tenancy?.id) {
+                    dashStorage.setItem('tenancy_id', String(auth.systemValues.tenancy.id));
+                }
+
                 // Set basic localStorage for react-admin compatibility
                 dashStorage.setItem('authenticated', 'true');
                 dashStorage.setItem('user', JSON.stringify(auth.user));
@@ -182,7 +187,12 @@ const authProvider = {
         }
 
         try {
-            const { data: auth } = await axios.get(getEnv('APP_GETAUTH_ENDPOINT'));
+            // Always use the primary auth endpoint (tenancyAuth for tenancy apps).
+            // The X-Tenant-Id header (injected by useAxios interceptor) tells the backend
+            // which tenant's settings to return, while always preserving tenancy/tenants data.
+            const authEndpoint = getEnv('APP_GETAUTH_ENDPOINT');
+
+            const { data: auth } = await axios.get(authEndpoint);
 
             dashStorage.setItem(
                 'roles',
@@ -193,18 +203,21 @@ const authProvider = {
             dashStorage.setItem('authenticated', 'true');
             dashStorage.setItem('user', JSON.stringify(auth.user));
 
-            if (
-                JSON.parse(
-                    DASHAdminSystemConstants.system.ENABLE_TENANT_IMPERSONATION.toString(),
-                ) &&
-                auth.user?.tenant_id
-            ) {
+            // Persist tenancy_id for the flow (always available for tenancy admin users)
+            if (auth.systemValues?.tenancy?.id) {
+                dashStorage.setItem('tenancy_id', String(auth.systemValues.tenancy.id));
+            }
 
-                dashStorage.setItem('tenant_id', auth.user?.tenant_id);
-                //setCookie('tenant_id', auth.user?.tenant_id);
-                dashStorage.setItem('user_id', auth.user?.id);
-               //setCookie('user_id', auth.user?.id);
+            // Persist user_id always
+            if (auth.user?.id) {
+                dashStorage.setItem('user_id', auth.user.id);
+            }
 
+            // Only set tenant_id if user has explicitly selected one via TenantSwitcher
+            // Do NOT auto-set from user.tenant_id — the tenancy should start without a default tenant
+            const activeTenantId = dashStorage.getItem('active_tenant_id');
+            if (activeTenantId) {
+                dashStorage.setItem('tenant_id', activeTenantId);
             }
 
             //setAuthEvent(auth);

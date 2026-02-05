@@ -1,5 +1,5 @@
 /**
- * KitchnTabsWebAppWithProviders
+ * DashAppComponent
  * 
  * This component is lazy-loaded from main.tsx and contains all heavy dependencies:
  * - Redux store and Provider
@@ -31,7 +31,7 @@ import {
 } from 'dash-admin-state';
 
 // Import CSS variable utility from dash-boilerplate
-import { getCssVariableNumber } from 'dash-boilerplate';
+import { getCssVariableNumber, initializeThemeEarly } from 'dash-boilerplate';
 
 /* Dependency Styles - now async loaded */
 import 'react-toastify/dist/ReactToastify.css';
@@ -60,6 +60,11 @@ import { updateDomCssVariables } from 'dash-utils';
 import KitchnTabsWebBootstrap from './KitchnTabsWebBootstrap';
 
 import PublicHeaderActions from './components/PublicHeaderActions';
+
+
+// Initialize theme early before React renders to prevent flash
+initializeThemeEarly('dark');
+
 
 // Get tenant images from persistence
 const getTenantImages = () => {
@@ -167,12 +172,11 @@ const INITIAL_APP_STATE = createInitialState();
 const store = configureStore(INITIAL_APP_STATE);
 setReduxStore(store);
 
-// Apply platform classes and inject styles
 applyPlatformBodyClasses();
 
-/*
+// In this tenancy application, the styles will only change on switching tenants, not by default. By default it will use the default system colors. 
 // Inject CSS variables from tenant settings
-const injectTenantStyles = () => {
+/*const injectTenantStyles = () => {
     const tenantSettings = AuthPersistenceService.getTenantSettings();
     if (tenantSettings) {
         try {
@@ -186,18 +190,20 @@ const injectTenantStyles = () => {
     }
 };
 
+// Apply platform classes and inject styles
 
 injectTenantStyles();
 
 */
 
+
 /**
- * KitchnTabsWebAppWithProviders
+ * DashAppComponent
  * 
  * Wraps the main bootstrap component with all required providers.
  * This is lazy-loaded to keep heavy deps out of the initial bundle.
  */
-const KitchnTabsWebAppWithProviders: React.FC = () => {
+const DashAppComponent: React.FC = () => {
     return (
         <Provider store={store}>
             <KitchnTabsWebBootstrap />
@@ -205,4 +211,4 @@ const KitchnTabsWebAppWithProviders: React.FC = () => {
     );
 };
 
-export default KitchnTabsWebAppWithProviders;
+export default DashAppComponent;

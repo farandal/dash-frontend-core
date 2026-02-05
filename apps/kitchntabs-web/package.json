@@ -41,6 +41,7 @@
     "@types/qrcode.react": "^3.0.0",
     "axios": "^1.11.0",
     "clsx": "^2.1.1",
+    "dash-boilerplate": "workspace:*",
     "dash-admin": "workspace:*",
     "dash-admin-state": "workspace:*",
     "dash-app-common": "workspace:*",

@@ -41,7 +41,7 @@ const KitchnTabsSharedRoutes = () => [
             </Suspense>
         }
     />,
-   
+   /*
     <Route
         key="register"
         path='/registrarse'
@@ -52,44 +52,8 @@ const KitchnTabsSharedRoutes = () => [
         }
     />,
    
-    <Route
-        key="signup-success"
-        path='/signup-success'
-        element={
-            <Suspense fallback={<GlobalSmallLoader />}>
-                <SignUpSuccess />
-            </Suspense>
-        }
-    />,
-    <Route
-        key="legal"
-        data-layout="no-layout"
-        path='/legal'
-        element={
-            <Suspense fallback={<GlobalSmallLoader />}>
-                <Legal />
-            </Suspense>
-        }
-    />,
-    <Route
-        key={'reset-password'}
-        path='reset-password'
-        element={
-            <Suspense fallback={<GlobalSmallLoader />}>
-                {<RecoverPassword />}
-            </Suspense>
-        }
-    />,
-    <Route
-        key={'change-password'}
-        path='change-password'
-        element={
-            <Suspense fallback={<GlobalSmallLoader />}>
-                {<ChangePassword />}
-            </Suspense>
-        }
-    />,
-   
+  */
+  
     <Route
         path="*"
         //element={<NotFound disableCountdown={true} time={5} redirect="/login" />}

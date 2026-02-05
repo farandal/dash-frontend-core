@@ -5,71 +5,48 @@
  * This version uses lightweight components that don't depend on react-admin,
  * reducing the initial bundle size significantly.
  */
-import React, { useMemo, useCallback } from 'react';
+import React, { useMemo, useCallback, useEffect } from 'react';
 import { Routes, BrowserRouter, HashRouter, Route } from 'react-router-dom';
 import { Box } from '@mui/material';
 import { DASHAdminSystemConstants, getEnv } from 'dash-constants';
+import { useDispatch } from 'react-redux';
+import { setResources } from 'dash-admin-state/src/redux/actions/Resources';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
-// Import from local dash-extensions - lightweight versions
-import GlobalSmallLoader from './dash-extensions/components/GlobalSmallLoader';
+// Import from shared dash-boilerplate package
+import {
+    GlobalSmallLoader,
+    DashThemeProviderLight,
+    createSimpleI18nProvider,
+} from 'dash-boilerplate';
+
+// Use dash-admin's I18nBridgeProvider as the single source of truth for i18n
+// This works for both public and private apps since AppMaterialMenu uses this context
+import { I18nBridgeProvider, useI18nBridge } from 'dash-admin/src/contexts/I18nBridgeContext';
+
+// App-specific imports
 import { dashPublicRoutes } from '@app/KitchnTabsWebPublicRoutes';
 import ThemeComponent from './components/theme/ThemeComponent';
-
-// OPTIMIZED: Use lightweight providers instead of dash-admin versions
-import { I18nBridgeProviderLight, useI18nBridgeLight } from './dash-extensions/components/I18nBridgeProviderLight';
-import { DashThemeProviderLight } from './dash-extensions/components/DashThemeProviderLight';
 
 // Import translations
 import customEnglish from './i18n/en';
 import customSpanish from './i18n/es';
+import { defaultComponentOverrides } from 'dash-styles';
 
 interface KitchnTabsPublicAppProps {}
 
-// Simple I18n Provider Implementation for Light App
-const createSimpleI18nProvider = (translations: any, initialLocale: string) => {
-    let locale = initialLocale;
-    
-    // Helper to get nested value
-    const getNestedValue = (obj: any, path: string) => {
-        return path.split('.').reduce((prev, curr) => prev ? prev[curr] : null, obj);
-    };
-
-    // Simple interpolation for variables like %{name}
-    const interpolate = (text: string, options: any) => {
-        if (!options || !text) return text;
-        return Object.keys(options).reduce((acc, key) => {
-            return acc.replace(new RegExp(`%\\{${key}\\}`, 'g'), options[key]);
-        }, text);
-    };
-
-    return {
-        translate: (key: string, options?: any) => {
-            const messages = translations[locale] || translations['en'];
-            const text = getNestedValue(messages, key);
-            
-            // If text is found, interpolate; otherwise return key
-            if (typeof text === 'string') {
-                return interpolate(text, options);
-            }
-            return key;
+// Create QueryClient instance for React Query
+const queryClient = new QueryClient({
+    defaultOptions: {
+        queries: {
+            refetchOnWindowFocus: false,
+            retry: 1,
         },
-        changeLocale: (newLocale: string) => {
-            if (translations[newLocale]) {
-                locale = newLocale;
-                return Promise.resolve();
-            }
-            return Promise.reject('Locale not found');
-        },
-        getLocale: () => locale,
-        getLocales: () => [
-            { locale: 'en', name: 'English' },
-            { locale: 'es', name: 'Español' }
-        ],
-        getMessages: (l: string) => translations[l]
-    };
-};
+    },
+});
 
 const KitchnTabsPublicApp: React.FC<KitchnTabsPublicAppProps> = () => {
+    const dispatch = useDispatch();
     // Memoize environment variables
     const envVars = useMemo(() => ({
         APP_VERSION: getEnv('APP_VERSION') || '1.0.0',
@@ -113,7 +90,10 @@ const KitchnTabsPublicApp: React.FC<KitchnTabsPublicAppProps> = () => {
     // Create simple i18nProvider
     const i18nProvider = useMemo(() => {
         const initialLocale = localStorage.getItem('dash-user-locale') || 'es';
-        return createSimpleI18nProvider(translationsData, initialLocale);
+        return createSimpleI18nProvider({ 
+            translations: translationsData, 
+            initialLocale 
+        });
     }, [translationsData]);
 
     // Memoize theme options
@@ -134,35 +114,67 @@ const KitchnTabsPublicApp: React.FC<KitchnTabsPublicAppProps> = () => {
                 }
             }
         },
+        ...defaultComponentOverrides({})
     }), []);
 
-    // Bridge setter component - using light version
+ 
+
+    // Bridge setter component - sets i18n provider on the single shared context
     const I18nBridgeSetter = ({ provider }: { provider: any }) => {
-        const { setI18nProvider } = useI18nBridgeLight();
+        const { setI18nProvider } = useI18nBridge();
+        
         React.useEffect(() => {
-            if (provider) setI18nProvider(provider);
+            if (provider) {
+                console.log('🌐 I18nBridgeSetter: Setting provider on I18nBridgeContext');
+                setI18nProvider(provider);
+            }
         }, [provider, setI18nProvider]);
         return null;
     };
 
+    useEffect(() => {
+        let mounted = true;
+
+        const loadPublicResources = async () => {
+            try {
+                const module = await import('./resources/public/homeResources');
+                const resources = module.default || module.HomeResources || [];
+                if (mounted) {
+                    dispatch<any>(setResources(resources));
+                }
+            } catch (error) {
+                console.error('❌ Failed to load public resources:', error);
+            }
+        };
+
+        loadPublicResources();
+
+        return () => {
+            mounted = false;
+        };
+    }, [dispatch]);
+
     return (
-        <RouterComponent>
-            <I18nBridgeProviderLight>
-                <I18nBridgeSetter provider={i18nProvider} />
-                <DashThemeProviderLight extendedOptions={extendedThemeOptions}>
-                    <Box className="kitchntabs-public-app">
-                        <ThemeComponent>
-                            <React.Suspense fallback={<GlobalSmallLoader />}>
-                                <Routes>
-                                    {/* Render shared routes */}
-                                    {dashPublicRoutes()}
-                                </Routes>
-                            </React.Suspense>
-                        </ThemeComponent>
-                    </Box>
-                </DashThemeProviderLight>
-            </I18nBridgeProviderLight>
-        </RouterComponent>
+        <QueryClientProvider client={queryClient}>
+            <RouterComponent>
+                {/* Single I18nBridgeProvider from dash-admin - works for all components */}
+                <I18nBridgeProvider>
+                    <I18nBridgeSetter provider={i18nProvider} />
+                    <DashThemeProviderLight extendedOptions={extendedThemeOptions}>
+                        <Box className="kitchntabs-public-app">
+                            <ThemeComponent>
+                                <React.Suspense fallback={<GlobalSmallLoader />}>
+                                    <Routes>
+                                        {/* Render shared routes */}
+                                        {dashPublicRoutes()}
+                                    </Routes>
+                                </React.Suspense>
+                            </ThemeComponent>
+                        </Box>
+                    </DashThemeProviderLight>
+                </I18nBridgeProvider>
+            </RouterComponent>
+        </QueryClientProvider>
     );
 };
 

@@ -12,11 +12,11 @@ import CssBaseline from '@mui/material/CssBaseline';
 import { Theme, createTheme, ThemeProvider } from '@mui/material';
 
 // Helper to get CSS variable value from :root
-const getCssVariable = (varName: string, defaultValue: string): string => {
+/*const getCssVariable = (varName: string, defaultValue: string): string => {
     if (typeof document === 'undefined') return defaultValue;
     const value = getComputedStyle(document.documentElement).getPropertyValue(varName).trim();
     return value || defaultValue;
-};
+};*/
 
 // Helper to get numeric CSS variable
 const getCssVariableNumber = (varName: string, defaultValue: number): number => {
@@ -27,33 +27,58 @@ const getCssVariableNumber = (varName: string, defaultValue: number): number => 
 };
 
 // Get theme colors from CSS variables based on mode
+// Helper to get CSS variable value from :root, returns null if not set
+const getCssVariable = (varName: string): string | null => {
+    if (typeof document === 'undefined') return null;
+    const value = getComputedStyle(document.documentElement).getPropertyValue(varName).trim();
+    return value || null;
+};
+
+// Get theme colors from CSS variables based on mode, only including defined variables
 const getThemeColors = (mode: 'light' | 'dark') => {
+    const colors: any = {};
     const suffix = `--${mode}`;
     
-    return {
-        // Primary colors
-        primaryColor: getCssVariable(`--primary-color${suffix}`, mode === 'dark' ? '#4a90d9' : '#1976d2'),
-        primaryContrast: getCssVariable(`--primary-contrast${suffix}`, '#ffffff'),
-        
-        // Secondary colors
-        secondaryColor: getCssVariable(`--secondary-color${suffix}`, mode === 'dark' ? '#9c27b0' : '#dc004e'),
-        
-        // Background colors
-        bodyBgPrimary: getCssVariable(`--bodybg-primary${suffix}`, mode === 'dark' ? '#1a1a2e' : '#f5f5f5'),
-        bodyBgSecondary: getCssVariable(`--bodybg-secondary${suffix}`, mode === 'dark' ? '#16213e' : '#ffffff'),
-        componentBg: getCssVariable(`--component-bg${suffix}`, mode === 'dark' ? '#16213e' : '#ffffff'),
-        
-        // Text colors
-        textColor: getCssVariable(`--text-color${suffix}`, mode === 'dark' ? '#ffffff' : '#000000'),
-        textContrast: getCssVariable(`--text-contrast${suffix}`, mode === 'dark' ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.6)'),
-        headingColor: getCssVariable(`--heading-color${suffix}`, mode === 'dark' ? '#ffffff' : '#000000'),
-        
-        // Link colors
-        linkColor: getCssVariable(`--link-color${suffix}`, mode === 'dark' ? '#4a90d9' : '#1976d2'),
-        
-        // Border colors
-        borderColor: getCssVariable(`--border-color${suffix}`, mode === 'dark' ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.12)'),
-    };
+    // Primary colors
+    const primaryColor = getCssVariable(`--primary-color${suffix}`);
+    if (primaryColor) colors.primaryColor = primaryColor;
+    
+    const primaryContrast = getCssVariable(`--primary-contrast${suffix}`);
+    if (primaryContrast) colors.primaryContrast = primaryContrast;
+    
+    // Secondary colors
+    const secondaryColor = getCssVariable(`--secondary-color${suffix}`);
+    if (secondaryColor) colors.secondaryColor = secondaryColor;
+    
+    // Background colors
+    const bodyBgPrimary = getCssVariable(`--bodybg-primary${suffix}`);
+    if (bodyBgPrimary) colors.bodyBgPrimary = bodyBgPrimary;
+    
+    const bodyBgSecondary = getCssVariable(`--bodybg-secondary${suffix}`);
+    if (bodyBgSecondary) colors.bodyBgSecondary = bodyBgSecondary;
+    
+    const componentBg = getCssVariable(`--component-bg${suffix}`);
+    if (componentBg) colors.componentBg = componentBg;
+    
+    // Text colors
+    const textColor = getCssVariable(`--text-color${suffix}`);
+    if (textColor) colors.textColor = textColor;
+    
+    const textContrast = getCssVariable(`--text-contrast${suffix}`);
+    if (textContrast) colors.textContrast = textContrast;
+    
+    const headingColor = getCssVariable(`--heading-color${suffix}`);
+    if (headingColor) colors.headingColor = headingColor;
+    
+    // Link colors
+    const linkColor = getCssVariable(`--link-color${suffix}`);
+    if (linkColor) colors.linkColor = linkColor;
+    
+    // Border colors
+    const borderColor = getCssVariable(`--border-color${suffix}`);
+    if (borderColor) colors.borderColor = borderColor;
+    
+    return colors;
 };
 
 // Create theme from CSS variables
@@ -114,9 +139,46 @@ const createMinimalTheme = (mode: 'light' | 'dark', extendedOptions?: any): Them
                         backgroundImage: 'none',
                     }
                 }
-            }
+            },
+            MuiOutlinedInput: {
+                styleOverrides: {
+                    root: {
+                        color: 'var(--text-color)',
+                        '& .MuiOutlinedInput-notchedOutline': {
+                            borderColor: 'var(--border-color)',
+                        },
+                        '&:hover .MuiOutlinedInput-notchedOutline': {
+                            borderColor: 'var(--primary-color)',
+                        },
+                        '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                            borderColor: 'var(--primary-color)',
+                        },
+                    },
+                },
+            },
+            MuiInputLabel: {
+                styleOverrides: {
+                    root: {
+                        color: 'var(--text-color)',
+                        '&.Mui-focused': {
+                            color: 'var(--primary-color)',
+                        },
+                    },
+                },
+            },
+            MuiSelect: {
+                styleOverrides: {
+                    select: {
+                        color: 'var(--text-color)',
+                    },
+                    icon: {
+                        color: 'var(--text-color)',
+                    },
+                },
+            },
+            ...(extendedOptions?.components || {}),
         },
-        ...extendedOptions,
+        ...(extendedOptions ? (({ components, ...rest }) => rest)(extendedOptions) : {}),
     });
 };
 
@@ -148,8 +210,19 @@ export const DashThemeProviderLight: React.FC<DashThemeProviderLightProps> = ({
     extendedOptions 
 }) => {
     const [currentMode, setCurrentMode] = useState<'light' | 'dark'>(() => {
-        const stored = document.documentElement.getAttribute('data-theme');
-        return (stored === 'light' || stored === 'dark') ? stored : 'dark';
+        // Check localStorage first
+        if (typeof window !== 'undefined') {
+            const stored = localStorage.getItem('theme');
+            if (stored === 'light' || stored === 'dark') return stored;
+        }
+        
+        // Fallback to data-theme attribute
+        if (typeof document !== 'undefined') {
+            const attr = document.documentElement.getAttribute('data-theme');
+            return (attr === 'light' || attr === 'dark') ? attr : 'dark';
+        }
+        
+        return 'dark';
     });
 
     const [themeVersion, setThemeVersion] = useState(0);

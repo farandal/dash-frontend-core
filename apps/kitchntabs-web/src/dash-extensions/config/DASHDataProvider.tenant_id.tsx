@@ -1,3 +1,4 @@
+import { getCookie } from 'dash-admin/src/utils/cookies';
 import { AxiosError } from 'axios';
 import queryString from 'query-string';
 import { processAxiosError, useAxios } from 'dash-axios-hook';
@@ -9,9 +10,11 @@ import { dashStorage } from 'dash-utils';
 
 const dataProvider = {
     getList: async (resource, params, _options) => {
+        const tenant_id = dashStorage.getItem('tenant_id');
+
         let payload = processPostData(
             resource,
-            { ...params.data, ...params.filter, ...{ no_cache: true } },
+            { ...params.data, ...params.filter, ...{ tenant_id: tenant_id, no_cache: true } },
             'getList',
         );
 
@@ -114,9 +117,6 @@ const dataProvider = {
         const axios = useAxios();
 
         try {
-            /*if(resource.includes('tenant/tenant')) { 
-                debugger; 
-            }*/
             const response = await axios.get(
                 `${resource}/${params.id}`,
                 params.meta ? { params: params.meta } : {},
@@ -200,6 +200,7 @@ const dataProvider = {
 
     getManyReference: async (resource, params) => {
 
+        const tenant_id = dashStorage.getItem('tenant_id');
         const pagination =
             params.filter && params.filter.pagination
                 ? params.filter.pagination
@@ -216,6 +217,7 @@ const dataProvider = {
 
             ...params.filter,
             [params.target]: params.id,
+            tenant_id,
         };
 
         if (pagination) {
@@ -253,11 +255,17 @@ const dataProvider = {
             params.data?.isFormData === true ||
             params.meta?.isFormData === true;
 
+        const tenant_id =
+            params && params.data && params.data.tenant_id
+                ? params.data.tenant_id
+                : dashStorage.getItem('tenant_id');
+
+
         const resourcePath = (params.id && resource.includes(params.id.toString())) ? resource : (params.id ? `${resource}/${params.id}` : resource);
 
         const postData = processPostData(
             resourcePath,
-            { ...params.data },
+            { ...params.data, ...{ tenant_id: tenant_id } },
             'update',
         );
 
@@ -274,20 +282,18 @@ const dataProvider = {
         }
 
         try {
-            let response;
             if (isFormData) {
                 const form: FormData = processFormData(resource, postData);
-                response = await action(resourcePath, form, {
+                const response = await action(resourcePath, form, {
                     headers: { 'Content-Type': 'multipart/form-data' },
                 });
-            } else {
-                response = await action(resourcePath, postData);
+
+                return response;
             }
 
-            // Backend now returns { data: ... } format directly
-            // React-Admin expects this exact format
-            return response.data;
+            const response = await action(resourcePath, postData);
 
+            return response;
         } catch (e: unknown) {
             const error = e as AxiosError<IDashAutoAdminDefaultBackendStructure>;
             throw processAxiosError(error, resource, 'update')
@@ -305,6 +311,14 @@ const dataProvider = {
 
         const resourcePath = (params.id && resource.includes(params.id.toString())) ? resource : (params.id ? `${resource}/${params.id}` : resource);
 
+        // Only add tenant_id from cookie if it's not already in the data and the user is not a system admin
+        let tenant_id = params.data?.tenant_id;
+
+        // Exception For system/user resource, don't auto-add tenant_id from cookie
+        if (resource !== 'system/user' && !tenant_id) {
+            tenant_id = dashStorage.getItem('tenant_id');
+        }
+
         const method: 'POST' | 'PUT' = params.meta?.method
             ? params.meta.method
             : 'POST';
@@ -315,25 +329,22 @@ const dataProvider = {
             resourcePath,
             {
                 ...params.data,
+                ...(tenant_id ? { tenant_id: tenant_id } : {}) // Only add tenant_id if it exists
             },
             'create',
         );
 
 
         try {
-            let response;
             if (isFormData) {
                 const form: FormData = processFormData(resource, postData);
-                response = await action(resourcePath, form, {
+                return await action(resourcePath, form, {
                     headers: { 'Content-Type': 'multipart/form-data' },
                 });
-            } else {
-                response = await action(resourcePath, postData);
             }
 
-            // Backend now returns { data: ... } format directly
-            // React-Admin expects this exact format
-            return response.data;
+            return await action(resourcePath, postData);
+
 
         } catch (e: unknown) {
             const error = e as AxiosError<IDashAutoAdminDefaultBackendStructure>;
@@ -342,10 +353,13 @@ const dataProvider = {
     },
     updateMany: async (resource, params) => {
 
+        const tenant_id = dashStorage.getItem('tenant_id');
+
         const axios = useAxios();
 
         const query = {
             filter: JSON.stringify({ ids: params.ids }),
+            tenant_id,
         };
 
         const method: 'POST' | 'PUT' = params.meta?.method
@@ -360,7 +374,7 @@ const dataProvider = {
                 params.data,
             );
 
-            return response.data;
+            return response;
         } catch (e: any) {
             window.dispatchEvent(
                 new MessageEvent('dash-global-loader', { data: false }),
@@ -371,6 +385,11 @@ const dataProvider = {
 
     import: async (resource, params) => {
         params.data = processPostData(resource, params.data, 'import');
+
+        if (dashStorage.getItem('tenant_id')) {
+            if (params.data && !params.data.tenant_id)
+                params.data.tenant_id = dashStorage.getItem('tenant_id');
+        }
 
         const axios = useAxios();
 
@@ -395,6 +414,7 @@ const dataProvider = {
     },
 
     delete: async (resource, params) => {
+        const tenant_id = dashStorage.getItem('tenant_id');
         const axios = useAxios();
 
         const resourcePath = (params.id && resource.includes(params.id.toString())) ? resource : `${resource}/${params.id}`;
@@ -402,6 +422,7 @@ const dataProvider = {
         // try {
         const { data } = await axios.delete(resourcePath, {
             ...params.data,
+            tenant_id: tenant_id,
         });
         return {
             data,
@@ -415,12 +436,14 @@ const dataProvider = {
     },
 
     deleteMany: async (resource, params) => {
+        const tenant_id = dashStorage.getItem('tenant_id');
 
         const axios = useAxios();
 
         const query = {
 
             ids: params.ids ? params.ids : [],
+            tenant_id,
         };
 
         // try {

@@ -9,17 +9,16 @@ import React, { lazy, Suspense } from 'react';
 import { useSelector } from 'react-redux';
 import { IAuthState, IDASHAppState } from 'dash-admin-state';
 
-// Import bootstrap utilities
+// Import bootstrap utilities from shared boilerplate package
 import {
     useAppInitialization,
     useInitializeReduxFromPersisted,
     useLogoutEventListener,
     usePendingRedirect,
-    usePathnameTracker
-} from './dash-extensions/utils/DashBootstrapUtils';
-
-// Import GlobalSmallLoader from local dash-extensions
-import GlobalSmallLoader from './dash-extensions/components/GlobalSmallLoader';
+    useUrlLocaleDetection,
+    GlobalSmallLoader,
+    DefaultInitializationErrorFallback,
+} from 'dash-boilerplate';
 
 // Lazy load app-specific resource loaders (splits bundles)
 const KitchnTabsWebPrivateAppLoader = lazy(() => import('./KitchnTabsWebPrivateAppLoader'));
@@ -42,6 +41,9 @@ const KitchnTabsWebBootstrap: React.FC = () => {
     // Handle redirect parameters
     usePendingRedirect();
 
+    // Detect and apply locale from URL query string (e.g., ?lang=es)
+    useUrlLocaleDetection(['es', 'en'], 'es');
+
     console.log('🔍 KitchnTabsWebBootstrap: Redux auth state:', {
         authenticated: auth.authenticated,
         user: auth.user ? `${auth.user.name || auth.user.email} (${auth.user.id})` : null,
@@ -54,37 +56,10 @@ const KitchnTabsWebBootstrap: React.FC = () => {
 
     if (initializationError) {
         return (
-            <div
-                style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    minHeight: '100vh',
-                    gap: '16px',
-                    color: 'var(--text-color,@text-color--dark)',
-                }}
-            >
-                <h6 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 500, color: '#f44336' }}>
-                    {initializationError}
-                </h6>
-                <button
-                    onClick={() => window.location.reload()}
-                    style={{
-                        marginTop: '16px',
-                        padding: '8px 16px',
-                        backgroundColor: '#1976d2',
-                        color: 'white',
-                        border: 'none',
-                        borderRadius: '4px',
-                        cursor: 'pointer',
-                        fontSize: '14px',
-                        fontWeight: 500
-                    }}
-                >
-                    Retry
-                </button>
-            </div>
+            <DefaultInitializationErrorFallback 
+                error={initializationError}
+                retryLabel="Retry"
+            />
         );
     }
 

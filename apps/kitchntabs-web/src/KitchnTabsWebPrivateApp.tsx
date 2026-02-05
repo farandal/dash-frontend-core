@@ -298,7 +298,7 @@ const KitchnTabsWebPrivateApp: React.FC<KitchnTabsWebPrivateAppProps> = ({
     }, [translationsData, settings?.availableLocales, settings?.preferences]);
 
     // Load auto admin components
-    /*
+    
     const [dashAutoAdminComponents, setDashAutoAdminComponents] = React.useState<any>(null);
 
     useEffect(() => {
@@ -314,12 +314,12 @@ const KitchnTabsWebPrivateApp: React.FC<KitchnTabsWebPrivateAppProps> = ({
                     JsonCssVarValuesComp,
                     NotificationPreferencesComp
                 ] = await Promise.all([
-                    import('../components/ecommerce/uber/UberStoreAvailability'),
-                    import('../components/ecommerce/uber/BasicTokenGeneratorField'),
-                    import('dash-components').then(module => ({ default: module.Json })),
-                    import('dash-components').then(module => ({ default: module.JsonColorSelectorEnhanced })),
-                    import('dash-components').then(module => ({ default: module.JsonCssVarValues })),
-                    import('dash-components').then(module => ({ default: module.NotificationPreferences }))
+                    import('kt-ecommerce/src/components/Uber/UberStoreAvailability'),
+                    import('kt-ecommerce/src/components/Uber/BasicTokenGeneratorField'),
+                    import('dash-components/src/components/Json/Json'),
+                    import('dash-components/src/components/JsonColorSelector/JsonColorSelectorEnhanced'),
+                    import('dash-components/src/components/JsonColorSelector/JsonCssVarValues'),
+                    import('dash-components/src/components/NotificationPreferences/NotificationPreferences')
                 ]);
 
                 setDashAutoAdminComponents({
@@ -340,14 +340,12 @@ const KitchnTabsWebPrivateApp: React.FC<KitchnTabsWebPrivateAppProps> = ({
 
         loadAutoAdminComponents();
     }, []);
-    */
+    
 
 
     // Domain App Layout wrapper
     const DomainAppLayout = useCallback((props: any) => {
         const { ThemeComponent, children: c } = props;
-
-        debugger;
 
         return (
             <Suspense fallback={<GlobalSmallLoader message="Loading layout..." />}>
@@ -413,7 +411,8 @@ const KitchnTabsWebPrivateApp: React.FC<KitchnTabsWebPrivateAppProps> = ({
             <DASHAppProviders
                 wsMessagesManager={customWSMessagesManager || DASHWSMessagesManager}
                 extendedThemeOptions={extendedThemeOptions}
-                dashAutoAdminComponents={null}
+                //dashAutoAdminComponents={null}
+                dashAutoAdminComponents={dashAutoAdminComponents}
                 queryClient={customQueryClient}
                 queryPersister={localStoragePersister}
                 CustomEchoProvider={customEchoProvider}

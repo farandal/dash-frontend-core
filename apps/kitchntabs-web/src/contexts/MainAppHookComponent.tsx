@@ -36,6 +36,21 @@ const MainAppHookComponent = () => {
 
     const lastNotificationRef = useRef<any>(null);
 
+    // Listen for subscription plan change events to trigger refresh
+    useEffect(() => {
+        const handlePlanChange = (event: CustomEvent) => {
+            console.log('🔔 MainAppHookComponent: Subscription plan changed, triggering refresh...', event.detail);
+            // Trigger a global refresh to update any subscription-related data
+            refresh();
+        };
+
+        window.addEventListener('subscription_plan_changed' as any, handlePlanChange);
+        
+        return () => {
+            window.removeEventListener('subscription_plan_changed' as any, handlePlanChange);
+        };
+    }, [refresh]);
+
     useEffect(() => {
         console.log('🔍 MainAppHookComponent: Setting up notification listener...');
         const lastNotification = laravelEchoContext?.lastEvent;

@@ -498,7 +498,7 @@ export default ({ mode }) => {
 
       allowedHosts: [
         "pw-hmr.ngrok.dev",
-        "pw.ngrok.dev",
+        "pw-web.ngrok.dev",
         "localhost",
         "localhost:3000",
         "0.0.0.0",
@@ -745,9 +745,8 @@ export default ({ mode }) => {
         less: {
           javascriptEnabled: true,
           additionalData: `
-            @import "../../../packages/dash-styles/src/dash-variables.less";
-            @import '@app/dash-variables.less';
             @import "../../../packages/dash-styles/src/dash-css-transformer.less";
+            @import '@app/dash-variables.less';
           `,
         },
       },

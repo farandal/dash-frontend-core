@@ -16,8 +16,8 @@ const ErrorFallback: React.FC<FallbackProps> = ({ error, resetErrorBoundary }) =
         justifyContent: 'center',
         height: '100vh',
         gap: '16px',
-        color: 'var(--text-color, #fff)',
-        backgroundColor: 'var(--body-color, #1a1a2e)'
+        color: 'var(--text-color)',
+        backgroundColor: 'var(--body-color)'
     }}>
         <h1 style={{ margin: 0, fontSize: '1.5rem' }}>Something went wrong</h1>
         <p style={{ margin: 0, opacity: 0.8 }}>{error?.message || 'Unknown error'}</p>
@@ -25,7 +25,7 @@ const ErrorFallback: React.FC<FallbackProps> = ({ error, resetErrorBoundary }) =
             onClick={resetErrorBoundary}
             style={{
                 padding: '8px 24px',
-                backgroundColor: 'var(--primary-color, #4a90d9)',
+                backgroundColor: 'var(--primary-color)',
                 color: '#fff',
                 border: 'none',
                 borderRadius: '4px',
@@ -46,7 +46,7 @@ const SimpleLoader: React.FC = () => (
         justifyContent: 'center',
         alignItems: 'center',
         height: '100vh',
-        backgroundColor: 'var(--body-color, #1a1a2e)'
+        backgroundColor: 'var(--body-color)'
     }}>
         <div 
             className="loading-spinner"
@@ -54,7 +54,7 @@ const SimpleLoader: React.FC = () => (
                 width: '40px',
                 height: '40px',
                 border: '3px solid rgba(255,255,255,0.1)',
-                borderTopColor: 'var(--primary-color, #4a90d9)',
+                borderTopColor: 'var(--primary-color)',
                 borderRadius: '50%',
                 animation: 'spin 1s linear infinite'
             }}

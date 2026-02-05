@@ -7,27 +7,14 @@
  * - CSS is loaded via async imports to not block initial render
  */
 import React from 'react';
-import { createRoot } from 'react-dom/client'
+import { createRoot } from 'react-dom/client';
 
-// Lightweight wrapper - no react-admin dependency
-import AppWrapperLight from './dash-extensions/components/AppWrapperLight';
-
-// Import minimal inline loader
-import { GlobalSmallLoader } from './dash-extensions/components';
+// Import lightweight boilerplate components from shared package
+import { AppWrapperLight, GlobalSmallLoader } from 'dash-boilerplate';
 
 const rootElement = document.getElementById('root');
 if (!rootElement) { throw new Error('Root element not found'); }
 
-// Initialize theme early before React renders to prevent flash
-const initializeThemeEarly = () => {
-    const stored = localStorage.getItem('theme');
-    const theme = (stored === 'light' || stored === 'dark') ? stored : 'dark';
-    document.documentElement.setAttribute('data-theme', theme);
-    if (!stored) {
-        localStorage.setItem('theme', theme);
-    }
-};
-initializeThemeEarly();
 
 // Electron store sync (if available)
 if (window.electronStore) {
@@ -46,7 +33,7 @@ const AppComponent = React.lazy<React.FC>(() => {
     return new Promise<{ default: React.FC }>((resolve) => {
         // Small delay to allow initial render first
         setTimeout(() => {
-            import('./KitchnTabsWebAppWithProviders').then((mod) => {
+            import('./DashAppComponent').then((mod) => {
                 resolve({ default: mod.default });
             }).catch((error) => {
                 console.error('Failed to load application:', error);
@@ -84,7 +71,7 @@ const AppComponent = React.lazy<React.FC>(() => {
 });
 
 // Render with minimal wrapper - no Redux provider yet
-// Redux provider is included in KitchnTabsWebAppWithProviders
+// Redux provider is included in DashAppComponent
 root.render(
     <AppWrapperLight>
         <React.Suspense fallback={<GlobalSmallLoader />}>
