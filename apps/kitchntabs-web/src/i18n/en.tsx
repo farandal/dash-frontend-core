@@ -1,9 +1,17 @@
 const customEn = {
+       
     "Delivery Method": "Delivery Method",
     "Table Number": "Table Number",
     "Counter": "Counter",
     "Table": "Table",
     "Delivery": "Delivery",
+    "dash-auto-admin-tabs": {
+        "Productos": "Products",
+        "Actualizaciones": "Updates",
+        "Vouchers": "Vouchers",
+        "Datos": "Data",
+    },
+    
 
     tab: {
         attribute: {
@@ -350,6 +358,7 @@ const customEn = {
             campaigns: 'Campaigns',
             import_export: 'Import/Export',
             cashier: 'Cashier',
+            
         },
         // System resources
         system: {
@@ -606,6 +615,239 @@ const customEn = {
                 instructions: "Point your camera at the QR code",
             }
         },
+        // Tenancy resources
+        tenancy: {
+            groups: {
+                account: "Account",
+                billing: "Billing",
+                system: "System"
+            },
+            account: {
+                label: "Account",
+            },
+            subscription: {
+                label: "Subscription",
+            },
+            invoices: {
+                label: "Invoices",
+            },
+            payment_methods: {
+                label: "Payment Methods",
+            },
+            tenants: {
+                label: "Tenants",
+                menu_all: "All Tenants",
+                main_action: "Add Tenant",
+            },
+        },
+    },
+    // Verification
+    verify: {
+        title: "Account Verification",
+        verifying: "Verifying your account...",
+        invalidLink: "Invalid or expired verification link. Redirecting...",
+        success: "Account verified successfully! Redirecting...",
+        alreadyVerified: "Account is already verified. Redirecting...",
+        error: "An error occurred during verification. Redirecting...",
+    },
+    // Profile
+    profile: {
+        title: "Profile",
+        subtitle: "Profile configuration",
+        validation: {
+            required: "This field is required",
+            passwords_dont_match: "Passwords do not match",
+        },
+        success: "User updated successfully",
+        error_prefix: "Error updating user,",
+        error_default: "Error updating user",
+        sections: {
+            info_title: "Info",
+            passwords_title: "Passwords",
+        },
+        fields: {
+            name: "Name",
+            lastname: "Last Name",
+            email: "Email",
+            current_password: "Current password",
+            new_password: "New password",
+            repeat_password: "Repeat new password",
+        },
+        actions: {
+            save: "Save",
+            saving: "Saving...",
+            save_passwords: "Save Passwords",
+            saving_passwords: "Saving Passwords...",
+        }
+    },
+    // Dashboard
+    dashboard: {
+        title: "Dashboard",
+        welcome: "Welcome to the Tenancy Admin Dashboard",
+    },
+    // Subscription module
+    subscription: {
+        fetch_error: "Error fetching subscription plans: %{message}",
+        unsupported_plans: "%{count} plan(s) not available with your current payment method. To access all plans, consider changing your payment method.",
+        no_compatible_plans: "No compatible plans available with your current payment method (%{gateway}). Please contact your system administrator.",
+        management: {
+            title: "Subscription Management",
+            subtitle: "Manage your subscription plan and billing settings.",
+        },
+        current: {
+            title: "Subscription",
+            subtitle: "Manage your subscription and add-ons.",
+        },
+        available_plans: {
+            title: "Available Plans",
+            subtitle: "Choose a plan that fits your needs. You can upgrade or downgrade at any time.",
+        },
+        renews: "Renews",
+        no_active: "You don't have an active subscription. Choose a plan below to get started.",
+        current_plan: "Current Plan",
+        select_plan: "Select Plan",
+        trial_days: "%{days} day trial",
+        // Feature translations
+        features: {
+            basic_features: "Basic features",
+            email_support: "Email support",
+            one_store: "1 store included",
+            three_users: "3 users",
+            fifty_products: "50 products",
+            unlimited_products: "Unlimited products",
+            unlimited_users: "Unlimited users",
+            priority_support: "Priority support",
+            advanced_analytics: "Advanced analytics",
+            api_access: "API access",
+        },
+        // Plan change notifications
+        pending_change_title: "Plan Change Pending",
+        pending_change_message: "Your plan change to %{plan} is pending payment confirmation. You will receive an email once the payment is processed.",
+        confirm_upgrade_title: "Confirm Plan Upgrade",
+        confirm_upgrade: "Are you sure you want to upgrade to %{plan}?",
+        confirm_downgrade_title: "Confirm Plan Change",
+        confirm_downgrade: "Are you sure you want to change to %{plan}?",
+        confirm_change_title: "Confirm Plan Change",
+        confirm_change: "Are you sure you want to change to %{plan}?",
+        upgrade_success: "Successfully upgraded to %{plan}",
+        downgrade_success: "Successfully changed to %{plan}",
+        change_success: "Successfully changed to %{plan}",
+        upgrade_error: "Failed to upgrade plan",
+        downgrade_error: "Failed to change plan",
+        change_error: "Failed to change plan",
+        downgrade_not_allowed: "Downgrade to %{plan} is not allowed",
+        // Unsubscribe
+        unsubscribe: {
+            button: "Cancel Subscription",
+            processing: "Cancelling...",
+            confirm_title: "Cancel Subscription",
+            confirm_message: "Are you sure you want to cancel your subscription?",
+            confirm_button: "Cancel Subscription",
+            access_until: "Access until:",
+            days_remaining: "Days remaining:",
+            what_happens_title: "What happens when you unsubscribe:",
+            success: "Subscription cancelled. Access until %{date}.",
+            error: "Failed to cancel subscription",
+            preview_error: "Failed to load cancellation details",
+        },
+        // Subscription management actions
+        manage: "Manage",
+        choose_plan: "Choose a plan",
+        cancel_plan: "Cancel plan",
+        cancel_success: "Subscription cancelled successfully",
+        cancel_error: "Error cancelling subscription",
+        // Subscription details labels
+        active: "Subscription Active",
+        status_label: "Status:",
+        billing_cycle_label: "Billing Cycle:",
+        current_period_label: "Current Period:",
+        trial_ends_label: "Trial Ends:",
+        next_billing_label: "Next Billing:",
+        pending_change: "Pending Change",
+        switching_to: "Switching to:",
+        effective_date: "Effective:",
+    },
+    // Billing & Payment Gateways
+    billing: {
+        // Gateway Selector
+        selectPaymentMethod: "Select a Payment Provider",
+        selectPaymentMethodDesc: "Choose how you want to pay for your subscription",
+        noGatewaysAvailable: "No payment methods available for your account",
+        supportedCurrencies: "Currencies",
+        connecting: "Connecting...",
+        addCard: "Add Card",
+        
+        // Add Payment Method Prompt
+        addPaymentRequired: "Payment Method Required",
+        trialEndsIn: "Your trial ends in %{days} day(s)",
+        trialEnded: "Your trial has ended",
+        planContinue: "Add a payment method to continue using %{plan}",
+        
+        // Gateway Callback
+        callback: {
+            processing: "Processing your card...",
+            pleaseWait: "Please wait while we complete your registration.",
+            success: "Payment method added successfully!",
+            successTitle: "Success!",
+            redirecting: "Redirecting you back...",
+            noToken: "No registration token received",
+            error: "Failed to complete registration",
+            errorTitle: "Something went wrong",
+            tryAgain: "Try Again",
+        },
+        
+        // Payment Methods
+        paymentMethods: {
+            title: "Payment Methods",
+            description: "Manage your payment methods for subscription billing.",
+            noPaymentMethod: "No Payment Method",
+            addPaymentMethodToSubscribe: "Add a payment method to subscribe to a paid plan.",
+            addNew: "Add Payment Method",
+            setDefault: "Set as Default",
+            remove: "Remove",
+            default: "Default",
+            expiresOn: "Expires %{date}",
+            noMethods: "No payment methods added yet",
+            connected: "Connected",
+            paymentCard: "Payment Card",
+            removePaymentMethod: "Remove Payment Method",
+            removePaymentMethodTooltip: "Remove payment method",
+            confirmRemovePaymentMethod: "Are you sure you want to remove this payment method? You will need to add a new one to continue using paid features.",
+            paymentMethodRemoved: "Payment method removed",
+            errorRemovingPaymentMethod: "Failed to remove payment method",
+            addedOn: "Added on",
+        },
+        
+        // Invoices
+        invoices: {
+            title: "Payment Document",
+            document: "Document",
+            preview: "Document Preview",
+            view: "View",
+            download: "Download",
+            downloadAll: "Download All",
+            close: "Close",
+            loading: "Loading document...",
+            loadError: "Error loading document",
+            downloadSuccess: "Document downloaded successfully",
+            downloadError: "Error downloading document",
+            notAvailable: "Document not available",
+            browserNotSupported: "Your browser cannot display PDFs. Please download the document.",
+            // Document types
+            documentType: {
+                receipt: "Receipt",
+                invoice: "Invoice",
+                document: "Document",
+            },
+            // Status labels
+            status: {
+                succeeded: "Paid",
+                paid: "Paid",
+                pending: "Pending",
+                failed: "Failed",
+                refunded: "Refunded",
+            },
+        },
     },
     mall: {
         // Orders
@@ -769,6 +1011,7 @@ const customEn = {
 
     common: {
         cancel: "Cancel",
+        keep: "Keep Subscription",
         view: "View",
         edit: "Edit",
         login: "Login",
@@ -1091,21 +1334,24 @@ const customEn = {
             delete_selected: 'Delete Selected',
         },
     },
-    "dash-auto-admin-tabs": {
-        "Productos": "Products",
-        "Actualizaciones": "Updates",
-        "Vouchers": "Vouchers",
-        "Datos": "Data",
-    },
-    
     // Landing Page Content
     landing: {
+        login : {
+            email: 'Email',
+            password: 'Password',
+            submit: 'Submit',
+            resetPassword: 'Reset password'
+        },
         hero: {
             title: "KitchnTabs",
             subtitle: "The operational infrastructure that connects every restaurant in the world",
             description: "A technological platform designed for food courts and restaurants that digitalizes, orders, and synchronizes the entire ordering process, from taking orders to preparation and delivery.",
             cta: "Get Started",
-            learnMore: "Learn More"
+            learnMore: "Learn More",
+            trialTitle: "Join KitchnTabs now for free!",
+            trialSubtitle: "Start your 30-day free trial. No credit card required.",
+            emailPlaceholder: "Enter your email",
+            createStore: "CREATE STORE"
         },
         what: {
             title: "What is KitchnTabs?",
@@ -1237,10 +1483,15 @@ const customEn = {
             title: "Stay Updated",
             description: "Subscribe to our newsletter for the latest updates"
         },
+        cta: {
+            title: "Start your journey with us!",
+            subtitle: "Start your free 30-day trial. No credit card required."
+        },
         footer: {
             description: "Gastronomic management system",
             contact: "Contact",
             terms: "Terms",
+            security: "Security",
             privacy: "Privacy",
             copyright: "© KitchTabs, All rights reserved"
         },
@@ -1279,6 +1530,7 @@ const customEn = {
                     description: "Progressively incorporates digital payments, marketplace integration, inventory control and logistics."
                 }
             }
+        }
     },
     signup: {
         title: "Create Your Account",
@@ -1293,6 +1545,9 @@ const customEn = {
         confirmPassword: "Confirm Password",
         contactPhone: "Contact Phone",
         rut: "RUT",
+        preferredLanguage: "Preferred Language",
+        preferredCurrency: "Preferred Currency",
+        preferredTimezone: "Timezone",
         
         // Buttons and actions
         continueWithGoogle: "Continue with Google",
@@ -1313,6 +1568,7 @@ const customEn = {
         invalidEmail: "Invalid email address",
         businessNameRequired: "Business name is required",
         rutRequired: "RUT is required",
+        publicIdLabel: "Tax ID",
         invalidRut: "Invalid RUT",
         firstNameRequired: "First name is required",
         lastNameRequired: "Last name is required",
@@ -1330,7 +1586,189 @@ const customEn = {
         googleAuthError: "Error with Google authentication",
         
         // Dialog titles
-        error: "Error"
+        error: "Error",
+        
+        success: {
+            title: "Account Created Successfully!",
+            welcome: "Welcome! Your account has been created and you have subscribed to the %{planName} plan.",
+            verificationSent: "We have sent a verification email to %{email}. Please check your inbox and click on the verification link to activate your account.",
+            description: "Now you can log in to your account and start using all the features included in your plan.",
+            loginButton: "Go to Login",
+            homeButton: "Back to Home",
+            home_button: "Back to Home"
+        },
+        
+        verify: {
+            title: "Account Verification",
+            verifying: "Verifying account...",
+            invalidLink: "Invalid verification link.",
+            success: "Account verified successfully. Redirecting to login...",
+            alreadyVerified: "Account already verified. Redirecting to login...",
+            error: "Error verifying account. Please try again.",
+            redirecting: "Redirecting to login..."
+        },
+        
+        login: {
+            title: "Login",
+            email: "Email",
+            password: "Password",
+            submit: "Login",
+            resetPassword: "Reset password",
+            invalidCredentials: "Invalid credentials",
+            invalidEmail: "Invalid email address",
+            invalidPassword: "Invalid password",
+            loading: "Loading...",
+            alreadyLoggedIn: "You are already logged in",
+            goHome: "Go to Home"
+        }
+    },
+
+    // Menu Items
+    menu: {
+        home: "Home",
+        plans: "Plans",
+        about: "About",
+        contact: "Contact",
+        download: "Download",
+        features: "Features"
+    },
+
+    // Plans Page
+    plans: {
+        title: "Choose Your Plan",
+        subtitle: "Start your free trial today. No credit card required.",
+        getStarted: "Get Started",
+        footer: "All plans include a free trial period. Cancel anytime.",
+        loading: "Loading plans...",
+        error: "Failed to load subscription plans. Please try again later.",
+        noPlans: "No plans available at this time.",
+        
+        // Plan names by slug
+        planNames: {
+            "free-trial": "Free Trial",
+            "basic-plan": "Basic Plan",
+            "professional-plan": "Professional Plan",
+            "enterprise-plan": "Enterprise Plan"
+        },
+        
+        // Plan descriptions by slug
+        planDescriptions: {
+            "free-trial": "30-day free trial with basic features",
+            "basic-plan": "Perfect for individuals and small teams",
+            "professional-plan": "Advanced features for growing businesses",
+            "enterprise-plan": "Complete solution for large organizations"
+        },
+        
+        // Feature translations
+        features: {
+            basic_features: "Basic features",
+            email_support: "Email support",
+            one_store: "1 store",
+            three_users: "3 users",
+            fifty_products: "50 products",
+            unlimited_stores: "Unlimited stores",
+            unlimited_users: "Unlimited users",
+            unlimited_products: "Unlimited products",
+            priority_support: "Priority support",
+            advanced_analytics: "Advanced analytics",
+            custom_domain: "Custom domain",
+            api_access: "API access",
+            white_label: "White label"
+        },
+        
+        // Billing cycles
+        billingCycle: {
+            daily: "per day",
+            weekly: "per week",
+            monthly: "per month",
+            yearly: "per year",
+            daily_short: "/day",
+            weekly_short: "/wk",
+            monthly_short: "/mo",
+            yearly_short: "/yr"
+        },
+        
+        // Trial badge
+        trialDays: "%{days}-day free trial",
+        
+        // Badges
+        popular: "Popular",
+        selected: "Selected"
+    },
+
+    // Tenancy Account Management
+    tenancy_account: {
+        management: {
+            title: "Account Management",
+            delete: {
+                title: "Delete Account",
+                description: "Permanently delete your account and all associated data. This action cannot be undone.",
+                button: "Delete Account",
+                dialog: {
+                    title: "Delete Account",
+                    warning_title: "Warning: This action is irreversible",
+                    warning_content: "Deleting your account will:",
+                    warning_items: {
+                        disable: "Immediately disable your account",
+                        schedule: "Schedule permanent deletion after %{days} days",
+                        delete_users: "Delete all users associated with this account",
+                        delete_tenants: "Delete all stores/tenants you manage",
+                        delete_products: "Delete all products and inventory",
+                        delete_subscriptions: "Cancel all active subscriptions",
+                        delete_data: "Permanently erase all your data"
+                    },
+                    confirm_instruction: "Type DELETE to confirm:",
+                    confirm_word: "DELETE",
+                    cancel: "Cancel",
+                    confirm: "Delete My Account"
+                },
+                success: "Account deletion initiated. You will receive an email confirmation.",
+                error: "Failed to initiate account deletion. Please try again.",
+                cannot_delete: "Cannot delete account at this time. Please contact support."
+            },
+            pending_deletion: {
+                title: "Account Pending Deletion",
+                description: "Your account is scheduled for permanent deletion on %{date}.",
+                cancel_button: "Cancel Deletion",
+                cancel_success: "Account deletion has been cancelled.",
+                cancel_error: "Failed to cancel deletion. Please try again."
+            },
+            export: {
+                title: "Export Your Data",
+                description: "Download a copy of all your account data in a portable format.",
+                button: "Request Data Export",
+                requesting: "Requesting export...",
+                success: "Data export requested. You will receive an email when it's ready.",
+                error: "Failed to request data export. Please try again.",
+                history: {
+                    title: "Export History",
+                    no_exports: "No data exports yet.",
+                    status: {
+                        pending: "Pending",
+                        processing: "Processing",
+                        completed: "Completed",
+                        failed: "Failed",
+                        expired: "Expired"
+                    },
+                    download: "Download",
+                    expires: "Expires: %{date}",
+                    expired_message: "This export has expired"
+                }
+            }
+        }
+    },
+
+    // Account list translations
+    account: {
+        no_accounts: "No accounts",
+        email_label: "Email",
+        created_label: "Created",
+        updated_label: "Updated",
+        trial_ends_label: "Trial ends",
+        plan_label: "Plan",
+        trial_days_left: "Trial days left",
+        deletion_scheduled: "Account scheduled for deletion on %{date}",
+        deletion_days_remaining: "Account deletion in %{days} days",
     }
 };
 

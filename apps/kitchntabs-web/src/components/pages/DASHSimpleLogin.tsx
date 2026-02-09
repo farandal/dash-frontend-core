@@ -22,12 +22,14 @@ const errorSource = '';
 
 import {DASHAppConstants} from 'dash-constants';
 import DASHAuthenticationService from 'dash-admin/src/contexts/auth/DASHAuthenticationService';
+import { useTranslate } from '../hooks/usePolyglotTranslation';
 
 interface DASHLightWeightLoginProps {
     [key: string]: any;
 }
 
 const DASHLightWeightLogin: React.FC<DASHLightWeightLoginProps> = (props) => {
+    const translate = useTranslate();
     
     const EMAIL_REGEX = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
 
@@ -109,7 +111,7 @@ const DASHLightWeightLogin: React.FC<DASHLightWeightLoginProps> = (props) => {
             
             setLoginLoading(false);
             
-            let eMessage = 'Credenciales inválidas';
+            let eMessage = translate('login.invalidCredentials');
             if (error && error.response && error.response.data && error.response.data.message) {
                 eMessage = error.response.data.message;
             } else if (error && error.error) {
@@ -140,6 +142,7 @@ const DASHLightWeightLogin: React.FC<DASHLightWeightLoginProps> = (props) => {
                     boxShadow: 3
                 }}
             >
+             
                 <CardContent sx={{ p: 3 }}>
                     <form onSubmit={handleSubmit(onSubmit)} className='dash-app-login-form'>
                         {/* Title */}
@@ -153,15 +156,15 @@ const DASHLightWeightLogin: React.FC<DASHLightWeightLoginProps> = (props) => {
                                     fontWeight: 500
                                 }}
                             >
-                                Ingresar
+                                {translate('login.title')}
                             </h1>
                         </Box>
 
                         {/* Email Field */}
                         <Box sx={{ mb: 1.5 }}>
                             <TextField
-                                label='Email'
-                                placeholder='Email'
+                                label={translate('login.email')}
+                                placeholder={translate('login.email')}
                                 required
                                 fullWidth
                                 {...register('email', { validate: validateEmail })}
@@ -171,7 +174,7 @@ const DASHLightWeightLogin: React.FC<DASHLightWeightLoginProps> = (props) => {
                             />
                             {errors.email && (
                                 <Box sx={{ color: 'error.main', fontSize: '0.75rem', mt: 0.25 }}>
-                                    {errors.email.message || "Email inválido"}
+                                    {errors.email.message || translate('login.invalidEmail')}
                                 </Box>
                             )}
                         </Box>
@@ -179,8 +182,8 @@ const DASHLightWeightLogin: React.FC<DASHLightWeightLoginProps> = (props) => {
                         {/* Password Field */}
                         <Box sx={{ mb: 1.5 }}>
                             <TextField
-                                label='Contraseña'
-                                placeholder='Contraseña'
+                                label={translate('login.password')}
+                                placeholder={translate('login.password')}
                                 fullWidth
                                 {...register('password')}
                                 className='dash-app-form-item-input'
@@ -212,7 +215,7 @@ const DASHLightWeightLogin: React.FC<DASHLightWeightLoginProps> = (props) => {
                             />
                             {errors.password && (
                                 <Box sx={{ color: 'error.main', fontSize: '0.75rem', mt: 0.25 }}>
-                                    {errors.password.message || "Contraseña Inválida"}
+                                    {errors.password.message || translate('login.invalidPassword')}
                                 </Box>
                             )}
                         </Box>
@@ -221,10 +224,11 @@ const DASHLightWeightLogin: React.FC<DASHLightWeightLoginProps> = (props) => {
                         <Box sx={{ mb: 1.5, textAlign: 'right' }}>
                             <Link
                                 className='link link--secondary'
-                                href='/reset-password'
+                                component="button"
+                                onClick={() => navigate('/reset-password')}
                                 sx={{ fontSize: '0.875rem' }}
                             >
-                                Resetear contraseña D
+                                {translate('login.resetPassword')}
                             </Link>
                         </Box>
 
@@ -239,7 +243,7 @@ const DASHLightWeightLogin: React.FC<DASHLightWeightLoginProps> = (props) => {
                                 variant='contained'
                                 sx={{ py: 1 }}
                             >
-                                Ingresar
+                                {translate('login.submit')}
                             </LoadingButton>
                         </Box>
                     </form>

@@ -2,15 +2,15 @@ import React, {  } from 'react';
 import { PropsWithChildren } from 'react';
 
 import NotificationsCenter from '../components/Notifications/NotificationsCenter';
+import TenantSwitcher from './tenancy/TenantSwitcher';
 
 const DASHHeaderActions: React.FC<PropsWithChildren> = (props) => {
-    // Only keep header actions here, notifications are handled by NotificationsCenter
     return (
         <>
-            <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', width: '100%' }}>
-                {/* Other header actions can go here */}
+         
+                <TenantSwitcher />
                 <NotificationsCenter />
-            </div>
+           
         </>
     );
 };

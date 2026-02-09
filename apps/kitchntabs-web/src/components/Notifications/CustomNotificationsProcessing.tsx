@@ -231,6 +231,50 @@ const playNotificationSound = async (): Promise<void> => {
 
 export const processCustomNotification = async (notification: any): Promise<{ alarmCompleted: boolean }> => {
 
+    // Handle subscription plan change notifications
+    const notificationClass = notification?.notificationPayload?.class;
+    const eventType = notification?.type || 
+                      notification?.data?.type || 
+                      notification?.notificationPayload?.type;
+    
+    if (notificationClass === 'SubscriptionPlanChangeNotification' || 
+        eventType === 'subscription_plan_change_applied') {
+        console.log('🔔 [processCustomNotification] Subscription plan change detected');
+        
+        const notificationData = notification?.data || 
+                                notification?.notificationPayload?.notificationPayload || {};
+        
+        const fromPlanName = notificationData.from_plan_name || 'Previous Plan';
+        const toPlanName = notificationData.to_plan_name || 'New Plan';
+        const changeType = notificationData.change_type || 'change';
+        
+        // Build notification message
+        const message = changeType === 'upgrade' 
+            ? `🎉 Plan upgraded to ${toPlanName}`
+            : changeType === 'downgrade'
+            ? `Plan changed to ${toPlanName}`
+            : `Plan changed from ${fromPlanName} to ${toPlanName}`;
+        
+        // Show browser notification if permissions allow
+        if ('Notification' in window && Notification.permission === 'granted') {
+            new Notification('Subscription Updated', {
+                body: message,
+                icon: '/logo.png'
+            });
+        }
+        
+        // Show toast notification (if you have a notify function available)
+        console.log('✅ [processCustomNotification]', message);
+        
+        // Trigger a page refresh to update subscription data
+        // This will reload the current view if user is on subscription page
+        window.dispatchEvent(new CustomEvent('subscription_plan_changed', {
+            detail: { changeType, fromPlanName, toPlanName }
+        }));
+        
+        return { alarmCompleted: false }; // No alarm for plan changes
+    }
+
     let marketplace = notification?.data?.marketplace?.system_marketplace?.name || "STORE" ;
     const isConfirmedStatus = notification?.data?.new === "CONFIRMED";
     let play = false;

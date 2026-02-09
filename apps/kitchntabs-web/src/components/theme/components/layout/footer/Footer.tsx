@@ -160,16 +160,17 @@ export default function Footer({ space }) {
                 <div className="col-md-6 col-lg-5">
                   <div className="terms-policy-wrap text-lg-right text-md-right text-left">
                     <ul className="list-inline">
-                      {/*<li className="list-inline-item">
-                        <a className="small-text" href="#/">
+                  
+                        <li className="list-inline-item">
+                        <Link className="small-text" to="/terms">
                           {translate('landing.footer.terms')}
-                        </a>
-                      </li>*/}
-                      {/*<li className="list-inline-item">
-                        <a className="small-text" href="#/">
-                          Security
-                        </a>
-                      </li>*/}
+                        </Link>
+                      </li>
+                       <li className="list-inline-item">
+                        <Link className="small-text" to="/security">
+                          {translate('landing.footer.security')}
+                        </Link>
+                      </li>
                       <li className="list-inline-item">
                         <Link className="small-text" to="/privacy">
                           {translate('landing.footer.privacy')}

@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useTranslate } from '../hooks/usePolyglotTranslation';
 
 import { Box, Typography, CircularProgress } from '@mui/material';
-import { getEnv } from 'dash-constants/src/DASHAdminSystemConstants';
 import { useAxios } from 'dash-axios-hook';
 
 
@@ -13,73 +13,52 @@ interface VerifyAccountProps {
 const TrialVerify: React.FC<VerifyAccountProps> = ({
     
 }) => {
+    const translate = useTranslate();
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
     const axios  = useAxios();
     const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
-    const [message, setMessage] = useState('Verificando cuenta...');
+    const [message, setMessage] = useState(translate('verify.verifying'));
 
     const verify = async () => {
         try {
-            const verificationUrlParam = searchParams.get('verification_url');
-            if (verificationUrlParam) {
-                // Use the full verification URL directly
-                const res = await axios.get(verificationUrlParam);
-                switch (res.status) {
-                    case 200:
-                        setStatus('success');
-                        setMessage('Cuenta verificada correctamente. Redirigiendo al login...');
-                        setTimeout(() => navigate('/login'), 3000);
-                        break;
-                    case 204:
-                        setStatus('success');
-                        setMessage('Cuenta ya verificada. Redirigiendo al login...');
-                        setTimeout(() => navigate('/login'), 3000);
-                        break;
-                    default:
-                        setStatus('error');
-                        setMessage('Error al verificar la cuenta. Por favor, intente nuevamente.');
-                        setTimeout(() => navigate('/login'), 3000);
-                        break;
-                }
-                return;
-            }
+          
 
             const id = searchParams.get('id');
-            const hash = searchParams.get('hash');
+            const token = searchParams.get('token');
 
-            if (!id || !hash) {
+            if (!id || !token) {
                 setStatus('error');
-                setMessage('Link de verificación inválido.');
-                setTimeout(() => navigate('/login'),8000);
+                setMessage(translate('verify.invalidLink'));
+                setTimeout(() => navigate('/login'), 8000);
                 return;
             }
 
-            const verificationUrl = `/api/email/verify/${id}/${hash}`;
+            const verificationUrl = `/trial/verify/${id}/${token}`;
             
             const res = await axios.get(verificationUrl);
             
             switch (res.status) {
                 case 200:
                     setStatus('success');
-                    setMessage('Cuenta verificada correctamente. Redirigiendo al login...');
+                    setMessage(translate('verify.success'));
                     setTimeout(() => navigate('/login'), 3000);
                     break;
                 case 204:
                     setStatus('success');
-                    setMessage('Cuenta ya verificada. Redirigiendo al login...');
+                    setMessage(translate('verify.alreadyVerified'));
                     setTimeout(() => navigate('/login'), 3000);
                     break;
                 default:
                     setStatus('error');
-                    setMessage('Error al verificar la cuenta. Por favor, intente nuevamente.');
+                    setMessage(translate('verify.error'));
                     setTimeout(() => navigate('/login'), 8000);
                     break;
             }
         } catch (error) {
             console.error('Verification error:', error);
             setStatus('error');
-            setMessage('Error al verificar la cuenta. Por favor, intente nuevamente.');
+            setMessage(translate('verify.error'));
             setTimeout(() => navigate('/login'), 8000);
         }
     };
@@ -107,7 +86,7 @@ const TrialVerify: React.FC<VerifyAccountProps> = ({
                         my: 8,
                     }}
                 >
-                    <h1 className="dash-app-login-form-title">Verificación de Cuenta</h1>
+                    <h1 className="dash-app-login-form-title">{translate('verify.title')}</h1>
                     {status === 'loading' && <CircularProgress size={60} thickness={4} />}
                     <Typography sx={{ mt: 2, textAlign: 'center' }}>
                         {message}

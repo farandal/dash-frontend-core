@@ -2,8 +2,9 @@ import React, { createRef, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import Button from '@mui/material/Button';
-import { useNavigate } from 'react-router-dom';
-import { useNotify, useTranslate } from 'react-admin';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { useNotify } from 'react-admin';
+import { useTranslate } from '../hooks/usePolyglotTranslation';
 import ReCAPTCHA from 'react-google-recaptcha';
 import { GoogleLogin, GoogleOAuthProvider, CredentialResponse } from '@react-oauth/google';
 import { 
@@ -16,7 +17,13 @@ import {
     Alert,
     useTheme,
     useMediaQuery,
-    CircularProgress
+    CircularProgress,
+    FormControl,
+    InputLabel,
+    Select,
+    MenuItem,
+    FormHelperText,
+    ListSubheader
 } from '@mui/material';
 import HomeIcon from '@mui/icons-material/Home';
 
@@ -25,7 +32,8 @@ import DictionaryContext from 'dash-admin/src/contexts/dictionary/DictionaryCont
 import { useAxios } from 'dash-axios-hook';
 import { useDialog } from 'dash-dialog';
 import {DASHAdminSystemConstants} from 'dash-constants';
-import { RutValidator } from 'dash-admin/src/utils/validators';
+import { RutValidator, RutValidatorWithoutDots } from 'dash-admin/src/utils/validators';
+import { useSystemConfig, SystemConfigData } from '../../hooks/useSystemConfig';
 
 interface SignUpFormData {
     email: string;
@@ -36,6 +44,9 @@ interface SignUpFormData {
     password: string;
     password_confirmation: string;
     phone: string;
+    primary_language: string;
+    primary_currency: string;
+    primary_timezone: string;
     'g-recaptcha-response'?: string;
 }
 
@@ -54,6 +65,10 @@ const SignUpPage = (props) => {
     const [recpatcha, setRecaptcha] = useState(null);
     const [loading, setLoading] = useState(false);
     const [googleAuthLoading, setGoogleAuthLoading] = useState(false);
+    
+    // Use cached system config query
+    const { data: systemConfigResponse, isLoading: systemConfigLoading } = useSystemConfig();
+    const systemConfig = systemConfigResponse?.data;
 
     // Add responsive breakpoints
     const theme = useTheme();
@@ -64,6 +79,7 @@ const SignUpPage = (props) => {
     const dialog = useDialog();
     const dict = React.useContext(DictionaryContext);
     const navigate = useNavigate();
+    const location = useLocation();
     const form = useForm<SignUpFormData>();
     const {
         register,
@@ -79,10 +95,28 @@ const SignUpPage = (props) => {
 
     const watchedEmail = watch('email');
 
+    // Get available locales from settings
+    const settings = useSelector((state: IDASHAppState<any, any, any>) => state.settings);
+    const availableLocales = settings.availableLocales || [
+        { locale: 'es', name: 'Español', icon: 'es' },
+        { locale: 'en', name: 'English', icon: 'en' },
+    ];
+    const currentLocale = settings.locale || 'es';
+
     const onChangeRecaptcha = (value: string) => {
         clearErrors('g-recaptcha-response');
         setRecaptcha(value);
     };
+
+    // Pre-fill email from navigation state (from hero form)
+    useEffect(() => {
+        const emailFromState = (location.state as { email?: string })?.email;
+        if (emailFromState) {
+            setValue('email', emailFromState);
+        }
+        // Set default language to current locale
+        setValue('primary_language', currentLocale);
+    }, [location.state, setValue, currentLocale]);
 
     useEffect(() => {
         dispatch(
@@ -91,6 +125,18 @@ const SignUpPage = (props) => {
             }),
         );
     }, []);
+
+    // Set default values from cached system config
+    useEffect(() => {
+        if (systemConfig?.defaults) {
+            setValue('primary_currency', systemConfig.defaults.currency || 'CLP');
+            setValue('primary_timezone', systemConfig.defaults.timezone || 'America/Santiago');
+            // Only set language if not already set
+            if (!watch('primary_language')) {
+                setValue('primary_language', systemConfig.defaults.language || currentLocale);
+            }
+        }
+    }, [systemConfig, setValue, currentLocale]);
 
     const googleClientId: string = DASHAdminSystemConstants.system.GOOGLE_CLIENT_ID;
 
@@ -167,6 +213,9 @@ const SignUpPage = (props) => {
                 password: data.password,
                 password_confirmation: data.password_confirmation,
                 phone: data.phone,
+                primary_language: data.primary_language || currentLocale,
+                primary_currency: data.primary_currency || systemConfig?.defaults?.currency || 'CLP',
+                primary_timezone: data.primary_timezone || systemConfig?.defaults?.timezone || 'America/Santiago',
             };
 
             if (enableRecaptcha) {
@@ -317,7 +366,7 @@ const SignUpPage = (props) => {
                             required
                             fullWidth
                             {...register('email', {
-                                required: translate('signup.email')Required,
+                                required: translate('signup.email'),
                                 pattern: {
                                     value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
                                     message: translate('signup.invalidEmail')
@@ -343,7 +392,7 @@ const SignUpPage = (props) => {
                             fullWidth
                             className='dash-app-form-item-input'
                             {...register('public_name', {
-                                required: translate('signup.businessName')Required
+                                required: translate('signup.businessName')
                             })}
                             error={!!errors.public_name}
                             helperText={errors.public_name?.message}
@@ -358,12 +407,12 @@ const SignUpPage = (props) => {
                     <div className='dash-app-form-item'>
                         <TextField
                             placeholder='11.111.111-1'
-                            label='RUT'
+                            label={translate('signup.publicIdLabel')}
                             required
                             fullWidth
                             className='dash-app-form-item-input'
                             {...register('public_id', { 
-                                validate: RutValidator,
+                                validate: RutValidatorWithoutDots,
                                 required: translate('signup.rutRequired')
                             })}
                             error={!!errors.public_id}
@@ -386,7 +435,7 @@ const SignUpPage = (props) => {
                                     fullWidth
                                     className='dash-app-form-item-input'
                                     {...register('name', {
-                                        required: translate('signup.firstName')Required
+                                        required: translate('signup.firstName')
                                     })}
                                     error={!!errors.name}
                                     helperText={errors.name?.message}
@@ -407,7 +456,7 @@ const SignUpPage = (props) => {
                                     fullWidth
                                     className='dash-app-form-item-input'
                                     {...register('lastname', {
-                                        required: translate('signup.lastName')Required
+                                        required: translate('signup.lastName')
                                     })}
                                     error={!!errors.lastname}
                                     helperText={errors.lastname?.message}
@@ -432,10 +481,10 @@ const SignUpPage = (props) => {
                                     type='password'
                                     className='dash-app-form-item-input'
                                     {...register('password', {
-                                        required: translate('signup.password')Required,
+                                        required: translate('signup.password'),
                                         minLength: {
                                             value: 8,
-                                            message: translate('signup.password')MinLength
+                                            message: translate('signup.password')
                                         }
                                     })}
                                     error={!!errors.password}
@@ -458,10 +507,10 @@ const SignUpPage = (props) => {
                                     className='dash-app-form-item-input'
                                     type='password'
                                     {...register('password_confirmation', {
-                                        required: translate('signup.confirmPassword')Required,
+                                        required: translate('signup.confirmPassword'),
                                         validate: (value) => {
                                             const password = form.getValues('password');
-                                            return value === password || translate('signup.password')sDoNotMatch;
+                                            return value === password || translate('signup.password');
                                         }
                                     })}
                                     error={!!errors.password_confirmation}
@@ -494,6 +543,115 @@ const SignUpPage = (props) => {
                                 }
                             }}
                         />
+                    </div>
+
+                    {/* Language Preference */}
+                    <div className='dash-app-form-item'>
+                        <FormControl 
+                            fullWidth 
+                            error={!!errors.primary_language}
+                            sx={{
+                                '& .MuiInputBase-root': {
+                                    fontSize: { xs: '0.875rem', sm: '1rem' }
+                                }
+                            }}
+                        >
+                            <InputLabel id="primary-language-label">
+                                {translate('signup.preferredLanguage')}
+                            </InputLabel>
+                            <Select
+                                labelId="primary-language-label"
+                                label={translate('signup.preferredLanguage')}
+                                defaultValue={currentLocale}
+                                {...register('primary_language')}
+                            >
+                                {availableLocales.map((locale: any) => (
+                                    <MenuItem key={locale.locale} value={locale.locale}>
+                                        {locale.name}
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                            {errors.primary_language && (
+                                <FormHelperText>{errors.primary_language.message}</FormHelperText>
+                            )}
+                        </FormControl>
+                    </div>
+
+                    {/* Currency Preference */}
+                    <div className='dash-app-form-item'>
+                        <FormControl 
+                            fullWidth 
+                            error={!!errors.primary_currency}
+                            disabled={systemConfigLoading}
+                            sx={{
+                                '& .MuiInputBase-root': {
+                                    fontSize: { xs: '0.875rem', sm: '1rem' }
+                                }
+                            }}
+                        >
+                            <InputLabel id="primary-currency-label">
+                                {translate('signup.preferredCurrency')}
+                            </InputLabel>
+                            <Select
+                                labelId="primary-currency-label"
+                                label={translate('signup.preferredCurrency')}
+                                defaultValue={systemConfig?.defaults?.currency || 'CLP'}
+                                {...register('primary_currency')}
+                            >
+                                {systemConfig?.currencies && systemConfig.currencies.length > 0 ? (
+                                    systemConfig.currencies.map((currency) => (
+                                        <MenuItem key={currency.code} value={currency.code}>
+                                            {currency.label}
+                                        </MenuItem>
+                                    ))
+                                ) : (
+                                    <MenuItem value="CLP">CLP - Chilean Peso ($)</MenuItem>
+                                )}
+                            </Select>
+                            {errors.primary_currency && (
+                                <FormHelperText>{errors.primary_currency.message}</FormHelperText>
+                            )}
+                        </FormControl>
+                    </div>
+
+                    {/* Timezone Preference */}
+                    <div className='dash-app-form-item'>
+                        <FormControl 
+                            fullWidth 
+                            error={!!errors.primary_timezone}
+                            disabled={systemConfigLoading}
+                            sx={{
+                                '& .MuiInputBase-root': {
+                                    fontSize: { xs: '0.875rem', sm: '1rem' }
+                                }
+                            }}
+                        >
+                            <InputLabel id="primary-timezone-label">
+                                {translate('signup.preferredTimezone')}
+                            </InputLabel>
+                            <Select
+                                labelId="primary-timezone-label"
+                                label={translate('signup.preferredTimezone')}
+                                defaultValue={systemConfig?.defaults?.timezone || 'America/Santiago'}
+                                {...register('primary_timezone')}
+                            >
+                                {systemConfig?.timezones && Object.keys(systemConfig.timezones).length > 0 ? (
+                                    Object.entries(systemConfig.timezones).flatMap(([region, zones]) => [
+                                        <ListSubheader key={`header-${region}`}>{region.replace('_', ' ')}</ListSubheader>,
+                                        ...zones.map((tz) => (
+                                            <MenuItem key={tz.value} value={tz.value}>
+                                                {tz.label}
+                                            </MenuItem>
+                                        ))
+                                    ])
+                                ) : (
+                                    <MenuItem value="America/Santiago">America/Santiago (UTC-03:00)</MenuItem>
+                                )}
+                            </Select>
+                            {errors.primary_timezone && (
+                                <FormHelperText>{errors.primary_timezone.message}</FormHelperText>
+                            )}
+                        </FormControl>
                     </div>
 
                     {/* reCAPTCHA */}
@@ -580,7 +738,7 @@ const SignUpPage = (props) => {
                             <Button 
                                 variant="text" 
                                 size="small" 
-                                onClick={() => navigate('/legal')}
+                                onClick={() => navigate('/privacy')}
                                 sx={{ 
                                     textTransform: 'none', 
                                     p: 0, 
@@ -595,7 +753,7 @@ const SignUpPage = (props) => {
                             <Button 
                                 variant="text" 
                                 size="small" 
-                                onClick={() => navigate('/legal')}
+                                onClick={() => navigate('/terms')}
                                 sx={{ 
                                     textTransform: 'none', 
                                     p: 0, 

@@ -1,4 +1,5 @@
 const customEs = {
+  
     "Delivery Method": "Método de Entrega",
     "Table Number": "Número de Mesa",
     "Counter": "Mostrador",
@@ -604,6 +605,239 @@ const customEs = {
                 instructions: "Apunta tu cámara al código QR",
             }
         },
+        // Tenancy resources
+        tenancy: {
+            groups: {
+                account: "Cuenta",
+                billing: "Facturación",
+                system: "Sistema"
+            },
+            account: {
+                label: "Cuenta",
+            },
+            subscription: {
+                label: "Suscripción",
+            },
+            invoices: {
+                label: "Facturas",
+            },
+            payment_methods: {
+                label: "Métodos de Pago",
+            },
+            tenants: {
+                label: "Locales",
+                menu_all: "Ver Todos",
+                main_action: "Agregar Local",
+            },
+        },
+    },
+    // Verification
+    verify: {
+        title: "Verificación de Cuenta",
+        verifying: "Verificando tu cuenta...",
+        invalidLink: "Enlace de verificación inválido o expirado. Redirigiendo...",
+        success: "¡Cuenta verificada exitosamente! Redirigiendo...",
+        alreadyVerified: "La cuenta ya está verificada. Redirigiendo...",
+        error: "Ocurrió un error durante la verificación. Redirigiendo...",
+    },
+    // Profile
+    profile: {
+        title: "Perfil",
+        subtitle: "Configuración de perfil",
+        validation: {
+            required: "El campo es requerido",
+            passwords_dont_match: "Las contraseñas no coinciden",
+        },
+        success: "Usuario actualizado correctamente",
+        error_prefix: "Error al actualizar el usuario,",
+        error_default: "Error al actualizar el usuario",
+        sections: {
+            info_title: "Info",
+            passwords_title: "Contraseñas",
+        },
+        fields: {
+            name: "Nombre",
+            lastname: "Apellido",
+            email: "Email",
+            current_password: "Contraseña actual",
+            new_password: "Nueva contraseña",
+            repeat_password: "Repita nueva contraseña",
+        },
+        actions: {
+            save: "Guardar",
+            saving: "Guardando...",
+            save_passwords: "Guardar Contraseñas",
+            saving_passwords: "Guardando Contraseñas...",
+        }
+    },
+    // Dashboard
+    dashboard: {
+        title: "Panel de Control",
+        welcome: "Bienvenido al Panel de Administración",
+    },
+    // Subscription module
+    subscription: {
+        fetch_error: "Error al obtener los planes de suscripción: %{message}",
+        unsupported_plans: "%{count} plan(es) no disponible(s) con su método de pago actual. Para acceder a todos los planes, considere cambiar su método de pago.",
+        no_compatible_plans: "No hay planes disponibles compatibles con su método de pago actual (%{gateway}). Por favor, contacte al administrador del sistema.",
+        management: {
+            title: "Gestión de Suscripción",
+            subtitle: "Administra tu plan de suscripción y configuración de facturación.",
+        },
+        current: {
+            title: "Suscripción",
+            subtitle: "Administra tu suscripción y complementos.",
+        },
+        available_plans: {
+            title: "Planes Disponibles",
+            subtitle: "Elige un plan que se adapte a tus necesidades. Puedes mejorar o cambiar en cualquier momento.",
+        },
+        renews: "Renueva",
+        no_active: "No tienes una suscripción activa. Elige un plan a continuación para comenzar.",
+        current_plan: "Plan Actual",
+        select_plan: "Seleccionar Plan",
+        trial_days: "%{days} días de prueba",
+        // Feature translations
+        features: {
+            basic_features: "Funciones básicas",
+            email_support: "Soporte por email",
+            one_store: "1 local incluido",
+            three_users: "3 usuarios",
+            fifty_products: "50 productos",
+            unlimited_products: "Productos ilimitados",
+            unlimited_users: "Usuarios ilimitados",
+            priority_support: "Soporte prioritario",
+            advanced_analytics: "Analíticas avanzadas",
+            api_access: "Acceso a API",
+        },
+        // Plan change notifications
+        pending_change_title: "Cambio de Plan Pendiente",
+        pending_change_message: "Tu cambio de plan a %{plan} está pendiente de confirmación de pago. Recibirás un correo electrónico una vez que el pago sea procesado.",
+        confirm_upgrade_title: "Confirmar Mejora de Plan",
+        confirm_upgrade: "¿Estás seguro de que deseas mejorar a %{plan}?",
+        confirm_downgrade_title: "Confirmar Cambio de Plan",
+        confirm_downgrade: "¿Estás seguro de que deseas cambiar a %{plan}?",
+        confirm_change_title: "Confirmar Cambio de Plan",
+        confirm_change: "¿Estás seguro de que deseas cambiar a %{plan}?",
+        upgrade_success: "Plan mejorado exitosamente a %{plan}",
+        downgrade_success: "Plan cambiado exitosamente a %{plan}",
+        change_success: "Plan cambiado exitosamente a %{plan}",
+        upgrade_error: "Error al mejorar el plan",
+        downgrade_error: "Error al cambiar el plan",
+        change_error: "Error al cambiar el plan",
+        downgrade_not_allowed: "No se permite cambiar a %{plan}",
+        // Unsubscribe
+        unsubscribe: {
+            button: "Cancelar Suscripción",
+            processing: "Cancelando...",
+            confirm_title: "Cancelar Suscripción",
+            confirm_message: "¿Estás seguro de que deseas cancelar tu suscripción?",
+            confirm_button: "Cancelar Suscripción",
+            access_until: "Acceso hasta:",
+            days_remaining: "Días restantes:",
+            what_happens_title: "Qué sucede cuando cancelas:",
+            success: "Suscripción cancelada. Acceso hasta %{date}.",
+            error: "Error al cancelar la suscripción",
+            preview_error: "Error al cargar detalles de cancelación",
+        },
+        // Subscription management actions
+        manage: "Administrar",
+        choose_plan: "Elegir un plan",
+        cancel_plan: "Cancelar plan",
+        cancel_success: "Suscripción cancelada exitosamente",
+        cancel_error: "Error al cancelar la suscripción",
+        // Subscription details labels
+        active: "Suscripción Activa",
+        status_label: "Estado:",
+        billing_cycle_label: "Ciclo de Facturación:",
+        current_period_label: "Período Actual:",
+        trial_ends_label: "Prueba Termina:",
+        next_billing_label: "Próxima Facturación:",
+        pending_change: "Cambio Pendiente",
+        switching_to: "Cambiando a:",
+        effective_date: "Efectivo:",
+    },
+    // Billing & Payment Gateways
+    billing: {
+        // Gateway Selector
+        selectPaymentMethod: "Selecciona un Proveedor de Pago",
+        selectPaymentMethodDesc: "Elige cómo quieres pagar tu suscripción",
+        noGatewaysAvailable: "No hay métodos de pago disponibles para tu cuenta",
+        supportedCurrencies: "Monedas",
+        connecting: "Conectando...",
+        addCard: "Agregar Tarjeta",
+        
+        // Add Payment Method Prompt
+        addPaymentRequired: "Método de Pago Requerido",
+        trialEndsIn: "Tu período de prueba termina en %{days} día(s)",
+        trialEnded: "Tu período de prueba ha terminado",
+        planContinue: "Agrega un método de pago para continuar usando %{plan}",
+        
+        // Gateway Callback
+        callback: {
+            processing: "Procesando tu tarjeta...",
+            pleaseWait: "Por favor espera mientras completamos tu registro.",
+            success: "¡Método de pago agregado exitosamente!",
+            successTitle: "¡Éxito!",
+            redirecting: "Redirigiendo...",
+            noToken: "No se recibió token de registro",
+            error: "Error al completar el registro",
+            errorTitle: "Algo salió mal",
+            tryAgain: "Intentar de Nuevo",
+        },
+        
+        // Payment Methods
+        paymentMethods: {
+            title: "Métodos de Pago",
+            description: "Administra tus métodos de pago para la suscripción.",
+            noPaymentMethod: "Sin Método de Pago",
+            addPaymentMethodToSubscribe: "Agrega un método de pago para suscribirte a un plan de pago.",
+            addNew: "Agregar Método de Pago",
+            setDefault: "Establecer como Predeterminado",
+            remove: "Eliminar",
+            default: "Predeterminado",
+            expiresOn: "Vence el %{date}",
+            noMethods: "Aún no has agregado métodos de pago",
+            connected: "Conectado",
+            paymentCard: "Tarjeta de Pago",
+            removePaymentMethod: "Eliminar Método de Pago",
+            removePaymentMethodTooltip: "Eliminar método de pago",
+            confirmRemovePaymentMethod: "¿Estás seguro de que deseas eliminar este método de pago? Necesitarás agregar uno nuevo para continuar usando funciones de pago.",
+            paymentMethodRemoved: "Método de pago eliminado",
+            errorRemovingPaymentMethod: "Error al eliminar método de pago",
+            addedOn: "Agregado el",
+        },
+        
+        // Invoices
+        invoices: {
+            title: "Documento de Pago",
+            document: "Documento",
+            preview: "Vista previa del documento",
+            view: "Ver",
+            download: "Descargar",
+            downloadAll: "Descargar Todo",
+            close: "Cerrar",
+            loading: "Cargando documento...",
+            loadError: "Error al cargar el documento",
+            downloadSuccess: "Documento descargado correctamente",
+            downloadError: "Error al descargar el documento",
+            notAvailable: "Documento no disponible",
+            browserNotSupported: "Tu navegador no puede mostrar PDFs. Por favor descarga el documento.",
+            // Document types
+            documentType: {
+                receipt: "Recibo",
+                invoice: "Factura",
+                document: "Documento",
+            },
+            // Status labels
+            status: {
+                succeeded: "Pagado",
+                paid: "Pagado",
+                pending: "Pendiente",
+                failed: "Fallido",
+                refunded: "Reembolsado",
+            },
+        },
     },
     mall: {
         // Orders
@@ -767,6 +1001,7 @@ const customEs = {
 
     common: {
         cancel: "Cancelar",
+        keep: "Mantener Suscripción",
         view: "Ver",
         edit: "Editar",
         login: "Ingresar",
@@ -1097,12 +1332,22 @@ const customEs = {
     
     // Contenido de la Página de Inicio
     landing: {
+        login : {
+            email: 'Email',
+            password: 'Contraseña',
+            submit: 'Ingresar',
+            resetPassword: 'Resetear contraseña'
+        },
         hero: {
             title: "KitchnTabs",
             subtitle: "La infraestructura operativa que conecta todos los restaurantes del mundo",
             description: "Una plataforma tecnológica diseñada para patios de comida y restaurantes que permite digitalizar, ordenar y sincronizar todo el proceso de pedidos, desde la toma de comandas hasta la preparación y entrega.",
             cta: "Comenzar",
-            learnMore: "Conocer Más"
+            learnMore: "Conocer Más",
+            trialTitle: "¡Únete a KitchnTabs gratis ahora!",
+            trialSubtitle: "Comienza tu periodo de 30 días gratis. No requiere tarjeta de crédito.",
+            emailPlaceholder: "Ingresa tu correo electrónico",
+            createStore: "CREAR TIENDA"
         },
         what: {
             title: "¿Qué es KitchnTabs?",
@@ -1234,12 +1479,17 @@ const customEs = {
             title: "Mantente Actualizado",
             description: "Suscríbete a nuestro boletín para recibir las últimas actualizaciones"
         },
+        cta: {
+            title: "¡Comienza tu camino con nosotros!",
+            subtitle: "Comienza tu periodo de 30 días gratis. No requiere tarjeta de crédito."
+        },
         footer: {
             description: "Sistema de gestión gastronómica",
             contact: "Contacto",
             terms: "Términos",
+            security: "Seguridad",
             privacy: "Privacidad",
-            copyright: "© KitchTabs, Todos los derechos reservados"
+            copyright: "© KitchnTabs, Todos los derechos reservados"
         },
         download: {
             title: "Descarga KitchnTabs",
@@ -1291,6 +1541,9 @@ const customEs = {
         confirmPassword: "Confirmar Contraseña",
         contactPhone: "Teléfono de Contacto",
         rut: "RUT",
+        preferredLanguage: "Idioma Preferido",
+        preferredCurrency: "Moneda Preferida",
+        preferredTimezone: "Zona Horaria",
         
         // Buttons and actions
         continueWithGoogle: "Continuar con Google",
@@ -1311,6 +1564,7 @@ const customEs = {
         invalidEmail: "Dirección de correo electrónico inválida",
         businessNameRequired: "El nombre de la empresa es obligatorio",
         rutRequired: "El RUT es obligatorio",
+         publicIdLabel: "RUT Empresa",
         invalidRut: "RUT inválido",
         firstNameRequired: "El nombre es obligatorio",
         lastNameRequired: "El apellido es obligatorio",
@@ -1328,7 +1582,185 @@ const customEs = {
         googleAuthError: "Error con la autenticación de Google",
         
         // Dialog titles
-        error: "Error"
+        error: "Error",
+        
+        success: {
+            title: "¡Cuenta Creada Exitosamente!",
+            welcome: "¡Bienvenido! Tu cuenta ha sido creada y te has suscrito al plan %{planName}.",
+            verificationSent: "Hemos enviado un correo de verificación a %{email}. Por favor revisa tu bandeja de entrada y haz clic en el enlace de verificación para activar tu cuenta.",
+            description: "Ahora puedes iniciar sesión en tu cuenta y comenzar a usar todas las funciones incluidas en tu plan.",
+            loginButton: "Ir a Iniciar Sesión",
+            homeButton: "Volver al Inicio",
+            home_button:"Volver al Inicio"
+        },
+        
+        verify: {
+            title: "Verificación de Cuenta",
+            verifying: "Verificando cuenta...",
+            invalidLink: "Link de verificación inválido.",
+            success: "Cuenta verificada correctamente. Redirigiendo al login...",
+            alreadyVerified: "Cuenta ya verificada. Redirigiendo al login...",
+            error: "Error al verificar la cuenta. Por favor, intente nuevamente.",
+            redirecting: "Redirigiendo al login..."
+        },
+        
+        login: {
+            title: "Ingresar",
+            email: "Email",
+            password: "Contraseña",
+            submit: "Ingresar",
+            resetPassword: "Resetear contraseña",
+            invalidCredentials: "Credenciales inválidas",
+            invalidEmail: "Email inválido",
+            invalidPassword: "Contraseña Inválida",
+            loading: "Cargando...",
+            alreadyLoggedIn: "Ya se encuentra logueado",
+            goHome: "Ir al Inicio"
+        }
+    },
+
+    // Menu Items
+    menu: {
+        home: "Inicio",
+        plans: "Planes",
+        about: "Acerca de",
+        contact: "Contacto",
+        download: "Descargar",
+        features: "Características"
+    },
+
+    // Plans Page
+    plans: {
+        title: "Elige Tu Plan",
+        subtitle: "Comienza tu prueba gratuita hoy. No se requiere tarjeta de crédito.",
+        getStarted: "Comenzar",
+        footer: "Todos los planes incluyen un período de prueba gratuito. Cancela en cualquier momento.",
+        loading: "Cargando planes...",
+        error: "Error al cargar los planes de suscripción. Por favor intenta de nuevo más tarde.",
+        noPlans: "No hay planes disponibles en este momento.",
+        popular: "Más Popular",
+        selected: "Seleccionado",
+        trialDays: "%{days} días de prueba gratis",
+        
+        // Plan names by slug
+        planNames: {
+            "free-trial": "Prueba Gratis",
+            "basic-plan": "Plan Básico",
+            "professional-plan": "Plan Profesional",
+            "enterprise-plan": "Plan Empresarial"
+        },
+        
+        // Plan descriptions by slug
+        planDescriptions: {
+            "free-trial": "Prueba gratuita de 30 días con funciones básicas",
+            "basic-plan": "Perfecto para individuos y equipos pequeños",
+            "professional-plan": "Funciones avanzadas para negocios en crecimiento",
+            "enterprise-plan": "Solución completa para grandes organizaciones"
+        },
+        
+        // Feature translations
+        features: {
+            basic_features: "Funciones básicas",
+            email_support: "Soporte por email",
+            one_store: "1 tienda",
+            three_users: "3 usuarios",
+            fifty_products: "50 productos",
+            unlimited_stores: "Tiendas ilimitadas",
+            unlimited_users: "Usuarios ilimitados",
+            unlimited_products: "Productos ilimitados",
+            priority_support: "Soporte prioritario",
+            advanced_analytics: "Análisis avanzados",
+            custom_domain: "Dominio personalizado",
+            api_access: "Acceso a API",
+            white_label: "Marca blanca"
+        },
+        
+        // Billing cycles
+        billingCycle: {
+            daily: "por día",
+            weekly: "por semana",
+            monthly: "por mes",
+            yearly: "por año",
+            daily_short: "/día",
+            weekly_short: "/sem",
+            monthly_short: "/mes",
+            yearly_short: "/año"
+        },
+    },
+
+    // Gestión de Cuenta de Tenancy
+    tenancy_account: {
+        management: {
+            title: "Gestión de Cuenta",
+            delete: {
+                title: "Eliminar Cuenta",
+                description: "Elimina permanentemente tu cuenta y todos los datos asociados. Esta acción no se puede deshacer.",
+                button: "Eliminar Cuenta",
+                dialog: {
+                    title: "Eliminar Cuenta",
+                    warning_title: "Advertencia: Esta acción es irreversible",
+                    warning_content: "Eliminar tu cuenta:",
+                    warning_items: {
+                        disable: "Deshabilitará tu cuenta inmediatamente",
+                        schedule: "Programará la eliminación permanente después de %{days} días",
+                        delete_users: "Eliminará todos los usuarios asociados a esta cuenta",
+                        delete_tenants: "Eliminará todas las tiendas/locales que administras",
+                        delete_products: "Eliminará todos los productos e inventario",
+                        delete_subscriptions: "Cancelará todas las suscripciones activas",
+                        delete_data: "Borrará permanentemente todos tus datos"
+                    },
+                    confirm_instruction: "Escribe ELIMINAR para confirmar:",
+                    confirm_word: "ELIMINAR",
+                    cancel: "Cancelar",
+                    confirm: "Eliminar Mi Cuenta"
+                },
+                success: "Eliminación de cuenta iniciada. Recibirás un correo de confirmación.",
+                error: "Error al iniciar la eliminación de cuenta. Por favor intenta de nuevo.",
+                cannot_delete: "No se puede eliminar la cuenta en este momento. Por favor contacta a soporte."
+            },
+            pending_deletion: {
+                title: "Cuenta Pendiente de Eliminación",
+                description: "Tu cuenta está programada para eliminación permanente el %{date}.",
+                cancel_button: "Cancelar Eliminación",
+                cancel_success: "La eliminación de la cuenta ha sido cancelada.",
+                cancel_error: "Error al cancelar la eliminación. Por favor intenta de nuevo."
+            },
+            export: {
+                title: "Exportar Tus Datos",
+                description: "Descarga una copia de todos los datos de tu cuenta en un formato portable.",
+                button: "Solicitar Exportación de Datos",
+                requesting: "Solicitando exportación...",
+                success: "Exportación de datos solicitada. Recibirás un correo cuando esté lista.",
+                error: "Error al solicitar la exportación de datos. Por favor intenta de nuevo.",
+                history: {
+                    title: "Historial de Exportaciones",
+                    no_exports: "Sin exportaciones de datos aún.",
+                    status: {
+                        pending: "Pendiente",
+                        processing: "Procesando",
+                        completed: "Completado",
+                        failed: "Fallido",
+                        expired: "Expirado"
+                    },
+                    download: "Descargar",
+                    expires: "Expira: %{date}",
+                    expired_message: "Esta exportación ha expirado"
+                }
+            }
+        }
+    },
+
+    // Traducciones de lista de cuentas
+    account: {
+        no_accounts: "Sin cuentas",
+        email_label: "Correo electrónico",
+        created_label: "Creado",
+        updated_label: "Actualizado",
+        trial_ends_label: "Prueba termina",
+        plan_label: "Plan",
+        trial_days_left: "Días de prueba restantes",
+        deletion_scheduled: "Cuenta programada para eliminación el %{date}",
+        deletion_days_remaining: "Eliminación de cuenta en %{days} días",
     }
 };
 

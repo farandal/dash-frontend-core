@@ -177,7 +177,8 @@ const NotificationsCenter: React.FC = () => {
             <IconButton
                 onClick={handleNotificationClick}
                 aria-label="notifications"
-                color="inherit"
+                className='dash-icon-button-color dash-icon-button-bg'
+                //color="inherit"
             >
                 <Badge badgeContent={unreadCount} color="error" max={99}>
                     {unreadCount > 0 ? <NotificationsActive /> : <NotificationsNone />}

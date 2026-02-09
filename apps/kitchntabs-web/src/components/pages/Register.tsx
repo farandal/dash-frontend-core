@@ -12,7 +12,7 @@ import DictionaryContext from 'dash-admin/src/contexts/dictionary/DictionaryCont
 import { useAxios } from 'dash-axios-hook';
 import { useDialog } from 'dash-dialog';
 import {DASHAppConstants} from 'dash-constants';
-import { RutValidator } from 'dash-admin/src/utils/validators';
+import { RutValidator, RutValidatorWithoutDots } from 'dash-admin/src/utils/validators';
 
 interface RegisterPageProps {
 
@@ -149,9 +149,9 @@ const RegisterPage: React.FC<RegisterPageProps> = ({
 				<div className="dash-app-form-item">
 					<TextField
 						label="Rut"
-						placeholder="11.111.111-1"
+						placeholder="11111111-1"
 						required
-						{...register('public_id', { validate: RutValidator })}
+						{...register('public_id', { validate: RutValidatorWithoutDots })}
 						className="dash-app-form-item-input"
 						error={!!errors.public_id}
 						helperText={errors.public_id?.message || (errors.public_id && 'Rut inválido')}

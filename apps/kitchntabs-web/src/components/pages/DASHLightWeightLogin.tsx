@@ -22,11 +22,11 @@ const successSource = '';
 const errorSource = '';
 
 import { DASH_REDUX_ACTIONS } from 'dash-admin-state';
-import DictionaryContext from 'dash-admin/src/contexts/dictionary/DictionaryContext';
 import {DASHAppConstants} from 'dash-constants';
 
 import { AuthPersistenceService } from 'dash-auth';
 import DASHAuthenticationService from 'dash-admin/src/contexts/auth/DASHAuthenticationService';
+import { useTranslate } from '../hooks/usePolyglotTranslation';
 
 interface DASHLightWeightLoginProps {
   
@@ -34,7 +34,7 @@ interface DASHLightWeightLoginProps {
 }
 
 const DASHLightWeightLogin: React.FC<DASHLightWeightLoginProps> = (props) => {
-   
+    const translate = useTranslate();
     
     const EMAIL_REGEX = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
 
@@ -47,7 +47,6 @@ const DASHLightWeightLogin: React.FC<DASHLightWeightLoginProps> = (props) => {
     const [authenticated, setAuthenticated] = useState(false);
     const [formError, setFormError] = useState<string | null>(null);
     const dispatch = useDispatch();
-    const dict = React.useContext(DictionaryContext);
     const form = useForm();
     
     // Mobile and keyboard state
@@ -343,7 +342,7 @@ const DASHLightWeightLogin: React.FC<DASHLightWeightLoginProps> = (props) => {
             
             setLoginLoading(false);
             
-            let eMessage = 'Credenciales inválidas';
+            let eMessage = translate('landing.login.invalidCredentials');
             if (error && error.response && error.response.data && error.response.data.message) {
                 eMessage = error.response.data.message;
             } else if (error && error.error) {
@@ -365,6 +364,8 @@ const DASHLightWeightLogin: React.FC<DASHLightWeightLoginProps> = (props) => {
     };
 
     // Initialize app authentication on component mount
+    // NOTE: This only sets the authenticated state. It does NOT navigate.
+    // Navigation only happens after actual login or via DASHAdmin's PrivateRedirectListener.
     useEffect(() => {
         const initializeAuth = async () => {
             try {
@@ -375,9 +376,9 @@ const DASHLightWeightLogin: React.FC<DASHLightWeightLoginProps> = (props) => {
                     console.log('App authentication initialized successfully');
                     setAuthenticated(true);
                     setLoggedIn(true);
-                    
+                    // NOTE: We do NOT navigate here. Info only.
                     if (initResponse.redirectAfterLogin) {
-                        console.log('Redirect found during initialization:', initResponse.redirectAfterLogin);
+                        console.log('Role redirect available:', initResponse.redirectAfterLogin, '(not navigating during init)');
                     }
                 } else {
                     console.log('App authentication initialization failed or no valid auth found');
@@ -405,7 +406,7 @@ const DASHLightWeightLogin: React.FC<DASHLightWeightLoginProps> = (props) => {
                         minHeight="50vh"
                         textAlign="center"
                     >
-                        <div>Cargando...</div>
+                        <div>{translate('landing.login.loading')}</div>
                     </Box>
                 </Container>
         
@@ -417,7 +418,19 @@ const DASHLightWeightLogin: React.FC<DASHLightWeightLoginProps> = (props) => {
     const banner =  AuthPersistenceService.getTenantImages()?.banner?.original;
 
     return (
-       
+        <Box 
+            className="dash-app-login-wrapper"
+            sx={{
+                flex: 1,
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignItems: 'center',
+                //minHeight: 'calc(100vh - 300px)', /* Account for header and footer */
+                padding: { xs: 2, sm: 3 },
+            }}
+        >
+          
             <Container 
                 maxWidth="sm" 
                 sx={{ 
@@ -455,7 +468,7 @@ const DASHLightWeightLogin: React.FC<DASHLightWeightLoginProps> = (props) => {
                                                 fontWeight: 500
                                             }}
                                         >
-                                            Ingresar
+                                            {translate('landing.login.title')}
                                         </h1>
                                     </Box>
                                 )*/}
@@ -463,8 +476,8 @@ const DASHLightWeightLogin: React.FC<DASHLightWeightLoginProps> = (props) => {
                                 {/* Email Field */}
                                 <Box sx={{ mb: isMobile ? 1 : 1.5 }}>
                                     <TextField
-                                        label='Email'
-                                        placeholder='Email'
+                                        label={translate('landing.login.email')}
+                                        placeholder={translate('landing.login.email')}
                                         required
                                         fullWidth
                                         {...register('email', { validate: validateEmail })}
@@ -479,7 +492,7 @@ const DASHLightWeightLogin: React.FC<DASHLightWeightLoginProps> = (props) => {
                                     />
                                     {errors.email && (
                                         <Box sx={{ color: 'error.main', fontSize: '0.75rem', mt: 0.25 }}>
-                                            {errors.email.message ? dict.get(errors.email.message as string, true) : "Email inválido"}
+                                            {errors.email.message || translate('landing.login.invalidEmail')}
                                         </Box>
                                     )}
                                 </Box>
@@ -487,8 +500,8 @@ const DASHLightWeightLogin: React.FC<DASHLightWeightLoginProps> = (props) => {
                                 {/* Password Field */}
                                 <Box sx={{ mb: isMobile ? 1 : 1.5 }}>
                                     <TextField
-                                        label='Contraseña'
-                                        placeholder='Contraseña'
+                                        label={translate('landing.login.password')}
+                                        placeholder={translate('landing.login.password')}
                                         fullWidth
                                         {...register('password')}
                                         className='dash-app-form-item-input'
@@ -525,7 +538,7 @@ const DASHLightWeightLogin: React.FC<DASHLightWeightLoginProps> = (props) => {
                                     />
                                     {errors.password && (
                                         <Box sx={{ color: 'error.main', fontSize: '0.75rem', mt: 0.25 }}>
-                                            {errors.password.message ? dict.get(errors.password.message as string, true) : "Contraseña Inválida"}
+                                            {errors.password.message || translate('landing.login.invalidPassword')}
                                         </Box>
                                     )}
                                 </Box>
@@ -553,11 +566,13 @@ const DASHLightWeightLogin: React.FC<DASHLightWeightLoginProps> = (props) => {
                                             fontSize: isMobile ? '0.875rem' : '1rem'
                                         }}
                                     >
-                                        Ingresar
+                                        {translate('landing.login.submit')}
                                     </LoadingButton>
                                     
                                 </Box>
-    </form>
+                            </form>
+
+
                                 {!(isMobile && isKeyboardOpen) && (
                                 <Box sx={{ mb: isMobile ? 1 : 1.5, textAlign: 'right' }}>
                                     <Link
@@ -566,7 +581,7 @@ const DASHLightWeightLogin: React.FC<DASHLightWeightLoginProps> = (props) => {
                                         onClick={() => navigate('/reset-password')}
                                         sx={{ fontSize: isMobile ? '0.75rem' : '0.875rem' }}
                                     >
-                                        Resetear contraseña
+                                        {translate('landing.login.resetPassword')}
                                     </Link>
                                 </Box>
                             )}
@@ -575,9 +590,9 @@ const DASHLightWeightLogin: React.FC<DASHLightWeightLoginProps> = (props) => {
                         </Box>
                     ) : (
                         <Box sx={{ textAlign: 'center' }}>
-                           {/* <Box sx={{ mb: 2 }}>
+                            <Box sx={{ mb: 2 }}>
                                 <div className='dash-app-form-item'>
-                                    Ya se encuentra logueado
+                                    {translate('landing.login.alreadyLoggedIn')}
                                 </div>
                             </Box>
                             <Button
@@ -586,13 +601,13 @@ const DASHLightWeightLogin: React.FC<DASHLightWeightLoginProps> = (props) => {
                                 onClick={() => navigate('/')}
                                 size={isMobile ? 'medium' : 'large'}
                             >
-                                Ir al Home
+                                {translate('landing.login.goHome')}
                             </Button>
-                            */}
                         </Box>
                     )}
                 </Box>
             </Container>
+        </Box>
 
     );
 };

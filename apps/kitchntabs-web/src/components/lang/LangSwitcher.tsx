@@ -136,8 +136,8 @@ const LangSwitcher = (props: LanguageSwitcherButtonProps) => {
         <>
             <div
                 ref={avatarRef}
-                className='dash-language-avatar'
-                {... !webView ? { 
+                //className='dash-icon-button-color dash-icon-button-bg'
+                {...!webView ? { 
                     onMouseEnter: handleLanguageMouseEnter, 
                     onMouseLeave: handleMouseLeave 
                 } : { 
@@ -152,7 +152,7 @@ const LangSwitcher = (props: LanguageSwitcherButtonProps) => {
                         height: '30px',
                         minHeight: '30px'
                     }}
-                    className='dash-language-avatar-icon'
+                    className='dash-icon-button-color dash-icon-button-bg'
                 >
                     {getNameForLocale(locale).substring(0, 2).toUpperCase()}
                 </Avatar>

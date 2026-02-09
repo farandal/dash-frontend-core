@@ -14,6 +14,7 @@ import BrandCarousel from "../theme/components/testimonial/BrandCarousel";
 import HeroThree from "../theme/themes/index-3/HeroThree";
 import Screenshot from "../theme/components/screenshot/Screenshot";
 import Download from "../theme/pages/Download";
+import CtaSignup from "../theme/components/cta/CtaSignup";
 
 export default function HomeThree() {
   const theme = useTheme();
@@ -26,6 +27,7 @@ export default function HomeThree() {
       <Promo />
       <VideoPromo />
       <Download />
+      <CtaSignup bgColor={true} />
       {/*<Promo />
       <Features />
       <FeatureImgThree />

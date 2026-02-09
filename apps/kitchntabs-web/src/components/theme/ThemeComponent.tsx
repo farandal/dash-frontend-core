@@ -18,22 +18,39 @@ import DomainHeader from "dash-admin/src/default-theme/DomainHeader";
 const ThemeComponent: React.FC<IDomainTheme<any, any>> = (props) => {
     const { menuComponent, headerToolBar, footerComponent, children } = props;
   
-    return  <div id={'dash-app-layout'} className={'dash-app-layout'}>
-        <AppSidebarMaterial 
-                    className={'dash-app-layout-sidebar'}
-                   
-                />
+    return (
+        <div id={'dash-app-layout'} className={'dash-app-layout'}>
+            <AppSidebarMaterial 
+                className={'dash-app-layout-sidebar'}
+            />
             <Box
                 className={'dash-app-layout-content'}
+                sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    minHeight: '100vh',
+                }}
             >
                 {/* DomainHeader provides the burger menu toggle on mobile */}
                 <DomainHeader />
-                {/*headerToolBar*/}
+                
+                {/* Main content area - grows to fill available space */}
+                <Box 
+                    className="dash-theme-content"
+                    sx={{
+                        flex: 1,
+                        display: 'flex',
+                        flexDirection: 'column',
+                    }}
+                >
                     {children}
+                </Box>
+                
+                {/* Footer stays at the bottom */}
                 <Footer space />
             </Box>
-    </div>
+        </div>
+    );
 }
 
 export default ThemeComponent;
-
