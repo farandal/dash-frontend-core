@@ -197,14 +197,14 @@ td {
   -webkit-font-smoothing: antialiased;
 }
 
-body {
+/*body {
   //background-color: #ffffff;
   font-family: "Open Sans", sans-serif;
   font-size: 1rem;
   color: #707070;
   font-weight: 400;
   line-height: 1.75;
-}
+}*/
 
 p {
   margin-bottom: 1.25em;
@@ -1429,7 +1429,8 @@ span.sub-title {
 .hero-section-3 {
   position: relative;
   overflow: hidden;
-  margin-top: -16px;
+  // Negative margin for the header.
+  margin-top: -70px;
 }
 
 .hero-section-2:before {
@@ -1449,7 +1450,7 @@ span.sub-title {
   width: 100%;
   height: auto;
   bottom: 76px;
-  z-index: 0;
+  z-index: -1;
   left: 268px;
   overflow: hidden;
   background-size: cover;

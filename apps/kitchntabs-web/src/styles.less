@@ -34,19 +34,162 @@
 @import './styles/theme/theme.less';
 
 @import './styles/sidebar.less';
-
+// bootstrap imports are important for this application because of the landing page using some bootstrap styles.
 @import './styles/theme/bootstrap.less';
+
 @import './styles/theme/responsive.less';
 @import './styles/theme/themify-icons.less';
 
 @import './styles/theme/colors.less';
 
 
+@import './styles/tree.less';
 
 :root {
-    --sidebar-large-width: 255px;
+    --sidebar-large-width: 200px;
     --sidebar-small-width: 64px;
     --sidebar-horizontal-height: 64px;
-    --logo-max-width: 200px;
-    --logo-max-height: 60px;
+    // Logo dimensions for vertical sidebar (left/right)
+    --logo-vertical-max-width: 130px;
+    --logo-vertical-max-height: 130px;
+    // Logo dimensions for horizontal sidebar (top/bottom)
+    --logo-horizontal-max-width: 200px;
+    --logo-horizontal-max-height: 60px;
+}
+
+/* =============================================================================
+   KITCHNTABS PUBLIC APP LAYOUT STYLES
+   - Sticky footer at bottom
+   - Centered content
+   ============================================================================= */
+
+.kitchntabs-public-app {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.kitchntabs-public-app .dash-app-layout {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.kitchntabs-public-app .dash-app-layout-content {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 100vh;
+}
+
+/* Main content area - grows to push footer down */
+.kitchntabs-public-app .dash-theme-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Footer stays at the bottom */
+.kitchntabs-public-app footer,
+.kitchntabs-public-app .footer-section {
+    margin-top: auto;
+    flex-shrink: 0;
+}
+
+/* =============================================================================
+   LOGIN PAGE SPECIFIC STYLES
+   - Center the login form vertically in available space
+   ============================================================================= */
+
+.dash-app-login-wrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    //min-height: calc(100vh - 200px); /* Account for header and footer */
+    padding: 20px;
+}
+
+.dash-app-login-form {
+    //width: 100%;
+    //max-width: 400px;
+    padding: 20px;
+    
+    border-radius: 12px;
+    backdrop-filter: blur(10px);
+}
+
+html[data-theme='light'] .dash-app-login-form {
+    background: rgba(255, 255, 255, 0.5);
+}
+html[data-theme='dark'] .dash-app-login-form {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+
+
+.dash-app-login-form-title {
+    text-align: center;
+    color: var(--text-header, #fff);
+    margin-bottom: 24px;
+    font-size: 1.75rem;
+    font-weight: 600;
+}
+
+/* Input field overrides for login form */
+.dash-app-login-form .MuiTextField-root {
+    margin-bottom: 16px;
+}
+
+.dash-app-login-form .MuiInputBase-root {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+}
+
+.dash-app-login-form .MuiInputLabel-root {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.dash-app-login-form .MuiInputBase-input {
+    color: #fff;
+}
+
+.dash-app-login-form .MuiOutlinedInput-notchedOutline {
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.dash-app-login-form .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
+    border-color: rgba(255, 255, 255, 0.5);
+}
+
+.dash-app-login-form .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
+    border-color: var(--highlight-color, #d4ff00);
+}
+
+.dash-app-login-form .submit {
+    margin-top: 8px;
+}
+
+/* Link styles in login form */
+.dash-app-login-form .link--secondary {
+    color: var(--highlight-color, #d4ff00) !important;
+    text-decoration: none;
+}
+
+.dash-app-login-form .link--secondary:hover {
+    text-decoration: underline;
+}
+
+// TODO: Refactor to another location.
+.dash-tenant-switcher-menu {
+
+     z-index: 10000;        
+     min-width: 240px;
+     max-width: 320px;
+     background-color: var(--module-bg);
+     border-radius: 8px;
+     box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+     overflow: hidden;
+     border: 1px solid var(--module-border);
 }
