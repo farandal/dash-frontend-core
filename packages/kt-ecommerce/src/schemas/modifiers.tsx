@@ -1,3 +1,4 @@
+import TenantIdsSelector from "../components/TenantIdsSelector";
 import ModifierOptionsComponent from "../components/Modifiers/ModifierOptionsComponent";
 import ModifierProducts from "../components/Modifiers/ModifierProducts";
 import ModifierType from "../components/Modifiers/ModifierType";
@@ -46,6 +47,7 @@ const modifierGroupSchema: IDashAutoAdminAttribute[] = [
     type: Number,
     inList: false
   },
+   
   {
     tab: "Opciones",
     label: 'Opciones',
@@ -82,7 +84,19 @@ const modifierGroupSchema: IDashAutoAdminAttribute[] = [
         filter={{ pagination: { perPage: 50 } }}
         isMultiple={true} resourceConfig={resourceConfig}    />
   }*/
-  }
+  },
+
+  {   
+     tab: "Tenants",
+          attribute: 'tenant_ids',
+          label: 'Tenants',
+          type: Array,
+          inList: false,
+          custom: true,
+          component: TenantIdsSelector
+        
+      },
+   
        
 ];
 

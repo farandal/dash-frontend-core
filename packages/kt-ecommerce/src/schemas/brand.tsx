@@ -3,6 +3,7 @@ import CustomImageInput from 'dash-admin/src/components/misc/CustomImageInput';
 import Avatar from "dash-admin/src/components/avatar/Avatar";
 import { IDashAutoAdminAttribute } from "dash-auto-admin";
 import { ImageInput } from "react-admin";
+import TenantIdsSelector from "../components/TenantIdsSelector";
 
 const brandSchema: IDashAutoAdminAttribute[] = [
 
@@ -72,6 +73,17 @@ const brandSchema: IDashAutoAdminAttribute[] = [
         inShow: true,
         inEdit: true
     }*/
+
+         {   // TODO: if is_internal, do not allow this input
+                  attribute: 'tenant_ids',
+                  label: 'Tenants',
+                  type: Array,
+                  inList: false,
+                  custom: true,
+                  component: TenantIdsSelector
+                
+              },
+        
 
 ];
 

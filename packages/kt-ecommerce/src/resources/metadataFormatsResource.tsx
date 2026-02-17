@@ -41,7 +41,7 @@ const metadataFormatsResource: IDashAutoAdminResourceConfig =
     },
 
     listViewButton: { enabled: false },
-    listDeleteButton: { enabled: false },
+    listDeleteButton: { enabled: true },
     drawer: false,
     formGroupMode: "tabs", // groups or tabs
     refreshAfter: true,

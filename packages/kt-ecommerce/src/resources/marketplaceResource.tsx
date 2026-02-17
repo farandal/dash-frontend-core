@@ -35,7 +35,12 @@ const marketplaceResource: IDashAutoAdminResourceConfig =
         redirect: "/ecommerce/marketplace/create",
     },
     exporter: false,
-    drawer: false,
+    drawer: true,
+    drawerOptions:{
+        create: false,
+        edit:  false,
+        
+    },
     listViewButton: { enabled: false },
     listEditButton: { enabled: true },
     //listEditButton: { enabled: true, component: QuickEditButton, props: { icon: <Icons.Bolt />, label: "", resource: "marketplace/inline", navigation:"virtualhash", navigate: (id) => id, size: "small", color: "secondary" }},

@@ -1,3 +1,4 @@
+import TenantIdsSelector from "../components/TenantIdsSelector";
 import SearchableSelectChipsControlRecordContext from "../components/RASearchableSelectChipsRecordContext";
 import { IDashAutoAdminAttribute } from "dash-auto-admin";
 import React from "react";
@@ -84,6 +85,18 @@ const stocktypeSchema:IDashAutoAdminAttribute[] = [
         filter={{ flat: true, pagination: { perPage: 50 }, leafs: true }}
         isMultiple={true} />
     },*/
+
+
+      {   
+         tab: "Tenants",
+              attribute: 'tenant_ids',
+              label: 'Tenants',
+              type: Array,
+              inList: false,
+              custom: true,
+              component: TenantIdsSelector
+            
+    },
   
 ];
 

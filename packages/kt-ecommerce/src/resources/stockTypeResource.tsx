@@ -42,7 +42,7 @@ const stockTypeResource: IDashAutoAdminResourceConfig =
     },
     drawer: true,
     drawerOptions: {
-        create: true,
+        create: false,
         edit: true,
         view: true
     },

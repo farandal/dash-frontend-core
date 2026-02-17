@@ -6,12 +6,15 @@ import React from "react";
 
 import ListAlt from "@mui/icons-material/ListAlt";
 import {DASHAppConstants} from "dash-constants";
+import ProductImportContext from "../components/ProductImport/ProductImportContext";
+
 const Icon = ListAlt as unknown as React.FC;
 
 const productImportInstanceResource: IDashAutoAdminResourceConfig =
 {
  roles:[DASHAppConstants.system.SYSTEM_ROLE, DASHAppConstants.system.TENANT_ROLE],
   component: ResourceTemplate,
+  contextComponent: ProductImportContext,
   model: "ecommerce/product_import_instances",
   group: "resource.groups.import_export",
   label: "resource.import.instances.label",
@@ -23,6 +26,7 @@ const productImportInstanceResource: IDashAutoAdminResourceConfig =
       redirect: "/ecommerce/product_import_instances",
     },
   ],
+  
  
     mainAction: {
             title: "resource.import.instances.main_action",
@@ -40,6 +44,9 @@ const productImportInstanceResource: IDashAutoAdminResourceConfig =
   redirectAfterCreate: "edit", 
   redirectAfterUpdate:"edit",
   mutationMode: "pessimistic",
+  dataGridProps: {
+    rowClick: false,
+  },
   postFormatter(params, method) {
     // Remove legacy fields - they should be in import_options now
     const legacyFields = ['create_new_categories', 'assign_default_brand', 'assign_default_category'];

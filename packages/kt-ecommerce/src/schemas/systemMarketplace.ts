@@ -1,4 +1,5 @@
 import { SystemMarketplaceTenantAssociator } from "../components/Marketplace/SystemMarketplaceTenantAssociator";
+import { SystemMarketplaceTenancyAssociator } from "../components/Marketplace/SystemMarketplaceTenancyAssociator";
 import SystemMarketplaceImage from "../components/SystemMarketplaceImage";
 import SystemMarketplaceIcon from "../components/SystemMarketplaceIcon";
 import { IDashAutoAdminAttribute } from "dash-auto-admin";
@@ -50,6 +51,17 @@ const systemMarketplaceSchema:IDashAutoAdminAttribute[] = [
         type: String,
         custom: true,
         component: SystemMarketplaceTenantAssociator,
+        inList: false,
+        inCreate: false,
+        inEdit: true,
+        inShow: false
+    },
+
+    {
+        attribute: 'tenancy_ids',
+        type: String,
+        custom: true,
+        component: SystemMarketplaceTenancyAssociator,
         inList: false,
         inCreate: false,
         inEdit: true,

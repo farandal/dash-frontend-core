@@ -1,4 +1,5 @@
 import { SystemPointOfSaleTenantAssociator } from "../components/Marketplace/SystemPointOfsaleTenantAssociator";
+import { SystemPointOfSaleTenancyAssociator } from "../components/Marketplace/SystemPointOfSaleTenancyAssociator";
 import SystemPointOfSaleImage from "../components/SystemPointOfSaleImage";
 import SystemPointOfSaleIcon from "../components/SystemPointOfSaleIcon";
 import { IDashAutoAdminAttribute } from "dash-auto-admin";
@@ -49,6 +50,17 @@ const systemPointOfSaleSchema:IDashAutoAdminAttribute[] = [
             type: String,
             custom: true,
             component: SystemPointOfSaleTenantAssociator,
+            inList: false,
+            inCreate: false,
+            inEdit: true,
+            inShow: false
+        },
+
+        {
+            attribute: 'tenancy_ids',
+            type: String,
+            custom: true,
+            component: SystemPointOfSaleTenancyAssociator,
             inList: false,
             inCreate: false,
             inEdit: true,

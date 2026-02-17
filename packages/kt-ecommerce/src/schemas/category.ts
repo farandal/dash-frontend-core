@@ -37,6 +37,7 @@ import CategoryOutputMapper from "../components/Category/CategoryOutputMapper";
 import { IDashAutoAdminAttribute } from "dash-auto-admin";
 import CategoryIcon from "../components/Category/CategoryIcon";
 import CategoryIconList from "../components/Category/CategoryIconList";
+import TenantIdsSelector from "../components/TenantIdsSelector";
 
 const categorySchema: IDashAutoAdminAttribute[] = [
 
@@ -80,6 +81,16 @@ const categorySchema: IDashAutoAdminAttribute[] = [
     processor: "File"
   },
 
+     {   // TODO: if is_internal, do not allow this input
+        tab: "Tenants",
+                  attribute: 'tenant_ids',
+                  label: 'Tenants',
+                  type: Array,
+                  inList: false,
+                  custom: true,
+                  component: TenantIdsSelector
+                
+              },
   /* {
        tab: "Mapeo de categorías de marketplace",
        label: "Mapeador categorias de marketplace",

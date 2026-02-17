@@ -91,8 +91,8 @@ const productResource: IDashAutoAdminResourceConfig =
 
     postFormatter: (data) => {
      
-        /* TODO: METADATA */
-        if (data.metadata_items) {
+
+        /*if (data.metadata_items) {
             data.metadata_items = data.metadata_items.filter((data) => {
                 if (data.value) {
                     return true;
@@ -100,7 +100,18 @@ const productResource: IDashAutoAdminResourceConfig =
             });
         } else {
             data.metadata_items = [];
+        }*/
+
+        if (data.metadata_items) {
+            // Convert object values into an array
+            data.metadata_items = (Object.values(data.metadata_items) as { metadata_format_id: string; value: string }[]).filter((item) => {
+                return !!item.value; // keep only items with a truthy value
+            });
+        } else {
+            data.metadata_items = [];
         }
+
+
 
         let priceArray: any = [];
         if (data.updatedPrices) {
@@ -175,23 +186,50 @@ const productResource: IDashAutoAdminResourceConfig =
          /*@ts-ignore*/
         Array.from((form as any).keys()).forEach(key => form.delete(key));
 
+        // Fields that need special handling (arrays of objects, complex objects)
+        const specialFields = [
+            'prices', 'stocks', 'products', 'metadata_items', 'products_file', 
+            'gallery_images', 'category_ids', 'modifier_groups_ids', 'tenant_ids'
+        ];
+        
+        // Fields that are relation objects and should NOT be sent to the backend
+        // (the backend only needs the _id fields, not the full relation objects)
+        const relationObjectFields = [
+            'category', 'categories', 'primary_category', 'brand', 'gallery', 
+            'tenants', 'metadata', 'modifier_groups', 'images', '_gallery_debug',
+            'has_stocks', 'has_prices' // computed fields
+        ];
+
         // Append all simple fields
         Object.keys(transformed).forEach(key => {
             const value = transformed[key];
             
-            // Skip complex objects and arrays that need special handling
-            if (['prices', 'stocks', 'products', 'metadata_items', 'products_file', 'gallery_images', 'category_ids', 'modifier_groups_ids'].includes(key)) {
+            // Skip fields that need special handling
+            if (specialFields.includes(key)) {
                 return;
             }
             
-            // Append simple values
-            if (value !== null && value !== undefined) {
-                // Convert booleans to 1/0 for Laravel
-                if (typeof value === 'boolean') {
-                    form.append(key, value ? '1' : '0');
-                } else {
-                    form.append(key, value.toString());
-                }
+            // Skip relation object fields (these are full objects, not IDs)
+            if (relationObjectFields.includes(key)) {
+                return;
+            }
+            
+            // Skip null/undefined values
+            if (value === null || value === undefined) {
+                return;
+            }
+            
+            // Skip objects and arrays (they would become [object Object])
+            if (typeof value === 'object') {
+                console.warn(`Skipping object field '${key}' to prevent [object Object] serialization`);
+                return;
+            }
+            
+            // Convert booleans to 1/0 for Laravel
+            if (typeof value === 'boolean') {
+                form.append(key, value ? '1' : '0');
+            } else {
+                form.append(key, String(value));
             }
         });
 
@@ -222,8 +260,9 @@ const productResource: IDashAutoAdminResourceConfig =
         // Handle metadata_items array - only send if not empty
         if (transformed.metadata_items && Array.isArray(transformed.metadata_items) && transformed.metadata_items.length > 0) {
             transformed.metadata_items.forEach((item: any, index: number) => {
-                form.append(`metadata_items[${index}][metadata_format_id]`, item.metadata_format_id.toString());
-                form.append(`metadata_items[${index}][value]`, item.value.toString());
+                // metadata_format_id is now UUIDv7 (string), so just use String()
+                form.append(`metadata_items[${index}][metadata_format_id]`, String(item.metadata_format_id));
+                form.append(`metadata_items[${index}][value]`, String(item.value));
             });
         }
 
@@ -231,7 +270,7 @@ const productResource: IDashAutoAdminResourceConfig =
         const categoryIds = transformed.category_ids || params.category_ids;
         if (categoryIds && Array.isArray(categoryIds) && categoryIds.length > 0) {
             categoryIds.forEach((id: any) => {
-                form.append('category_ids[]', id.toString());
+                form.append('category_ids[]', String(id));
             });
         }
 
@@ -239,7 +278,15 @@ const productResource: IDashAutoAdminResourceConfig =
         const modifierGroupIds = transformed.modifier_groups_ids || params.modifier_groups_ids;
         if (modifierGroupIds && Array.isArray(modifierGroupIds) && modifierGroupIds.length > 0) {
             modifierGroupIds.forEach((id: any) => {
-                form.append('modifier_groups_ids[]', id.toString());
+                form.append('modifier_groups_ids[]', String(id));
+            });
+        }
+
+        // Handle tenant_ids array - only send if not empty
+        const tenantIds = transformed.tenant_ids || params.tenant_ids;
+        if (tenantIds && Array.isArray(tenantIds) && tenantIds.length > 0) {
+            tenantIds.forEach((id: any) => {
+                form.append('tenant_ids[]', String(id));
             });
         }
 

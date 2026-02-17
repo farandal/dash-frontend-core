@@ -21,7 +21,7 @@ const systemPointOfSaleResource: IDashAutoAdminResourceConfig =
     //references: [{ reference: 'roles', target: 'role', schema: rolesSchema }]
     //references: [{ reference: 'roles', target: 'id', schema: roleSchema }],
     icon: <Icon />,
-    group: "Recursos de sistema",
+    group: "System",
     menu: [
         {
             title: "Puntos de venta",

@@ -1,8 +1,10 @@
+
 import InputMetadataFormatMappings from "../components/Metadata/InputMetadataFormatMappings";
 import MarketplacesMetadataMapper from "../components/Metadata/MarketplacesMetadataMapper";
 import MetadataTypeSelector from "../components/Misc/MetadataTypeSelector";
 import { IDashAutoAdminAttribute } from "dash-auto-admin";
 import React from "react";
+import TenantIdsSelector from "../components/TenantIdsSelector";
 
 const metadataFormatShcema: IDashAutoAdminAttribute[] = [
 
@@ -59,6 +61,16 @@ const metadataFormatShcema: IDashAutoAdminAttribute[] = [
         />
     },
 
+    {   // TODO: if is_internal, do not allow this input
+        attribute: 'tenant_ids',
+        label: 'Tenants',
+        type: Array,
+        inList: false,
+        custom: true,
+        component: TenantIdsSelector
+      
+    },
+
     /* TODO!!! */
 
     /*
@@ -89,7 +101,7 @@ const metadataFormatShcema: IDashAutoAdminAttribute[] = [
 
     /* What is this for??? */
 
-    {
+   /* {
 
         label: 'Archivo de importación',
         type: File,
@@ -100,7 +112,11 @@ const metadataFormatShcema: IDashAutoAdminAttribute[] = [
         inCreate: false,
         processor: "Blob"
     }
+        */
 
+
+
+    
 ];
 
 export default metadataFormatShcema;

@@ -99,6 +99,7 @@ const tenantTenantSchema:IDashAutoAdminAttribute[] = [
    {
      tab: 'Datos',
       label: 'Monedas Disponibles',
+      inList:false,
       attribute: 'currency_ids',
       //listAttribute: 'name',
       type: 'ecommerce/currency.code',

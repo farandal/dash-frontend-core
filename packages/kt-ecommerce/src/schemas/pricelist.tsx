@@ -1,3 +1,4 @@
+import TenantIdsSelector from "../components/TenantIdsSelector";
 import { IDashAutoAdminAttribute } from "dash-auto-admin";
 import React from "react";
 import { SelectInput } from "react-admin";
@@ -39,6 +40,16 @@ const pricelistSchema: IDashAutoAdminAttribute[] = [
     type: Boolean,
     inList: true
   },
+
+    {   // TODO: if is_internal, do not allow this input
+          attribute: 'tenant_ids',
+          label: 'Tenants',
+          type: Array,
+          inList: false,
+          custom: true,
+          component: TenantIdsSelector
+        
+      },
 
   /*
   {

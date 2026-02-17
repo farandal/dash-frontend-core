@@ -1,4 +1,5 @@
 //import ProductMetadata from "../components/Metadata/ProductMetadata";
+import TenantIdsSelector from "../components/TenantIdsSelector";
 import ProductMetadata from "../components/Metadata/ProductMetadata";
 import GallerySelector from "../components/Product/GallerySelector";
 import ProductImage from "../components/Product/ProductImage";
@@ -376,7 +377,18 @@ const productSchema: IDashAutoAdminAttribute[] = [
     inShow: true,
     //inDrawer: false,
     component: ProductHistory,
-  }
+  },
+
+    {   // TODO: if is_internal, do not allow this input
+        tab: "Tenants",
+          attribute: 'tenant_ids',
+          label: 'Tenants',
+          type: Array,
+          inList: false,
+          custom: true,
+          component: TenantIdsSelector
+        
+      },
 
 ];
 

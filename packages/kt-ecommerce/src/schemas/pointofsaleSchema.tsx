@@ -1,5 +1,6 @@
 //import MarketplaceConnection from "../resources/TenantMarketplaceResource/MarketplaceConnection";
 
+import TenantIdsSelector from "../components/TenantIdsSelector"
 import PointOfSaleConnectionOptions from "../components/PointOfSale/PointOfSaleConnectionOptions"
 import SystemPointOfSaleSelector from "../components/PointOfSale/SystemPointOfSaleSelector"
 import { IDashAutoAdminAttribute } from "dash-auto-admin"
@@ -10,7 +11,7 @@ export interface IPointOfsale {
     tenant_system_point_of_sale_id: number,
     active: boolean,
     notified: boolean,
-    connection_params: {[x:string]:any}
+    connection_params: { [x: string]: any }
     tenantSystemPointOfSale: {
         id: number
         system_point_of_sale_id: number
@@ -45,18 +46,18 @@ const pointOfSaleSchema: IDashAutoAdminAttribute[] = [
         inList: true,
         inEdit: true,
         inShow: true,
-        inCreate:true,
+        inCreate: true,
         readOnly: true
     },
 
-       {
+    {
         attribute: 'is_default',
         label: 'Principal',
         type: Boolean,
         inList: true,
         inEdit: true,
         inShow: true,
-        inCreate:true,
+        inCreate: true,
         readOnly: true
     },
 
@@ -82,18 +83,30 @@ const pointOfSaleSchema: IDashAutoAdminAttribute[] = [
         inList: false
     },
 
-   /* {
-        //tab: "Conexión",
-        attribute: 'connection_params',
-        label: 'Establecer conexión con el marketplace',
-        type: String,
+    /* {
+         //tab: "Conexión",
+         attribute: 'connection_params',
+         label: 'Establecer conexión con el marketplace',
+         type: String,
+         custom: true,
+         inList:false,
+         inShow:false,
+         inCreate:false,
+         component: MarketplaceConnection,
+         
+     },*/
+
+    {   // TODO: if is_internal, do not allow this input
+        attribute: 'tenant_ids',
+        label: 'Tenants',
+        type: Array,
+        inList: false,
         custom: true,
-        inList:false,
-        inShow:false,
-        inCreate:false,
-        component: MarketplaceConnection,
-        
-    },*/
+        component: TenantIdsSelector
+
+    },
+
+
 
 ];
 

@@ -69,6 +69,10 @@ const pointOfSaleResource: IDashAutoAdminResourceConfig =
     },
     exporter: false,
     drawer: true,
+    drawerOptions:{
+        create: false,
+        
+    },
     listViewButton: { enabled: false },
     listDeleteButton: { enabled: false },
     showNotifyAfterSubmit: true,

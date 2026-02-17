@@ -1,3 +1,4 @@
+import TenantIdsSelector from "../components/TenantIdsSelector";
 import Gallery from "../components/Gallery";
 import GalleryPrimaryImageSelector from "../components/GalleryPrimaryImageSelector";
 import { IDashAutoAdminAttribute } from "dash-auto-admin";
@@ -15,11 +16,13 @@ import { IDashAutoAdminAttribute } from "dash-auto-admin";
 */
 const gallerySchema: IDashAutoAdminAttribute[] = [
     {
+        tab: "Galería",
         label: 'Título',
         attribute: 'title',
         type: String
     },
     {
+         tab: "Galería",
         label: 'Principal',
         attribute: 'primary_image_id',
         listAttribute: 'gallery.primary_image_id',
@@ -30,6 +33,7 @@ const gallerySchema: IDashAutoAdminAttribute[] = [
         component: GalleryPrimaryImageSelector
     },
     {
+         tab: "Galería",
         label: 'Imágenes',
         attribute: 'images',
         type: String,
@@ -41,7 +45,18 @@ const gallerySchema: IDashAutoAdminAttribute[] = [
             console.log(value,allValues);
             return "Error de validación";
         },*/
-    }
+    },
+     {   // TODO: if is_internal, do not allow this input
+         tab: "Tenants",
+              attribute: 'tenant_ids',
+              label: 'Tenants',
+              type: Array,
+              inList: false,
+              custom: true,
+              component: TenantIdsSelector
+            
+          },
+    
 ];
 
 export default gallerySchema;

@@ -1,5 +1,6 @@
 
 //import MarketplaceConfigurationOptions from "../components/TenantMarketplaceResource/MarketplaceConfigurationOptions"
+import TenantIdsSelector from "../components/TenantIdsSelector"
 import MarketplaceConnectionOptions from "../components/TenantMarketplaceResource/MarketplaceConnectionOptions"
 import MarketplaceTests from "../components/TenantMarketplaceResource/MarketplaceTests"
 import TenantMarketplaceSelector from "../components/TenantMarketplaceResource/TenantMarketplaceSelector"
@@ -13,8 +14,8 @@ export interface ITenantMarketplace {
     tenant_system_marketplace_id: number,
     active: boolean,
     notified: boolean,
-    connection_params: {[x:string]:any}
-    tests:  {[x:string]:any},
+    connection_params: { [x: string]: any }
+    tests: { [x: string]: any },
     tenantSystemMarketplace: {
         id: number
         system_marketplace_id: number
@@ -53,7 +54,7 @@ const tenantMarketplaceSchema: IDashAutoAdminAttribute[] = [
         inList: true,
         inEdit: false,
         inShow: true,
-        inCreate:false,
+        inCreate: false,
         readOnly: true
     },
 
@@ -65,7 +66,7 @@ const tenantMarketplaceSchema: IDashAutoAdminAttribute[] = [
         inList: true,
         inEdit: false,
         inShow: true,
-        inCreate:false,
+        inCreate: false,
         readOnly: true
     },
 
@@ -104,21 +105,30 @@ const tenantMarketplaceSchema: IDashAutoAdminAttribute[] = [
 
     },
 
-
-   
-
-   /* {
-        //tab: "Conexión",
-        attribute: 'connection_params',
-        label: 'Establecer conexión con el marketplace',
-        type: String,
+    {   // TODO: if is_internal, do not allow this input
+        attribute: 'tenant_ids',
+        label: 'Tenants',
+        type: Array,
+        inList: false,
         custom: true,
-        inList:false,
-        inShow:false,
-        inCreate:false,
-        component: MarketplaceConnection,
+        component: TenantIdsSelector
 
-    },*/
+    },
+
+
+
+    /* {
+         //tab: "Conexión",
+         attribute: 'connection_params',
+         label: 'Establecer conexión con el marketplace',
+         type: String,
+         custom: true,
+         inList:false,
+         inShow:false,
+         inCreate:false,
+         component: MarketplaceConnection,
+ 
+     },*/
 
 
 

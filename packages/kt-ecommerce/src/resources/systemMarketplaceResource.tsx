@@ -21,7 +21,7 @@ const systemMarketplaceResource: IDashAutoAdminResourceConfig =
     //references: [{ reference: 'roles', target: 'role', schema: rolesSchema }]
     //references: [{ reference: 'roles', target: 'id', schema: roleSchema }],
     redirectAfterUpdate: "edit",
-    group: "Recursos de sistema",
+    group: "System",
     menu: [
         {
             title: "Marketplace",

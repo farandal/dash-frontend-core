@@ -16,6 +16,12 @@ import {DASHAppConstants} from "dash-constants";
 const Icon = LocalOffer as unknown as React.FC;
 const BoltIcon = Bolt as unknown as React.FC;
 
+/*
+
+BUGS: on creating a new pricelist the list do not refreshes. it remains cached, even when refreshihng the page. 
+
+*/
+
 const pricelistResource: IDashAutoAdminResourceConfig =
 {
     roles:[DASHAppConstants.system.SYSTEM_ROLE, DASHAppConstants.system.TENANT_ROLE],
@@ -86,6 +92,7 @@ const pricelistResource: IDashAutoAdminResourceConfig =
     }
     return params;
   },
+  
   saveButtonAlwaysEnabled: true,
   processErrors: false,
   listProps: { storeKey: false }, // deshabilita persistencia deel estado, cache de los valores seleccionados sort, page, etc.
