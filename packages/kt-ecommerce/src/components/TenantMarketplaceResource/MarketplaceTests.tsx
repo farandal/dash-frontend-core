@@ -14,7 +14,8 @@ import {
     CircularProgress,
     TextField,
     LinearProgress,
-    Alert
+    Alert,
+    Card
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { IDashAutoAdminCustomFieldComponent } from 'dash-auto-admin';
@@ -27,11 +28,17 @@ import {
     useEditContext,
     useGetOne,
     Loading,
-    useNotify
+    useNotify,
+    useRefresh
 } from 'react-admin';
 import MUISimpleJsonTable from '../MuiSimpleJsonTable';
 import { useAxios } from 'dash-axios-hook';
 import { ITenantMarketplace } from '../../schemas/tenantMarketplace';
+import { DASHAdminSystemConstants } from 'dash-constants';
+import { useDialog } from 'dash-dialog';
+import { AppDialogOptions } from 'dash-dialog/src/IAppDialogProps';
+import nativeAxios from 'axios';
+
 
 const LoadingProgress: React.FC<{ message: string }> = ({ message }) => (
     <Box sx={{ width: '100%', p: 3, textAlign: 'center' }}>
@@ -42,13 +49,126 @@ const LoadingProgress: React.FC<{ message: string }> = ({ message }) => (
     </Box>
 );
 
-const TenantMarketplaceTestsEdit: React.FC<IDashAutoAdminCustomFieldComponent> = () => {
+const TenantMarketplaceTestsEdit: React.FC<IDashAutoAdminCustomFieldComponent> = (props) => {
     const [openModal, setOpenModal] = useState(false);
     const { record, isPending } = useEditContext();
     const [testResults, setTestResults] = useState<Record<string, any>>({});
     const [loading, setLoading] = useState<Record<string, boolean>>({});
     const axios = useAxios();
     const notify = useNotify();
+    const refresh = useRefresh();
+    const dialog = useDialog();
+
+    const { resourceConfig, method } = props;
+
+
+    const successDialog = (message = "", options?: Partial<AppDialogOptions>) => {
+        dialog(
+            {
+                variant: "info",
+                title: "Conexión realizada exitosamente",
+                content: message,
+                ...options
+            })
+    }
+
+    const errorDialog = (message, options?: Partial<AppDialogOptions>) => {
+        dialog(
+            {
+                variant: "danger",
+                title: "Ha ocurrido un error.",
+                content: message,
+                ...options
+            })
+    }
+
+
+
+    const getSettings = async () => {
+        if (!record?.id) return;
+
+        try {
+            const url = DASHAdminSystemConstants.system.API_URL + "/api/ecommerce/marketplace/" + record.id + "/oauth/getSettings";
+            const response = await axios.get(url);
+            console.log("getSettings", response);
+            refresh();
+            notify("Configuración obtenida exitosamente", { type: 'success' });
+        } catch (error) {
+            console.error("Error getting settings:", error);
+            notify("Error al obtener la configuración", { type: 'error' });
+        }
+    }
+
+    const getTenantMarketplaceConnectionURL = async () => {
+        if (!record?.id) return;
+
+        const getTenantMarketplaceConnectionURL = DASHAdminSystemConstants.system.API_URL + "/api/ecommerce/marketplace/" + record.id + "/oauth/setUpConnection";
+
+        try {
+            const response = await axios.post(getTenantMarketplaceConnectionURL);
+
+            if (response.data && response.data.method === "TOKEN") {
+                // Assumed success, continue...
+                successDialog();
+                refresh();
+            } else if (response.data && response.data.auth_url) {
+                try {
+                    // This request performs OAuth authentication using the provided credentials and parameters
+                    const oauthResponse = await nativeAxios.request({
+                        url: response.data.auth_url,
+                        method: response.data.method,
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded'
+                        },
+                        data: new URLSearchParams(response.data.params)
+                    });
+
+                    successDialog();
+                    refresh();
+                    return oauthResponse.data;
+                } catch (error) {
+                    errorDialog(JSON.stringify(error));
+                    console.error('OAuth request failed:', error);
+                } finally {
+                    notify("Proceso de conexión finalizado");
+                }
+            } else {
+                // For other cases handle success
+                successDialog();
+                refresh();
+            }
+        } catch (e: any) {
+            console.error("getTenantMarketplaceConnectionURL", e);
+            const response = e.response;
+
+            if (!response) {
+                errorDialog("Error de conexión. Por favor intente nuevamente.");
+                return;
+            }
+
+            switch (response.status) {
+                case 301:
+                    console.log("REDIRECT", response.data.auth_url);
+                    window.location = response.data.auth_url;
+                    break;
+                case 422:
+                    errorDialog(response.data.response?.body || response.data.message || "Error");
+                    break;
+                case 500:
+                    errorDialog(response.data.message);
+                    break;
+                default:
+                    errorDialog(response.data.message || e.message || "Ha ocurrido un error, vuelva a intentarlo.");
+                    break;
+            }
+        } finally {
+            notify("Proceso de conexión finalizado");
+        }
+    }
+
+
+
+
 
     const {
         data: connectionFormat,
@@ -59,11 +179,16 @@ const TenantMarketplaceTestsEdit: React.FC<IDashAutoAdminCustomFieldComponent> =
         {
             id: record?.tenant_system_marketplace_id,
         },
-        { 
-            refetchOnWindowFocus: false, 
+        {
+            refetchOnWindowFocus: false,
             enabled: !!(record?.id && record?.tenant_system_marketplace_id)
         }
     );
+
+
+
+
+
 
     function changeOpenModal() {
         openModal ? setOpenModal(false) : setOpenModal(true);
@@ -115,7 +240,7 @@ const TenantMarketplaceTestsEdit: React.FC<IDashAutoAdminCustomFieldComponent> =
     }
 
     // Handle error case
-    if (connectionFormatError) {
+    /*if (connectionFormatError) {
         console.error('Connection format error:', connectionFormatError);
         return (
             <Box sx={{ p: 2 }}>
@@ -125,14 +250,41 @@ const TenantMarketplaceTestsEdit: React.FC<IDashAutoAdminCustomFieldComponent> =
                 <Button onClick={changeOpenModal} variant="outlined" className="btn-width-lg" style={{ marginLeft: 'auto' }}>
                     Panel de pruebas
                 </Button>
-            </Box>
+            </Box>  
         );
-    }
+    }*/
 
-    return <>
-        <Button onClick={changeOpenModal} variant="outlined" className="btn-width-lg" style={{ marginLeft: 'auto' }}>
-            Panel de pruebas
-        </Button>
+    return <Box 
+    style={{
+        display: 'flex',
+        flexDirection: 'column'
+    }} 
+    sx={{ mb: 1 }}
+    >
+
+        {connectionFormatError ? <Alert>
+            {connectionFormatError?.message || 'Error'}
+        </Alert> : <></>}
+
+
+        {(method === "edit" && (record?.connection_params)) ?
+            <>
+                <Button variant="outlined" onClick={() => getTenantMarketplaceConnectionURL()}>
+                    {record.active ? "Re-Establecer conexión / renovar token" : "Establecer conexión - obtener token"}
+                </Button>
+                <Button variant="outlined" onClick={() => getSettings()}>
+                    Obtener configuración
+                </Button>
+                <Button variant="outlined" onClick={changeOpenModal} >
+                    Panel de pruebas
+                </Button>
+            </>
+            :
+            <></>}
+
+
+
+
 
         <SwipeableDrawer
             anchor={'right'}
@@ -144,13 +296,13 @@ const TenantMarketplaceTestsEdit: React.FC<IDashAutoAdminCustomFieldComponent> =
             onOpen={function (): void {
                 throw new Error('Function not implemented.');
             }}>
-            <Box sx={{ 
-                bgcolor: 'primary.main', 
+            <Box sx={{
+                bgcolor: 'primary.main',
                 color: 'primary.contrastText',
                 position: 'relative',
                 padding: '8px 16px'
             }}>
-                <Box sx={{ 
+                <Box sx={{
                     display: 'flex',
                     alignItems: 'center',
                     minHeight: '64px'
@@ -233,7 +385,7 @@ const TenantMarketplaceTestsEdit: React.FC<IDashAutoAdminCustomFieldComponent> =
                                                     slotProps={{
                                                         input: {
                                                             readOnly: true,
-                                                            style: { fontFamily: 'monospace', fontSize:'9px' }
+                                                            style: { fontFamily: 'monospace', fontSize: '9px' }
                                                         }
                                                     }}
                                                 />
@@ -256,7 +408,7 @@ const TenantMarketplaceTestsEdit: React.FC<IDashAutoAdminCustomFieldComponent> =
                 </Button>
             </DialogActions>
         </SwipeableDrawer>
-    </>
+    </Box>
 }
 
 /** View component */

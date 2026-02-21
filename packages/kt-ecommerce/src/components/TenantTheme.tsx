@@ -6,16 +6,21 @@ import { Tenant } from "dash-admin/src/interfaces/Tenant";
 import MUISimpleJsonTable from "dash-admin/src/components/misc/MuiSimpleJsonTable";
 import { useSystemRequestsCache } from 'dash-admin/src/contexts/SystemRequestsCache';
 
+/** Wrapper creating a React component boundary so DashAutoFormTabs hooks don't violate Rules of Hooks */
+const FormTabsRenderer: React.FC<{schema: any; method: "list" | "create" | "edit" | "view"; label: string}> = ({schema, method, label}) => (
+    <>{DashAutoFormTabs({schema, resourceConfig: null, options: {mode: method, label}})}</>
+);
+
 export interface ITenantSettings extends IDashAutoAdminCustomFieldComponent {
   tenant: Tenant
 }
 
 const TenantThemeEdit: React.FC<ITenantSettings> = ({ method, attribute, tenant }) => {
   const [settingFormatsSchema, setSettingFormatsSchema] = useState<any>(null);
-  const formContext = useFormContext();
+  /*const formContext = useFormContext();
   const formValues = useWatch({
     control: formContext.control
-  });
+  });*/
 
   const { formats: settingsFormats, loading } = useSystemRequestsCache();
 
@@ -51,14 +56,7 @@ const TenantThemeEdit: React.FC<ITenantSettings> = ({ method, attribute, tenant 
 
   if (!settingFormatsSchema) return <Loading />
   return <section>
-    {settingFormatsSchema ? (
-      DashAutoFormTabs({schema:settingFormatsSchema, resourceConfig:null, options: {
-        mode: method,
-        label: 'Tema y Colores', // Customized label
-      }})
-    ) : (
-      <></>
-    )}
+    <FormTabsRenderer schema={settingFormatsSchema} method={method} label="Tema y Colores" />
   </section>
 }
 

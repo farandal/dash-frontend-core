@@ -16,6 +16,7 @@ import MUISimpleJsonTable from "../MuiSimpleJsonTable";
 import { IDashNotificationPayloadBase } from "dash-admin/src/interfaces/communication/INotification";
 import CheckCircle from "@mui/icons-material/CheckCircle";
 import { dashStorage } from 'dash-utils';
+import { useProductImportState } from './ProductImportContext';
 const LinearProgressWithLabel = (
   props: LinearProgressProps & { value: number }
 ) => {
@@ -79,10 +80,11 @@ const NormalizedProgressComponent = ({ progress, stats, mode }: {
 
       {/* Current Status */}
       {progress?.current_sku && progress.current_sku !== 'completed' && (
-        <Box sx={{ mb: 2 }}>
-          <Typography variant="body2">
-            {translate('resource.import.instances.progress.currently_processing')} <Chip label={progress.current_sku} size="small" color="primary" />
+        <Box sx={{ mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Typography variant="body2" component="span">
+            {translate('resource.import.instances.progress.currently_processing')}
           </Typography>
+          <Chip label={progress.current_sku} size="small" color="primary" />
         </Box>
       )}
 
@@ -212,28 +214,8 @@ export interface IProgressObject {
   [x: string]: IProgressUpdate;
 }
 
-// Interface for normalized import progress
-interface INormalizedProgress {
-  percent: number;
-  processed: number;
-  total: number;
-  current_sku: string;
-  timestamp: string;
-}
-
-interface INormalizedStats {
-  products_to_create?: number;
-  products_to_update?: number;
-  products_created?: number;
-  products_updated?: number;
-  categories_to_create?: number;
-  categories_created?: number;
-  brands_to_create?: number;
-  galleries_to_create?: number;
-  galleries_created?: number;
-  errors_count: number;
-  skipped_rows: number;
-}
+// Interface for normalized import progress - now imported from context
+// Using types from ProductImportContext
 
 const ProductImportComponentView: React.FC<IDashAutoAdminCustomFieldComponent> = ({
   method,
@@ -244,200 +226,143 @@ const ProductImportComponentView: React.FC<IDashAutoAdminCustomFieldComponent> =
   const refresh = useRefresh();
   const translate = useTranslate();
 
-  // Legacy template import progress
+  // Get state from context (provided by contextComponent in resource config)
+  const contextState = useProductImportState();
+  const { 
+    normalizedProgress: contextProgress, 
+    normalizedStats: contextStats, 
+    isNormalizedImportActive: contextImportActive,
+    importStats: contextImportStats,
+    lastImportEvent,
+    clearProgress
+  } = contextState;
+
+  // Debug: Log context state on every render
+  console.log('🟡🟡🟡 [ProductImportComponent] Context state 🟡🟡🟡', {
+    hasContextProgress: !!contextProgress,
+    hasContextStats: !!contextStats,
+    contextImportActive,
+    hasLastImportEvent: !!lastImportEvent,
+    lastImportEventType: lastImportEvent?.type || lastImportEvent?.notificationPayload?.type,
+    // Check if we're using default context (not provided)
+    isDefaultContext: contextState === undefined || Object.keys(contextState).length === 0
+  });
+
+  // Local state for UI-specific needs (will be synced with context)
+  const [localProgress, setLocalProgress] = useState<any>(null);
+  const [localStats, setLocalStats] = useState<any>(null);
+  const [localImportActive, setLocalImportActive] = useState(false);
+
+  // Merge context and local state (local takes precedence during active import)
+  const normalizedProgress = localImportActive ? localProgress : contextProgress;
+  const normalizedStats = localImportActive ? localStats : contextStats;
+  const isNormalizedImportActive = localImportActive || contextImportActive;
+  const importStats = contextImportStats;
+
+  // Legacy template import progress (kept local as it's not used in context)
   const [progress, setProgress] = useState<IProgressObject>();
   
-  // Normalized import progress
-  const [normalizedProgress, setNormalizedProgress] = useState<INormalizedProgress | null>(null);
-  const [normalizedStats, setNormalizedStats] = useState<INormalizedStats | null>(null);
-  const [isNormalizedImportActive, setIsNormalizedImportActive] = useState(false);
-  
   const [stats, setStats] = useState<any>(null);
-  const [importStats, setImportStats] = useState<any>();
   const [importDialogOpen, setImportDialogOpen] = React.useState(false);
   const [notificationDialogOpen, SetNotificationDialogOpen] = React.useState(false);
   const [notificationDialogProps, SetNotificationDialogProps] = React.useState(null);
 
+  // Legacy notification handling for class-based notifications (template imports)
   const { events, lastEvent } = useContext<ILaravelEchoContext>(LaravelEchoContext);
   const [lastNotification, setLastNotification] = useState(null);
-  const [lastNormalizedNotification, setLastNormalizedNotification] = useState(null);
 
+  // Sync local state with context events during import
   useEffect(() => {
-    // Unified notification handler - works for both template and normalized imports
-    // Priority: Check for type-based notifications first (unified approach)
-    if (!lastEvent) return;
-    
-    const storedEvent = dashStorage.getItem('lastImportEvent');
-    const currentEvent = JSON.stringify(lastEvent);
-    
-    if (storedEvent === currentEvent) return;
-    
-    // Check if this is a type-based notification (works for both template and normalized)
-    const eventType = lastEvent.type || lastEvent.notificationPayload?.type;
-    
-    console.log('[ProductImport] Received event:', { 
-      type: lastEvent.type, 
-      payloadType: lastEvent.notificationPayload?.type,
-      payloadClass: lastEvent.notificationPayload?.class,
-      eventType,
-      data: lastEvent.data
+    console.log('[ProductImportComponent] useEffect triggered, lastImportEvent:', {
+      hasEvent: !!lastImportEvent,
+      eventType: lastImportEvent?.type || lastImportEvent?.data?.type || lastImportEvent?.notificationPayload?.type,
+      rawEvent: lastImportEvent
     });
     
-    if (eventType) {
-      switch (eventType) {
-        case "import.started":
-        case "import.progress":
-        case "import.failed":
-        case "import.completed":
-        case "import.already_completed":
-          console.log('[ProductImport] Routing to normalized handler with type:', eventType);
-          setLastNormalizedNotification(lastEvent);
-          dashStorage.setItem('lastImportEvent', currentEvent);
-          return;
-      }
-    }
+    if (!lastImportEvent) return;
     
-    // Fallback: class-based routing for legacy template notifications without type
-    const notificationClass = lastEvent.notificationPayload?.class;
-    if (notificationClass) {
-      switch (notificationClass) {
-        case "ValidateProductImportNotification":
-        case "ProductImportNotification":
-        case "ProductImportProgressNotification":
-        case "ProductImportErrorNotification":
-          console.log('[ProductImport] Routing to legacy handler with class:', notificationClass);
-          setLastNotification(lastEvent);
-          dashStorage.setItem('lastImportEvent', currentEvent);
-          break;
-      }
-    }
-  }, [lastEvent]);
-  useEffect(() => {
-    if (!lastNotification) return
-
-    switch (lastNotification.notificationPayload.class) {
+    // Check multiple possible locations for event type
+    const eventType = lastImportEvent.type || 
+                      lastImportEvent.data?.type || 
+                      lastImportEvent.notificationPayload?.type ||
+                      lastImportEvent.notificationPayload?.stdClass?.type ||
+                      lastImportEvent.notificationPayload?.notificationPayload?.type;
+    
+    // Get notification data from multiple possible locations
+    const notificationData = lastImportEvent.data || 
+                             lastImportEvent.notificationPayload?.notificationPayload ||
+                             lastImportEvent.notificationPayload?.stdClass?.notificationPayload ||
+                             {};
+    
+    console.log('[ProductImportComponent] Syncing with context event:', eventType, {
+      notificationData,
+      currentLocalImportActive: localImportActive
+    });
+    
+    switch (eventType) {
+      case 'import.started':
+        setLocalImportActive(true);
+        setLocalProgress(null);
+        setLocalStats(null);
+        break;
         
-      case "ValidateProductImportNotification":
-        // Remove setImportDialogOpen(false) since we're not showing it
+      case 'import.progress':
+        if (notificationData.progress) {
+          setLocalProgress(notificationData.progress);
+        }
+        if (notificationData.stats) {
+          setLocalStats(notificationData.stats);
+        }
+        break;
         
-        // Extract and display validation stats for template mode
-        const validationData = lastNotification.notificationPayload.notificationPayload;
-        if (validationData && validationData.json && validationData.json.info) {
-          setStats({
-            ...validationData.json.info,
-            log_id: validationData?.id
-          });
+      case 'import.completed':
+        console.log('✅✅✅ [ProductImportComponent] IMPORT COMPLETED - Setting localImportActive=FALSE ✅✅✅');
+        setLocalImportActive(false);
+        setLocalProgress(prev => ({
+          ...prev,
+          percent: 100,
+          current_sku: 'completed',
+          timestamp: new Date().toISOString()
+        }));
+        if (notificationData.stats) {
+          setLocalStats(notificationData.stats);
         }
         
-        setLastNotification(null);
-        break;
-        
-      case "ProductImportNotification":
-      case "ProductImportProgressNotification":
-        // Remove setImportDialogOpen(false) since we're not showing it
-        setLastNotification(null);
-        break;
-        
-      case "ProductImportErrorNotification":
-        // Remove setImportDialogOpen(false) since we're not showing it
-        setLastNotification(null);
+        // Show completion dialog
         SetNotificationDialogOpen(true);
-       
-        const error = formatNotification<IDashNotificationPayloadBase>(
-            lastNotification
-        );
+        SetNotificationDialogProps({
+          variant: "success",
+          title: "",
+          showCloseButton: true,
+          content: <CheckCircle sx={{ fontSize: 60, color: 'success.main' }} />
+        });
+        break;
         
+      case 'import.failed':
+        setLocalImportActive(false);
+        
+        SetNotificationDialogOpen(true);
+        const error = formatNotification<IDashNotificationPayloadBase>(lastImportEvent);
         SetNotificationDialogProps({
           variant: "error",
           title: error.title,
           content: (
-            <NotificationWrapper
-              notification={lastNotification}
-              key={0}
-            >
-              <NotificationComponent
-                notification={lastNotification}
-              />
+            <NotificationWrapper notification={lastImportEvent} key={0}>
+              <NotificationComponent notification={lastImportEvent} />
             </NotificationWrapper>
           ),
         });
         break;
         
-      default:
-        const formattedNotification =
-          formatNotification<IDashNotificationPayloadBase>(
-            lastNotification
-          );
+      case 'import.already_completed':
+        setLocalImportActive(false);
+        setLocalProgress(null);
+        
+        const modeLabel = notificationData.mode === 'preview' 
+          ? translate('resource.import.instances.tabs.preview') 
+          : translate('resource.import.instances.tabs.import');
+        
         SetNotificationDialogOpen(true);
-        SetNotificationDialogProps({
-          variant: "info",
-          title: formattedNotification.title,
-          content: (
-            <NotificationWrapper
-              notification={lastNotification}
-              key={0}
-            >
-              <NotificationComponent
-                notification={lastNotification}
-              />
-            </NotificationWrapper>
-          ),
-        });
-        setLastNotification(null);
-        refresh();
-        break;
-    }
-  }, [lastNotification]);
-
-  useEffect(() => {
-    if (!lastNormalizedNotification) return
-    
-    // Extract notification data - works for both template and normalized imports
-    // Template: data is in lastNormalizedNotification.data (includes progress object)
-    // Normalized: data is in lastNormalizedNotification.data or notificationPayload.notificationPayload
-    const notificationData = lastNormalizedNotification.data || lastNormalizedNotification.notificationPayload?.notificationPayload || {};
-    
-    // Extract type - works for both template and normalized imports
-    const eventType = lastNormalizedNotification.type || lastNormalizedNotification.notificationPayload?.type;
-    
-    console.log('[ProductImport] Processing notification:', { eventType, notificationData, rawEvent: lastNormalizedNotification });
-    
-    switch (eventType) {
-      case "import.started":
-        setIsNormalizedImportActive(true);
-        setNormalizedProgress(null);
-        setNormalizedStats(null);
-        setLastNormalizedNotification(null);
-        break;
-        
-      case "import.progress":
-        setIsNormalizedImportActive(true);
-        
-        // Update progress from notification
-        if (notificationData.progress) {
-          console.log('[ProductImport] Setting progress:', notificationData.progress);
-          setNormalizedProgress(notificationData.progress);
-        }
-        
-        // Update stats from notification
-        if (notificationData.stats) {
-          console.log('[ProductImport] Setting stats:', notificationData.stats);
-          setNormalizedStats(notificationData.stats);
-        }
-        
-        setLastNormalizedNotification(null);
-        break;
-
-      case "import.already_completed": // Add this new case
-        setIsNormalizedImportActive(false);
-        
-        // Clear any stuck progress
-        setNormalizedProgress(null);
-        
-        // Show info notification
-        SetNotificationDialogOpen(true);
-        const modeLabel = notificationData.mode === 'preview' ? translate('resource.import.instances.tabs.preview') : translate('resource.import.instances.tabs.import');
-        
         SetNotificationDialogProps({
           variant: "info",
           title: translate('resource.import.instances.dialog.already_completed.title', { mode: modeLabel }),
@@ -455,82 +380,108 @@ const ProductImportComponentView: React.FC<IDashAutoAdminCustomFieldComponent> =
             </Alert>
           ),
         });
+        break;
+    }
+  }, [lastImportEvent]);
+
+  // Legacy class-based notification handler for template imports only
+  useEffect(() => {
+    if (!lastEvent) return;
+    
+    // Only handle class-based notifications here (context handles type-based)
+    // Check multiple possible locations for event type
+    const eventType = lastEvent.type || 
+                      lastEvent.data?.type || 
+                      lastEvent.notificationPayload?.type ||
+                      lastEvent.notificationPayload?.stdClass?.type ||
+                      lastEvent.notificationPayload?.notificationPayload?.type;
+    if (eventType) return; // Let context handle type-based events
+    
+    const notificationClass = lastEvent.notificationPayload?.class ||
+                              lastEvent.notificationPayload?.stdClass?.class;
+    if (!notificationClass) return;
+    
+    // Check for duplicate
+    const storedEvent = dashStorage.getItem('lastImportEvent');
+    const currentEvent = JSON.stringify(lastEvent);
+    if (storedEvent === currentEvent) return;
+    
+    switch (notificationClass) {
+      case "ValidateProductImportNotification":
+      case "ProductImportNotification":
+      case "ProductImportProgressNotification":
+      case "ProductImportErrorNotification":
+        console.log('[ProductImportComponent] Legacy class notification:', notificationClass);
+        setLastNotification(lastEvent);
+        dashStorage.setItem('lastImportEvent', currentEvent);
+        break;
+    }
+  }, [lastEvent]);
+
+  // Handle legacy class-based notifications (template imports)
+  useEffect(() => {
+    if (!lastNotification) return
+
+    // Handle multiple possible locations for class name
+    const notificationClass = lastNotification.notificationPayload?.class ||
+                              lastNotification.notificationPayload?.stdClass?.class;
+    
+    // Get notification payload data from multiple possible locations
+    const notificationPayloadData = lastNotification.notificationPayload?.notificationPayload ||
+                                    lastNotification.notificationPayload?.stdClass?.notificationPayload;
+
+    switch (notificationClass) {
         
-        setLastNormalizedNotification(null);
-        
-        // Refresh the record to show current state
-        /*setTimeout(() => {
-          refresh();
-        }, 1000);*/
+      case "ValidateProductImportNotification":
+        // Extract and display validation stats for template mode
+        const validationData = notificationPayloadData;
+        if (validationData && validationData.json && validationData.json.info) {
+          setStats({
+            ...validationData.json.info,
+            log_id: validationData?.id
+          });
+        }
+        setLastNotification(null);
         break;
         
-      case "import.failed":
-        setIsNormalizedImportActive(false);
+      case "ProductImportNotification":
+      case "ProductImportProgressNotification":
+        setLastNotification(null);
+        break;
         
-        // Keep the last progress and stats visible even after failure
-        
+      case "ProductImportErrorNotification":
+        setLastNotification(null);
         SetNotificationDialogOpen(true);
-        
-        const error = formatNotification<IDashNotificationPayloadBase>(
-            lastNormalizedNotification
-        );
-        
+       
+        const legacyError = formatNotification<IDashNotificationPayloadBase>(lastNotification);
         SetNotificationDialogProps({
           variant: "error",
-          title: error.title,
+          title: legacyError.title,
           content: (
-            <NotificationWrapper
-              notification={lastNormalizedNotification}
-              key={0}
-            >
-              <NotificationComponent
-                notification={lastNormalizedNotification}
-              />
+            <NotificationWrapper notification={lastNotification} key={0}>
+              <NotificationComponent notification={lastNotification} />
             </NotificationWrapper>
           ),
         });
-        
-        setLastNormalizedNotification(null);
         break;
         
-      case "import.completed":
-        setIsNormalizedImportActive(false);
-        
-        // Set final progress to 100%
-        setNormalizedProgress(prev => ({
-          ...prev,
-          percent: 100,
-          current_sku: 'completed',
-          timestamp: new Date().toISOString()
-        }));
-        
-        // Set final stats from notification data
-        if (notificationData.stats) {
-          setNormalizedStats(notificationData.stats);
-        }
-        
-        // Set import stats for final results display
-        setImportStats(notificationData);
-        
-        // Show completion notification
+      default:
+        const formattedNotification = formatNotification<IDashNotificationPayloadBase>(lastNotification);
         SetNotificationDialogOpen(true);
         SetNotificationDialogProps({
-          variant: "success",
-          title: "",
-          showCloseButton: true,
-          content: <CheckCircle sx={{ fontSize: 60, color: 'success.main' }} />
-                    
+          variant: "info",
+          title: formattedNotification.title,
+          content: (
+            <NotificationWrapper notification={lastNotification} key={0}>
+              <NotificationComponent notification={lastNotification} />
+            </NotificationWrapper>
+          ),
         });
-        
-        setLastNormalizedNotification(null);
-        
-        // Refresh the record after completion
-        /*setTimeout(() => {
-          refresh();
-        }, 2000);*/
+        setLastNotification(null);
+        refresh();
         break;
     }
-  }, [lastNormalizedNotification]);
+  }, [lastNotification]);
 
 
  const startProcess = async (e: any) => {
@@ -546,9 +497,9 @@ const ProductImportComponentView: React.FC<IDashAutoAdminCustomFieldComponent> =
 
   // Reset normalized progress when starting
   if (record.import_type === 'normalized') {
-    setIsNormalizedImportActive(true);
-    setNormalizedProgress(null);
-    setNormalizedStats(null);
+    setLocalImportActive(true);
+    setLocalProgress(null);
+    setLocalStats(null);
   }
 
   try {
@@ -557,10 +508,10 @@ const ProductImportComponentView: React.FC<IDashAutoAdminCustomFieldComponent> =
     // Handle immediate responses from controller
     if (data.already_completed) {
       // Stop the loading state
-      setIsNormalizedImportActive(false);
+      setLocalImportActive(false);
       
       // Clear any stuck progress
-      setNormalizedProgress(null);
+      setLocalProgress(null);
       
       // Show info notification
       SetNotificationDialogOpen(true);
@@ -594,7 +545,7 @@ const ProductImportComponentView: React.FC<IDashAutoAdminCustomFieldComponent> =
     
     if (data.already_running) {
       // Stop the loading state
-      setIsNormalizedImportActive(false);
+      setLocalImportActive(false);
       
       // Show info notification
       SetNotificationDialogOpen(true);
@@ -635,13 +586,13 @@ const ProductImportComponentView: React.FC<IDashAutoAdminCustomFieldComponent> =
     
     // Handle preview mode immediate results (for template imports)
     if (data.preview_mode === 1 && data.stats) {
-      setIsNormalizedImportActive(false);
+      setLocalImportActive(false);
       setStats(JSON.parse(JSON.stringify(data.stats)));
     }
 
   } catch (error:any) {
     console.error('Import failed:', error);
-    setIsNormalizedImportActive(false);
+    setLocalImportActive(false);
     
     // Show error dialog for actual failures
     SetNotificationDialogOpen(true);

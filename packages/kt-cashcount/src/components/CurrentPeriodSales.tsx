@@ -36,7 +36,13 @@ import {
     Timeline,
 } from '@mui/icons-material';
 import { useDataProvider, useNotify, useTranslate } from 'react-admin';
-import { formatCurrency } from 'kt-ecommerce';
+import { priceFormatter } from 'dash-utils';
+
+// Bridge helper: converts string amounts to number and formats with priceFormatter
+const formatAmount = (amount: number | string): string => {
+    const numericAmount = typeof amount === 'string' ? parseFloat(amount) : (amount || 0);
+    return priceFormatter(numericAmount, 'CLP');
+};
 import { useAxios } from 'dash-axios-hook';
 
 interface CurrentPeriodData {
@@ -275,14 +281,14 @@ const CurrentPeriodSales: React.FC = () => {
                         <Grid item xs={12} md={4}>
                             <Box textAlign="center">
                                 <Typography variant="h4" color="primary">
-                                    {formatCurrency(data.current_totals.amount)}
+                                    {formatAmount(data.current_totals.amount)}
                                 </Typography>
                                 <Typography variant="body2" color="textSecondary">
                                     {translate('cashcount.total_amount', { _: 'Total Amount' })}
                                 </Typography>
                                 <Typography variant="caption" color="textSecondary">
                                     {translate('cashcount.daily_average', { 
-                                        avg: formatCurrency(data.daily_averages.amount),
+                                        avg: formatAmount(data.daily_averages.amount),
                                         _: 'Avg: %{avg}/day'
                                     })}
                                 </Typography>
@@ -291,14 +297,14 @@ const CurrentPeriodSales: React.FC = () => {
                         <Grid item xs={12} md={4}>
                             <Box textAlign="center">
                                 <Typography variant="h4" color="primary">
-                                    {formatCurrency(data.current_totals.tips)}
+                                    {formatAmount(data.current_totals.tips)}
                                 </Typography>
                                 <Typography variant="body2" color="textSecondary">
                                     {translate('cashcount.total_tips', { _: 'Total Tips' })}
                                 </Typography>
                                 <Typography variant="caption" color="textSecondary">
                                     {translate('cashcount.daily_average', { 
-                                        avg: formatCurrency(data.daily_averages.tips),
+                                        avg: formatAmount(data.daily_averages.tips),
                                         _: 'Avg: %{avg}/day'
                                     })}
                                 </Typography>
@@ -330,7 +336,7 @@ const CurrentPeriodSales: React.FC = () => {
                                             <Typography variant="caption" color="textSecondary">
                                                 {metric === 'sales' ? 
                                                     `${data.last_daily_average} → ${data.current_daily_average}` :
-                                                    `${formatCurrency(data.last_daily_average)} → ${formatCurrency(data.current_daily_average)}`
+                                                    `${formatAmount(data.last_daily_average)} → ${formatAmount(data.current_daily_average)}`
                                                 }
                                             </Typography>
                                         </Box>
@@ -389,8 +395,8 @@ const CurrentPeriodSales: React.FC = () => {
                                                 </Typography>
                                             </TableCell>
                                             <TableCell align="center">{pos.sales}</TableCell>
-                                            <TableCell align="center">{formatCurrency(pos.amount)}</TableCell>
-                                            <TableCell align="center">{formatCurrency(pos.tips)}</TableCell>
+                                            <TableCell align="center">{formatAmount(pos.amount)}</TableCell>
+                                            <TableCell align="center">{formatAmount(pos.tips)}</TableCell>
                                             <TableCell align="center">
                                                 <Box display="flex" alignItems="center" justifyContent="center">
                                                     <Typography variant="body2" sx={{ mr: 1 }}>
@@ -454,8 +460,8 @@ const CurrentPeriodSales: React.FC = () => {
                                                     color={index < 3 ? 'primary' : 'default'}
                                                 />
                                             </TableCell>
-                                            <TableCell align="center">{formatCurrency(product.total_amount)}</TableCell>
-                                            <TableCell align="center">{formatCurrency(product.average_price)}</TableCell>
+                                            <TableCell align="center">{formatAmount(product.total_amount)}</TableCell>
+                                            <TableCell align="center">{formatAmount(product.average_price)}</TableCell>
                                         </TableRow>
                                     ))}
                                 </TableBody>
@@ -514,7 +520,7 @@ const CurrentPeriodSales: React.FC = () => {
                                             </TableCell>
                                             <TableCell align="center">
                                                 <Typography variant="body2" fontWeight="medium">
-                                                    {formatCurrency(order.total_amount)}
+                                                    {formatAmount(order.total_amount)}
                                                 </Typography>
                                             </TableCell>
                                             <TableCell align="center">

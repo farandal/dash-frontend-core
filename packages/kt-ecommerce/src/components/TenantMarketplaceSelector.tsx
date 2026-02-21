@@ -9,14 +9,12 @@ import { DataGrid, GridColDef } from "@mui/x-data-grid"
 
 import { Loading, useGetList, useGetOne, useRecordContext, useTranslate } from "react-admin"
 import { Tenant } from "dash-admin/src/interfaces/Tenant"
+import { IDashAutoAdminCustomFieldComponent } from "dash-auto-admin"
 
-export interface ITenantMarketplaceSelector {
-    //tenant: Tenant
-    method: string
-}
 
-export const TenantMarketplaceSelectorEdit: React.FC<ITenantMarketplaceSelector> = ({
+export const TenantMarketplaceSelectorEdit: React.FC<IDashAutoAdminCustomFieldComponent> = ({
     method,
+    resourceConfig,
     ...props
 }) => {
     const { setValue } = useFormContext();
@@ -26,8 +24,8 @@ export const TenantMarketplaceSelectorEdit: React.FC<ITenantMarketplaceSelector>
     const [toDeleteSystemMarketplace, setToDeleteSystemMarketplace] = useState<any[]>([])
     const [resetKey, setResetKey] = useState(0)
     const systemMarketplaceRows = useWatch({ name: "systemMarketplaces", defaultValue: [] })
-
-    const { data: tenant, isLoading: tenantLoading } = useGetOne('tenant/tenant', { id: tenantContext.id}, { refetchOnWindowFocus: false});
+  
+    const { data: tenant, isLoading: tenantLoading } = useGetOne(`${resourceConfig.config?.tenant_selector_model || "tenant/tenant"}`, { id: tenantContext.id}, { refetchOnWindowFocus: false});
 
     useEffect(() => {
         if(tenant && !tenantLoading) {
@@ -35,6 +33,13 @@ export const TenantMarketplaceSelectorEdit: React.FC<ITenantMarketplaceSelector>
             setValue("system_marketplace_ids", (tenant.systemMarketplaces || []).map((m: any) => m.id))
         }
     }, [tenant, tenantLoading, setValue])
+
+    // Keep system_marketplace_ids in sync whenever systemMarketplaces changes
+    useEffect(() => {
+        if (systemMarketplaceRows && Array.isArray(systemMarketplaceRows)) {
+            setValue("system_marketplace_ids", systemMarketplaceRows.map((m: any) => m.id));
+        }
+    }, [systemMarketplaceRows, setValue]);
 
     const columns: GridColDef[] = [
         { field: "id", headerName: "ID", width: 20 },
@@ -148,7 +153,7 @@ export const TenantMarketplaceSelectorEdit: React.FC<ITenantMarketplaceSelector>
     )
 }
 
-export const TenantMarketplaceSelectorCreate: React.FC<ITenantMarketplaceSelector> = ({
+export const TenantMarketplaceSelectorCreate: React.FC<IDashAutoAdminCustomFieldComponent> = ({
     method,
     ...props
 }) => {
@@ -205,7 +210,7 @@ export const TenantMarketplaceSelectorCreate: React.FC<ITenantMarketplaceSelecto
     )
 }
 
-export const TenantMarketplaceSelector: React.FC<ITenantMarketplaceSelector> = ({
+export const TenantMarketplaceSelector: React.FC<IDashAutoAdminCustomFieldComponent> = ({
     ...props
 }) => {
 

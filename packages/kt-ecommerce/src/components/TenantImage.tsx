@@ -200,7 +200,7 @@ const TenantImageEdit: React.FC<TenantImageProps> = ({
       const fieldName = attribute.attribute.replace('_images', ''); // Remove _images suffix
       formData.append(fieldName, selectedFile);
 
-      const response = await axios.post(`tenant/tenant/${tenant.id}${endpoint}`, formData, {
+      const response = await axios.post(`${resourceConfig.model}/${tenant.id}${endpoint}`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -258,7 +258,7 @@ const TenantImageEdit: React.FC<TenantImageProps> = ({
 
     try {
       const deleteEndpoint = endpoint.replace('/upload-', '/delete-');
-      await axios.delete(`tenant/tenant/${tenant.id}${deleteEndpoint}`);
+      await axios.delete(`${resourceConfig.model}/${tenant.id}${deleteEndpoint}`);
 
       setCurrentImage(null);
       notify('Imagen eliminada exitosamente', { type: 'success' });

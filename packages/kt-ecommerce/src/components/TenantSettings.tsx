@@ -8,6 +8,10 @@ import { Tenant } from "dash-admin/src/interfaces/Tenant";
 import MUISimpleJsonTable from "dash-admin/src/components/misc/MuiSimpleJsonTable";
 import { useSystemRequestsCache } from 'dash-admin/src/contexts/SystemRequestsCache';
 
+/** Wrapper creating a React component boundary so DashAutoFormTabs hooks don't violate Rules of Hooks */
+const FormTabsRenderer: React.FC<{schema: any; method: "list" | "create" | "edit" | "view"; label: string}> = ({schema, method, label}) => (
+    <>{DashAutoFormTabs({schema, resourceConfig: null, options: {mode: method, label}})}</>
+);
 
 export interface ITenantSettings extends IDashAutoAdminCustomFieldComponent {
   tenant: Tenant
@@ -19,10 +23,10 @@ const TenantSettingsEdit: React.FC<ITenantSettings> = ({ method, attribute, tena
   /*if (!tenant?.settings) return <Loading />*/
   //const [settingsFormats, setSettingsFormats] = useState(null);
   const [settingFormatsSchema, setSettingFormatsSchema] = useState<any>(null);
-  const formContext = useFormContext();
+  /*const formContext = useFormContext();
   const formValues = useWatch({
     control: formContext.control
-  });
+  });*/
 
   const { formats: settingsFormats, loading } = useSystemRequestsCache();
 
@@ -31,11 +35,17 @@ const TenantSettingsEdit: React.FC<ITenantSettings> = ({ method, attribute, tena
   //const { axios } = useAxios();
 
   useEffect(() => {
-  
 
     if (settingsFormats && settingsFormats.data) {
 
-      const parsedSchema = settingsFormats.data
+       const data = settingsFormats.data.setting_formats || settingsFormats.data;
+    
+       if(!data) { 
+        console.log('No setting_formats found in response');
+        return; 
+      }
+
+      const parsedSchema = data
         .filter((entry) => entry.tab !== 'colors' && entry.visible !== false)
         .map((entry) => {
         const defaultValue =
@@ -62,6 +72,7 @@ const TenantSettingsEdit: React.FC<ITenantSettings> = ({ method, attribute, tena
       setSettingFormatsSchema(parsedSchema);
 
     }
+  
 
   }, [settingsFormats])
 
@@ -76,15 +87,7 @@ const TenantSettingsEdit: React.FC<ITenantSettings> = ({ method, attribute, tena
   }*/
   if (!settingFormatsSchema) return <Loading />
   return <section>
-  
-    {settingFormatsSchema ? (
-      DashAutoFormTabs({schema:settingFormatsSchema, resourceConfig:null, options: {
-        mode: method,
-        label: 'Opciones de configuración',
-      }})
-    ) : (
-      <></>
-    )}
+    <FormTabsRenderer schema={settingFormatsSchema} method={method} label="Opciones de configuración" />
   </section>
 
   //return <>{DashAutoFormGroups(settingFormatsSchema, null, { mode: method, useReadOnlyInputAsTextField: true, label: "Opciones de configuración", meta: {dynamic: true} })}</>

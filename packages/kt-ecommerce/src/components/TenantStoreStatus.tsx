@@ -21,7 +21,8 @@ import { IDashAutoAdminCustomFieldComponent } from 'dash-auto-admin';
 
 const TenantStoreStatus: React.FC<IDashAutoAdminCustomFieldComponent> = ({
     attribute,
-    method
+    method,
+    resourceConfig
 }) => {
     const record = useRecordContext();
     const translate = useTranslate();
@@ -39,7 +40,7 @@ const TenantStoreStatus: React.FC<IDashAutoAdminCustomFieldComponent> = ({
         setLoading(true);
         try {
             const action = is_open ? 'close' : 'open';
-            const url = `/tenant/tenant/${record.id}/toggle-open`;
+            const url = `${resourceConfig.model}/${record.id}/toggle-open`;
             
             const response = await axios.post(url, { action });
             const data = response.data;

@@ -21,7 +21,7 @@ const ImportTypeSelectorEdit: React.FC<IDashAutoAdminCustomFieldComponent> = ({ 
 
   return (
     <div style={{ display: 'flex', gap: '16px' }}>
-      <Card sx={{ flex: 1, cursor: 'pointer' }} onClick={() => handleChange({ target: { value: 'normalized' } } as React.ChangeEvent<HTMLInputElement>)}>
+      <Card sx={{ flex: 1, cursor: 'pointer', m:1 }} onClick={() => handleChange({ target: { value: 'normalized' } } as React.ChangeEvent<HTMLInputElement>)}>
         <CardContent>
           <FormControl component="fieldset" sx={{ width: '100%' }}>
             <RadioGroup value={importTypeField.field.value || 'normalized'}>
@@ -41,7 +41,7 @@ const ImportTypeSelectorEdit: React.FC<IDashAutoAdminCustomFieldComponent> = ({ 
           </FormControl>
         </CardContent>
       </Card>
-      <Card sx={{ flex: 1, cursor: 'pointer' }} onClick={() => handleChange({ target: { value: 'template' } } as React.ChangeEvent<HTMLInputElement>)}>
+      <Card sx={{ flex: 1, cursor: 'pointer',  m:1  }} onClick={() => handleChange({ target: { value: 'template' } } as React.ChangeEvent<HTMLInputElement>)}>
         <CardContent>
           <FormControl component="fieldset" sx={{ width: '100%' }}>
             <RadioGroup value={importTypeField.field.value || 'normalized'}>

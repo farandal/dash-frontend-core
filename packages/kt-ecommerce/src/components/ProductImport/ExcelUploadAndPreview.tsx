@@ -124,13 +124,13 @@ const ExcelUploadAndPreviewEdit: React.FC<IDashAutoAdminCustomFieldComponent> = 
   return (
     <>
       {!canShowPreview && importType === 'template' && (
-        <Alert severity="warning" sx={{ mb: 2 }}>
+        <Alert severity="warning" sx={{ m: 1 }}>
           {translate('resource.import.instances.alerts.select_template')}
         </Alert>
       )}
 
       {importType === 'normalized' && (
-        <Alert severity="info" sx={{ mb: 2 }}>
+        <Alert severity="info" sx={{ m: 1 }}>
           <Typography variant="body2">
             <strong>{translate('resource.import.instances.alerts.normalized_format_title')}</strong> {translate('resource.import.instances.alerts.normalized_format_desc')}
           </Typography>

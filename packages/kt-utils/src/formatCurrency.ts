@@ -1,4 +1,4 @@
-import numeral from 'numeral';
+import { priceFormatter } from 'dash-utils';
 
 export interface Currency {
     id?: number;
@@ -7,52 +7,16 @@ export interface Currency {
     format?: string;
 }
 
-// Export a simple formatter function for display purposes
+/**
+ * Format a number as currency
+ * @deprecated Use priceFormatter from dash-utils directly instead.
+ * This function delegates to the centralized priceFormatter.
+ */
 export const formatCurrency = (amount: number | string, currency?: Currency): string => {
-
-    if(!currency) {
-        currency = { code:"", symbol: '$', format: ',' }
-    }
     const numericAmount = typeof amount === 'string' ? parseFloat(amount) : amount;
-    
-    if (isNaN(numericAmount)) {
-        const shouldShowDecimals = currency.format ? 
-            currency.format.includes('.') || currency.format.includes('0.') : 
-            true;
-        return shouldShowDecimals ? `${currency.symbol}0.00` : `${currency.symbol}0`;
-    }
-    
-    // Determine if we should show decimals based on currency format
-    const shouldShowDecimals = currency.format ? 
-        currency.format.includes('.') || currency.format.includes('0.') : 
-        true;
-    
-    // Use the currency format if available, otherwise use default
-    let formatString = currency.format || '0,0.00';
-    
-    // If format is just "," (like CLP), use integer format
-    if (currency.format === ',' || !shouldShowDecimals) {
-        formatString = '0,0';
-    }
-    
-    try {
-        const formattedNumber = numeral(numericAmount).format(formatString);
-        return `${currency.symbol}${formattedNumber}`;
-    } catch (error) {
-        // Fallback to basic formatting
-        const options: Intl.NumberFormatOptions = {
-            style: 'decimal',
-            minimumFractionDigits: shouldShowDecimals ? 2 : 0,
-            maximumFractionDigits: shouldShowDecimals ? 2 : 0,
-        };
-        
-        if (currency.format?.includes(',')) {
-            options.useGrouping = true;
-        }
-        
-        const formatted = new Intl.NumberFormat('en-US', options).format(numericAmount);
-        return `${currency.symbol}${formatted}`;
-    }
+    if (isNaN(numericAmount)) return `${currency?.symbol || '$'}0`;
+    const currencyCode = currency?.code || 'CLP';
+    return priceFormatter(numericAmount, currencyCode);
 };
 
 // Helper function to determine if a currency should show decimals
@@ -78,3 +42,4 @@ export const getCurrencyDecimalPlaces = (currency: Currency): number => {
     
     return 2; // Default to 2 decimal places
 };
+

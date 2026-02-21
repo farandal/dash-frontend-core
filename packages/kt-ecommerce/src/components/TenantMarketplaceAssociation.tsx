@@ -7,18 +7,18 @@ import { TenantMarketplaceSelector, TenantMarketplaceSelectorCreate } from './Te
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { NoResults } from 'dash-admin/src/components/misc/NoResults';
 
-const TenantMarketplaceAssociationEdit: React.FC<IDashAutoAdminCustomFieldComponent> = ({ method, attribute }) => {
+const TenantMarketplaceAssociationEdit: React.FC<IDashAutoAdminCustomFieldComponent> = (props) => {
 
-  return <TenantMarketplaceSelector method={method} />
+  return <TenantMarketplaceSelector {...props} />
 }
 
-const TenantMarketplaceAssociationCreate: React.FC<IDashAutoAdminCustomFieldComponent> = ({ method, attribute }) => {
+const TenantMarketplaceAssociationCreate: React.FC<IDashAutoAdminCustomFieldComponent> = (props) => {
 
-  return <TenantMarketplaceSelectorCreate method={method} />
+  return <TenantMarketplaceSelectorCreate {...props} />
 }
 
 
-const TenantMarketplaceAssociationView: React.FC<IDashAutoAdminCustomFieldComponent> = ({ method, attribute }) => {
+const TenantMarketplaceAssociationView: React.FC<IDashAutoAdminCustomFieldComponent> = ({ method, attribute,resourceConfig }) => {
   const tenant: Tenant = useRecordContext();
 
   const columns: GridColDef[] = [

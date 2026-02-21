@@ -14,7 +14,7 @@ import {
 } from 'react-admin';
 import { Chip, Box } from '@mui/material';
 import { Assessment, Refresh } from '@mui/icons-material';
-import { formatCurrency } from 'kt-ecommerce';
+import { priceFormatter } from 'dash-utils';
 
 const CashCountListActions = () => (
     <TopToolbar>
@@ -51,7 +51,7 @@ const StatusField = ({ record }) => {
 const CurrencyField = ({ record }) => {
  
     
-    return <span>{formatCurrency(record.final_total_amount || record.system_total_amount)}</span>;
+    return <span>{priceFormatter(parseFloat(record.final_total_amount || record.system_total_amount) || 0, 'CLP')}</span>;
 };
 
 const CashCountList = () => {

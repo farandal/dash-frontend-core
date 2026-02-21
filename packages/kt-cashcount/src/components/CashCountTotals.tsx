@@ -21,7 +21,15 @@ import {
     Stack
 } from '@mui/material';
 import { useFormContext } from 'react-hook-form';
-import { FormattedPrice, formatCurrency } from 'kt-ecommerce';
+import { FormattedPrice } from 'kt-ecommerce';
+import { priceFormatter } from 'dash-utils';
+
+// Bridge helper: extracts currency code from currency object for priceFormatter
+const formatCurrencyBridge = (amount: number | string, currency?: any): string => {
+    const numericAmount = typeof amount === 'string' ? parseFloat(amount) : (amount || 0);
+    const currencyCode = currency?.code || 'CLP';
+    return priceFormatter(numericAmount, currencyCode);
+};
 
 
 const ListComponent: React.FC<IDashAutoAdminCustomFieldComponent> = () => {
@@ -34,7 +42,7 @@ const ListComponent: React.FC<IDashAutoAdminCustomFieldComponent> = () => {
     return (
         <Box>
             <Typography variant="body2" color="textSecondary">
-                {translate('cashcount.sales_count', { count: effectiveSales, _: '%{count} sales' })} • {formatCurrency(effectiveAmount, record?.currency)}
+                {translate('cashcount.sales_count', { count: effectiveSales, _: '%{count} sales' })} • {formatCurrencyBridge(effectiveAmount, record?.currency)}
             </Typography>
         </Box>
     );
@@ -73,7 +81,7 @@ const ViewComponent: React.FC<IDashAutoAdminCustomFieldComponent> = () => {
                                             {translate('cashcount.amount', { _: 'Amount' })}
                                         </Typography>
                                         <Typography variant="h6" sx={{ fontSize: '1rem' }}>
-                                            {formatCurrency(record?.system_total_amount, record?.currency)}
+                                            {formatCurrencyBridge(record?.system_total_amount, record?.currency)}
                                         </Typography>
                                     </Grid>
                                     <Grid size={4}>
@@ -81,7 +89,7 @@ const ViewComponent: React.FC<IDashAutoAdminCustomFieldComponent> = () => {
                                             {translate('cashcount.tips', { _: 'Tips' })}
                                         </Typography>
                                         <Typography variant="h6" sx={{ fontSize: '1rem' }}>
-                                            {formatCurrency(record?.system_total_tips, record?.currency)}
+                                            {formatCurrencyBridge(record?.system_total_tips, record?.currency)}
                                         </Typography>
                                     </Grid>
                                 </Grid>
@@ -111,7 +119,7 @@ const ViewComponent: React.FC<IDashAutoAdminCustomFieldComponent> = () => {
                                             {translate('cashcount.amount', { _: 'Amount' })}
                                         </Typography>
                                         <Typography variant="h6" sx={{ fontSize: '1rem' }}>
-                                            {formatCurrency(record?.final_total_amount ?? record?.system_total_amount, record?.currency)}
+                                            {formatCurrencyBridge(record?.final_total_amount ?? record?.system_total_amount, record?.currency)}
                                         </Typography>
                                     </Grid>
                                     <Grid size={4}>
@@ -119,7 +127,7 @@ const ViewComponent: React.FC<IDashAutoAdminCustomFieldComponent> = () => {
                                             {translate('cashcount.tips', { _: 'Tips' })}
                                         </Typography>
                                         <Typography variant="h6" sx={{ fontSize: '1rem' }}>
-                                            {formatCurrency(record?.final_total_tips ?? record?.system_total_tips, record?.currency)}
+                                            {formatCurrencyBridge(record?.final_total_tips ?? record?.system_total_tips, record?.currency)}
                                         </Typography>
                                     </Grid>
                                 </Grid>
@@ -165,8 +173,8 @@ const ViewComponent: React.FC<IDashAutoAdminCustomFieldComponent> = () => {
                                                             <Typography variant="caption" color="textSecondary" display="block">
                                                                 {translate('cashcount.system_values', { 
                                                                     sales: breakdown.system_sales,
-                                                                    amount: formatCurrency(breakdown.system_amount, record?.currency),
-                                                                    tips: formatCurrency(breakdown.system_tips, record?.currency),
+                                                                    amount: formatCurrencyBridge(breakdown.system_amount, record?.currency),
+                                                                    tips: formatCurrencyBridge(breakdown.system_tips, record?.currency),
                                                                     _: 'System: %{sales} sales, %{amount}, %{tips} tips'
                                                                 })}
                                                             </Typography>
@@ -184,21 +192,21 @@ const ViewComponent: React.FC<IDashAutoAdminCustomFieldComponent> = () => {
                                                     </TableCell>
                                                     <TableCell align="center">
                                                         <Typography variant="body2" color={hasPosCorrections ? 'warning.main' : 'inherit'}>
-                                                            {formatCurrency(breakdown.effective_amount, record?.currency)}
+                                                            {formatCurrencyBridge(breakdown.effective_amount, record?.currency)}
                                                         </Typography>
                                                         {hasPosCorrections && breakdown.final_amount !== breakdown.system_amount && (
                                                             <Typography variant="caption" color="textSecondary" display="block">
-                                                                ({translate('cashcount.was_value', { value: formatCurrency(breakdown.system_amount, record?.currency), _: 'was %{value}' })})
+                                                                ({translate('cashcount.was_value', { value: formatCurrencyBridge(breakdown.system_amount, record?.currency), _: 'was %{value}' })})
                                                             </Typography>
                                                         )}
                                                     </TableCell>
                                                     <TableCell align="center">
                                                         <Typography variant="body2" color={hasPosCorrections ? 'warning.main' : 'inherit'}>
-                                                            {formatCurrency(breakdown.effective_tips, record?.currency)}
+                                                            {formatCurrencyBridge(breakdown.effective_tips, record?.currency)}
                                                         </Typography>
                                                         {hasPosCorrections && breakdown.final_tips !== breakdown.system_tips && (
                                                             <Typography variant="caption" color="textSecondary" display="block">
-                                                                ({translate('cashcount.was_value', { value: formatCurrency(breakdown.system_tips, record?.currency), _: 'was %{value}' })})
+                                                                ({translate('cashcount.was_value', { value: formatCurrencyBridge(breakdown.system_tips, record?.currency), _: 'was %{value}' })})
                                                             </Typography>
                                                         )}
                                                     </TableCell>
@@ -358,7 +366,7 @@ const EditComponent: React.FC<IDashAutoAdminCustomFieldComponent> = () => {
                                                 {translate('cashcount.amount', { _: 'Amount' })}
                                             </Typography>
                                             <Typography variant="h6" sx={{ fontSize: '1rem' }}>
-                                                {formatCurrency(record?.system_total_amount, record?.currency)}
+                                                {formatCurrencyBridge(record?.system_total_amount, record?.currency)}
                                             </Typography>
                                         </Grid>
                                         <Grid size={4}>
@@ -366,7 +374,7 @@ const EditComponent: React.FC<IDashAutoAdminCustomFieldComponent> = () => {
                                                 {translate('cashcount.tips', { _: 'Tips' })}
                                             </Typography>
                                             <Typography variant="h6" sx={{ fontSize: '1rem' }}>
-                                                {formatCurrency(record?.system_total_tips, record?.currency)}
+                                                {formatCurrencyBridge(record?.system_total_tips, record?.currency)}
                                             </Typography>
                                         </Grid>
                                     </Grid>
@@ -515,12 +523,12 @@ const EditComponent: React.FC<IDashAutoAdminCustomFieldComponent> = () => {
                                                         </TableCell>
                                                         <TableCell align="center">
                                                             <Typography variant="body2" color="textSecondary" sx={{ fontSize: '0.875rem' }}>
-                                                                {formatCurrency(breakdown.system_amount, record?.currency)}
+                                                                {formatCurrencyBridge(breakdown.system_amount, record?.currency)}
                                                             </Typography>
                                                         </TableCell>
                                                         <TableCell align="center">
                                                             <Typography variant="body2" color="textSecondary" sx={{ fontSize: '0.875rem' }}>
-                                                                {formatCurrency(breakdown.system_tips, record?.currency)}
+                                                                {formatCurrencyBridge(breakdown.system_tips, record?.currency)}
                                                             </Typography>
                                                         </TableCell>
                                                         
@@ -634,12 +642,12 @@ const EditComponent: React.FC<IDashAutoAdminCustomFieldComponent> = () => {
                                                 </TableCell>
                                                 <TableCell align="center">
                                                     <Typography variant="subtitle2" color="textSecondary" sx={{ fontSize: '0.875rem' }}>
-                                                        {formatCurrency(record?.system_total_amount, record?.currency)}
+                                                        {formatCurrencyBridge(record?.system_total_amount, record?.currency)}
                                                     </Typography>
                                                 </TableCell>
                                                 <TableCell align="center">
                                                     <Typography variant="subtitle2" color="textSecondary" sx={{ fontSize: '0.875rem' }}>
-                                                        {formatCurrency(record?.system_total_tips, record?.currency)}
+                                                        {formatCurrencyBridge(record?.system_total_tips, record?.currency)}
                                                     </Typography>
                                                 </TableCell>
                                                 
@@ -661,7 +669,7 @@ const EditComponent: React.FC<IDashAutoAdminCustomFieldComponent> = () => {
                                                         color={finalAmount !== record?.system_total_amount ? 'warning.main' : 'primary.main'}
                                                         sx={{ fontSize: '0.875rem' }}
                                                     >
-                                                        {formatCurrency(finalAmount, record?.currency)}
+                                                        {formatCurrencyBridge(finalAmount, record?.currency)}
                                                     </Typography>
                                                 </TableCell>
                                                 <TableCell align="center">
@@ -671,7 +679,7 @@ const EditComponent: React.FC<IDashAutoAdminCustomFieldComponent> = () => {
                                                         color={finalTips !== record?.system_total_tips ? 'warning.main' : 'primary.main'}
                                                         sx={{ fontSize: '0.875rem' }}
                                                     >
-                                                        {formatCurrency(finalTips, record?.currency)}
+                                                        {formatCurrencyBridge(finalTips, record?.currency)}
                                                     </Typography>
                                                 </TableCell>
                                                 

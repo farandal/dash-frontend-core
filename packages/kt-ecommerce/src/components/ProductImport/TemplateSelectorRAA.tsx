@@ -69,7 +69,7 @@ const TemplateSelectorRAAEdit: React.FC<IDashAutoAdminCustomFieldComponent> = ({
   // Don't show template selector for normalized imports
   if (importType === 'normalized') {
     return (
-      <Alert severity="info">
+      <Alert severity="info" sx={{m:1}}>
         La importación normalizada no requiere plantilla. Se utilizará el formato estándar.
       </Alert>
     );

@@ -9,7 +9,13 @@ import {
 } from '@mui/material';
 import { useRecordContext, useDataProvider } from 'react-admin';
 import { Print, GetApp } from '@mui/icons-material';
-import { formatCurrency } from 'kt-ecommerce';
+import { priceFormatter } from 'dash-utils';
+
+// Bridge helper for string amounts
+const formatAmount = (amount: number | string): string => {
+    const numericAmount = typeof amount === 'string' ? parseFloat(amount) : (amount || 0);
+    return priceFormatter(numericAmount, 'CLP');
+};
 
 const CashCountReport = () => {
     const record = useRecordContext();
@@ -131,7 +137,7 @@ const CashCountReport = () => {
                                 Total Amount
                             </Typography>
                             <Typography variant="h5">
-                                {formatCurrency(record.final_total_amount || record.system_total_amount)}
+                                {formatAmount(record.final_total_amount || record.system_total_amount)}
                             </Typography>
                         </Grid>
                         <Grid item xs={4}>
@@ -139,7 +145,7 @@ const CashCountReport = () => {
                                 Total Tips
                             </Typography>
                             <Typography variant="h5">
-                                {formatCurrency(record.final_total_tips || record.system_total_tips)}
+                                {formatAmount(record.final_total_tips || record.system_total_tips)}
                             </Typography>
                         </Grid>
                     </Grid>

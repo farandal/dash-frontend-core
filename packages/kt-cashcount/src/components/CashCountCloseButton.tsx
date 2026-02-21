@@ -13,7 +13,7 @@ import {
 } from '@mui/material';
 import { useRecordContext, useNotify, useRefresh, useDataProvider } from 'react-admin';
 import { format } from 'date-fns';
-import { formatCurrency } from 'kt-ecommerce';
+import { priceFormatter } from 'dash-utils';
 
 interface CashCountCloseButtonProps {
     onClose?: () => void;
@@ -118,7 +118,7 @@ const CashCountCloseButton: React.FC<CashCountCloseButtonProps> = ({ onClose }) 
                             </Box>
                             <Box textAlign="center" p={2} bgcolor="grey.50" borderRadius={1}>
                                 <Typography variant="h4" color="primary">
-                                    {formatCurrency(effectiveTotals.amount)}
+                                    {priceFormatter(parseFloat(String(effectiveTotals.amount)) || 0, 'CLP')}
                                 </Typography>
                                 <Typography variant="body2" color="textSecondary">
                                     Total Amount
@@ -126,7 +126,7 @@ const CashCountCloseButton: React.FC<CashCountCloseButtonProps> = ({ onClose }) 
                             </Box>
                             <Box textAlign="center" p={2} bgcolor="grey.50" borderRadius={1}>
                                 <Typography variant="h4" color="primary">
-                                    {formatCurrency(effectiveTotals.tips)}
+                                    {priceFormatter(parseFloat(String(effectiveTotals.tips)) || 0, 'CLP')}
                                 </Typography>
                                 <Typography variant="body2" color="textSecondary">
                                     Total Tips

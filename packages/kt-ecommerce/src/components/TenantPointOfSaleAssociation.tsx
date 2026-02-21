@@ -12,12 +12,8 @@ import { IDashAutoAdminCustomFieldComponent } from 'dash-auto-admin';
 import { NoResults } from 'dash-admin/src/components/misc/NoResults';
 import { Tenant } from '../interfaces';
 
-export interface ITenantPointOfSaleSelector {
-    //tenant: Tenant
-    method: string
-}
 
-export const TenantPointOfSaleSelector: React.FC<ITenantPointOfSaleSelector> = ({
+export const TenantPointOfSaleSelector: React.FC<IDashAutoAdminCustomFieldComponent> = ({
     method,
     ...props
 }) => {
@@ -35,6 +31,13 @@ export const TenantPointOfSaleSelector: React.FC<ITenantPointOfSaleSelector> = (
             setValue("system_point_of_sale_ids", tenant.systemPointOfSales.map((p: any) => p.id));
         }
     }, [tenant, setValue]);
+
+    // Keep system_point_of_sale_ids in sync whenever systemPointOfSales changes
+    useEffect(() => {
+        if (systemPointOfSaleRows && Array.isArray(systemPointOfSaleRows)) {
+            setValue("system_point_of_sale_ids", systemPointOfSaleRows.map((p: any) => p.id));
+        }
+    }, [systemPointOfSaleRows, setValue]);
 
     const columns: GridColDef[] = [
         { field: "id", headerName: "ID", width: 20 },
@@ -141,7 +144,7 @@ export const TenantPointOfSaleSelector: React.FC<ITenantPointOfSaleSelector> = (
     )
 }
 
-export const TenantPointOfSaleSelectorCreate: React.FC<ITenantPointOfSaleSelector> = ({
+export const TenantPointOfSaleSelectorCreate: React.FC<IDashAutoAdminCustomFieldComponent> = ({
     method,
     ...props
 }) => {
@@ -193,12 +196,12 @@ export const TenantPointOfSaleSelectorCreate: React.FC<ITenantPointOfSaleSelecto
 }
 
 
-const TenantPointOfSaleAssociationEdit: React.FC<IDashAutoAdminCustomFieldComponent> = ({ method, attribute }) => {
+const TenantPointOfSaleAssociationEdit: React.FC<IDashAutoAdminCustomFieldComponent> = (props) => {
 
-    return <TenantPointOfSaleSelector method={method} />
+    return <TenantPointOfSaleSelector {...props} />
 }
 
-const TenantPointOfSaleAssociationView: React.FC<IDashAutoAdminCustomFieldComponent> = ({ method, attribute }) => {
+const TenantPointOfSaleAssociationView: React.FC<IDashAutoAdminCustomFieldComponent> = ({ method, attribute, resourceConfig }) => {
     const tenant: Tenant = useRecordContext();
 
     const columns: GridColDef[] = [

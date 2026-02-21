@@ -170,7 +170,7 @@ const CreateComponent: React.FC<IDashAutoAdminCustomFieldComponent> = () => {
                             p={2} 
                             borderRadius={1} 
                             textAlign="center"
-                            sx={{ backgroundColor: 'grey.50' }}
+                         
                         >
                             <Typography variant="body1" color="textSecondary" gutterBottom sx={{ fontSize: '0.875rem' }}>
                                 📅 {translate('cashcount.period_auto_calculated', { _: 'Period dates will be calculated automatically' })}
