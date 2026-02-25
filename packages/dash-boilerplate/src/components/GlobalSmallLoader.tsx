@@ -1,0 +1,112 @@
+/**
+ * GlobalSmallLoader
+ * 
+ * A minimal loading component that doesn't depend on heavy UI libraries.
+ * Used during initial app load before heavier dependencies are available.
+ */
+import React from "react";
+
+export interface GlobalSmallLoaderProps {
+    message?: string;
+    showMessage?: boolean;
+}
+
+const loaderSvgMarkup = `<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="32px" height="32px" style="shape-rendering:geometricPrecision; text-rendering:geometricPrecision; image-rendering:optimizeQuality; fill-rule:evenodd; clip-rule:evenodd" viewBox="0 0 16 16"><g><path style="opacity:1" fill="#FFFFFF" d="M11.506 12.388q0.306 0.011 0.617 0.008v1.281h-0.89a2 2 0 0 1 -0.898 -0.215 1.24 1.24 0 0 1 -0.629 -0.761 2.5 2.5 0 0 1 -0.094 -0.554q-0.006 -1.082 -0.004 -2.163h-0.609q0.002 -0.398 -0.004 -0.796a616 616 0 0 0 -1.676 2.023 657 657 0 0 0 2.069 2.46q-0.935 0.012 -1.874 0.008L6.003 11.61q-0.006 1.035 -0.004 2.069H4.485q0.004 -2.983 -0.008 -5.966 -0.661 -0.21 -0.863 -0.875a2 2 0 0 1 -0.039 -0.258q-0.008 -2.108 0 -4.217 0.12 -0.356 0.48 -0.246 0.153 0.079 0.191 0.246l0.008 3.272q0.05 0.116 0.168 0.066 0.035 -0.027 0.051 -0.066l0.008 -3.264q0.095 -0.329 0.433 -0.269 0.191 0.059 0.238 0.254l0.008 3.272q0.065 0.14 0.195 0.055l0.023 -0.039 0.008 -3.264q0.086 -0.321 0.418 -0.285 0.197 0.057 0.254 0.254a352 352 0 0 1 0.016 3.295q0.062 0.109 0.176 0.051 0.029 -0.028 0.043 -0.066l0.008 -3.28q0.045 -0.17 0.207 -0.238 0.25 -0.074 0.41 0.129a0.5 0.5 0 0 1 0.047 0.109q0.014 1.063 0.012 2.128 0.002 1.088 -0.012 2.175 -0.137 0.844 -0.96 1.078a301 301 0 0 0 0 3.006q0.753 -1.005 1.503 -2.011 1.05 -0.006 2.101 -0.004 0.002 -0.519 -0.004 -1.039a1.82 1.82 0 0 1 -1.281 -1.101q-0.197 -0.504 -0.211 -1.046a4.7 4.7 0 0 1 0.383 -2.03q0.242 -0.547 0.668 -0.964 0.395 -0.364 0.929 -0.445 0.695 -0.056 1.218 0.398 0.476 0.438 0.73 1.035 0.513 1.212 0.32 2.514a2.26 2.26 0 0 1 -0.484 1.07 1.75 1.75 0 0 1 -0.754 0.5v1.109h0.992v1.265h-0.992q-0.002 1.042 0.004 2.085 0.05 0.323 0.379 0.32"/></g></svg>`;
+
+const KTIcon: React.FC = () => (
+    <span dangerouslySetInnerHTML={{ __html: loaderSvgMarkup }} />
+);
+
+/**
+ * Global small loader component
+ */
+export const GlobalSmallLoader: React.FC<GlobalSmallLoaderProps> = ({ 
+    message,
+    showMessage = false,
+}) => (
+    <div>
+        <div className="initial-loader">
+            <div className="initial-loader-spinner">
+            </div>
+            <span className="initial-loader-icon">
+                <KTIcon />
+            </span>
+        </div>
+        {showMessage && message && <div className="initial-loader-text">{message}</div>}
+    </div>
+);
+
+/**
+ * HTML markup for the loader (for use in index.html)
+ */
+export const GlobalLoaderHtmlMarkup = `<div class="initial-loader">
+    <div class="initial-loader-spinner">
+        <span class="initial-loader-icon">
+        ${loaderSvgMarkup}
+        </span>
+    </div>
+    <div class="initial-loader-text"></div>
+</div>`;
+
+/**
+ * Inject critical CSS styles for the loader
+ * Call this early in the app lifecycle
+ */
+export const injectCriticalStyles = (): void => {
+    if (typeof document === 'undefined') return;
+    if (document.getElementById('critical-loading-styles')) return;
+    
+    const style = document.createElement('style');
+    style.id = 'critical-loading-styles';
+    style.textContent = `
+        .initial-loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: var(--text-color, #fff);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            z-index: 9999;
+        }
+        .initial-loader-spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(255,255,255,0.1);
+            border-top-color: var(--primary-color, #3f51b5);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .initial-loader-icon {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 16px;
+            height: 16px;
+            transform: translate(-50%, -50%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+        }
+        .initial-loader-text {
+            margin-top: 16px;
+            font-size: 14px;
+            opacity: 0.7;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    `;
+    document.head.appendChild(style);
+};
+
+export default GlobalSmallLoader;

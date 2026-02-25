@@ -790,7 +790,7 @@ const getTenantSettingsValues = () => {
                     onClick={() => handlePreview(document.documentElement.getAttribute('data-theme'))}
                     color="primary"
                 >
-                    Preview Colors
+                    Preview Colors TEST
                 </Button>
                 <Button 
                     startIcon={<AddIcon />} 

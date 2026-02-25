@@ -13,6 +13,7 @@ import {
 } from '@mui/material';
 import { useRecordContext, useDataProvider } from 'react-admin';
 import { IDashAutoAdminCustomFieldComponent } from "dash-auto-admin";
+import { priceFormatter } from 'dash-utils';
 
 interface Payment {
     id: number;
@@ -84,7 +85,7 @@ const PaymentHistoryView: React.FC<IDashAutoAdminCustomFieldComponent> = () => {
                                 {new Date(payment.created_at).toLocaleDateString()}
                             </TableCell>
                             <TableCell>
-                                ${(payment.amount / 100).toLocaleString()}
+                                {priceFormatter(payment.amount, 'CLP')}
                             </TableCell>
                             <TableCell>
                                 <Typography 

@@ -8,12 +8,17 @@ import MUISimpleJsonTable from "../misc/MuiSimpleJsonTable";
 import { useTenantSettingsFormats } from "./TenantSettingsContext";
 import { useSystemRequestsCache } from "../../contexts/SystemRequestsCache";
 
+/** Wrapper creating a React component boundary so DashAutoFormTabs hooks don't violate Rules of Hooks */
+const FormTabsRenderer: React.FC<{schema: any; method: "list" | "create" | "edit" | "view"; label: string}> = ({schema, method, label}) => (
+    <>{DashAutoFormTabs({schema, resourceConfig: null, options: {mode: method, label}})}</>
+);
+
 const TenantThemeEdit: React.FC<IDashAutoAdminCustomFieldComponent> = ({ method, attribute, tenant }) => {
     const [settingFormatsSchema, setSettingFormatsSchema] = useState<any>(null);
-    const formContext = useFormContext();
+    /*const formContext = useFormContext();
     const formValues = useWatch({
         control: formContext.control
-    });
+    });*/
 
     const { formats: formatsData, loading } = useSystemRequestsCache();
 
@@ -65,21 +70,8 @@ const TenantThemeEdit: React.FC<IDashAutoAdminCustomFieldComponent> = ({ method,
     }*/
     //if (!settingFormatsSchema || loading) return <Loading />
     return <section>
-    
-        {settingFormatsSchema ? (
-            DashAutoFormTabs({
-                schema: settingFormatsSchema, resourceConfig: null, options: {
-                    mode: method,
-                    label: 'Tema',
-                }
-            })
-        ) : (
-            <></>
-        )}
+        {settingFormatsSchema && <FormTabsRenderer schema={settingFormatsSchema} method={method} label="Tema" />}
     </section>
-
-    //return <>{DashAutoFormGroups(settingFormatsSchema, null, { mode: method, useReadOnlyInputAsTextField: true, label: "Opciones de configuración", meta: {dynamic: true} })}</>
-
 
 }
 
@@ -115,17 +107,7 @@ const TenantThemeCreate: React.FC<IDashAutoAdminCustomFieldComponent> = ({ metho
 
     //if (!settingFormatsSchema || loading) return <Loading />
     return <section>
-
-        {settingFormatsSchema ? (
-            DashAutoFormTabs({
-                schema: settingFormatsSchema, resourceConfig: null, options: {
-                    mode: method,
-                    label: 'Tema',
-                }
-            })
-        ) : (
-            <></>
-        )}
+        {settingFormatsSchema && <FormTabsRenderer schema={settingFormatsSchema} method={method} label="Tema" />}
     </section>
 
 }

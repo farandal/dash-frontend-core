@@ -15,6 +15,7 @@ import {
 import { Check as CheckIcon, Star as StarIcon } from '@mui/icons-material';
 import { useRecordContext } from 'react-admin';
 import { IDashAutoAdminCustomFieldComponent } from "dash-auto-admin";
+import { priceFormatter } from 'dash-utils';
 
 const SubscriptionPlanPreview: React.FC<IDashAutoAdminCustomFieldComponent> = ({ method, attribute, resourceConfig }) => {
     const record = useRecordContext();
@@ -22,11 +23,7 @@ const SubscriptionPlanPreview: React.FC<IDashAutoAdminCustomFieldComponent> = ({
     if (!record) return null;
 
     const formatPrice = (price: number) => {
-        return new Intl.NumberFormat('es-CL', {
-            style: 'currency',
-            currency: 'CLP',
-            minimumFractionDigits: 0
-        }).format(price / 100);
+        return priceFormatter(price, 'CLP');
     };
 
     const getBillingCycleText = (cycle: string) => {

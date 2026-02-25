@@ -26,6 +26,10 @@ export { default as Json } from './components/Json/Json'
 export { default as JsonCssVarValues } from './components/JsonColorSelector/JsonCssVarValues'
 export { default as NotificationPreferences } from './components/NotificationPreferences/NotificationPreferences'
 
+// Audit Log Component
+export { AuditLog } from './components/AuditLog';
+export type { AuditLogProps, ActivityLogRecord } from './components/AuditLog';
+
 // Notifications Components
 export {
     NotificationsCenter,

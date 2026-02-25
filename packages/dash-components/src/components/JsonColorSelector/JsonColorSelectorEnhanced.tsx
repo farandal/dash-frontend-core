@@ -35,6 +35,10 @@ import { updateDomCssVariables } from 'dash-utils';
 import { AuthPersistenceService } from 'dash-auth';
 
 
+// Feature flags for pagination behavior
+const JSON_COLOR_SELECTOR_PAGINATION_ENABLED: boolean = false;
+const JSON_COLOR_SELECTOR_PAGINATION_SHOW_ALL: boolean = false;
+
 // Default color mappings (can be modified later)
 const DEFAULT_COLOR_MAPPINGS: ColorMapping = {
     "primary-color": "Primary Color",
@@ -182,6 +186,7 @@ export const JsonEdit: React.FC<IDashAutoAdminCustomFieldComponent> = (props) =>
     // Pagination state
     const [page, setPage] = useState<number>(1);
     const [pageSize] = useState<number>(50);
+    const [showAll, setShowAll] = useState<boolean>(!JSON_COLOR_SELECTOR_PAGINATION_ENABLED);
 
     // File input ref for CSS import
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -548,17 +553,25 @@ export const JsonEdit: React.FC<IDashAutoAdminCustomFieldComponent> = (props) =>
     };
 
     // Update only a single DOM color property
-    const updateSingleDomColor = (key: string, color: string) => {
+    const updateSingleDomColor = useCallback((key: string, color: string) => {
         if (!key.trim()) return;
+      
+        requestAnimationFrame(() => {
+            const currentTheme = document.documentElement.getAttribute('data-theme') || '';
+            const themeSuffix = currentTheme ? `--${currentTheme}` : '';
 
-        const currentTheme = document.documentElement.getAttribute('data-theme');
-        const themeSuffix = `--${currentTheme}`;
-
-        if (key.endsWith(themeSuffix)) {
-            const baseKey = key.slice(0, -themeSuffix.length);
-            document.documentElement.style.setProperty(`--${baseKey}`, color);
-        }
-    };
+            if (themeSuffix && key.endsWith(themeSuffix)) {
+                const baseKey = key.slice(0, -themeSuffix.length);
+                document.documentElement.style.setProperty(`--${baseKey}`, color);
+                document.documentElement.style.setProperty(`--${baseKey}${themeSuffix}`, color);
+            } else {
+                // Fallback: update the variable directly if it doesn't match the current theme suffix
+                // This handles global variables or keys being edited that don't adhere to the specific suffix
+                const varName = key.startsWith('--') ? key : `--${key}`;
+                document.documentElement.style.setProperty(varName, color);
+            }
+        });
+    }, []);
 
     // Batch update for preview only - processes all colors at once
     const updateDomColors = (colors: Record<string, any>) => {
@@ -843,9 +856,10 @@ export const JsonEdit: React.FC<IDashAutoAdminCustomFieldComponent> = (props) =>
                                 gap: 2,
                                 width: '100%'
                             }}>
-                                {filteredPairs
-                                    .slice((page - 1) * pageSize, page * pageSize)
-                                    .map((pair) => (
+                                {(showAll
+                                    ? filteredPairs
+                                    : filteredPairs.slice((page - 1) * pageSize, page * pageSize)
+                                ).map((pair) => (
                                     <Box key={pair.id} sx={{ minWidth: 0 }}>
                                         <LocalColorPaletteItem
                                             pair={pair}
@@ -856,9 +870,9 @@ export const JsonEdit: React.FC<IDashAutoAdminCustomFieldComponent> = (props) =>
                                 ))}
                             </Box>
                             
-                            {/* Pagination Controls */}
-                            {filteredPairs.length > pageSize && (
-                                <Box sx={{ mt: 4, display: 'flex', justifyContent: 'center' }}>
+                            {/* Pagination Controls - only when pagination is enabled and not showing all */}
+                            {JSON_COLOR_SELECTOR_PAGINATION_ENABLED && !showAll && filteredPairs.length > pageSize && (
+                                <Box sx={{ mt: 4, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
                                     <Pagination 
                                         count={Math.ceil(filteredPairs.length / pageSize)} 
                                         page={page} 
@@ -868,12 +882,43 @@ export const JsonEdit: React.FC<IDashAutoAdminCustomFieldComponent> = (props) =>
                                         showFirstButton 
                                         showLastButton
                                     />
+
+                                    {/* Show All button */}
+                                    {JSON_COLOR_SELECTOR_PAGINATION_SHOW_ALL && (
+                                        <Link
+                                            component="button"
+                                            variant="body2"
+                                            underline="always"
+                                            onClick={() => setShowAll(true)}
+                                            sx={{ mt: 0.5, fontSize: '0.8rem', cursor: 'pointer' }}
+                                        >
+                                            Show all
+                                        </Link>
+                                    )}
                                 </Box>
                             )}
                             
                             <Typography variant="caption" sx={{ display: 'block', textAlign: 'center', mt: 2, color: 'text.secondary' }}>
-                                Showing {Math.min((page - 1) * pageSize + 1, filteredPairs.length)} - {Math.min(page * pageSize, filteredPairs.length)} of {filteredPairs.length} colors
+                                {showAll
+                                    ? `Showing all ${filteredPairs.length} colors`
+                                    : `Showing ${Math.min((page - 1) * pageSize + 1, filteredPairs.length)} - ${Math.min(page * pageSize, filteredPairs.length)} of ${filteredPairs.length} colors`
+                                }
                             </Typography>
+
+                            {/* Show paginated link when showing all and pagination is enabled */}
+                            {JSON_COLOR_SELECTOR_PAGINATION_ENABLED && showAll && filteredPairs.length > pageSize && (
+                                <Box sx={{ display: 'flex', justifyContent: 'center', mt: 1 }}>
+                                    <Link
+                                        component="button"
+                                        variant="body2"
+                                        underline="always"
+                                        onClick={() => { setShowAll(false); setPage(1); }}
+                                        sx={{ fontSize: '0.8rem', cursor: 'pointer' }}
+                                    >
+                                        Show paginated
+                                    </Link>
+                                </Box>
+                            )}
                         </>
                     ) : (
                         <Box sx={{ 

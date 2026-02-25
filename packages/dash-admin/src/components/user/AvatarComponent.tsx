@@ -10,7 +10,7 @@ import React from 'react';
 import { useWindowSize } from 'dash-utils';
 import { useAuthContext } from '../../contexts/auth/AuthContext';
 
-import { useRedirect } from 'react-admin';
+import { useRedirect, useTranslate } from 'react-admin';
 import { useNavigate } from 'react-router-dom';
 import { NavEventManager } from '../../utils/navEvents';
 
@@ -21,6 +21,7 @@ interface AvatarComponentProps {
 const AvatarComponent: React.FC<AvatarComponentProps> = ({ sidebarPosition = 'left' }) => {
     const { user, logout, authenticated } = useAuthContext();
     const windowSize = useWindowSize();
+    const translate = useTranslate();
 
     const theme = useTheme();
     const isSmallScreen = useMediaQuery(theme.breakpoints.down('md'));
@@ -67,9 +68,10 @@ useEffect(() => {
             // Fallback logout - redirect to login
             window.location.href = '/login';
         }*/
-    
+        localStorage.clear();
         await logout();
-        navigate('/');
+        //navigate('/');
+        window.location.href = '/';
     };
 
     const handleProfileRedirect = () => {
@@ -229,9 +231,12 @@ useEffect(() => {
                     <Avatar 
                         src={getAvatarImageUrl()} 
                         key={getAvatarImageUrl()} // Force re-render when image changes
+                        className='dash-icon-button-color dash-icon-button-bg'
                     />
                 ) : (
-                    <Avatar>
+                    <Avatar
+                        className='dash-icon-button-color dash-icon-button-bg'
+                    >
                         {getUserInitials()}
                     </Avatar>
                 )}
@@ -267,8 +272,8 @@ useEffect(() => {
                                     <AccountCircleIcon />
                                 </span>
                             }
-                            label='Perfil'
-                            className='dash-user-item'
+                            label={translate('ra.auth.user_menu', { _: 'Perfil' })}
+                            className='dash-icon-button-color dash-icon-button-bg'
                         />
                         <IconMenuItem
                             onClick={(e) => {
@@ -280,8 +285,8 @@ useEffect(() => {
                                     <LogoutIcon />
                                 </span>
                             }
-                            label='Cerrar sesión'
-                            className='dash-user-item'
+                            label={translate('ra.auth.logout', { _: 'Cerrar sesión' })}
+                            className='dash-icon-button-color dash-icon-button-bg'
                         />
                     </div>
                 </div>,

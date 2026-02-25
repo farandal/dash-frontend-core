@@ -1,0 +1,194 @@
+
+
+.dash-modal {
+    // Shared defaults if needed
+    font-family: 'Montserrat';
+
+    &-default {
+        background: var(--module-bg);
+        box-shadow: var(--component-shadow);
+        
+        &.MuiPaper-root {
+            background: var(--module-bg);
+        }
+
+        > .MuiTypography-root.MuiDialogTitle-root {
+            font-family: 'Montserrat';
+            font-style: normal;
+            font-weight: 700;
+            font-size: 16px;
+            line-height: 24px;
+            color: var(--heading-color);
+            padding: 16px 24px;
+            
+            .dash-modal-img {
+                display: flex;
+                align-items: center;
+                margin-right: 8px;
+                svg {
+                     font-size: 20px;
+                }
+            }
+        }
+
+        > .MuiDialogContent-root {
+            padding: 24px;
+            border: 1px solid var(--component-border-split);
+            border-left: unset;
+            border-right: unset;
+
+            font-family: 'Montserrat';
+            font-style: normal;
+            font-weight: 400;
+            font-size: 14px;
+            line-height: 22px;
+            color: var(--text-color);
+        }
+
+        > .MuiDialogActions-root {
+            padding: 10px 16px;
+        }
+
+        // Fullscreen Override
+        &.fullscreen {
+            background: none;
+            box-shadow: none;
+            
+            &.MuiPaper-root {
+                background: none;
+            }
+
+            > .MuiDialogContent-root {
+                border: none;
+            }
+        }
+    }
+
+    &-info, &-success, &-danger {
+        padding-top: 39px !important;
+        background: transparent !important;
+        box-shadow: unset !important;
+        overflow: visible !important;
+
+        &.MuiPaper-root {
+            background: transparent !important;
+            box-shadow: none !important;
+            overflow: visible !important;
+        }
+
+        > .MuiTypography-root.MuiDialogTitle-root {
+            //height: 115px;
+            border-radius: 8px;
+            padding: 0 0 30px;
+            overflow: visible;
+            
+            .dash-modal-img {
+                position: relative;
+                width: 140px;
+                height: 120px;
+                margin: -40px auto 0;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                
+                svg {
+                    width: 100%;
+                    height: 100%;
+                    object-fit: contain;
+                    * {
+                        pointer-events: none;
+                    }
+                }
+            }
+        }
+
+        > .MuiDialogContent-root {
+            margin-top: -20px;
+            padding: 42px 32px 0; // Increased top padding to push content down from title area
+            border: unset;
+            background: var(--component-bg);
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+            position: relative;
+            z-index: 1;
+
+            .dash-modal-title {
+                margin-bottom: 16px;
+                h3 {
+                    font-family: 'Montserrat';
+                    font-style: normal;
+                    font-weight: 700;
+                    font-size: 20px;
+                    line-height: 24px;
+                    text-align: center;
+                    color: var(--heading-color);
+                    margin: 0;
+                }
+            }
+
+            font-family: 'Montserrat';
+            font-style: normal;
+            font-weight: 400;
+            font-size: 16px;
+            line-height: 24px;
+            text-align: center;
+            color: var(--text-color);
+        }
+
+        > .MuiDialogActions-root {
+            padding: 16px;
+            background: var(--component-bg);
+            border-bottom-left-radius: 8px;
+            border-bottom-right-radius: 8px;
+            justify-content: center;
+        }
+
+        // Shared Fullscreen Overrides
+        &.fullscreen {
+            &.MuiPaper-root {
+                background: none !important;
+            }
+            > .MuiTypography-root.MuiDialogTitle-root {
+                background: none !important; // Override the gradient/color set in specific variants
+            }
+            > .MuiDialogContent-root {
+                background: none;
+                border: none;
+            }
+            > .MuiDialogActions-root {
+                background: none;
+            }
+        }
+    }
+
+    &-info {
+        > .MuiTypography-root.MuiDialogTitle-root {
+            background: linear-gradient(93.81deg, var(--primary-color) 2.98%, var(--primary-contrast) 102.49%);
+            .dash-modal-img svg {
+                fill: var(--alert-info-bg);
+            }
+        }
+    }
+
+    &-success {
+        > .MuiTypography-root.MuiDialogTitle-root {
+            background: var(--btn-success-bg);
+            .dash-modal-img svg {
+                fill: var(--alert-success-bg);
+            }
+        }
+    }
+
+    &-danger {
+        > .MuiTypography-root.MuiDialogTitle-root {
+            background: var(--btn-danger-bg);
+            .dash-modal-img svg {
+                fill: var(--alert-error-bg); // or var(--highlight-color) if needed
+                path {
+                    fill: var(--alert-error-bg);
+                }
+            }
+        }
+    }
+}
+

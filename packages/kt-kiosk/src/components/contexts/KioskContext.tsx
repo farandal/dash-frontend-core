@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useMemo, useCallback, ReactNode } from 'react';
 import { useDataProvider, useNotify } from 'react-admin';
 import { IKioskProduct, IKioskCartItem, IKioskCategory, IKioskSession, IKioskConfirmation } from '../interfaces/IKiosk';
-import { formatCurrency } from 'kt-ecommerce';
+import { priceFormatter } from 'dash-utils';
 
 interface KioskContextType {
     // Session
@@ -321,19 +321,15 @@ export const KioskProvider: React.FC<KioskProviderProps> = ({ children }) => {
         return cartItems.reduce((sum, item) => sum + item.quantity, 0);
     }, [cartItems]);
 
-    // Format price - use proper currency formatting like tabResource
+    // Format price - use centralized priceFormatter from dash-utils
     const formatPrice = useCallback((amount: number | string | undefined | null) => {
         const numericAmount = typeof amount === 'string' ? parseFloat(amount) : (amount ?? 0);
         const safeAmount = isNaN(numericAmount) ? 0 : numericAmount;
         
-        // Use the currency from session if available
-        const currency = session?.currency ? {
-            code: session.currency.code || '',
-            symbol: session.currency.symbol || '$',
-            format: session.currency.format || '0,0.00'
-        } : undefined;
+        // Use the currency code from session if available
+        const currencyCode = session?.currency?.code || 'CLP';
         
-        return formatCurrency(safeAmount, currency);
+        return priceFormatter(safeAmount, currencyCode);
     }, [session]);
 
     // Cart actions

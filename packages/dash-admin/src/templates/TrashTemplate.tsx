@@ -101,11 +101,11 @@ const TrashTemplate = (resourceConfig: IDashAutoAdminResourceConfig, locale?: st
 		return (
 			<>
         
-				<Button label={translate('dash.action.continue')} onClick={handleRestoreManyClick} />
+				<Button label={translate('dash.action.restore')} onClick={handleRestoreManyClick} />
 				<Confirm
 					isOpen={restoreConfirmDialogOpen}
 					loading={isRestoringLoading}
-					title={translate('dash.action.continue')}
+					title={translate('dash.action.restore')}
 					content={translate('dash.message.are_you_sure')}
 					onConfirm={handleRestoreManyConfirm}
 					onClose={handleRestoreManyDialogClose}

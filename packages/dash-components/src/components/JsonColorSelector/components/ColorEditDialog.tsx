@@ -3,10 +3,7 @@ import {
     Button,
     TextField,
     Typography,
-    Dialog,
-    DialogTitle,
-    DialogContent,
-    DialogActions,
+    Drawer,
     InputAdornment,
     FormControl,
     InputLabel,
@@ -15,15 +12,17 @@ import {
     Tabs,
     Tab,
     Avatar,
+    IconButton,
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
+import CloseIcon from '@mui/icons-material/Close';
 import { ChromePicker } from 'react-color';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { ColorFormat, ColorFormatType, KeyValuePair } from '../interfaces/interfaces';
 import { convertColor, getContrastColor, rgbArrayToHex } from '../helpers/functions';
 
 
-// Color edit dialog component
+// Color edit drawer component (right-side panel)
 const ColorEditDialog: React.FC<{
     open: boolean;
     pair: KeyValuePair | null;
@@ -38,6 +37,17 @@ const ColorEditDialog: React.FC<{
     const [colorFormat, setColorFormat] = useState<ColorFormatType>('hex');
     const [keyError, setKeyError] = useState<string>('');
     const [tabValue, setTabValue] = useState(0);
+    const lastUpdateRef = useRef<number>(0); // Ref for throttling numeric updates
+
+    // Memoize styles to prevent unnecessary re-renders of ChromePicker
+    const pickerStyles = useMemo(() => ({
+        default: {
+            picker: {
+                width: '100%',
+                boxShadow: 'none',
+            }
+        }
+    }), []);
     useEffect(() => {
         if (pair) {
             setEditedPair({ ...pair });
@@ -156,7 +166,12 @@ const ColorEditDialog: React.FC<{
         const newValue = convertColor(colorFormatObj, colorFormat);
         setEditedPair({ ...editedPair, value: newValue });
 
-        updateSingleDomColor(editedPair.key, newValue);
+        // Throttle DOM updates to prevent layout thrashing (max 60fps)
+        const now = Date.now();
+        if (now - lastUpdateRef.current >= 16) {
+            updateSingleDomColor(editedPair.key, newValue);
+            lastUpdateRef.current = now;
+        }
     };
 
 
@@ -183,259 +198,293 @@ const ColorEditDialog: React.FC<{
     if (!editedPair) return null;
 
     return (
-        <Dialog
+        <Drawer
+            anchor="right"
             open={open}
             onClose={onClose}
-            maxWidth="md" // Changed to md for more space
-            fullWidth
+            BackdropProps={{ invisible: true }}
             PaperProps={{
-                sx: { minHeight: 600 }
+                sx: {
+                    width: { xs: '100%', sm: 460 },
+                    maxWidth: '100vw',
+                    display: 'flex',
+                    flexDirection: 'column',
+                }
             }}
         >
-            <DialogTitle>
-                {pair?.key ? `Edit Color: ${pair.key}` : 'Add New Color'}
-            </DialogTitle>
-            <DialogContent>
-                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, pt: 1 }}>
-                    {/* Color Name */}
-                    <TextField
-                        fullWidth
-                        label="Color Name"
-                        value={editedPair.key}
-                        onChange={(e) => handleKeyChange(e.target.value)}
-                        error={!!keyError}
-                        helperText={keyError}
-                        placeholder="e.g., primary-color--light, background-dark--dark"
-                    />
+            {/* Drawer Header */}
+            <Box sx={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                px: 2,
+                py: 1.5,
+                borderBottom: '1px solid',
+                borderColor: 'divider',
+                flexShrink: 0,
+            }}>
+                <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                    {pair?.key ? `Edit: ${pair.key}` : 'Add New Color'}
+                </Typography>
+                <IconButton onClick={onClose} size="small">
+                    <CloseIcon />
+                </IconButton>
+            </Box>
 
-                    {/* Color Format Selector */}
-                    <FormControl fullWidth>
-                        <InputLabel>Color Format</InputLabel>
-                        <Select
-                            value={colorFormat}
-                            label="Color Format"
-                            onChange={(e) => setColorFormat(e.target.value as ColorFormatType)}
-                        >
-                            <MenuItem value="hex">HEX</MenuItem>
-                            <MenuItem value="rgb">RGB</MenuItem>
-                            <MenuItem value="rgba">RGBA (with alpha)</MenuItem>
-                            <MenuItem value="hsl">HSL</MenuItem>
-                            <MenuItem value="hsla">HSLA (with alpha)</MenuItem>
-                        </Select>
-                    </FormControl>
+            {/* Drawer Content - Scrollable */}
+            <Box sx={{
+                flex: 1,
+                overflowY: 'auto',
+                px: 2,
+                py: 2,
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 3,
+            }}>
+                {/* Color Name */}
+                <TextField
+                    fullWidth
+                    label="Color Name"
+                    value={editedPair.key}
+                    onChange={(e) => handleKeyChange(e.target.value)}
+                    error={!!keyError}
+                    helperText={keyError}
+                    placeholder="e.g., primary-color--light, background-dark--dark"
+                    size="small"
+                />
 
-                    {/* Color Picker and Extracted Colors Side by Side */}
-                    <Box sx={{ display: 'flex', gap: 3 }}>
-                        {/* Left Side - Color Picker */}
-                        <Box sx={{ flex: 1 }}>
-                            <Typography variant="subtitle2" gutterBottom>
-                                Color Picker
-                            </Typography>
+                {/* Color Format Selector */}
+                <FormControl fullWidth size="small">
+                    <InputLabel>Color Format</InputLabel>
+                    <Select
+                        value={colorFormat}
+                        label="Color Format"
+                        onChange={(e) => setColorFormat(e.target.value as ColorFormatType)}
+                    >
+                        <MenuItem value="hex">HEX</MenuItem>
+                        <MenuItem value="rgb">RGB</MenuItem>
+                        <MenuItem value="rgba">RGBA (with alpha)</MenuItem>
+                        <MenuItem value="hsl">HSL</MenuItem>
+                        <MenuItem value="hsla">HSLA (with alpha)</MenuItem>
+                    </Select>
+                </FormControl>
 
-                            {/* Color Picker Tabs */}
-                            <Box>
-                                <Tabs value={tabValue} onChange={(_, newValue) => setTabValue(newValue)}>
-                                    <Tab label="Picker" />
-                                    <Tab label="Manual" />
-                                </Tabs>
+                {/* Color Picker */}
+                <Box>
+                    <Typography variant="subtitle2" gutterBottom>
+                        Color Picker
+                    </Typography>
 
-                                {/*tabValue === 0 && (
-                                <Box sx={{ mt: 2, display: 'flex', justifyContent: 'center' }}>
-                                    <ChromePicker
-                                        color={editedPair.value}
-                                        onChange={handleColorChange}
-                                        disableAlpha={!['rgba', 'hsla'].includes(colorFormat)} // This will show alpha when rgba or hsla is selected
-                                    />
-                                </Box>
-                            )*/}
+                    {/* Color Picker Tabs */}
+                    <Box>
+                        <Tabs value={tabValue} onChange={(_, newValue) => setTabValue(newValue)} variant="fullWidth">
+                            <Tab label="Picker" />
+                            <Tab label="Manual" />
+                        </Tabs>
 
-                                {tabValue === 0 && (
-                                    <Box sx={{ mt: 2, display: 'flex', justifyContent: 'center' }}>
-                                        <ChromePicker
-                                            color={editedPair.value}
-                                            onChange={handleColorChange}
-                                            disableAlpha={false} // Change this to false to always show alpha
-                                        />
-                                    </Box>
-                                )}
-
-                                {tabValue === 1 && (
-                                    <Box sx={{ mt: 2 }}>
-                                        <TextField
-                                            fullWidth
-                                            label={`Color Value (${colorFormat.toUpperCase()})`}
-                                            value={editedPair.value}
-                                            onChange={(e) => {
-                                                const newValue = e.target.value;
-                                                setEditedPair({ ...editedPair, value: newValue });
-                                                // Also update the DOM color for preview
-                                                updateSingleDomColor(editedPair.key, newValue);
-                                            }}
-                                            placeholder={
-                                                colorFormat === 'hex' ? '#ff0000' :
-                                                    colorFormat === 'rgb' ? 'rgb(255, 0, 0)' :
-                                                        colorFormat === 'rgba' ? 'rgba(255, 0, 0, 0.5)' :
-                                                            colorFormat === 'hsl' ? 'hsl(0, 100%, 50%)' :
-                                                                'hsla(0, 100%, 50%, 0.5)'
-                                            }
-                                            helperText={
-                                                colorFormat === 'rgba' ? 'Alpha value should be between 0 and 1 (e.g., 0.1, 0.5, 1)' :
-                                                    colorFormat === 'hsla' ? 'Alpha value should be between 0 and 1 (e.g., 0.1, 0.5, 1)' :
-                                                        undefined
-                                            }
-                                            InputProps={{
-                                                startAdornment: (
-                                                    <InputAdornment position="start">
-                                                        <Box
-                                                            sx={{
-                                                                width: 20,
-                                                                height: 20,
-                                                                backgroundColor: editedPair.value,
-                                                                border: '1px solid #ccc',
-                                                                borderRadius: 1,
-                                                                // Add a checkerboard pattern background for transparency preview
-                                                                backgroundImage: colorFormat === 'rgba' || colorFormat === 'hsla' ?
-                                                                    'linear-gradient(45deg, #ccc 25%, transparent 25%), linear-gradient(-45deg, #ccc 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #ccc 75%), linear-gradient(-45deg, transparent 75%, #ccc 75%)' :
-                                                                    'none',
-                                                                backgroundSize: '4px 4px',
-                                                                backgroundPosition: '0 0, 0 2px, 2px -2px, -2px 0px',
-                                                            }}
-                                                        />
-                                                    </InputAdornment>
-                                                ),
-                                            }}
-                                        />
-                                    </Box>
-                                )}
+                        {tabValue === 0 && (
+                            <Box sx={{ mt: 2, display: 'flex', justifyContent: 'center' }}>
+                                <ChromePicker
+                                    color={editedPair.value}
+                                    onChange={handleColorChange}
+                                    disableAlpha={false}
+                                    styles={pickerStyles}
+                                />
                             </Box>
-                        </Box>
+                        )}
 
-                        {/* Right Side - Extracted Colors */}
-                        {extractedColors.length > 0 && (
-                            <Box sx={{ flex: '0 0 200px' }}>
-                                <Typography variant="subtitle2" gutterBottom>
-                                    Extracted Colors
-                                </Typography>
-                                <Box sx={{
-                                    display: 'flex',
-                                    flexWrap: 'wrap',
-                                    gap: 1,
-                                    p: 2,
-                                    border: '1px solid #e0e0e0',
-                                    borderRadius: 1,
-                                    backgroundColor: '#fafafa'
-                                }}>
-                                    {extractedColors.map((color, index) => {
-                                        const hexColor = rgbArrayToHex(color);
-                                        const isSelected = editedPair.value === hexColor;
-
-                                        return (
-                                            <Avatar
-                                                key={index}
-                                                sx={{
-                                                    width: 40,
-                                                    height: 40,
-                                                    backgroundColor: hexColor,
-                                                    border: isSelected ? '3px solid #1976d2' : '2px solid #ccc',
-                                                    cursor: 'pointer',
-                                                    transition: 'all 0.2s',
-                                                    '&:hover': {
-                                                        transform: 'scale(1.1)',
-                                                        boxShadow: 2,
-                                                    },
-                                                    color: getContrastColor(hexColor),
-                                                    fontWeight: 'bold',
-                                                }}
-                                                onClick={() => handleExtractedColorSelect(color)}
-                                                title={`Use extracted color: ${hexColor}`}
-                                            >
-                                                {index + 1}
-                                            </Avatar>
-                                        );
-                                    })}
-                                </Box>
-                                <Typography variant="caption" color="textSecondary" sx={{ mt: 1, display: 'block' }}>
-                                    Click any color to use it
-                                </Typography>
+                        {tabValue === 1 && (
+                            <Box sx={{ mt: 2 }}>
+                                <TextField
+                                    fullWidth
+                                    size="small"
+                                    label={`Color Value (${colorFormat.toUpperCase()})`}
+                                    value={editedPair.value}
+                                    onChange={(e) => {
+                                        const newValue = e.target.value;
+                                        setEditedPair({ ...editedPair, value: newValue });
+                                        // Also update the DOM color for preview
+                                        updateSingleDomColor(editedPair.key, newValue);
+                                    }}
+                                    placeholder={
+                                        colorFormat === 'hex' ? '#ff0000' :
+                                            colorFormat === 'rgb' ? 'rgb(255, 0, 0)' :
+                                                colorFormat === 'rgba' ? 'rgba(255, 0, 0, 0.5)' :
+                                                    colorFormat === 'hsl' ? 'hsl(0, 100%, 50%)' :
+                                                        'hsla(0, 100%, 50%, 0.5)'
+                                    }
+                                    helperText={
+                                        colorFormat === 'rgba' ? 'Alpha value should be between 0 and 1 (e.g., 0.1, 0.5, 1)' :
+                                            colorFormat === 'hsla' ? 'Alpha value should be between 0 and 1 (e.g., 0.1, 0.5, 1)' :
+                                                undefined
+                                    }
+                                    InputProps={{
+                                        startAdornment: (
+                                            <InputAdornment position="start">
+                                                <Box
+                                                    sx={{
+                                                        width: 20,
+                                                        height: 20,
+                                                        backgroundColor: editedPair.value,
+                                                        border: '1px solid #ccc',
+                                                        borderRadius: 1,
+                                                        // Add a checkerboard pattern background for transparency preview
+                                                        backgroundImage: colorFormat === 'rgba' || colorFormat === 'hsla' ?
+                                                            'linear-gradient(45deg, #ccc 25%, transparent 25%), linear-gradient(-45deg, #ccc 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #ccc 75%), linear-gradient(-45deg, transparent 75%, #ccc 75%)' :
+                                                            'none',
+                                                        backgroundSize: '4px 4px',
+                                                        backgroundPosition: '0 0, 0 2px, 2px -2px, -2px 0px',
+                                                    }}
+                                                />
+                                            </InputAdornment>
+                                        ),
+                                    }}
+                                />
                             </Box>
                         )}
                     </Box>
+                </Box>
 
-                    {/* Color Preview */}
+                {/* Extracted Colors */}
+                {extractedColors.length > 0 && (
                     <Box>
                         <Typography variant="subtitle2" gutterBottom>
-                            Preview
+                            Extracted Colors
                         </Typography>
+                        <Box sx={{
+                            display: 'flex',
+                            flexWrap: 'wrap',
+                            gap: 1,
+                            p: 2,
+                            border: '1px solid',
+                            borderColor: 'divider',
+                            borderRadius: 1,
+                            backgroundColor: 'action.hover',
+                        }}>
+                            {extractedColors.map((color, index) => {
+                                const hexColor = rgbArrayToHex(color);
+                                const isSelected = editedPair.value === hexColor;
+
+                                return (
+                                    <Avatar
+                                        key={index}
+                                        sx={{
+                                            width: 36,
+                                            height: 36,
+                                            backgroundColor: hexColor,
+                                            border: isSelected ? '3px solid #1976d2' : '2px solid #ccc',
+                                            cursor: 'pointer',
+                                            transition: 'all 0.2s',
+                                            '&:hover': {
+                                                transform: 'scale(1.1)',
+                                                boxShadow: 2,
+                                            },
+                                            color: getContrastColor(hexColor),
+                                            fontWeight: 'bold',
+                                            fontSize: '0.7rem',
+                                        }}
+                                        onClick={() => handleExtractedColorSelect(color)}
+                                        title={`Use extracted color: ${hexColor}`}
+                                    >
+                                        {index + 1}
+                                    </Avatar>
+                                );
+                            })}
+                        </Box>
+                        <Typography variant="caption" color="textSecondary" sx={{ mt: 1, display: 'block' }}>
+                            Click any color to use it
+                        </Typography>
+                    </Box>
+                )}
+
+                {/* Color Preview */}
+                <Box>
+                    <Typography variant="subtitle2" gutterBottom>
+                        Preview
+                    </Typography>
+                    <Box
+                        sx={{
+                            width: '100%',
+                            height: 80,
+                            backgroundColor: editedPair.value,
+                            border: '1px solid #ccc',
+                            borderRadius: 1,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            position: 'relative',
+                            // Add checkerboard background for alpha preview
+                            backgroundImage: (editedPair.value.includes('rgba') || editedPair.value.includes('hsla')) ?
+                                'linear-gradient(45deg, #f0f0f0 25%, transparent 25%), linear-gradient(-45deg, #f0f0f0 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #f0f0f0 75%), linear-gradient(-45deg, transparent 75%, #f0f0f0 75%)' :
+                                'none',
+                            backgroundSize: '10px 10px',
+                            backgroundPosition: '0 0, 0 5px, 5px -5px, -5px 0px',
+                        }}
+                    >
                         <Box
                             sx={{
                                 width: '100%',
-                                height: 80,
+                                height: '100%',
                                 backgroundColor: editedPair.value,
-                                border: '1px solid #ccc',
                                 borderRadius: 1,
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
-                                position: 'relative',
-                                // Add checkerboard background for alpha preview
-                                backgroundImage: (editedPair.value.includes('rgba') || editedPair.value.includes('hsla')) ?
-                                    'linear-gradient(45deg, #f0f0f0 25%, transparent 25%), linear-gradient(-45deg, #f0f0f0 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #f0f0f0 75%), linear-gradient(-45deg, transparent 75%, #f0f0f0 75%)' :
-                                    'none',
-                                backgroundSize: '10px 10px',
-                                backgroundPosition: '0 0, 0 5px, 5px -5px, -5px 0px',
                             }}
                         >
-                            <Box
+                            <Typography
+                                variant="body2"
                                 sx={{
-                                    width: '100%',
-                                    height: '100%',
-                                    backgroundColor: editedPair.value,
+                                    color: getContrastColor(editedPair.value),
+                                    fontWeight: 'bold',
+                                    backgroundColor: 'rgba(0,0,0,0.1)',
+                                    padding: '4px 8px',
                                     borderRadius: 1,
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
                                 }}
                             >
-                                <Typography
-                                    variant="body2"
-                                    sx={{
-                                        color: getContrastColor(editedPair.value),
-                                        fontWeight: 'bold',
-                                        backgroundColor: 'rgba(0,0,0,0.1)',
-                                        padding: '4px 8px',
-                                        borderRadius: 1,
-                                    }}
-                                >
-                                    {editedPair.key || 'Color Preview'}
-                                </Typography>
-                            </Box>
+                                {editedPair.key || 'Color Preview'}
+                            </Typography>
                         </Box>
                     </Box>
                 </Box>
-            </DialogContent>
-            <DialogActions>
+            </Box>
+
+            {/* Drawer Footer - Fixed at bottom */}
+            <Box sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 1,
+                px: 2,
+                py: 1.5,
+                borderTop: '1px solid',
+                borderColor: 'divider',
+                flexShrink: 0,
+                backgroundColor: 'background.paper',
+            }}>
                 {pair?.key && (
                     <Button
                         onClick={handleDelete}
                         color="error"
                         startIcon={<DeleteIcon />}
+                        size="small"
                     >
                         Delete
                     </Button>
                 )}
                 <Box sx={{ flexGrow: 1 }} />
-                <Button onClick={onClose}>
+                <Button onClick={onClose} size="small">
                     Cancel
                 </Button>
                 <Button
                     onClick={handleSave}
                     variant="contained"
                     disabled={!!keyError || !editedPair.key.trim()}
+                    size="small"
                 >
                     Save
                 </Button>
-            </DialogActions>
-        </Dialog>
+            </Box>
+        </Drawer>
     );
 };
 

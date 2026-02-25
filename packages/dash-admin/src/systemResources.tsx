@@ -1,41 +1,27 @@
 
-import { SelectInput } from 'react-admin';
-//import { SelectArrayInput } from 'react-admin';
+import { SelectInput, FunctionField } from 'react-admin';
 import ResourceTemplate from './templates/ResourceTemplate';
 import IAppResourceConfig from './interfaces/IAppResourceConfig';
-//import permissionSchema from './schemas/permissions';
-//import roleSchema from './schemas/roles';
 import { TenantImpersonateResource } from './resources/Tenant/ImpersonateTenantResource';
 import tenantSystemAdminSchema from './schemas/tenant_superadmin';
+import subscriptionPlanSchema from './schemas/subscriptionPlan';
 import { RutValidator } from './utils/validators';
 import { DASHAppConstants } from 'dash-constants';
 import Avatar from './components/avatar/Avatar';
-
-// Replace the current imports with these optimized direct imports
-//import Https from '@mui/icons-material/Https';
 import SystemUpdateAlt from '@mui/icons-material/SystemUpdateAlt';
 import Person from '@mui/icons-material/Person';
+import CardMembershipIcon from '@mui/icons-material/CardMembership';
 import { lazy } from 'react';
-//import subscriptionPlanSchema from './schemas/subscription/subscriptionPlanSchema';
-//import subscriptionSchema from './schemas/subscription/subscriptionSchema';
-//import TenantSettingsFormatsProvider from './components/tenant/TenantSettingsContext';
-//import { AvailablePermissionsContext } from './components/permission/AvailablePermissionsContext';
+import BusinessIcon from "@mui/icons-material/Business";
+import Chip from "@mui/material/Chip";
+
 import SystemRequestsCache from './contexts/SystemRequestsCache';
-//import RolePermissionBulkManager from './components/permission/RolePermissionBulkManager';
-//import rolePermissionBulkSchema from './schemas/rolePermissionBulk';
+import { SubscriptionPlanFormatsProvider } from './contexts/SubscriptionPlanFormatsProvider';
 import roleSchemaDataGrid from './schemas/rolesDataGrid';
+import FormatCurrency from './components/currency/Format';
 
 const TableContainer = lazy(() => import('@mui/material/TableContainer'));
 
-// Icons from commented code (include these if you plan to uncomment that code)
-
-/**
- * Configures the system resources for the DASH Admin application.
- * This includes resources such as permissions, roles, users, and tenant impersonation.
- * The configuration is defined as an array of `IAppResourceConfig` objects, which specify
- * the details of each resource, including its component, model, label, schema, icon, and menu.
- * The configuration also includes settings for the data grid, such as sticky headers and maximum height.
- */
 
 const drawerSettings = {
     drawer: true,
@@ -50,6 +36,323 @@ const drawerSettings = {
 };
 
 const systemResources: IAppResourceConfig[] = [
+
+    {
+        roles: [DASHAppConstants.system.SYSTEM_ROLE],
+        trash: true,
+        component: ResourceTemplate,
+        model: "system/tenancy",
+        //group: "resource.groups.system_resources",
+        group: "Accounts",
+        //path: "/tenancy/account",
+        schema: [
+            {
+                tab: 'Account',
+                label: 'Public Name',
+                attribute: 'public_name',
+                type: String,
+                inList: true,
+                inEdit: true,
+                inShow: true,
+                inCreate: false,
+            },
+            {
+                tab: 'Account',
+                label: 'Legal Name',
+                attribute: 'legal_name',
+                type: String,
+                inList: false,
+                inEdit: true,
+                inShow: true,
+                inCreate: false,
+            },
+            {
+                tab: 'Account',
+                label: 'Public ID',
+                attribute: 'public_id',
+                type: String,
+                inList: true,
+                inEdit: true,
+                inShow: true,
+                inCreate: false,
+            },
+            {
+                tab: 'Account',
+                label: 'Account Status',
+                attribute: 'account_status_label',
+                type: String,
+                custom: true,
+                inList: true,
+                inEdit: false,
+                inShow: true,
+                inCreate: false,
+                component: () => (
+                    <FunctionField
+                        label="Account Status"
+                        render={(record: any) => {
+                            const status = record?.account_status_label || record?.account_status || '-';
+                            const colorMap: Record<string, 'success' | 'warning' | 'error' | 'default'> = {
+                                'Active': 'success',
+                                'Suspended': 'warning',
+                                'Canceled': 'error',
+                                'Expired': 'default',
+                                'Pending Deletion': 'error',
+                            };
+                            return <Chip label={status} color={colorMap[status] || 'default'} size="small" />;
+                        }}
+                    />
+                ),
+            },
+            {
+                tab: 'Account',
+                label: 'Email',
+                attribute: 'email',
+                type: String,
+                inList: true,
+                inEdit: true,
+                inShow: true,
+                inCreate: false,
+            },
+            {
+                tab: 'Account',
+                label: 'URL',
+                attribute: 'url',
+                type: String,
+                inList: false,
+                inEdit: true,
+                inShow: true,
+                inCreate: false,
+            },
+            {
+                tab: 'Account',
+                label: 'Slug',
+                attribute: 'slug',
+                type: String,
+                inList: true,
+                inEdit: false,
+                inShow: true,
+                inCreate: false,
+            },
+            {
+                tab: 'Account',
+                label: 'Currency',
+                attribute: 'settings.currency',
+                type: String,
+                inList: false,
+                inEdit: true,
+                inShow: true,
+                inCreate: true,
+                fieldProps: {
+                    helperText: "Default currency code (e.g., USD, EUR)"
+                }
+            },
+            {
+                tab: 'Account',
+                label: 'Timezone',
+                attribute: 'settings.timezone',
+                type: String,
+                inList: false,
+                inShow: true,
+                inEdit: false,
+                inCreate: false,
+            },
+            {
+                tab: 'Account',
+                label: 'Timezone',
+                attribute: 'settings.timezone',
+                type: String,
+                custom: true,
+                inList: false,
+                inShow: false,
+                inEdit: true,
+                inCreate: true,
+                component: SelectInput,
+                componentProps: {
+                    source: 'settings.timezone',
+                    choices: [
+                        { id: 'America/Santiago', name: 'America/Santiago' },
+                        { id: 'UTC', name: 'UTC' },
+                        { id: 'America/New_York', name: 'America/New_York' },
+                        { id: 'Europe/London', name: 'Europe/London' },
+                    ],
+                    defaultValue: 'UTC'
+                }
+            },
+            {
+                tab: 'Subscription',
+                label: 'Subscription Status',
+                attribute: 'subscription_status',
+                type: String,
+                custom: true,
+                inList: true,
+                inEdit: false,
+                inShow: true,
+                inCreate: false,
+                component: () => (
+                    <FunctionField
+                        label="Subscription Status"
+                        render={(record: any) => {
+                            const status = record?.subscription_status || 'none';
+                            const colorMap: Record<string, 'success' | 'warning' | 'error' | 'info' | 'default'> = {
+                                'active': 'success',
+                                'canceled': 'error',
+                                'past_due': 'warning',
+                                'trialing': 'info',
+                                'none': 'default',
+                            };
+                            return <Chip label={status} color={colorMap[status] || 'default'} size="small" />;
+                        }}
+                    />
+                ),
+            },
+            {
+                tab: 'Subscription',
+                label: 'Plan',
+                attribute: 'subscription_plan_name',
+                type: String,
+                inList: false,
+                inEdit: false,
+                inShow: true,
+                inCreate: false,
+            },
+            {
+                tab: 'Subscription',
+                label: 'Subscription State',
+                attribute: 'subscription_state',
+                type: String,
+                inList: false,
+                inEdit: false,
+                inShow: true,
+                inCreate: false,
+            },
+            {
+                tab: 'Subscription',
+                label: 'Gateway',
+                attribute: 'gateway_type',
+                type: String,
+                inList: false,
+                inEdit: false,
+                inShow: true,
+                inCreate: false,
+            },
+            {
+                tab: 'Subscription',
+                label: 'Canceled At',
+                attribute: 'canceled_at',
+                type: Date,
+                inList: false,
+                inEdit: false,
+                inShow: true,
+                inCreate: false,
+            },
+            {
+                tab: 'Subscription',
+                label: 'Expires At',
+                attribute: 'expires_at',
+                type: Date,
+                inList: false,
+                inEdit: false,
+                inShow: true,
+                inCreate: false,
+            },
+            {
+                tab: 'Usage',
+                label: 'Tenants',
+                attribute: 'tenants_count',
+                type: Number,
+                inList: true,
+                inEdit: false,
+                inShow: true,
+                inCreate: false,
+            },
+            {
+                tab: 'Usage',
+                label: 'Users',
+                attribute: 'users_count',
+                type: Number,
+                inList: true,
+                inEdit: false,
+                inShow: true,
+                inCreate: false,
+            },
+            {
+                tab: 'Trial',
+                label: 'Trial Ends At',
+                attribute: 'trial_ends_at',
+                type: Date,
+                inList: false,
+                inEdit: false,
+                inShow: true,
+                inCreate: false,
+            },
+            {
+                tab: 'Trial',
+                label: 'Is On Trial',
+                attribute: 'is_on_trial',
+                type: Boolean,
+                inList: true,
+                inEdit: false,
+                inShow: true,
+                inCreate: false,
+            },
+            {
+                tab: 'Trial',
+                label: 'Trial Days Remaining',
+                attribute: 'trial_days_remaining',
+                type: Number,
+                inList: false,
+                inEdit: false,
+                inShow: true,
+                inCreate: false,
+            },
+        ],
+        label: "Accounts",
+        icon: <BusinessIcon />,
+
+        create: false,
+
+        menu: [
+            {
+                title: 'Accounts',
+                redirect: '/system/tenancy',
+            },
+            {
+                title: '🗑',
+                redirect: '/system/tenancy/trash',
+            },
+        ],
+
+        referenceFilters: [
+            {
+                id: "PublicName",
+                label: "Name",
+                source: "public_name",
+                reference: null,
+                optionText: null,
+                alwaysOn: true,
+            },
+            {
+                id: "AccountStatus",
+                label: "Account Status",
+                source: "account_status",
+                reference: [
+                    { id: 'active', name: 'Active' },
+                    { id: 'canceled', name: 'Canceled' },
+                    { id: 'expired', name: 'Expired' },
+                    { id: 'suspended', name: 'Suspended' },
+                    { id: 'soft_deleted', name: 'Pending Deletion' },
+                ],
+                optionText: "name",
+                alwaysOn: true,
+            },
+        ],
+
+        mutationMode: "pessimistic",
+        redirectAfterUpdate: false,
+
+        ...drawerSettings,
+    },
+
     {
         roles: [DASHAppConstants.system.SYSTEM_ROLE],
         component: ResourceTemplate,
@@ -67,13 +370,14 @@ const systemResources: IAppResourceConfig[] = [
             )
         },
         model: 'system/tenant',
-        label: 'resource.system.tenants.label',
-
+        label: 'Stores',
+        trash: true,
         schema: tenantSystemAdminSchema,
         //references: [{ reference: 'roles', target: 'role', schema: rolesSchema }]
         //references: [{ reference: 'roles', target: 'gitid', schema: roleSchema }],
         icon: <Person />,
-        group: 'resource.groups.system_resources',
+        //group: 'resource.groups.system_resources',
+        group: "Accounts",
         menu: [{
             title: 'resource.system.tenants.menu_list',
             redirect: '/system/tenant',
@@ -131,7 +435,7 @@ const systemResources: IAppResourceConfig[] = [
             undoable: false,
             emptyWhileLoading: true
         },
-        dataGridProps: { stickyHeader: true, rowClick:false },
+        dataGridProps: { stickyHeader: true, rowClick: false },
         dataGridWrapper: (props: any) => <TableContainer sx={{ maxHeight: 800 }} >{props.children}</TableContainer>,
         //listEditButton: { enabled: true },
 
@@ -143,134 +447,8 @@ const systemResources: IAppResourceConfig[] = [
 
 
     },
-    /*{
-        roles: [DASHAppConstants.system.SYSTEM_ROLE],
-        component: ResourceTemplate,
-        model: 'system/permissions',
-        label: 'Permisos',
-        schema: permissionSchema,
-        icon: <Https />,
-        group: 'Recursos de sistema',
-
-        menu: [
-            {
-                title: 'Permisos',
-                redirect: '/system/permissions',
-            },
-        ],
-        //mainAction: {
-        //    title: 'Crear permiso',
-        //    // type: "ghost",
-        //    redirect: '/system/permission/create',
-        //},
-        search: true,
-        mutationMode: 'pessimistic',
-        dataGridProps: { stickyHeader: true },
-        dataGridWrapper: (props: any) => (
-            <TableContainer sx={{ maxHeight: 800 }}>{props.children}</TableContainer>
-        ),
-        postFormatter: (params, _) => {
-            return params;
-        },
-        ...drawerSettings,
-        edit: false,
-        listEditButton: { enabled: false },
-        delete: false,
-        listDeleteButton: { enabled: false },
-    },*/
-
-    /* Old permission selector experiment */
-    /* {
-        roles: [DASHAppConstants.system.SYSTEM_ROLE],
-        component: ResourceTemplate,
-        model: 'system/role',
-        label: 'roles',
-        icon: <SystemUpdateAlt />,
-        group: 'Recursos de sistema',
-        menu: [
-            {
-                title: 'Roles',
-                redirect: '/system/role',
-            },
-        ],
-
-        contextComponent: ({ resourceConfig, mode, children }) => {
-            console.log("TenantSettingsFormatsProvider", resourceConfig, mode);
-
-            return mode === "list" ? children : <SystemRequestsCache
-                cacheKey="system_available_permissions_cache"
-                apiUrl="system/permission/availablePermissions"
-                cacheSeconds={300}
-            >{children}</SystemRequestsCache>
-        },
-
-        referenceFilters: [
-            {
-                id: "Nombre",
-                label: "Nombre", // filter label'
-                source: "name", // id field
-                reference: null,
-                optionText: null,
-                alwaysOn: true,
-            },
-        ],
-        toolbarCreateButton: { enabled: true },
-
-        mainAction: {
-            title: 'Agregar Rol',
-            fn: "redirect",
-            // type: "ghost",
-            mode: "create",
-            redirect: "create",
-        },
-
-        view: false,
-        schema: roleSchema,
 
 
-
-        dataGridProps: { stickyHeader: true },
-        listEditButton: { enabled: true },
-        listViewButton: { enabled: false },
-
-        toolbarDeleteButton: { enabled: false },
-        toolbarListButton: { enabled: false },
-        toolbarSaveButton: { enabled: true },
-        toolbarExportButton: { enabled: false },
-        toolbarEditButton: { enabled: false },
-
-
-        formGroupMode: 'groups',
-
-        mutationMode: 'pessimistic',
-        editProps: {
-            queryOptions: { meta: { forceFetch: true } },
-            undoable: false,
-            emptyWhileLoading: true
-        },
-
-        saveButtonAlwaysEnabled: true,
-        refreshAfter: true,
-        //redirect: "list",
-        //redirectAfterCreate: true,
-        //redirectAfterUpdate: true,
-
-        dataGridWrapper: (props: any) => (
-            <TableContainer sx={{ maxHeight: 800 }}>{props.children}</TableContainer>
-        ),
-        // references: [
-        //      { reference: 'permission', tab: 'Permisos', target: 'role_id', schema: permissionSchema, type: "ReferenceManyField" },
-        // ],
-        // postFormatter: (params, _) => {
-        //     //if(method === "update") {
-        //     //    params._method = "PUT";
-        //     //}
-        //     delete params.permissions
-        //     return params
-        // },
-        ...drawerSettings,
-    },
-    */
 
 
 
@@ -280,7 +458,8 @@ const systemResources: IAppResourceConfig[] = [
         model: 'system/role-permissions-bulk',
         label: 'resource.system.roles.label',
         icon: <SystemUpdateAlt />,
-        group: 'resource.groups.system_resources',
+        //group: 'resource.groups.system_resources',
+        group: "System",
         menu: [
             {
                 title: 'resource.system.roles.menu_list',
@@ -366,106 +545,14 @@ const systemResources: IAppResourceConfig[] = [
     },
 
 
-
-
-    /*
-        {
-            roles: [DASHAppConstants.system.SYSTEM_ROLE],
-            component: ResourceTemplate,
-            model: 'system/subscription-plan',
-            label: 'planes',
-            icon: <SystemUpdateAlt />,
-            group: 'Recursos de sistema',
-            menu: [
-                {
-                    title: 'Planes',
-                    redirect: '/system/subscription-plan',
-                },
-            ],
-            mainAction: {
-                title: 'Agregar',
-                // type: "ghost",
-                redirect: '/system/subscription-plan/create',
-            },
-            schema: subscriptionPlanSchema,
-            mutationMode: 'pessimistic',
-            redirectAfterUpdate: false,
-    
-            dataGridProps: { stickyHeader: true },
-            listEditButton: { enabled: true },
-            toolbarCreateButton: { enabled: false },
-            toolbarDeleteButton: { enabled: false },
-            toolbarListButton: { enabled: false },
-            toolbarSaveButton: { enabled: true },
-            toolbarExportButton: { enabled: false },
-            toolbarEditButton: { enabled: false },
-    
-            formGroupMode: 'groups',
-    
-            dataGridWrapper: (props: any) => (
-                <TableContainer sx={{ maxHeight: 800 }}>{props.children}</TableContainer>
-            ),
-    
-            postFormatter: (params, _) => {
-    
-                return params
-            },
-            ...drawerSettings,
-        },
-    
-    
-        {
-            roles: [DASHAppConstants.system.SYSTEM_ROLE],
-            component: ResourceTemplate,
-            model: 'system/subscription',
-            label: 'suscripciones',
-            icon: <SystemUpdateAlt />,
-            group: 'Recursos de sistema',
-            menu: [
-                {
-                    title: 'Subscripciones',
-                    redirect: '/system/subscription',
-                },
-            ],
-            mainAction: {
-                title: 'Agregar',
-                // type: "ghost",
-                redirect: '/system/subscription-plan/create',
-            },
-            schema: subscriptionSchema,
-            mutationMode: 'pessimistic',
-            redirectAfterUpdate: false,
-    
-            dataGridProps: { stickyHeader: true },
-            listEditButton: { enabled: true },
-            listViewButton: { enabled: false },
-            toolbarCreateButton: { enabled: false },
-            toolbarDeleteButton: { enabled: false },
-            toolbarListButton: { enabled: false },
-            toolbarSaveButton: { enabled: true },
-            toolbarExportButton: { enabled: false },
-            toolbarEditButton: { enabled: false },
-    
-            formGroupMode: 'groups',
-    
-            dataGridWrapper: (props: any) => (
-                <TableContainer sx={{ maxHeight: 800 }}>{props.children}</TableContainer>
-            ),
-    
-            postFormatter: (params, _) => {
-    
-                return params
-            },
-            ...drawerSettings,
-        },
-    */
     {
         roles: [DASHAppConstants.system.SYSTEM_ROLE],
         component: ResourceTemplate,
         trash: true,
         isFormData: true,
         model: 'system/user',
-        group: 'resource.groups.system_resources',
+        //group: 'resource.groups.system_resources',
+        group: "Accounts",
         label: 'resource.system.users.label',
         refreshAfter: true,
         referenceFilters: [
@@ -702,7 +789,7 @@ const systemResources: IAppResourceConfig[] = [
             redirect: '/system/user/create',
         },
         mutationMode: 'pessimistic',
-       // isFormData: true,
+        // isFormData: true,
         dataGridProps: { stickyHeader: true },
         dataGridWrapper: (props: any) => (
             <TableContainer sx={{ maxHeight: 800 }}>{props.children}</TableContainer>
@@ -735,194 +822,302 @@ const systemResources: IAppResourceConfig[] = [
         ...drawerSettings,
     },
 
-];
-
-
-/*
-if (JSON.parse(constants.system.ENABLE_TENANT_IMPERSONATION)) {
-    systemResources.unshift({
+    // ============ Subscription Plans Management ============
+    {
         roles: [DASHAppConstants.system.SYSTEM_ROLE],
-        component: ImpersonateTenantResource,
-        model: 'system/settings',
-        group: 'Administración',
-        label: 'Impersonar cliente',
-        schema: [],
-        icon: <AdminPanelSettings />,
-        menu: [],
-        mainAction: null,
-    });
-}
+        component: ResourceTemplate,
+        model: 'system/subscription-plan',
+        label: 'Subscription Plans',
+        //group: 'resource.groups.system_resources',
+        group: "System",
+        icon: <CardMembershipIcon />,
+        trash: true,
 
-if (JSON.parse(constants.system.ENABLE_TENANT_IMPERSONATION)) {
-    systemResources.unshift({
+        // Context wrapper for fetching limit formats and addon formats from backend
+        contextComponent: ({ resourceConfig, mode, children }) => {
+            console.log("SubscriptionPlanFormatsProvider", resourceConfig, mode);
+            return mode === "list" ? children : (
+                <SubscriptionPlanFormatsProvider cacheSeconds={300}>
+                    {children}
+                </SubscriptionPlanFormatsProvider>
+            );
+        },
+
+        schema: subscriptionPlanSchema,
+
+        menu: [
+            {
+                title: 'All Plans',
+                redirect: '/system/subscription-plan',
+            },
+        ],
+
+        mainAction: {
+            title: 'Create Plan',
+            fn: "redirect",
+            mode: "create",
+            redirect: "create",
+        },
+
+        referenceFilters: [
+            {
+                id: "name",
+                label: "Plan Name",
+                source: "name",
+                reference: null,
+                optionText: null,
+                alwaysOn: true,
+            },
+            {
+                id: "is_active",
+                label: "Active",
+                source: "is_active",
+                reference: null,
+                optionText: null,
+                alwaysOn: false,
+            },
+        ],
+
+        // Enable all CRUD operations
+        create: true,
+        view: true,
+        refreshAfter: true,
+        toolbarCreateButton: { enabled: true },
+
+        // Form configuration
+        mutationMode: 'pessimistic',
+        editProps: {
+            queryOptions: { meta: { forceFetch: true } },
+            undoable: false,
+            emptyWhileLoading: true,
+        },
+
+        // Data grid configuration
+        dataGridProps: { stickyHeader: true },
+        dataGridWrapper: (props: any) => (
+            <TableContainer sx={{ maxHeight: 800 }}>{props.children}</TableContainer>
+        ),
+        listEditButton: { enabled: true },
+        listViewButton: { enabled: true },
+
+        // Post-processing for form data
+        postFormatter: (params, method) => {
+            // Ensure limits is properly formatted as an object
+            if (params.limits && typeof params.limits === 'object') {
+                // Clean up null/undefined values
+                const cleanedLimits: Record<string, any> = {};
+                Object.entries(params.limits).forEach(([key, value]) => {
+                    // Convert empty strings to null for integer fields
+                    if (value === '' || value === undefined) {
+                        cleanedLimits[key] = null;
+                    } else {
+                        cleanedLimits[key] = value;
+                    }
+                });
+                params.limits = cleanedLimits;
+            }
+
+            // Ensure prices is properly formatted as an object
+            if (params.prices && typeof params.prices === 'object') {
+                // Clean up null/undefined/empty values and ensure integer values
+                const cleanedPrices: Record<string, number> = {};
+                Object.entries(params.prices).forEach(([currencyCode, value]) => {
+                    // Only include valid numeric values
+                    if (value !== '' && value !== undefined && value !== null) {
+                        const numValue = parseInt(String(value), 10);
+                        if (!isNaN(numValue)) {
+                            cleanedPrices[currencyCode] = numValue;
+                        }
+                    }
+                });
+                params.prices = cleanedPrices;
+            }
+
+            // Ensure billing_cycle has a default value (required field)
+            if (!params.billing_cycle) {
+                params.billing_cycle = 'monthly';
+            }
+
+            // Ensure trial_days has a default value
+            if (params.trial_days === undefined || params.trial_days === null) {
+                params.trial_days = 0;
+            }
+
+            // Ensure tier has a default value
+            if (params.tier === undefined || params.tier === null) {
+                params.tier = 1;
+            }
+
+            return params;
+        },
+
+        redirectAfterUpdate: false,
+        redirectAfterCreate: true,
+        ...drawerSettings,
+    },
+
+
+    {
         roles: [DASHAppConstants.system.SYSTEM_ROLE],
         component: ResourceTemplate,
         trash: true,
-        model: 'system/tenant',
-        label: 'Cliente',
-        schema: tenantSystemAdminSchema,
-        drawer: false,
-        edit: true,
-        
+        model: "ecommerce/currency",
+        label: "resource.ecommerce.currencies.label",
+        schema: [
+            {
+                label: 'Código',
+                attribute: 'code',
+                type: String,
+                fieldOptions: {
+                    helperText: 'E.g: CLP | USD ...'
+                }
+
+            },
+            {
+                label: 'Formato',
+                attribute: 'format',
+                type: String,
+                fieldOptions: {
+                    helperText: 'E.g: 0.00 | 0,0.00 | 0'
+                }
+            },
+            {
+                label: 'Símbolo',
+                attribute: 'symbol',
+                type: String
+            },
+            {
+                label: 'Enabled',
+                attribute: 'is_enabled',
+                type: Boolean
+            },
+            {
+                label: 'Número formateado',
+                attribute: 'formateado',
+                type: Number,
+                custom: true,
+                inList: false,
+                component: FormatCurrency
+            },
+        ],
         //references: [{ reference: 'roles', target: 'role', schema: rolesSchema }]
-        //references: [{ reference: 'roles', target: 'gitid', schema: roleSchema }],
+        //references: [{ reference: 'roles', target: 'id', schema: roleSchema }],
         icon: <Person />,
-        group: 'Cliente',
+        // group: "resource.groups.system_resources",
+        group: "System",
         menu: [
             {
-                title: 'Cliente',
-                redirect: '/system/tenant',
+                title: "resource.ecommerce.currencies.menu_list",
+                redirect: "/ecommerce/currency",
             },
             {
                 title: "🗑",
-                redirect: "/trash/system/tenant",
-            }
+                redirect: "/ecommerce/currency/trash",
+            },
         ],
-        mainAction: {
-            title: 'Crear cliente',
-            // type: "ghost",
-            redirect: '/system/tenant/create',
-        },
-        postFormatter: (params) => {
-            return params;
-        },
-        mutationMode: 'pessimistic',
-        dataGridProps: { stickyHeader: true },
-        dataGridWrapper: (props: any) => (
-            <TableContainer sx={{ maxHeight: 800 }}>{props.children}</TableContainer>
-        ),
-    });
-}
 
-if (JSON.parse(constants.system.ENABLE_TENANT_IMPERSONATION)) {
-    systemResources.unshift({
-        roles: [DASHAppConstants.system.SYSTEM_ROLE],
-        component: ImpersonateTenantResource,
-        model: 'system/settings',
-        group: 'Administración',
-        label: 'Impersonar cliente',
-        schema: [],
-        icon: <AdminPanelSettings />,
-        menu: [],
-        mainAction: null,
-    });
-}
-if (JSON.parse(constants.system.ENABLE_TENANT_IMPERSONATION)) {
-    systemResources.unshift({
+        mainAction: {
+            title: "resource.ecommerce.currencies.main_action",
+            mode: "create",
+            fn: "virtualhash",
+            redirect: "inline/create",
+        },
+        drawer: true,
+        drawerOptions: {
+            create: true,
+            edit: true,
+            view: false
+        },
+
+        mutationMode: "pessimistic",
+        saveButtonAlwaysEnabled: true,
+        listProps: { storeKey: false, filterDefaultValues: { show_disabled: true } }, // deshabilita persistencia deel estado, cache de los valores seleccionados sort, page, etc.
+        resetSelectedIdsOnLoad: true,
+    },
+
+    // ============ Language Management ============
+    {
         roles: [DASHAppConstants.system.SYSTEM_ROLE],
         component: ResourceTemplate,
         trash: true,
-        model: 'system/tenant',
-        label: 'Cliente',
-        schema: tenantSystemAdminSchema,
-        drawer: false,
-        edit: true,
-        //references: [{ reference: 'roles', target: 'role', schema: rolesSchema }]
-        //references: [{ reference: 'roles', target: 'gitid', schema: roleSchema }],
-        icon: <Person />,
-        group: 'Cliente',
-        menu: [
+        model: "common/language",
+        label: "resource.common.languages.label",
+        schema: [
             {
-                title: 'Cliente',
-                redirect: '/system/tenant',
-            },
-            {
-                    title: "🗑",
-                    redirect: "/trash/system/tenant",
+                label: 'Code',
+                attribute: 'code',
+                type: String,
+                fieldOptions: {
+                    helperText: 'ISO 639-1 code (e.g., en, es, pt)'
                 }
+            },
+            {
+                label: 'Name',
+                attribute: 'name',
+                type: String,
+                fieldOptions: {
+                    helperText: 'Language name in English'
+                }
+            },
+            {
+                label: 'Native Name',
+                attribute: 'native_name',
+                type: String,
+                fieldOptions: {
+                    helperText: 'Language name in native language (e.g., Español)'
+                }
+            },
+            {
+                label: 'Active',
+                attribute: 'is_active',
+                type: Boolean
+            },
+            {
+                label: 'Translations',
+                attribute: 'translations',
+                type: Object,
+                inList: false,
+                inShow: true,
+                inEdit: true,
+                inCreate: true,
+                fieldOptions: {
+                    helperText: 'JSON key-value pairs for translations'
+                }
+            },
         ],
+        icon: <Person />,
+        group: "System",
+        menu: [
+            {
+                title: "resource.common.languages.menu_list",
+                redirect: "/common/language",
+            },
+            {
+                title: "🗑",
+                redirect: "/common/language/trash",
+            },
+        ],
+
         mainAction: {
-            title: 'Crear cliente',
-            // type: "ghost",
-            redirect: '/system/tenant/create',
+            title: "resource.common.languages.main_action",
+            mode: "create",
+            fn: "virtualhash",
+            redirect: "inline/create",
+        },
+        drawer: true,
+        drawerOptions: {
+            create: true,
+            edit: true,
+            view: false
         },
 
-        postFormatter: (params, _) => {
-            if (params.systemMarketplaces)
-                params.system_marketplace_ids = params.systemMarketplaces.map(
-                    (item) => item.id,
-                );
-            if (params.systemPointOfSales)
-                params.system_point_of_sale_ids = params.systemPointOfSales.map(
-                    (item) => item.id,
-                );
-            return params;
-        },
-        mutationMode: 'pessimistic',
-        dataGridProps: { stickyHeader: true },
-        dataGridWrapper: (props: any) => (
-            <TableContainer sx={{ maxHeight: 800 }}>{props.children}</TableContainer>
-        ),
+        mutationMode: "pessimistic",
+        saveButtonAlwaysEnabled: true,
+        listProps: { storeKey: false },
+        resetSelectedIdsOnLoad: true,
+    }
 
-    });
-}
+];
 
-if (JSON.parse(constants.system.ENABLE_LOGS_AND_NOTIFICATIONS)) {
-    systemResources.unshift({
-        roles: [DASHAppConstants.system.SYSTEM_ROLE],
-        component: ResourceTemplate,
-        model: 'system/notification',
-        label: 'Notifications',
-        schema: notificationSchema,
-        //references: [{ reference: 'roles', target: 'role', schema: rolesSchema }]
-        //references: [{ reference: 'roles', target: 'id', schema: roleSchema }],
-        icon: <NotificationImportant />,
-        group: 'Logs y Notificaciones',
-        menu: [
-            {
-                title: 'Notificaciones',
-                redirect: '/system/notification',
-            },
-        ],
-        create: false,
-        edit: false,
 
-        listViewButton: { enabled: true },
-        listEditButton: { enabled: false },
-        listDeleteButton: { enabled: false },
-
-        formGroupMode: 'groups', // groups or tabs
-        mutationMode: 'pessimistic',
-        search: true,
-        dataGridProps: { stickyHeader: true },
-        dataGridWrapper: (props: any) => (
-            <TableContainer sx={{ maxHeight: 800 }}>{props.children}</TableContainer>
-        ),
-    });
-}
-if (JSON.parse(constants.system.ENABLE_LOGS_AND_NOTIFICATIONS)) {
-    systemResources.unshift({
-        roles: [
-            constants.system
-                .DASH_SYSTEM_ROLE,
-        ],
-        component: LogResource,
-        model: 'system/log',
-        label: 'Logs',
-        schema: logSchema,
-        icon: <LockClock />,
-        group: 'Logs y Notificaciones',
-
-        menu: [
-            {
-                title: 'Logs',
-                redirect: '/system/log',
-            },
-        ],
-        create: false,
-        edit: false,
-        search: true,
-        referenceFilters: [
-            {
-                label: 'Tipo', // filter label'
-                source: 'loggeable_type', // id field
-                reference: 'log',
-                optionText: 'loggeable_type' // field from the model
-            },
-        ],
-    });
-    
-}
-
-*/
 export default systemResources;

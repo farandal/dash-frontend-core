@@ -123,7 +123,7 @@ const ValueItem: React.FC<{
             variant="outlined" 
             sx={{ 
                 mb: 1,
-                border: `2px solid ${getTypeColor(valueType)}`,
+                //border: `2px solid ${getTypeColor(valueType)}`,
                 '&:hover': {
                     boxShadow: 2,
                 },

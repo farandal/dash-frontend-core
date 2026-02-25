@@ -16,6 +16,7 @@ import {
 } from '@mui/icons-material';
 import { useRecordContext, useDataProvider } from 'react-admin';
 import { IDashAutoAdminCustomFieldComponent } from "dash-auto-admin";
+import { priceFormatter } from 'dash-utils';
 
 interface PlanStats {
     total_subscriptions: number;
@@ -61,11 +62,7 @@ const StatsView: React.FC<IDashAutoAdminCustomFieldComponent> = ({ method, attri
     };
 
     const formatCurrency = (amount: number) => {
-        return new Intl.NumberFormat('es-CL', {
-            style: 'currency',
-            currency: 'CLP',
-            minimumFractionDigits: 0
-        }).format(amount / 100);
+        return priceFormatter(amount, 'CLP');
     };
 
     if (loading) {

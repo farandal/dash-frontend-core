@@ -37,6 +37,7 @@ const tenantSystemAdminSchema: IDashAutoAdminAttribute[] = [
     {
         tab: 'Genéricos',
         label: 'Monedas Disponibles',
+        inList:false,
         attribute: 'currency_ids',
         //listAttribute: 'name',
         type: 'common/currency.code',

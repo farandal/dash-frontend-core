@@ -8,12 +8,17 @@ import MUISimpleJsonTable from "../misc/MuiSimpleJsonTable";
 import { useTenantAttributesFormats } from "./TenantAttributesContext";
 import { useSystemRequestsCache } from "../../contexts/SystemRequestsCache";
 
+/** Wrapper creating a React component boundary so DashAutoFormTabs hooks don't violate Rules of Hooks */
+const FormTabsRenderer: React.FC<{schema: any; method: "list" | "create" | "edit" | "view"; label: string}> = ({schema, method, label}) => (
+    <>{DashAutoFormTabs({schema, resourceConfig: null, options: {mode: method, label}})}</>
+);
+
 const TenantAttributesEdit: React.FC<IDashAutoAdminCustomFieldComponent> = ({ method, attribute, tenant }) => {
   const [attributeFormatsSchema, setAttributeFormatsSchema] = useState<any>(null);
-  const formContext = useFormContext();
+  /*const formContext = useFormContext();
   const formValues = useWatch({
     control: formContext.control
-  });
+  });*/
 
   const { formats: formatsData, loading } = useSystemRequestsCache();
 
@@ -56,15 +61,7 @@ const TenantAttributesEdit: React.FC<IDashAutoAdminCustomFieldComponent> = ({ me
   }, [formatsData])
 
   return <section>
-  
-    {attributeFormatsSchema ? (
-      DashAutoFormTabs({schema:attributeFormatsSchema, resourceConfig:null, options: {
-        mode: method,
-        label: 'Datos de contacto',
-      }})
-    ) : (
-      <></>
-    )}
+    {attributeFormatsSchema && <FormTabsRenderer schema={attributeFormatsSchema} method={method} label="Datos de contacto" />}
   </section>
 
 }
@@ -72,10 +69,10 @@ const TenantAttributesEdit: React.FC<IDashAutoAdminCustomFieldComponent> = ({ me
 const TenantAttributesCreate: React.FC<IDashAutoAdminCustomFieldComponent> = ({ method, attribute }) => {
   
   const [attributeFormatsSchema, setAttributeFormatsSchema] = useState<any>(null);
-  const formContext = useFormContext();
+  /*const formContext = useFormContext();
   const formValues = useWatch({
     control: formContext.control
-  });
+  });*/
 
   const { formats: formatsData, loading } = useSystemRequestsCache();
 
@@ -95,17 +92,8 @@ const TenantAttributesCreate: React.FC<IDashAutoAdminCustomFieldComponent> = ({ 
 
   }, [formatsData, loading])
 
- 
   return <section>
-  
-    {attributeFormatsSchema ? (
-      DashAutoFormTabs({schema:attributeFormatsSchema, resourceConfig:null, options: {
-        mode: method,
-        label: 'Datos de contacto',
-      }})
-    ) : (
-      <></>
-    )}
+    {attributeFormatsSchema && <FormTabsRenderer schema={attributeFormatsSchema} method={method} label="Datos de contacto" />}
   </section>
 
 }

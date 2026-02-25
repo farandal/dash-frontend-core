@@ -8,19 +8,24 @@ import MUISimpleJsonTable from "../misc/MuiSimpleJsonTable";
 import { useTenantSettingsFormats } from "./TenantSettingsContext";
 import { useSystemRequestsCache } from "../../contexts/SystemRequestsCache";
 
+/** Wrapper creating a React component boundary so DashAutoFormTabs hooks don't violate Rules of Hooks */
+const FormTabsRenderer: React.FC<{schema: any; method: "list" | "create" | "edit" | "view"; label: string}> = ({schema, method, label}) => (
+    <>{DashAutoFormTabs({schema, resourceConfig: null, options: {mode: method, label}})}</>
+);
+
 const TenantSettingsEdit: React.FC<IDashAutoAdminCustomFieldComponent> = ({ method, attribute, tenant }) => {
     const [settingFormatsSchema, setSettingFormatsSchema] = useState<any>(null);
-    const formContext = useFormContext();
+    /*const formContext = useFormContext();
     const formValues = useWatch({
         control: formContext.control
-    });
+    });*/
 
     const { formats: formatsData, loading } = useSystemRequestsCache();
 
     useEffect(() => {
-      
+     
         if (formatsData && formatsData.data && formatsData.data.setting_formats) {
-
+         
             const parsedSchema = formatsData.data.setting_formats
                 .filter((entry) => entry.tab !== 'colors' && entry.visible !== false)
                 .map((entry) => {
@@ -65,31 +70,18 @@ const TenantSettingsEdit: React.FC<IDashAutoAdminCustomFieldComponent> = ({ meth
     }*/
     //if (!settingFormatsSchema || loading) return <Loading />
     return <section>
-    
-        {settingFormatsSchema ? (
-            DashAutoFormTabs({
-                schema: settingFormatsSchema, resourceConfig: null, options: {
-                    mode: method,
-                    label: 'Opciones de configuración',
-                }
-            })
-        ) : (
-            <></>
-        )}
+        {settingFormatsSchema && <FormTabsRenderer schema={settingFormatsSchema} method={method} label="Opciones de configuración" />}
     </section>
-
-    //return <>{DashAutoFormGroups(settingFormatsSchema, null, { mode: method, useReadOnlyInputAsTextField: true, label: "Opciones de configuración", meta: {dynamic: true} })}</>
-
 
 }
 
 const TenantSettingsCreate: React.FC<IDashAutoAdminCustomFieldComponent> = ({ method, attribute }) => {
 
     const [settingFormatsSchema, setSettingFormatsSchema] = useState<any>(null);
-    const formContext = useFormContext();
+    /*const formContext = useFormContext();
     const formValues = useWatch({
         control: formContext.control
-    });
+    });*/
 
 
     const { formats: formatsData, loading } = useSystemRequestsCache();
@@ -115,17 +107,7 @@ const TenantSettingsCreate: React.FC<IDashAutoAdminCustomFieldComponent> = ({ me
 
     //if (!settingFormatsSchema || loading) return <Loading />
     return <section>
-
-        {settingFormatsSchema ? (
-            DashAutoFormTabs({
-                schema: settingFormatsSchema, resourceConfig: null, options: {
-                    mode: method,
-                    label: 'Opciones de configuración',
-                }
-            })
-        ) : (
-            <></>
-        )}
+        {settingFormatsSchema && <FormTabsRenderer schema={settingFormatsSchema} method={method} label="Opciones de configuración" />}
     </section>
 
 }

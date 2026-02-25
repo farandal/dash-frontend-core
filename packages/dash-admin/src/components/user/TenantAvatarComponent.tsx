@@ -25,8 +25,8 @@ interface TenantAvatarComponentProps {
 
 const TenantAvatarComponent: React.FC<TenantAvatarComponentProps> = ({ 
     imageUrl, 
-    maxWidth = 40,
-    maxHeight = 40,
+    maxWidth = 130,
+    maxHeight = 130,
     alt = "Tenant Logo",
     sidebarPosition = "left",
     sidebarSmallWidth = '64px',
@@ -36,30 +36,34 @@ const TenantAvatarComponent: React.FC<TenantAvatarComponentProps> = ({
 }) => {
     // For horizontal positions (top/bottom), we primarily use maxWidth/maxHeight
     const isHorizontal = sidebarPosition === "top" || sidebarPosition === "bottom";
+    const isVertical = sidebarPosition === "left" || sidebarPosition === "right";
     
-    // Determine dimensions to use
-    // Using explicit maxWidth/maxHeight 
-    //const effectiveWidth = maxWidth;
-    //const effectiveHeight = maxHeight;
-
+    // Container styling based on sidebar orientation
     const containerSx = {
-        //width: isHorizontal ? 'auto' : effectiveWidth,
-        //height: isHorizontal ? '100%' : effectiveHeight, 
-        maxWidth: maxWidth || '100%',
-        maxHeight: maxHeight || '100%',
+        padding: '8px',
         display: 'flex', 
         alignItems: 'center',
         justifyContent: 'center',
-        //height:  maxHeight || '100%',
-        //width:  maxWidth || '100%'
-        ...(isHorizontal && (sidebarPosition === "top" || sidebarPosition === "bottom") && { height: maxHeight  }),
-       
         
-        ...(!isHorizontal && navSize === "small" && (sidebarPosition === "left" || sidebarPosition === "right") && { width: sidebarSmallWidth  }),
-        ...(!isHorizontal && navSize === "large" && navExpanded && (sidebarPosition === "left" || sidebarPosition === "right") && { width: maxWidth  }),
-        //...(!isHorizontal && !navExpanded && (sidebarPosition === "left" || sidebarPosition === "right") && { height: sidebarSmallWidth  }),
-       
-
+        // Horizontal sidebar (top/bottom): constrain by height, let width be auto
+        ...(isHorizontal && { 
+            height: maxHeight,
+            maxHeight: maxHeight,
+        }),
+        
+        // Vertical sidebar (left/right): constrain by width based on nav state
+        ...(isVertical && navSize === "small" && { 
+            width: sidebarSmallWidth,
+            maxWidth: sidebarSmallWidth,
+        }),
+        ...(isVertical && navSize === "large" && navExpanded && { 
+            width: maxWidth,
+            maxWidth: maxWidth,
+        }),
+        ...(isVertical && navSize === "large" && !navExpanded && { 
+            width: sidebarSmallWidth,
+            maxWidth: sidebarSmallWidth,
+        }),
     };
 
     return (
