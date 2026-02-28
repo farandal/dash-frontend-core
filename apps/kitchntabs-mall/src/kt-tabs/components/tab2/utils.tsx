@@ -1,5 +1,6 @@
 import { AuthPersistenceService } from 'dash-auth';
 import { ProductItem } from './types';
+import { priceFormatter } from 'dash-utils';
 
 // Discount types
 export const DISCOUNT_TYPE_PERCENTAGE = 'percentage';
@@ -80,8 +81,6 @@ export const calculateServiceFee = (subtotal: number, serviceFeePercentage?: num
 export const formatCurrencyWithTenant = (amount: any, currency?: any): string => {
     const tenantCurrency = currency || getCurrencyFromAuth();
     
-
-    // TODO! get the primary currency for the current tenant from the AuthService or so. 
     // Handle null, undefined, or empty values
     if (amount === null || amount === undefined || amount === '') {
         return tenantCurrency ? `${tenantCurrency.symbol}0` : '$0.00';
@@ -104,21 +103,9 @@ export const formatCurrencyWithTenant = (amount: any, currency?: any): string =>
         return tenantCurrency ? `${tenantCurrency.symbol}0` : '$0.00';
     }
 
-    // Format based on currency
-    if (tenantCurrency) {
-        const { symbol, code, format } = tenantCurrency;
-        
-        // For CLP and similar currencies without decimals
-        if (code === 'CLP' || format === ',') {
-            return `${symbol}${Math.round(numericAmount).toLocaleString()}`;
-        }
-        
-        // For currencies with decimals
-        return `${symbol}${numericAmount.toFixed(2)}`;
-    }
-
-    // Fallback to default formatting
-    return `$${numericAmount.toFixed(2)}`;
+    // Use centralized priceFormatter with currency code
+    const currencyCode = tenantCurrency?.code || 'CLP';
+    return priceFormatter(numericAmount, currencyCode);
 };
 
 export const formatPriceAdjustmentWithTenant = (price: any, currency?: any): string => {
@@ -149,22 +136,13 @@ export const formatPriceAdjustmentWithTenant = (price: any, currency?: any): str
     // Return empty for zero
     if (numericPrice === 0) return '';
 
-    // Format based on currency
-    if (tenantCurrency) {
-        const { code, format } = tenantCurrency;
-        
-        // For CLP and similar currencies without decimals
-        if (code === 'CLP' || format === ',') {
-            const roundedPrice = Math.round(Math.abs(numericPrice));
-            return numericPrice > 0 ? `+${roundedPrice.toLocaleString()}` : `-${roundedPrice.toLocaleString()}`;
-        }
-        
-        // For currencies with decimals
-        return numericPrice > 0 ? `+${numericPrice.toFixed(2)}` : `-${Math.abs(numericPrice).toFixed(2)}`;
-    }
-
-    // Fallback
-    return numericPrice > 0 ? `+${numericPrice.toFixed(2)}` : `-${Math.abs(numericPrice).toFixed(2)}`;
+    // Use priceFormatter for the absolute value, then add sign
+    const currencyCode = tenantCurrency?.code || 'CLP';
+    const formatted = priceFormatter(Math.abs(numericPrice), currencyCode);
+    // Remove the currency symbol to add sign prefix
+    const symbol = tenantCurrency?.symbol || '$';
+    const valueOnly = formatted.startsWith(symbol) ? formatted.slice(symbol.length) : formatted;
+    return numericPrice > 0 ? `+${symbol}${valueOnly}` : `-${symbol}${valueOnly}`;
 };
 
 export const calculateOrderTotal = (products: ProductItem[]): number => {

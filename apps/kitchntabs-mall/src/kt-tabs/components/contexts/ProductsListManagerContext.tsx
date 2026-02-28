@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect, useMemo, useRef,
 import { useProductsCache, useTabCache } from '../hooks/useProductsCache';
 import { Product } from "../../types/ecommerce";
 import { ITab } from "../interfaces/ITab";
+import { priceFormatter } from "dash-utils";
 
 // Configuration constants
 export const SEARCH_CONFIG = {
@@ -326,7 +327,7 @@ export const ProductsListManagerProvider: React.FC<ProductsListManagerProviderPr
         if (fallbackPrice) {
             const numericPrice = parseFloat(fallbackPrice.toString());
             if (!isNaN(numericPrice)) {
-                return `$${numericPrice.toLocaleString('es-CL')}`;
+                return priceFormatter(numericPrice, 'CLP');
             }
             return fallbackPrice;
         }

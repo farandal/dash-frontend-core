@@ -85,9 +85,10 @@ export const useLogoutEventListener = () => {
                     auth: null,
                 })
             );
-            
+            debugger;
             // Clear persisted auth
             AuthPersistenceService.clearAuth();
+            localStorage.clear();
         };
 
         window.addEventListener('auth:logout', handleLogoutEvent as EventListener);

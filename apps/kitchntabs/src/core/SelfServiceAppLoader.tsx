@@ -1,5 +1,5 @@
 import React, { lazy, Suspense, useMemo } from 'react';
-import GlobalSmallLoader from '../dash-extensions/components/GlobalSmallLoader';
+import { GlobalSmallLoader } from 'dash-boilerplate';
 import DASHSelfServiceWSMessagesManager from '../dash-extensions/managers/DASHSelfServiceWSMessagesManager';
 
 const KitchnTabsPrivateApp = lazy(() => import('./KitchnTabsPrivateApp'));

@@ -1,4 +1,5 @@
-import { ICurrency, formatCurrency } from "../../types/ecommerce";
+import { ICurrency } from "../../types/ecommerce";
+import { priceFormatter } from 'dash-utils';
 
 export const getProductImage = (product: any) => {
         if (!product) {
@@ -37,7 +38,8 @@ export const formatPrice = (price: string | number, currency?: ICurrency) => {
         priceValue = price;
     }
     
-    return formatCurrency(priceValue, currency);
+    const currencyCode = currency?.code || 'CLP';
+    return priceFormatter(priceValue, currencyCode);
 };
 
 // Helper function to get the primary price from a product

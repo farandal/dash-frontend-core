@@ -16,11 +16,6 @@ import { ResourceManifest } from 'dash-app-common';
 // All resources are imported from kt-* packages for proper modularization.
 
 export const KitchnTabsResources: ResourceManifest = {
-    // ========================================================================
-    // SYSTEM RESOURCES (from dash-admin)
-    // ========================================================================
-    // Core system resources from dash-admin (users, roles, permissions, etc.)
-    systemResources: () => import('dash-admin/src/systemResources'),
 
     // add here storeResources, loaded from ./kt-store 
     //storeResources: () => import('./kt-store/resources/StoreResources'),
@@ -59,18 +54,17 @@ export const KitchnTabsResources: ResourceManifest = {
     pricelistResource: () => import('kt-ecommerce/src/resources/pricelistResource'),
     stockTypeResource: () => import('kt-ecommerce/src/resources/stockTypeResource'),
     modifierGroupResource: () => import('kt-ecommerce/src/resources/modifiersResource'),
-    
     // Import/export resources
     productImportTemplateResource: () => import('kt-ecommerce/src/resources/productImportTemplateResource'),
     productImportInstanceResource: () => import('kt-ecommerce/src/resources/productImportInstanceResource'),
-    
+
     // Tenant ecommerce resources
     ecommerceTenantResource: () => import('kt-ecommerce/src/resources/ecommerceTenantResource'),
     marketplaceResource: () => import('kt-ecommerce/src/resources/marketplaceResource'),
     pointOfSaleResource: () => import('kt-ecommerce/src/resources/pointOfSaleResource'),
     metadataFormatsResource: () => import('kt-ecommerce/src/resources/metadataFormatsResource'),
-    systemMarketplaceResource: () => import('kt-ecommerce/src/resources/systemMarketplaceResource'),
-    systemPointOfSaleResource: () => import('kt-ecommerce/src/resources/systemPointOfSaleResource'),
+    //systemMarketplaceResource: () => import('kt-ecommerce/src/resources/systemMarketplaceResource'),
+    //systemPointOfSaleResource: () => import('kt-ecommerce/src/resources/systemPointOfSaleResource'),
     campaignResource: () => import('kt-ecommerce/src/resources/campaignResource'),
 
     // Order resources

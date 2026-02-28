@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { CircularProgress, Box, useTheme, useMediaQuery } from '@mui/material';
 import { useGetOne } from 'react-admin';
 import { IDashAutoAdminCustomFieldComponent } from 'dash-auto-admin';
+import { priceFormatter } from 'dash-utils';
 // Direct import from local kt-tabs (avoid barrel exports for tree-shaking)
 //import type { ITab } from '../../kt-tabs/components/interfaces/ITab';
 import { useMallClientTabsContext } from './MallClientTabsContext';
@@ -78,23 +79,10 @@ const calculateItemTotal = (item: any): number => {
 };
 
 /**
- * Format a price for display.
- * Handles the case where prices might be in cents (large numbers without decimals)
- * or already in the correct format.
+ * Format a price for display using centralized priceFormatter.
  */
 const formatPrice = (price: number): string => {
-    // If the price is 0, show $0.00
-    if (price === 0) {
-        return '$0.00';
-    }
-    
-    // Format with locale-aware thousand separators
-    // For Chilean pesos or similar currencies without decimals, we might want whole numbers
-    // For now, let's show 2 decimal places
-    return '$' + price.toLocaleString('es-CL', {
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 2
-    });
+    return priceFormatter(price, 'CLP');
 };
 
 const OrderProductsView: React.FC<IDashAutoAdminCustomFieldComponent> = ({ record, resourceConfig }) => {

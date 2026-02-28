@@ -113,7 +113,6 @@ const SelfServiceHeaderActionsContent: React.FC<PropsWithChildren> = (props) => 
 
     return (
         <>
-            <Box sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', width: '100%', gap: 1 }}>
                 {/* Settings Button */}
                 <IconButton 
                     onClick={() => setIsSettingsDrawerOpen(true)}
@@ -139,7 +138,7 @@ const SelfServiceHeaderActionsContent: React.FC<PropsWithChildren> = (props) => 
                         <NotificationsIcon />
                     </Badge>
                 </IconButton>
-            </Box>
+         
 
             {/* Notifications Drawer */}
             <Drawer

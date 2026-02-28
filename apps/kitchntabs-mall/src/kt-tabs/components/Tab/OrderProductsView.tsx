@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 import { CardMedia, ListItem, List, Typography, Box, Grid, Card } from "@mui/material";
 import { ITab } from "../interfaces/ITab";
 
-import { formatCurrency } from "../../types/ecommerce";
+import { priceFormatter } from 'dash-utils';
 import { PLACEHOLDER_IMAGE, getCurrencyFromAuth, getDefaultServiceFeeFromAuth } from "../tab2/utils";
 import { ImagePlaceHolder } from "kt-utils";
 
@@ -17,22 +17,8 @@ const calculateServiceFee = (totalAmount: number, servicePercentage: number): nu
 };
 
 const formatCurrencyWithTenant = (amount: number, currency: any): string => {
-
-    return formatCurrency(amount, currency);
-    /*if (!currency) {
-        return `$${amount.toFixed(2)}`;
-    }
-    
-    try {
-        return new Intl.NumberFormat('es-ES', {
-            style: 'currency',
-            currency: currency.code || 'USD',
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-        }).format(amount);
-    } catch {
-        return `${currency.symbol || '$'}${amount.toFixed(2)}`;
-    }*/
+    const currencyCode = currency?.code || 'CLP';
+    return priceFormatter(amount, currencyCode);
 };
 
 /**

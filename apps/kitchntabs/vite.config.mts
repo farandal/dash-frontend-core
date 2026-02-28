@@ -744,10 +744,16 @@ export default ({ mode }) => {
       preprocessorOptions: {
         less: {
           javascriptEnabled: true,
+          /*
+          deprectated less vars that were moved to dash-css-transformer.less, which is imported in the apps/dash vite config, and included as additionalData in the less preprocessor options, so that all apps can use the same variables, and we can avoid circular dependencies between packages.
           additionalData: `
             @import "../../../packages/dash-styles/src/dash-variables.less";
             @import '@app/dash-variables.less';
             @import "../../../packages/dash-styles/src/dash-css-transformer.less";
+          `,*/
+           additionalData: `
+            @import "../../../packages/dash-styles/src/dash-css-transformer.less";
+            @import '@app/dash-variables.less';
           `,
         },
       },

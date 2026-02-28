@@ -17,19 +17,10 @@ import { useEffect, useState, useCallback, useMemo } from "react";
 import { MallCartItemsList } from "./MallCartItemsList";
 import { IMallCartItem, IMallProduct, IMallCurrency } from "../contexts/MallOrderCreateContext";
 import { useFormContext } from "react-hook-form";
-import { formatCurrency, IMallCurrency as ILocalCurrency } from "../utils/formatCurrency";
+import { IMallCurrency as ILocalCurrency } from "../utils/formatCurrency";
+import { priceFormatter } from 'dash-utils';
 
-/**
- * Convert mall currency format to local format for formatting
- */
-const toLocalCurrency = (currency: IMallCurrency | undefined): ILocalCurrency | undefined => {
-    if (!currency) return undefined;
-    return {
-        code: currency.code,
-        symbol: currency.symbol,
-        format: currency.format,
-    };
-};
+
 
 const ListComponent: React.FC<IDashAutoAdminCustomFieldComponent> = ({ method, attribute, resourceConfig }) => {
     const tab = useRecordContext<ITab>();
@@ -213,11 +204,12 @@ const MallOrderEditItems: React.FC<{ tab: ITab }> = ({ tab }) => {
         return { id: 0, code: 'CLP', symbol: '$', format: ',', decimals: 0 };
     }, [cartItems]);
 
-    // Format price function using local lightweight formatter
+    // Format price function using centralized priceFormatter
     const formatPrice = useCallback((amount: number | string | undefined | null, curr?: IMallCurrency): string => {
         const numAmount = typeof amount === 'string' ? parseFloat(amount) : (amount || 0);
         if (isNaN(numAmount)) return `${currency?.symbol || '$'}0`;
-        return formatCurrency(numAmount, toLocalCurrency(curr || currency));
+        const currencyCode = (curr || currency)?.code || 'CLP';
+        return priceFormatter(numAmount, currencyCode);
     }, [currency]);
 
     // Get product price

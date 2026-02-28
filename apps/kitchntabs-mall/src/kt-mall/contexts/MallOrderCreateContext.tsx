@@ -4,7 +4,8 @@ import { useFormContext } from 'react-hook-form';
 import { useAxios } from 'dash-axios-hook';
 import { dashStorage } from 'dash-utils';
 import { useMediaQuery, useTheme } from '@mui/material';
-import { formatCurrency, IMallCurrency as ILocalCurrency } from '../utils/formatCurrency';
+import { IMallCurrency as ILocalCurrency } from '../utils/formatCurrency';
+import { priceFormatter } from 'dash-utils';
 import { IStore } from '../interfaces/IStore';
 import { useMallStores, useMallProducts, MALL_CACHE_CONFIG } from '../hooks/useMallDataQueries';
 
@@ -20,17 +21,7 @@ export interface IMallCurrency {
     decimals?: number;
 }
 
-/**
- * Convert mall currency to local currency format for formatting
- */
-const toLocalCurrency = (currency: IMallCurrency | undefined): ILocalCurrency | undefined => {
-    if (!currency) return undefined;
-    return {
-        code: currency.code,
-        symbol: currency.symbol,
-        format: currency.format,
-    };
-};
+
 
 /**
  * Product item format for API submission (matching kt-tabs ProductItem interface)
@@ -845,7 +836,7 @@ export const MallOrderCreateProvider: React.FC<MallOrderCreateProviderProps> = (
         return { id: 0, code: 'USD', symbol: '$', format: ',', decimals: 0 };
     }, [stores, allProducts, getProductCurrency]);
     
-    // Format price using local formatCurrency (lightweight, no kt-ecommerce dependency)
+    // Format price using centralized priceFormatter from dash-utils
     const formatPrice = useCallback((amount: number | string | undefined | null, currency?: IMallCurrency): string => {
         const numAmount = typeof amount === 'string' ? parseFloat(amount) : (amount || 0);
         
@@ -854,9 +845,10 @@ export const MallOrderCreateProvider: React.FC<MallOrderCreateProviderProps> = (
             return `${fallbackCurrency?.symbol || '$'}0`;
         }
         
-        // Use local formatCurrency for lightweight formatting
+        // Use centralized priceFormatter with currency code
         const currencyToUse = currency || getCurrency();
-        return formatCurrency(numAmount, toLocalCurrency(currencyToUse || undefined));
+        const currencyCode = currencyToUse?.code || 'CLP';
+        return priceFormatter(numAmount, currencyCode);
     }, [getCurrency]);
     
     // Get product price (V1 getPrimaryPrice pattern)

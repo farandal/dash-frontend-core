@@ -14,17 +14,23 @@
         width: 100%;
         overflow: hidden;
       }
+
+
       #root {
         height: 100%;
         width: 100%;
       }
+
+      html[data-theme="dark"] { background: var(--bodybg-secondary--dark); }
+      html[data-theme="light"] { background: var(--bodybg-secondary--light); }
+     
       .initial-loader {
         display: flex;
         justify-content: center;
         align-items: center;
         height: 100vh;
         width: 100vw;
-        background: var(--background-color, #1a1a2e);
+        background: var(--background-color);
       }
       .loader-spinner {
         width: 50px;

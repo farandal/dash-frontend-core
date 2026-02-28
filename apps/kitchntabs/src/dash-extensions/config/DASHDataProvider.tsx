@@ -8,6 +8,7 @@ import { getResourceConfig, processFormData, processPostData } from 'kt-utils/sr
 import { dashStorage } from 'dash-utils';
 
 
+
 const dataProvider = {
     getList: async (resource, params, _options) => {
         const tenant_id = dashStorage.getItem('tenant_id');
@@ -288,12 +289,12 @@ const dataProvider = {
                     headers: { 'Content-Type': 'multipart/form-data' },
                 });
 
-                return response;
+                return response.data;
             }
 
             const response = await action(resourcePath, postData);
 
-            return response;
+            return response.data;
         } catch (e: unknown) {
             const error = e as AxiosError<IDashAutoAdminDefaultBackendStructure>;
             throw processAxiosError(error, resource, 'update')
@@ -338,13 +339,14 @@ const dataProvider = {
         try {
             if (isFormData) {
                 const form: FormData = processFormData(resource, postData);
-                return await action(resourcePath, form, {
+                const response = await action(resourcePath, form, {
                     headers: { 'Content-Type': 'multipart/form-data' },
                 });
+                return response.data;
             }
 
-            return await action(resourcePath, postData);
-
+            const response = await action(resourcePath, postData);
+            return response.data;
 
         } catch (e: unknown) {
             const error = e as AxiosError<IDashAutoAdminDefaultBackendStructure>;
@@ -374,7 +376,7 @@ const dataProvider = {
                 params.data,
             );
 
-            return response;
+            return response.data;
         } catch (e: any) {
             window.dispatchEvent(
                 new MessageEvent('dash-global-loader', { data: false }),

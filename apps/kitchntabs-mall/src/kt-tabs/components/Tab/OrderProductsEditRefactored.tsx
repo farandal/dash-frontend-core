@@ -13,6 +13,7 @@ import useWindowSize from 'dash-admin/src/hooks/window/useWindowSize';
 import { useEffect, useState, useMemo } from "react";
 import { Product } from "../../types/ecommerce";
 import { ImagePlaceHolder } from "kt-utils";
+import { priceFormatter } from "dash-utils";
 
 const placeholder = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII="
 
@@ -217,10 +218,10 @@ const OrderProductsEditRefactored: React.FC<IOrderProducts> = (props) => {
         const fallbackPrice = price || product.prices?.[0]?.price;
         
         if (fallbackPrice) {
-            // Format price for Chilean Pesos
+            // Format price using centralized formatter
             const numericPrice = parseFloat(fallbackPrice.toString());
             if (!isNaN(numericPrice)) {
-                return `$${numericPrice.toLocaleString('es-CL')}`;
+                return priceFormatter(numericPrice, 'CLP');
             }
             return fallbackPrice;
         }
