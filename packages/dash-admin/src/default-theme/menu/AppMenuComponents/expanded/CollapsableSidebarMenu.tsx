@@ -16,7 +16,7 @@ import ExpandMoreOutlinedIcon from '@mui/icons-material/ExpandMoreOutlined';
 import SidebarItem from './SidebarItem';
 
 /** @ts-ignore */
-import clickSound from '@app/assets/sounds/click2.mp3?string';
+//import clickSound from '@app/assets/sounds/click2.mp3?string';
 import { IPageState, DASH_REDUX_ACTIONS } from 'dash-admin-state';
 import {DASHAppConstants} from 'dash-constants';
 import { NavEventManager } from '../../../../utils/navEvents';
@@ -84,9 +84,9 @@ const CollapsableSidebarMenu = ({
 
   const playClick = () => {
     if (!!DASHAppConstants.system.UI_SOUNDS) {
-      const audio = new Audio(clickSound);
-      audio.load();
-      audio.play();
+      // const audio = new Audio(clickSound);
+      // audio.load();
+      // audio.play();
     }
   };
 

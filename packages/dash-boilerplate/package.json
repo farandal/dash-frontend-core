@@ -12,7 +12,7 @@
     "dependencies": {
         "@emotion/react": "latest",
         "@emotion/styled": "latest",
-        "@mui/material": "latest",
+        "@mui/material": "^7.3.10",
         "dash-admin": "workspace:*",
         "dash-admin-state": "workspace:*",
         "dash-auth": "workspace:*",
@@ -22,7 +22,7 @@
         "dash-utils": "workspace:*",
         "numeral": "^2.0.6",
         "react": "latest",
-        "react-admin": "5.10.1",
+        "react-admin": "5.14.6",
         "react-dom": "latest",
         "react-error-boundary": "^4.0.0",
         "react-redux": "latest"

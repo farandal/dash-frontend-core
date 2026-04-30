@@ -25,6 +25,17 @@ interface DashThemeContextType {
 
 const DashThemeContext = createContext<DashThemeContextType | null>(null);
 
+// Defensive patch for MUI v9: createThemeWithVars can produce a theme where
+// breakpoints.internal_mediaKeys is missing. Ensure it is always set so that
+// responsive `sx` props (e.g. `padding: { xs: 2, sm: 3 }`) do not crash.
+function patchThemeBreakpoints(theme: Theme): Theme {
+    const bp = (theme as any).breakpoints;
+    if (bp && !bp.internal_mediaKeys && bp.keys && bp.up) {
+        bp.internal_mediaKeys = bp.keys.map((key: string) => bp.up(key));
+    }
+    return theme;
+}
+
 export const useDashThemeContext = () => {
     const context = useContext(DashThemeContext);
     if (!context) {
@@ -58,11 +69,11 @@ export const DashThemeProvider: React.FC<DashThemeProviderProps> = ({ extendedOp
     const [theme, setTheme] = useState<Theme>(() => {
         const initialTenantSettings = AuthPersistenceService.getTenantSettings();
         /* @ts-ignore */
-        return createTheme(appTheme(extendedOptions, {
+        return patchThemeBreakpoints(createTheme(appTheme(extendedOptions, {
             currentMode,
             colors: initialTenantSettings?.colors,
             tenantSettings: initialTenantSettings,
-        }));
+        })));
     });
 
 
@@ -97,7 +108,7 @@ export const DashThemeProvider: React.FC<DashThemeProviderProps> = ({ extendedOp
             }
         );
         /* @ts-ignore */
-        const newTheme = createTheme(newThemeOptions);
+        const newTheme = patchThemeBreakpoints(createTheme(newThemeOptions));
 
         setThemeOptions(newThemeOptions);
         setTheme(newTheme);

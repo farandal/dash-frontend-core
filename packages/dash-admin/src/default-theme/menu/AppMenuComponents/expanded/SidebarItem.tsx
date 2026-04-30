@@ -8,9 +8,9 @@ import { useDispatch } from 'react-redux';
 import { useEffect, useState } from 'react';
 
 /** @ts-ignore */
-import clickSound from '@app/assets/sounds/click2.mp3?string';
+//import clickSound from '@app/assets/sounds/click2.mp3?string';
 /** @ts-ignore */
-import bubbleSound from '@app/assets/sounds/bubble.mp3?string';
+//import bubbleSound from '@app/assets/sounds/bubble.mp3?string';
 import { IPageState, DASH_REDUX_ACTIONS } from 'dash-admin-state';
 import {DASHAppConstants} from 'dash-constants';
 import isCurrentPath from '../../../../hooks/isCurrentPath';
