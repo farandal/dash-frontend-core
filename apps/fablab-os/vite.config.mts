@@ -5,7 +5,7 @@ import fs from "fs";
 import svgr from "vite-plugin-svgr";
 
 
-import packageJson from "../../package.json" assert { type: "json" };
+import packageJson from "../../package.json" with { type: "json" };
 
 interface IEnvVars {
   [x: string]: any;
