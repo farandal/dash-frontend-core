@@ -17,7 +17,12 @@ import { ResourceManifest } from 'dash-app-common';
 
 export const KitchnTabsWebPrivateResources: ResourceManifest = {
 
-    // add here storeResources, loaded from ./kt-store 
+    // ========================================================================
+    // LAB MODULE RESOURCES (FabLab OS domain)
+    // ========================================================================
+    labResources: () => import('../lab/resources/labResources'),
+
+    // add here storeResources, loaded from ./kt-store
     //storeResources: () => import('./kt-store/resources/StoreResources'),
     // ========================================================================
     // USER & PROFILE RESOURCES (from kt-ecommerce)
@@ -33,19 +38,26 @@ export const KitchnTabsWebPrivateResources: ResourceManifest = {
     // ========================================================================
     // GEOHIERARCHY RESOURCES (from kt-ecommerce)
     // ========================================================================
+    /*
     communeResource: () => import('kt-ecommerce/src/resources/geohierarchy/communeResource'),
     countryResource: () => import('kt-ecommerce/src/resources/geohierarchy/countryResource'),
     regionResource: () => import('kt-ecommerce/src/resources/geohierarchy/regionResource'),
+    */
 
     // ========================================================================
     // MALL RESOURCES (from kt-mall)
     // ========================================================================
+   
+    /*
     mallResources: () => import('../kt-mall/resources/MallResources'),
-
+    */
     // ========================================================================
     // ECOMMERCE RESOURCES (from kt-ecommerce)
     // ========================================================================
     // Essential ecommerce resources
+   
+    
+    /*
     productResource: () => import('kt-ecommerce/src/resources/productResource'),
     categoryResource: () => import('kt-ecommerce/src/resources/categoryResource'),
     galleryResource: () => import('kt-ecommerce/src/resources/galleryResource'),
@@ -66,7 +78,7 @@ export const KitchnTabsWebPrivateResources: ResourceManifest = {
     //systemMarketplaceResource: () => import('kt-ecommerce/src/resources/systemMarketplaceResource'),
     //systemPointOfSaleResource: () => import('kt-ecommerce/src/resources/systemPointOfSaleResource'),
     campaignResource: () => import('kt-ecommerce/src/resources/campaignResource'),
-
+    */
     // Order resources
     //orderResource: () => import('kt-ecommerce/src/resources/orderResource'),
     //deliveryDriverResource: () => import('kt-ecommerce/src/resources/delivery/deliveryDriverResource'),
@@ -75,8 +87,9 @@ export const KitchnTabsWebPrivateResources: ResourceManifest = {
     // ========================================================================
     // TABS RESOURCES (from kt-tabs)
     // ========================================================================
+   /*
     tabResources: () => import('../kt-tabs/resources/tabResource'),
-
+*/
     // ========================================================================
     // KIOSK RESOURCES (from kt-kiosk)
     // ========================================================================
@@ -85,12 +98,14 @@ export const KitchnTabsWebPrivateResources: ResourceManifest = {
     // ========================================================================
     // CASH COUNT RESOURCES (from kt-cashcount)
     // ========================================================================
+  
+  /*
     cashCountResource: () => import('kt-cashcount/src/resources/cashCountResource'),
 
     selfServiceResource: () => import('../kt-selfservice/resources/selfServiceResource'),
 
     mallServiceResource: () => import('../kt-mallservice/resources/mallServiceResource'),
-    
+    */
 };
 
 export default KitchnTabsWebPrivateResources;
