@@ -2,7 +2,7 @@
 title: Política de Privacidad - Español
 ---
 
-# Política de Privacidad de KitchnTabs
+# Política de Privacidad de FabLabOs
 
 **Fecha de Vigencia:** 22 de diciembre de 2025
 
@@ -10,7 +10,7 @@ title: Política de Privacidad - Español
 
 ## 1. Introducción
 
-Bienvenido a KitchnTabs ("nosotros", "nuestro" o "nuestra"). Estamos comprometidos con proteger su privacidad y garantizar la seguridad de su información personal. Esta Política de Privacidad explica cómo recopilamos, usamos, divulgamos y protegemos su información cuando utiliza nuestra plataforma de gestión de restaurantes, incluyendo nuestro sitio web, aplicaciones móviles y servicios relacionados (colectivamente, los "Servicios").
+Bienvenido a FabLabOs ("nosotros", "nuestro" o "nuestra"). Estamos comprometidos con proteger su privacidad y garantizar la seguridad de su información personal. Esta Política de Privacidad explica cómo recopilamos, usamos, divulgamos y protegemos su información cuando utiliza nuestra plataforma de gestión de restaurantes, incluyendo nuestro sitio web, aplicaciones móviles y servicios relacionados (colectivamente, los "Servicios").
 
 Al utilizar nuestros Servicios, usted acepta la recopilación y el uso de información de acuerdo con esta Política de Privacidad. Si no está de acuerdo con nuestras políticas y prácticas, por favor no utilice nuestros Servicios.
 
@@ -183,7 +183,7 @@ Su uso continuado de nuestros servicios después de la fecha efectiva de los cam
 
 Si tiene alguna pregunta sobre esta Política de Privacidad o nuestras prácticas de datos, por favor contáctenos:
 
-**KitchnTabs**
+**FabLabOs**
 Correo electrónico: privacy@kitchntabs.com
 Dirección: [Su Dirección Comercial]
 Teléfono: [Su Número de Teléfono]

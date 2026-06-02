@@ -363,10 +363,10 @@ const customEn = {
         // System resources
         system: {
             tenants: {
-                label: 'Clients',
-                menu_list: 'Clients',
+                label: 'Laboratories',
+                menu_list: 'Laboratories',
                 menu_trash: 'Trash',
-                main_action: 'Add Client',
+                main_action: 'Add Laboratory',
                 filter_name: 'Name',
             },
             roles: {
@@ -1343,19 +1343,19 @@ const customEn = {
             resetPassword: 'Reset password'
         },
         hero: {
-            title: "KitchnTabs",
+            title: "FabLabOs",
             subtitle: "The operational infrastructure that connects every restaurant in the world",
             description: "A technological platform designed for food courts and restaurants that digitalizes, orders, and synchronizes the entire ordering process, from taking orders to preparation and delivery.",
             cta: "Get Started",
             learnMore: "Learn More",
-            trialTitle: "Join KitchnTabs now for free!",
+            trialTitle: "Join FabLabOs now for free!",
             trialSubtitle: "Start your 30-day free trial. No credit card required.",
             emailPlaceholder: "Enter your email",
-            createStore: "CREATE STORE"
+            createStore: "CREATE LAB!"
         },
         what: {
-            title: "What is KitchnTabs?",
-            description: "KitchnTabs is a technological platform designed for food courts and restaurants, that allows digitalizing, ordering and synchronizing the entire ordering process, from taking orders to preparation and delivery, connecting kitchen, service and administration in real time."
+            title: "What is FabLabOs?",
+            description: "FabLabOs is a technological platform designed for food courts and restaurants, that allows digitalizing, ordering and synchronizing the entire ordering process, from taking orders to preparation and delivery, connecting kitchen, service and administration in real time."
         },
         features: {
             title: "Key Features",
@@ -1451,7 +1451,7 @@ const customEn = {
         },
         dashboard: {
             title: "Centralized Control Panel",
-            description: "KitchnTabs centralizes and digitalizes the restaurant's daily operation, allowing the entire team to work in a coordinated way and in real time.",
+            description: "FabLabOs centralizes and digitalizes the restaurant's daily operation, allowing the entire team to work in a coordinated way and in real time.",
             features: {
                 realtime: "📋 View active and completed orders in real time",
                 statusChange: "🔄 Change order status throughout the operational flow",
@@ -1496,10 +1496,10 @@ const customEn = {
             copyright: "© KitchTabs, All rights reserved"
         },
         download: {
-            title: "Download KitchnTabs",
+            title: "Download FabLabOs",
             subtitle: "A technological platform designed for food courts and restaurants that digitalizes, orders, and synchronizes the entire ordering process.",
-            what_is_title: "What is KitchnTabs?",
-            what_is_description: "KitchnTabs is a technological platform designed for food courts and restaurants that allows digitalizing, ordering and synchronizing the entire ordering process, from taking orders to preparation and delivery, connecting kitchen, service and administration in real time.",
+            what_is_title: "What is FabLabOs?",
+            what_is_description: "FabLabOs is a technological platform designed for food courts and restaurants that allows digitalizing, ordering and synchronizing the entire ordering process, from taking orders to preparation and delivery, connecting kitchen, service and administration in real time.",
             download_title: "Download the App",
             download_subtitle: "Available for all platforms. Choose your operating system and start optimizing your restaurant operations today.",
             admin_panel_text: "Already have an account? Access the admin panel",
@@ -1579,7 +1579,7 @@ const customEn = {
         phoneRequired: "Phone number is required",
         
         // Success and error messages
-        accountCreatedSuccess: "Welcome! You have subscribed to KitchnTabs 30-day free trial. Please check your email to verify your account.",
+        accountCreatedSuccess: "Welcome! You have subscribed to FabLabOs 30-day free trial. Please check your email to verify your account.",
         errorOccurred: "An error occurred, please try again",
         registrationError: "An error occurred during registration",
         googleSignupDisabled: "Google signup is currently disabled",

@@ -1,5 +1,5 @@
 /**
- * kt-dash-extensions - KitchnTabs Dash Extensions Package
+ * kt-dash-extensions - FabLabOs Dash Extensions Package
  * 
  * This package contains app configuration, auth providers,
  * data providers, layout settings, and core bootstrapping.

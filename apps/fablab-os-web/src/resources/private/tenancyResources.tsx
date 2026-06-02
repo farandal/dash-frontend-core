@@ -431,7 +431,7 @@ const tenancyResources: IDashAutoAdminResourceConfig[] = [
                     label: 'Roles',
                     attribute: 'roles',
                     listAttribute: 'role_ids',
-                    type: 'system/role.name',
+                    type: 'system/role/forSelect.name',
                     //type: Object,
                     // TODO Agregar un filtro, solo para traer los roles de cliente.
                     //pagination: false,
@@ -448,7 +448,7 @@ const tenancyResources: IDashAutoAdminResourceConfig[] = [
                     label: 'Roles',
                     attribute: 'roles',
                     listAttribute: 'role_ids',
-                    type: 'system/role.name',
+                    type: 'system/role/forSelect.name',
                     fieldProps: { linkType: false },
                     //type: Object,
                     // TODO Agregar un filtro, solo para traer los roles de cliente.

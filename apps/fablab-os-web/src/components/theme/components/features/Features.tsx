@@ -73,7 +73,7 @@ const Features = () => {
                 <div className="about-content-right">
                   <img
                     src={Image11}
-                    alt="KitchnTabs Features"
+                    alt="FabLabOs Features"
                     className="img-fluid"
                   />
                 </div>

@@ -370,7 +370,7 @@ const systemResources: IAppResourceConfig[] = [
             )
         },
         model: 'system/tenant',
-        label: 'Stores',
+        label: 'Laboratories',
         trash: true,
         schema: tenantSystemAdminSchema,
         //references: [{ reference: 'roles', target: 'role', schema: rolesSchema }]

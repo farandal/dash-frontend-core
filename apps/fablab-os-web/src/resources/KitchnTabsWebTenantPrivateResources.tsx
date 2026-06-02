@@ -1,7 +1,7 @@
 /**
  * KitchnTabsWebTenantPrivateResources
  * 
- * Resource manifest for the KitchnTabs application.
+ * Resource manifest for the FabLabOs application.
  * This file uses the refactored kt-* packages for all domain-specific resources.
  * 
  * Resources are loaded dynamically using import functions,

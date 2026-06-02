@@ -352,10 +352,10 @@ const customEs = {
         // System resources
         system: {
             tenants: {
-                label: 'Clientes',
-                menu_list: 'Clientes',
+                label: 'Laboratorios',
+                menu_list: 'Laboratorios',
                 menu_trash: 'Papelera',
-                main_action: 'Agregar Cliente',
+                main_action: 'Agregar Laboratorio',
                 filter_name: 'Nombre',
             },
             roles: {

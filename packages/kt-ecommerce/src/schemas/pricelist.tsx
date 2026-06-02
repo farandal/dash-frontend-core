@@ -26,7 +26,7 @@ const pricelistSchema: IDashAutoAdminAttribute[] = [
   {
     label: 'Moneda',
     attribute: 'currency_id',
-    type: 'ecommerce/currency.code',
+    type: 'ecommerce/currency/forSelect.code',
     pagination: false,
     multiple: false,
     component: SelectInput,

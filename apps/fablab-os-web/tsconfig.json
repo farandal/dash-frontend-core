@@ -28,12 +28,14 @@
     "paths": {
       "@app/*": ["./src/*"],
       "@kt-utils/*": ["../../packages/kt-utils/src/*"],
-      "@kt-ecommerce/*": ["../../packages/kt-ecommerce/src/*"],
+      "@kt-pages/*": ["../../packages/kt-pages/src/*"]
+    },
+    "old-paths": {
+       "@kt-ecommerce/*": ["../../packages/kt-ecommerce/src/*"],
       "@kt-tabs/*": ["./src/kt-tabs/src/*"],
       "@kt-mall/*": ["../../packages/kt-mall/src/*"],
       "@kt-cashcount/*": ["../../packages/kt-cashcount/src/*"],
       "@kt-kiosk/*": ["../../packages/kt-kiosk/src/*"],
-      "@kt-pages/*": ["../../packages/kt-pages/src/*"]
     }
   }
 }

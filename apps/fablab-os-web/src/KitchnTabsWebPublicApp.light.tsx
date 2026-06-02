@@ -1,7 +1,7 @@
 /**
  * KitchnTabsPublicApp (Light)
  * 
- * OPTIMIZED: Public (unauthenticated) app for KitchnTabs.
+ * OPTIMIZED: Public (unauthenticated) app for FabLabOs.
  * This version uses lightweight components that don't depend on react-admin,
  * reducing the initial bundle size significantly.
  */

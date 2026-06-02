@@ -4,12 +4,7 @@ import { useTranslate } from "@app/components/hooks/usePolyglotTranslation";
 import { TextField, Button, Box } from "@mui/material";
 
 // Import SVGs as modules so Vite bundles them
-import Telemedicine03 from "@app/assets/img/Telemedicine_03.svg";
-import HeroBgShape2 from "@app/assets/img/hero-bg-shape-2.svg";
-// Import SVGs as modules so Vite bundles them
-import Waiter from "@app/assets/waiter_male.svg";
-import MotoAnimation from "@app/assets/moto.svg";
-import KitchenAnim from "@app/assets/kitchen.svg";
+import MainBanner from "@app/assets/login-back.png";
 
 
 export default function HeroThree() {
@@ -125,28 +120,11 @@ export default function HeroThree() {
                   <div className="hero-animation-img">
                 <img
                   className="img-fluid d-block m-auto animation-one"
-                  src={Waiter}
-                  width="150"
+                  src={MainBanner}
+                  width="680"
                   alt="animation "
                 />
-                <img
-                  className="img-fluid d-none d-lg-block animation-two"
-                  src={MotoAnimation}
-                  alt="animation "
-                  width="120"
-                />
-                <img
-                  className="img-fluid d-none d-lg-block animation-three"
-                  src={Telemedicine03}
-                  alt="animation "
-                  width="120"
-                />
-                <img
-                  className="img-fluid d-none d-lg-block animation-four"
-                  src={KitchenAnim}
-                  alt="animation "
-                  width="200"
-                />
+               
               </div>
             </div>
 
@@ -157,11 +135,7 @@ export default function HeroThree() {
           </div>
         </div>
 
-        <img
-          src={HeroBgShape2}
-          className="shape-image"
-          alt="shape "
-        />
+       
       </section>
     </>
   );

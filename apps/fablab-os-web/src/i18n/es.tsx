@@ -130,7 +130,7 @@ const customEs = {
                 title: "Asistencia",
                 message: "Tu solicitud de asistencia ha sido recibida.",
                 staff_notified: "El personal ha sido notificado",
-                store_label: "Tienda",
+                store_label: "Laboratorio",
                 customer_label: "Cliente",
                 table_label: "Mesa",
                 estimated_time_label: "Tiempo estimado",
@@ -353,10 +353,10 @@ const customEs = {
         // System resources
         system: {
             tenants: {
-                label: 'Clientes',
-                menu_list: 'Clientes',
+                label: 'Laboratorios',
+                menu_list: 'Laboratorios',
                 menu_trash: 'Papelera',
-                main_action: 'Agregar Cliente',
+                main_action: 'Agregar Laboratorio',
                 filter_name: 'Nombre',
             },
             roles: {
@@ -625,9 +625,9 @@ const customEs = {
                 label: "Métodos de Pago",
             },
             tenants: {
-                label: "Locales",
+                label: "Laboratorios",
                 menu_all: "Ver Todos",
-                main_action: "Agregar Local",
+                main_action: "Agregar Laboratorio",
             },
         },
     },
@@ -844,8 +844,8 @@ const customEs = {
         no_active_orders: "No tienes órdenes activas. Puedes crear una nueva orden usando el menú.",
 
         // Store Selector
-        all_stores: 'Todas las Tiendas',
-        select_store: 'Selecciona una tienda',
+        all_stores: 'Todas las Laboratorios',
+        select_store: 'Selecciona una laboratorio',
         all: 'Todo',
 
         // Assistance
@@ -858,7 +858,7 @@ const customEs = {
 
         // Product Grid
         no_products_found: 'No se encontraron productos',
-        try_different_store_or_search: 'Intenta seleccionar otra tienda o ajustar tu búsqueda',
+        try_different_store_or_search: 'Intenta seleccionar otra laboratorio o ajustar tu búsqueda',
         featured: 'Destacados',
         add: 'Agregar',
 
@@ -884,7 +884,7 @@ const customEs = {
         // Cart Drawer
         your_order: 'Tu Orden',
         add_products_to_continue: 'Agrega algunos productos para continuar',
-        unknown_store: 'Tienda Desconocida',
+        unknown_store: 'Laboratorio Desconocida',
         clear_cart: 'Limpiar Carrito',
         total: 'Total',
         confirm_order: 'Confirmar Orden',
@@ -949,7 +949,7 @@ const customEs = {
                 pending: "Pendiente",
             },
             order_status_overall: "Estado General de la Orden",
-            stores_progress: "Progreso por Tienda",
+            stores_progress: "Progreso por Laboratorio",
             items: "ítems",
         },
     },
@@ -1274,12 +1274,12 @@ const customEs = {
             },
         },
         store_schedule: {
-            title: 'Horario de Tienda',
+            title: 'Horario de Laboratorio',
             subtitle: 'Configurar disponibilidad de apertura automática',
             enable_schedule: 'Habilitar Horario Programado',
             enabled: 'Activo',
             disabled: 'Deshabilitado (Modo Manual)',
-            disabled_warning: 'El horario está deshabilitado. El estado de la tienda debe gestionarse manualmente en la pestaña Estado.',
+            disabled_warning: 'El horario está deshabilitado. El estado de la laboratorio debe gestionarse manualmente en la pestaña Estado.',
             day: 'Día',
             active: 'Activo',
             hours: 'Horas de Apertura',
@@ -1291,18 +1291,18 @@ const customEs = {
             fetch_error: 'Error al cargar el horario',
         },
         store_status: {
-            title: 'Estado de Tienda',
+            title: 'Estado de Laboratorio',
             subtitle: 'Estado operativo actual y controles manuales',
             current_status: 'Estado Actual',
             open: 'ABIERTO',
             closed: 'CERRADO',
-            open_store: 'Abrir Tienda',
-            close_store: 'Cerrar Tienda',
+            open_store: 'Abrir Laboratorio',
+            close_store: 'Cerrar Laboratorio',
             schedule_active: 'Horario Activo',
-            manual_close_warning: 'La tienda está cerrada manualmente. Se abrirá automáticamente en el próximo horario programado.',
-            manual_open_warning: 'La tienda está abierta manualmente. Se actualizará según el horario cuando corresponda (ej. al entrar en periodo cerrado).',
-            following_schedule: 'La tienda opera según el horario programado (Zona horaria: %{timezone}).',
-            manual_mode_info: 'El horario está deshabilitado. Debe abrir y cerrar la tienda manualmente.',
+            manual_close_warning: 'La laboratorio está cerrada manualmente. Se abrirá automáticamente en el próximo horario programado.',
+            manual_open_warning: 'La laboratorio está abierta manualmente. Se actualizará según el horario cuando corresponda (ej. al entrar en periodo cerrado).',
+            following_schedule: 'La laboratorio opera según el horario programado (Zona horaria: %{timezone}).',
+            manual_mode_info: 'El horario está deshabilitado. Debe abrir y cerrar la laboratorio manualmente.',
         },
         marketplaces: {
             title: 'Integración con Marketplaces',
@@ -1339,23 +1339,23 @@ const customEs = {
             resetPassword: 'Resetear contraseña'
         },
         hero: {
-            title: "KitchnTabs",
+            title: "FabLabOs",
             subtitle: "La infraestructura operativa que conecta todos los restaurantes del mundo",
             description: "Una plataforma tecnológica diseñada para patios de comida y restaurantes que permite digitalizar, ordenar y sincronizar todo el proceso de pedidos, desde la toma de comandas hasta la preparación y entrega.",
             cta: "Comenzar",
             learnMore: "Conocer Más",
-            trialTitle: "¡Únete a KitchnTabs gratis ahora!",
+            trialTitle: "¡Únete a FabLabOs gratis ahora!",
             trialSubtitle: "Comienza tu periodo de 30 días gratis. No requiere tarjeta de crédito.",
             emailPlaceholder: "Ingresa tu correo electrónico",
-            createStore: "CREAR TIENDA"
+            createStore: "CREAR LAB!"
         },
         what: {
-            title: "¿Qué es KitchnTabs?",
-            description: "KitchnTabs es una plataforma tecnológica diseñada para patios de comida y restaurantes, que permite digitalizar, ordenar y sincronizar todo el proceso de pedidos, desde la toma de comandas hasta la preparación y entrega, conectando a cocina, atención y administración en tiempo real."
+            title: "¿Qué es FabLabOs?",
+            description: "Una plataforma tecnológica diseñada para laboratorios STEM que permite digitalizar, ordenar y sincronizar todo el proceso de gestión, desde la administración de proyectos y espacios de trabajo hasta el análisis de datos y la documentación científica"
         },
         features: {
             title: "Características Principales",
-            subtitle: "Todo lo que necesitas para gestionar tu restaurante eficientemente",
+            subtitle: "Todo lo que necesitas para gestionar tu laboratorio eficientemente",
             digitalOrders: {
                 icon: "📲",
                 title: "Digitaliza la toma de pedidos",
@@ -1447,7 +1447,7 @@ const customEs = {
         },
         dashboard: {
             title: "Panel de Control Centralizado",
-            description: "KitchnTabs centraliza y digitaliza la operación diaria del restaurante, permitiendo que todo el equipo trabaje de forma coordinada y en tiempo real.",
+            description: "FabLabOs centraliza y digitaliza la operación diaria del restaurante, permitiendo que todo el equipo trabaje de forma coordinada y en tiempo real.",
             features: {
                 realtime: "📋 Visualizar órdenes activas y completadas en tiempo real",
                 statusChange: "🔄 Cambiar el estado de las órdenes a lo largo del flujo operativo",
@@ -1489,13 +1489,13 @@ const customEs = {
             terms: "Términos",
             security: "Seguridad",
             privacy: "Privacidad",
-            copyright: "© KitchnTabs, Todos los derechos reservados"
+            copyright: "© FabLabOs, Todos los derechos reservados"
         },
         download: {
-            title: "Descarga KitchnTabs",
+            title: "Descarga FabLabOs",
             subtitle: "Una plataforma tecnológica diseñada para patios de comida y restaurantes que digitaliza, ordena y sincroniza todo el proceso de pedidos.",
-            what_is_title: "¿Qué es KitchnTabs?",
-            what_is_description: "KitchnTabs es una plataforma tecnológica diseñada para patios de comida y restaurantes, que permite digitalizar, ordenar y sincronizar todo el proceso de pedidos, desde la toma de comandas hasta la preparación y entrega, conectando a cocina, atención y administración en tiempo real.",
+            what_is_title: "¿Qué es FabLabOs?",
+            what_is_description: "FabLabOs es una plataforma tecnológica diseñada para patios de comida y restaurantes, que permite digitalizar, ordenar y sincronizar todo el proceso de pedidos, desde la toma de comandas hasta la preparación y entrega, conectando a cocina, atención y administración en tiempo real.",
             download_title: "Descarga la Aplicación",
             download_subtitle: "Disponible para todas las plataformas. Elige tu sistema operativo y comienza a optimizar las operaciones de tu restaurante hoy.",
             admin_panel_text: "¿Ya tienes una cuenta? Accede al panel de administración",
@@ -1575,7 +1575,7 @@ const customEs = {
         phoneRequired: "El número de teléfono es obligatorio",
         
         // Success and error messages
-        accountCreatedSuccess: "¡Bienvenido! Te has suscrito al periodo de prueba de 30 días de KitchnTabs. Por favor revisa tu correo electrónico para verificar tu cuenta.",
+        accountCreatedSuccess: "¡Bienvenido! Te has suscrito al periodo de prueba de 30 días de FabLabOs. Por favor revisa tu correo electrónico para verificar tu cuenta.",
         errorOccurred: "Ocurrió un error, por favor intenta de nuevo",
         registrationError: "Ocurrió un error durante el registro",
         googleSignupDisabled: "El registro con Google está actualmente deshabilitado",
@@ -1662,10 +1662,10 @@ const customEs = {
         features: {
             basic_features: "Funciones básicas",
             email_support: "Soporte por email",
-            one_store: "1 tienda",
+            one_store: "1 laboratorio",
             three_users: "3 usuarios",
             fifty_products: "50 productos",
-            unlimited_stores: "Tiendas ilimitadas",
+            unlimited_stores: "Laboratorios ilimitadas",
             unlimited_users: "Usuarios ilimitados",
             unlimited_products: "Productos ilimitados",
             priority_support: "Soporte prioritario",

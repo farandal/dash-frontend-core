@@ -1,178 +1,190 @@
-// This colors are the main theme colors. 
-// There is no need to create variables for color modes.
-// To switching between modes, such as light and dark mode 
-// Its only required to define css-vars suffixed with the mode
-// If no variable with suffix is found, the system will use the default variable.
-// The default 'light' mode will use the default variables configured without suffix. 
-// e.g:
-// --primary-color--dark, primary-contrast--dark
+/**
+ * Domain CSS Variable Overrides — kitchntabs-web (Public App)
+ *
+ * Override the default CSS custom properties from dash-styles here.
+ * These will take precedence over the values in dash-css-transformer.less.
+ *
+ * Naming convention:
+ *   --variable-name--light   → light mode value
+ *   --variable-name--dark    → dark mode value
+ *
+ * At runtime, updateDomCssVariables() copies the correct suffixed
+ * value into the base key (e.g. --primary-color) depending on the
+ * active theme.
+ */
 
-// Use this file in the domain project to overwrite the default light theme
-
-// ========================================
-// MAIN COLORS
-// ========================================
-//@main-color: #B19CD9;                    // Soft pastel purple
-//@main-color--dark: #8B5CF6;                     // Vibrant purple for dark mode
-//@main-color: @main-color--dark;                 // Default uses dark
-//
-//@main-color-contrast: #6B46C1;          // Deeper purple for contrast
-//@main-color-contrast--dark: #A78BFA;           // Lighter purple contrast for dark mode
-//@main-color-contrast: @main-color-contrast--dark; // Default uses dark
-//
-// ========================================
-// PRIMARY & SECONDARY COLORS
-// ========================================
-@primary-color: #8f00cb;               // Soft pastel purple
-@primary-color--dark: #8f00cb;                  // Vibrant purple for dark mode
-
-@primary-contrast: #00044c;            // Deep purple contrast for light
-@primary-contrast--dark: #00044c;               // Lighter purple contrast for dark
-
-@secondary-color: #FFB366;               // Soft pastel orange
-@secondary-color--dark: #FB923C;                // Vibrant orange for dark mode
-
-@secondary-contrast: #E65100;            // Deep orange contrast for light
-@secondary-contrast--dark: #c4b7a4;             // Light orange contrast for dark
-
-// ========================================
-// TEXT & CONTENT COLORS
-// ========================================
-@heading-color: #2D1B69;                 // Deep purple for light mode
-@heading-color--dark: #FFFFFF;                  // White for dark mode
-
-@text-color: #000000;                    // Deep purple for text
-@text-color--dark: #F3F0FF;                     // Light purple-tinted white
-
-@light-color: #F8F4FF;                   // Very light purple tint
-@light-color--dark: red;                    // Medium purple
-
-@highlight-color: #d4ff00;                  // Dark for highlights in light mode
-@highlight-color--dark: #d4ff00;                // White highlight for dark mode
-
-// ========================================
-// BUTTON STYLES
-// ========================================
-@btn-bg: #7faa00;                        // Light purple for light mode
-@btn-bg--dark: #7faa00;                         // Darker purple for dark mode
-
-@btn-hover-bg: #d4ff00;                  // Darker purple hover for light mode
-@btn-hover-bg--dark: #d4ff00;                   // Bright purple hover for dark mode
-
-@btn-color: #FFFFFF;                     // White text for light mode buttons
-@btn-color--dark: #F8F4FF;                      // Light purple text for dark mode buttons
-
-
-@tab-selected-bg: #979797;                     // White text for light mode buttons
-@tab-selected-bg--dark: @primary-color;                   // Light purple text for dark mode buttons
-
-// ========================================
-// BACKGROUND COLORS
-// ========================================
-@body-bg: inherit;                   // Dark background for light mode
-@body-bg--dark: inherit;                         // Lighter dark background for dark mode
-
-@framed_layout-bg: #F5F5F5;           // Almost white with purple hint
-@framed_layout-bg--dark: rgba(0, 0, 0, 0.7);             // Medium dark purple
-
-@module-bg: rgba(0, 0, 0, 0.1);             // Pure white for modules
-@module-bg--dark: rgba(0, 0, 0, 0.9);       // Semi-transparent purple
-
-// ========================================
-// BORDERS
-// ========================================
-@module-border: #E8D5F2;                // Light purple border
-@module-border--dark: #4C1D95;                 // Dark purple border
-
-// ========================================
-// SIDEBAR COLORS
-// ========================================
-@sidebar-primary: #FFFFFF;               // Color for the menu links
-@sidebar-primary--dark: #FFFFFF;                // Light purple for dark mode
-
-@sidebar-contrast: #6B46C1;              // Medium purple for light mode
-@sidebar-contrast--dark: #DDD6FE;               // Very light purple for dark mode
-
-@link-color: #6B46C1;                    // Deep purple links for light mode
-@link-color--dark: #A78BFA;                     // Light purple links for dark mode
-
-@sidebar_icon-primary: #B19CD9;          // Soft purple icons for light mode
-@sidebar_icon-primary--dark: #F3F0FF;           // Light icons for dark mode
-
-@sidebar_icon-secondary: #6B46C1;        // Darker purple icons for light mode
-@sidebar_icon-secondary--dark: #8B5CF6;         // Vibrant purple icons for dark mode
-
-@sidebar-bg-primary: rgba(255, 255, 255, 0); // Soft purple background for light mode
-@sidebar-bg-primary--dark:rgba(255, 255, 255, 0);   // Dark purple background for dark mode
-
-@sidebar-bg-hover: rgba(255, 255, 255, 0.5);
-@sidebar-bg-hover--dark: rgba(0, 0, 0, 0.5);
-
-@sidebar-bg-contrast: rgba(23, 29, 61, 0.5);           // Deeper purple background for light mode
-@sidebar-bg-contrast--dark: rgba(23, 29, 61, 0.5);             // Vibrant purple background for dark mode
-
-@sidebar_submenu-bg-primary: rgba(23, 29, 61, 0.5);    // Very light purple for light mode
-@sidebar_submenu-bg-primary--dark: rgba(23, 29, 61, 0.5);   // Medium purple for dark mode
-
-@sidebar_submenu-bg-contrast: rgba(23, 29, 61, 0.5);   // Deep purple for light mode
-@sidebar_submenu-bg-contrast--dark: rgba(23, 29, 61, 0.5);   // Vibrant purple for dark mode
-
-@sidebar_submenu-color-primary: #B19CD9; // Soft purple text for light mode
-@sidebar_submenu-color-primary--dark: #F3F0FF;  // Light text for dark mode
-
-@sidebar_submenu-color-contrast: #2D1B69; // Dark purple text for light mode
-@sidebar_submenu-color-contrast--dark: #DDD6FE; // Very light purple text for dark mode
-
-// ========================================
-// SCROLLBAR
-// ========================================
-@scroll_thumb-color: #D1C4E9;            // Light purple for scrollbar
-@scroll_thumb-color--dark: #7C3AED;             // Purple scrollbar for dark mode
-
-@scroll_track-color: transparent;            // Light purple for scrollbar
-@scroll_track-color--dark: transparent;               // Purple scrollbar for dark mode
-
-
-@sidebar-handle-primary: rgba(177, 156, 217, 0.3); // Light purple handle for light mode
-@sidebar-handle-primary--dark: rgba(139, 92, 246, 0.4);   // Purple handle for dark mode
-
-@sidebar-handle-contrast: rgba(107, 70, 193, 0.5); // Deep purple handle for light mode
-@sidebar-handle-contrast--dark: rgba(167, 139, 250, 0.6); // Light purple handle for dark mode
-
-// ========================================
-// LAYOUT & DIMENSIONS
-// ========================================
-
-// BREAKPOINTS
-@custom-padding: 10px;
-@content-horizontal-padding: 10px;
-@min-body-width: 575px;
-
-// Sidebar Dimensions
-@sidebar-large-width: 255px;
-@sidebar-small-width: 60px;
-
-@sidebar_submenu-padding: 40px;
-@sidebar-mini-drawer-width: 100px;
-@sidebar-padding-lr: 10px;
-@scroll-bar-margin: 19px;
-@scroll-bar-collapsed-margin: 5px;
-@sidebar-icon-width: 60px;
-
-// Breakpoints
-@screen-xs: 0;                // Extra small devices (phones, less than 1024px)
-@screen-sm: 960px;           // Small devices (tablets, 1024px and up) - UPDATED FROM 960px
-@screen-md: 990px;           // Medium devices (desktops, 1024px and up) - UPDATED FROM 960px
-@screen-lg: 1024px;           // Large devices (desktops, 1024px and up) - UPDATED FROM 992px
-@screen-xl: 1200px;           // Extra large devices (large desktops, 1200px and up)
-@screen-xxl: 1400px;          // Extra extra large devices (larger desktops, 1400px and up)
-
-// Also update the media query variables
-@mq-md: 960px;               // Updated from 960px
-@mq-sm: 990px;  // Update from 768px
-@mq-md: 1024px;  // Update from 960px
-/*
 :root {
-    --your-custom-css-var: #FFF;
+
+  // ========================================
+  // PRIMARY & SECONDARY COLORS
+  // ========================================
+  --primary-color--light: #cb0000;
+  --primary-color--dark: #cb0000;
+
+  --primary-contrast--light: rgb(119, 0, 0);
+  --primary-contrast--dark: rgb(119, 0, 0);
+
+  --secondary-color--light: #7faa00;
+  --secondary-color--dark: #df7722;
+
+  --secondary-contrast--light: #E65100;
+  --secondary-contrast--dark: #c4b7a4;
+
+  --bodybg-primary--light: #efefef;
+  --bodybg-secondary--light: #ffffff;
+
+  --bodybg-primary--dark: #af0000;
+  --bodybg-secondary--dark: #390000;
+
+  // ========================================
+  // TEXT & CONTENT COLORS
+  // ========================================
+  --heading-color--light: #2D1B69;
+  --heading-color--dark: #FFFFFF;
+
+  --text-color--light: #0b0b0b;
+  --text-color--dark: #F3F0FF;
+
+  --light-color--light: #F8F4FF;
+  --light-color--dark: red;
+
+  --highlight-color--light: rgb(150, 181, 0);
+  --highlight-color--dark: rgb(150, 181, 0);
+
+  --highlight-color-contrast--light: #000;
+  --highlight-color-contrast--dark: #fff;
+
+  // ========================================
+  // BUTTON STYLES
+  // ========================================
+  --btn-primary-bg--dark: #ffa200;
+  --btn-primary-color--dark: #fff;
+
+  --btn-primary-bg--light: #7faa00;
+  --btn-primary-color--light: #fff;
+
+  --btn-bg--light: #7faa00;
+  --btn-bg--dark: #7faa00;
+
+  --btn-hover-bg--light: #7faa00;
+  --btn-hover-bg--dark: #7faa00;
+
+  --btn-color--light: #FFFFFF;
+  --btn-color--dark: #F8F4FF;
+
+  --tab-selected-bg--light: #979797;
+  --tab-selected-bg--dark: #8f00cb;
+
+  --table-header-color--dark: #fff;
+  --table-header-color--light: #000;
+  // ========================================
+  // BACKGROUND COLORS
+  // ========================================
+  --body-bg--light: inherit;
+  --body-bg--dark: inherit;
+
+  --framed_layout-bg--light: #F5F5F5;
+  --framed_layout-bg--dark: rgba(0, 0, 0, 0.7);
+
+  --module-bg--light: rgba(225, 225, 225, 1);
+  --module-bg--dark: rgba(33, 33, 33, 1);
+
+  // ========================================
+  // BORDERS
+  // ========================================
+  --module-border--light: #b1b1b1;
+  --module-border--dark: #0d0d0d;
+
+  // ========================================
+  // SIDEBAR COLORS
+  // ========================================
+  --sidebar-primary--light: #FFFFFF;
+  --sidebar-primary--dark: #FFFFFF;
+
+  --sidebar-contrast--light: #6B46C1;
+  --sidebar-contrast--dark: #DDD6FE;
+
+  --link-color--light: #6B46C1;
+  --link-color--dark: #A78BFA;
+
+  --sidebar_icon-primary--light: #B19CD9;
+  --sidebar_icon-primary--dark: #F3F0FF;
+
+  --sidebar_icon-secondary--light: #6B46C1;
+  --sidebar_icon-secondary--dark: #8B5CF6;
+
+  --sidebar-bg-primary--light: rgba(255, 255, 255, 0);
+  --sidebar-bg-primary--dark: rgba(255, 255, 255, 0);
+
+  --sidebar-bg-hover--light: rgba(255, 255, 255, 0.5);
+  --sidebar-bg-hover--dark: rgba(0, 0, 0, 0.5);
+
+  --sidebar-bg-contrast--light: rgba(23, 29, 61, 0.5);
+  --sidebar-bg-contrast--dark: rgba(23, 29, 61, 0.5);
+
+  --sidebar_submenu-bg-primary--light: rgba(23, 29, 61, 0.5);
+  --sidebar_submenu-bg-primary--dark: rgba(23, 29, 61, 0.5);
+
+  --sidebar_submenu-bg-contrast--light: rgba(23, 29, 61, 0.5);
+  --sidebar_submenu-bg-contrast--dark: rgba(23, 29, 61, 0.5);
+
+  --sidebar_submenu-color-primary--light: #B19CD9;
+  --sidebar_submenu-color-primary--dark: #F3F0FF;
+
+  --sidebar_submenu-color-contrast--light: #2D1B69;
+  --sidebar_submenu-color-contrast--dark: #DDD6FE;
+
+  // ========================================
+  // SCROLLBAR
+  // ========================================
+  --scroll_thumb-color--light: #D1C4E9;
+  --scroll_thumb-color--dark: #7C3AED;
+
+  --scroll_track-color--light: transparent;
+  --scroll_track-color--dark: transparent;
+
+  --sidebar-handle-primary--light: rgba(177, 156, 217, 0.3);
+  --sidebar-handle-primary--dark: rgba(139, 92, 246, 0.4);
+
+  --sidebar-handle-contrast--light: rgba(107, 70, 193, 0.5);
+  --sidebar-handle-contrast--dark: rgba(167, 139, 250, 0.6);
+
+  // ========================================
+  // LAYOUT & DIMENSIONS
+  // ========================================
+  --custom-padding: 10px;
+  --content-horizontal-padding: 10px;
+  --min-body-width: 575px;
+
+  --sidebar-large-width: 200px;
+  --sidebar-small-width: 60px;
+  --sidebar-horizontal-height: 64px;
+
+  --sidebar_submenu-padding: 40px;
+  --sidebar-mini-drawer-width: 100px;
+  --sidebar-padding-lr: 10px;
+  --scroll-bar-margin: 19px;
+  --scroll-bar-collapsed-margin: 5px;
+  --sidebar-icon-width: 60px;
+
+  --logo-vertical-max-width: auto;
+  --logo-vertical-max-height: 130px;
+    // Logo dimensions for horizontal sidebar (top/bottom)
+  --logo-horizontal-max-width: 200px;
+  --logo-horizontal-max-height: 60px;
+
 }
-    */
+
+// Breakpoints (kept as LESS variables — used in @media queries which can't use CSS vars)
+@screen-xs: 0;
+@screen-sm: 540px;
+@screen-md: 990px;
+@screen-lg: 1024px;
+@screen-xl: 1200px;
+@screen-xxl: 1400px;
+
+@mq-xs: 0;
+@mq-sm: 540;
+@mq-md: 960px;
+@mq-md: 1024px;
+@mq-lg: 1280px;

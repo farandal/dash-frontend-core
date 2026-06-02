@@ -74,7 +74,7 @@ const tenantSuperAdminSchema: IDashAutoAdminAttribute[] = [
         inList:false,
         attribute: 'currency_ids',
         //listAttribute: 'name',
-        type: 'ecommerce/currency.code',
+        type: 'ecommerce/currency/forSelect.code',
         //type: Object,
         // TODO Agregar un filtro, solo para traer los roles de cliente.
         pagination: false,
@@ -90,7 +90,7 @@ const tenantSuperAdminSchema: IDashAutoAdminAttribute[] = [
         label: 'Moneda Primaria',
         attribute: 'currency_primary_id',
         //listAttribute: 'name',
-        type: 'ecommerce/currency.code',
+        type: 'ecommerce/currency/forSelect.code',
         //type: Object,
         // TODO Agregar un filtro, solo para traer los roles de cliente.
         pagination: false,

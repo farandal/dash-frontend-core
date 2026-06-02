@@ -1,6 +1,6 @@
 # Tenancy Account & Billing Components
 
-This directory contains React components for the tenancy billing panel in the KitchnTabs Web private app.
+This directory contains React components for the tenancy billing panel in the FabLabOs Web private app.
 
 ## Components
 

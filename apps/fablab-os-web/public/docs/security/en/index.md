@@ -2,7 +2,7 @@
 
 From confidential customer details, to payment information or simply menu catalogues and order history, our Merchants trust us to keep their data secure, private, and available whenever they need it. We take that responsibility seriously.
 
-At KitchnTabs, we maintain a security system that:
+At FabLabOs, we maintain a security system that:
 
 - **Prevents** all unauthorized access;
 - **Supports** continuous monitoring for potential vulnerabilities; and
@@ -60,7 +60,7 @@ Please see our full [Privacy Policy](/docs/privacy) for more details.
 
 ## Report a Vulnerability
 
-If you discover any security vulnerability in KitchnTabs, please email us at: **security@kitchntabs.com**
+If you discover any security vulnerability in FabLabOs, please email us at: **security@kitchntabs.com**
 
 We'll do our best to fix it right away.
 

@@ -103,7 +103,7 @@ const getDefaultAppCommon = () => {
         // Replace the default sidebar actions (BridgedLocalesMenuButton, etc.) with our custom headerToolBar
         headerToolBarReplace: false,
         panelSettings: {
-            appName: 'KitchnTabs.com',
+            appName: 'FabLabOs.com',
             horizontalLogo: tenantImages?.horizontal_logo?.original || horizontalLogo,
             squaredLogo: tenantImages?.squared_logo?.original || squaredLogo,
             loginBackground: tenantImages?.banner?.original || LoginBackground,

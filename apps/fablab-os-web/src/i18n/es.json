@@ -361,6 +361,6 @@
     "mall.session.order_status.not_shipped_text": "Tu orden no ha sido enviada. Si tienes alguna pregunta, por favor contacta al soporte.",
 
     "mall.session.order_status_overall": "Estado General del Pedido",
-    "mall.session.stores_progress": "Progreso por Tienda",
+    "mall.session.stores_progress": "Progreso por Laboratorio",
     "mall.session.items": "artículos"
 }

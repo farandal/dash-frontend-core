@@ -1,7 +1,7 @@
 /**
  * KitchnTabsBootstrap
  * 
- * Main bootstrap component for the KitchnTabs application.
+ * Main bootstrap component for the FabLabOs application.
  * Lightweight component that handles URL routing and renders appropriate app.
  * All initialization logic is delegated to DashBootstrapUtils hooks.
  */

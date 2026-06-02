@@ -465,7 +465,7 @@ const DraggableNotificationDialog: React.FC<DraggableNotificationDialogProps> = 
                                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                                     <StoreIcon color="secondary" />
                                     <Typography variant="body2" color="text.secondary">
-                                        Tienda:
+                                        Laboratorio:
                                     </Typography>
                                     <Chip
                                         label={notification.store}

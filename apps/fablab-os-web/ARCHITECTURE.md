@@ -1,9 +1,9 @@
-# KitchnTabs Application Architecture
+# FabLabOs Application Architecture
 
 > **Version**: 1.0.0  
 > **Last Updated**: December 2025
 
-This document provides a comprehensive overview of the KitchnTabs application architecture, including its structure, key components, data flow, and design patterns.
+This document provides a comprehensive overview of the FabLabOs application architecture, including its structure, key components, data flow, and design patterns.
 
 ---
 
@@ -28,7 +28,7 @@ This document provides a comprehensive overview of the KitchnTabs application ar
 
 ## Overview
 
-KitchnTabs is a **multi-tenant, multi-platform** e-commerce and point-of-sale application built as part of the DASH Platform ecosystem. It serves as an admin panel and storefront management system with support for:
+FabLabOs is a **multi-tenant, multi-platform** e-commerce and point-of-sale application built as part of the DASH Platform ecosystem. It serves as an admin panel and storefront management system with support for:
 
 - 📱 **Mobile** (Android/iOS via Capacitor)
 - 🖥️ **Desktop** (Windows/macOS/Linux via Electron)
@@ -105,7 +105,7 @@ dash-frontend/
 | Prefix | Purpose |
 |--------|---------|
 | `dash-*` | Platform-agnostic shared packages (admin, auth, components, utils) |
-| `kt-*` | KitchnTabs domain-specific packages (ecommerce, tabs, mall, kiosk) |
+| `kt-*` | FabLabOs domain-specific packages (ecommerce, tabs, mall, kiosk) |
 
 ---
 

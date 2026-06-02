@@ -1,7 +1,7 @@
 /**
  * KitchnTabsPrivateApp
  * 
- * Private (authenticated) app for KitchnTabs.
+ * Private (authenticated) app for FabLabOs.
  * Uses kt-* packages for all domain-specific functionality.
  */
 import React, { useMemo, useCallback, useEffect, Suspense, useState, PropsWithChildren } from 'react';

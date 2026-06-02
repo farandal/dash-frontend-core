@@ -2,7 +2,7 @@
 
 Desde los datos confidenciales de los clientes, hasta la información de pago o simplemente los catálogos de menús e historial de pedidos, nuestros Comerciantes confían en nosotros para mantener sus datos seguros, privados y disponibles cuando los necesiten. Nos tomamos esa responsabilidad muy en serio.
 
-En KitchnTabs, mantenemos un sistema de seguridad que:
+En FabLabOs, mantenemos un sistema de seguridad que:
 
 - **Previene** todo acceso no autorizado;
 - **Soporta** monitoreo continuo de vulnerabilidades potenciales; y
@@ -60,7 +60,7 @@ Por favor consulte nuestra [Política de Privacidad](/docs/privacy) completa par
 
 ## Reportar una Vulnerabilidad
 
-Si descubre alguna vulnerabilidad de seguridad en KitchnTabs, por favor envíenos un correo a: **security@kitchntabs.com**
+Si descubre alguna vulnerabilidad de seguridad en FabLabOs, por favor envíenos un correo a: **security@kitchntabs.com**
 
 Haremos nuestro mejor esfuerzo para solucionarlo de inmediato.
 
@@ -77,7 +77,7 @@ Haremos nuestro mejor esfuerzo para solucionarlo de inmediato.
 
 Verificamos el acceso a cuentas de Comerciantes a través de múltiples capas de seguridad:
 
-- **Autenticación basada en OAuth 2.0** con combinación de código-de-tienda/correo/contraseña
+- **Autenticación basada en OAuth 2.0** con combinación de código-de-laboratorio/correo/contraseña
 - **Autenticación de Dos Factores (2FA)** disponible y altamente recomendada para todos los comerciantes
 - Las contraseñas se almacenan usando **hash bcrypt con sales únicas** por usuario
 - **Pruebas automatizadas de desafío-respuesta (CAPTCHA)** para prevenir ataques de fuerza bruta e intentos de acceso automatizado

@@ -72,7 +72,7 @@ export default function DownloadCta() {
           </Typography>
         </Box>
 
-        {/* What is KitchnTabs */}
+        {/* What is FabLabOs */}
         <Box sx={{ mb: 6 }}>
           <Typography variant="h5" component="h3" sx={{ fontWeight: 600, mb: 2 }}>
             {translate("landing.download.what_is_title")}

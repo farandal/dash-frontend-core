@@ -70,14 +70,16 @@ const dataProvider = {
             const response = await axios.get(url);
             // The normal output for list pagination from the backend is  response?.data?.data the first data is part of the axios response, the second data is the actual attribute react-admin backend controller implements.
             // But in extraneuous cases, of a custom controller for example, that has not the data key, it will be appended. 
-            let results = {};
-           
-            if(typeof response.data.data.total !== 'undefined') {
+            let results = { data: [], total: 0 };
+
+            if (typeof response.data?.data?.total !== 'undefined') {
                 results = response.data.data; // custom endpoints with data.total
-            } else if (response?.data) {
-                results = response.data;
+            } else if (response?.data?.data && Array.isArray(response.data.data)) {
+                results = { data: response.data.data, total: response.data.total || response.data.data.length };
+            } else if (response?.data && Array.isArray(response.data)) {
+                results = { data: response.data, total: response.data.length };
             } else {
-                results = { data: response, total: parseInt(response.headers['content-range']) || 0 };
+                results = { data: [], total: parseInt(response.headers['content-range']) || 0 };
             }
           
             /* const ret = {
@@ -99,6 +101,7 @@ const dataProvider = {
             return results;
         } catch (e: any) {
             window.dispatchEvent(new MessageEvent('DASHGlobalError', { data: { error: e, config: { dialog: true } } }));
+            return { data: [], total: 0 };
         } finally {
             window.dispatchEvent(
                 new MessageEvent('auto-admin-loading-state', {
@@ -184,17 +187,29 @@ const dataProvider = {
 
         try {
             const response = await axios.get(url);
-            const results = response.data;
+            const payload = response.data;
+
+            let data: any[] = [];
+            if (Array.isArray(payload?.data)) {
+                data = payload.data;
+            } else if (Array.isArray(payload?.data?.data)) {
+                data = payload.data.data;
+            } else if (Array.isArray(payload)) {
+                data = payload;
+            }
+
+            const total =
+                payload?.total ??
+                payload?.data?.total ??
+                (parseInt(response.headers['content-range']) || data.length);
 
             return {
-                data: results.data,
-                total:
-                    results.data && results.data.total
-                        ? results.data.total
-                        : parseInt(response.headers['content-range']) || 0,
+                data,
+                total,
             };
         } catch (e: any) {
             //window.dispatchEvent(new MessageEvent('DASHGlobalError', { data: { error: e } }));
+            return { data: [], total: 0 };
         }
     },
 

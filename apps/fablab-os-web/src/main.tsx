@@ -1,5 +1,5 @@
 /**
- * KitchnTabs Application Entry Point
+ * FabLabOs Application Entry Point
  * 
  * OPTIMIZED: This entry point has been restructured to minimize the initial bundle size.
  * - Uses lightweight AppWrapperLight instead of react-admin dependent AppWrapper

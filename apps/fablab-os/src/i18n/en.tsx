@@ -354,10 +354,10 @@ const customEn = {
         // System resources
         system: {
             tenants: {
-                label: 'Clients',
-                menu_list: 'Clients',
+                label: 'Labs',
+                menu_list: 'Labs',
                 menu_trash: 'Trash',
-                main_action: 'Add Client',
+                main_action: 'Add Lab',
                 filter_name: 'Name',
             },
             roles: {

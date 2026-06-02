@@ -2,7 +2,7 @@
 title: Privacy Policy - English
 ---
 
-# KitchnTabs Privacy Policy
+# FabLabOs Privacy Policy
 
 **Effective Date:** December 22, 2025
 
@@ -10,7 +10,7 @@ title: Privacy Policy - English
 
 ## 1. Introduction
 
-Welcome to KitchnTabs ("we," "us," or "our"). We are committed to protecting your privacy and ensuring the security of your personal information. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our restaurant management platform, including our website, mobile applications, and related services (collectively, the "Services").
+Welcome to FabLabOs ("we," "us," or "our"). We are committed to protecting your privacy and ensuring the security of your personal information. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our restaurant management platform, including our website, mobile applications, and related services (collectively, the "Services").
 
 By using our Services, you agree to the collection and use of information in accordance with this Privacy Policy. If you do not agree with our policies and practices, please do not use our Services.
 
@@ -183,7 +183,7 @@ Your continued use of our services after the effective date of changes constitut
 
 If you have any questions about this Privacy Policy or our data practices, please contact us:
 
-**KitchnTabs**
+**FabLabOs**
 Email: privacy@kitchntabs.com
 Address: [Your Business Address]
 Phone: [Your Phone Number]
