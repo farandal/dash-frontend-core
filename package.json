@@ -134,8 +134,8 @@
     "build:config:android:prod": "cross-env MODE=production CUSTOM_MODE=pinoywok.ngrok TARGET_TYPE=mobile PLATFORM=android APP_PATH=apps/kitchntabs NODE_OPTIONS=--max-old-space-size=4048 node build_config.js",
     "build:packages": "pnpm -r --filter './packages/*' run build",
     "publish:packages": "pnpm run build:packages && pnpm -r --filter './packages/*' publish --access public --no-git-checks",
-    "publish:dashadmin": "pnpm --filter @dashadmin/dash-admin run build && pnpm --filter @dashadmin/dash-admin publish --access public --no-git-checks",
-    "build:dash-admin": "pnpm --filter @dashadmin/dash-admin run build"
+    "publish:dashadmin": "pnpm --filter dash-admin run build && pnpm --filter dash-admin publish --access public --no-git-checks",
+    "build:dash-admin": "pnpm --filter dash-admin run build"
   },
   "packageManager": "pnpm@9.15.0",
   "dependencies": {
@@ -161,8 +161,8 @@
     "axios": "^1.11.0",
     "clsx": "^2.1.1",
     "colorthief": "^2.6.0",
-    "@dashadmin/dash-eslint": "workspace:*",
-    "@dashadmin/dash-prettier": "workspace:*",
+    "dash-eslint": "workspace:*",
+    "dash-prettier": "workspace:*",
     "electron-store": "^10.1.0",
     "electron-updater": "^6.6.2",
     "embla-carousel-react": "^8.6.0",

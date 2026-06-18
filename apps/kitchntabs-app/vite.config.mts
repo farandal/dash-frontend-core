@@ -1,4 +1,4 @@
-import { defineConfig, loadEnv } from "vite";
+﻿import { defineConfig, loadEnv } from "vite";
 import react from "@vitejs/plugin-react";
 import path from "path";
 import fs from "fs";
@@ -57,20 +57,20 @@ const loadBuildConfig = (): IBuildConfig => {
       const configContent = fs.readFileSync(configPath, "utf8");
       const buildConfig = JSON.parse(configContent);
       console.log(
-        "📋 Loaded build_config.json:",
+        "ðŸ“‹ Loaded build_config.json:",
         buildConfig.buildId || "unknown"
       );
       return buildConfig;
     }
   } catch (error) {
     console.warn(
-      "⚠️ Warning: Could not load build_config.json:",
+      "âš ï¸ Warning: Could not load build_config.json:",
       error.message
     );
   }
 
   console.log(
-    "📋 No build_config.json found, using environment variables only"
+    "ðŸ“‹ No build_config.json found, using environment variables only"
   );
   return {};
 };
@@ -202,7 +202,7 @@ export default ({ mode }) => {
   // Load custom env file if customMode is specified
   let customEnvVars: IEnvVars = {};
   if (customMode && fs.existsSync(envPath)) {
-    console.log("📂 Loading custom env file:", envPath);
+    console.log("ðŸ“‚ Loading custom env file:", envPath);
     const envContent = fs.readFileSync(envPath, "utf8");
     const lines = envContent.split("\n");
     for (const line of lines) {
@@ -221,9 +221,9 @@ export default ({ mode }) => {
         customEnvVars[key] = value;
       }
     }
-    console.log("📋 Loaded custom env vars:", Object.keys(customEnvVars));
+    console.log("ðŸ“‹ Loaded custom env vars:", Object.keys(customEnvVars));
   } else if (customMode) {
-    console.warn("⚠️ Custom env file not found:", envPath);
+    console.warn("âš ï¸ Custom env file not found:", envPath);
   }
   
   // Merge env vars - custom overrides base
@@ -533,7 +533,7 @@ export default ({ mode }) => {
         name: "warn-preload-import",
         resolveId(source) {
           if (source.includes("electron/preload/index")) {
-            this.warn("⚠️  Attempted to import preload script in renderer!");
+            this.warn("âš ï¸  Attempted to import preload script in renderer!");
           }
           return null;
         },
@@ -552,7 +552,7 @@ export default ({ mode }) => {
             const isLocalhost = /^(localhost|127\.0\.0\.1|0\.0\.0\.0|\d+\.\d+\.\d+\.\d+)$/i.test(hmrHost);
             const socketHost = isLocalhost ? `${hmrHost}:${hmrPort}` : hmrHost;
             const socketProtocol = isDevelopment ? "ws" : "wss";
-            console.log(`🔧 Injecting HMR URL: ${socketProtocol}://${socketHost}/hmr/`);
+            console.log(`ðŸ”§ Injecting HMR URL: ${socketProtocol}://${socketHost}/hmr/`);
             console.log(`   Host type: ${isLocalhost ? 'localhost/IP (with port)' : 'domain (no port)'}`);
             
             // Override the WebSocket URL construction
@@ -592,16 +592,16 @@ export default ({ mode }) => {
         name: "build-config-info",
         buildStart() {
           if (buildConfig.buildId) {
-            console.log(`🔧 Building with config: ${buildConfig.buildId}`);
+            console.log(`ðŸ”§ Building with config: ${buildConfig.buildId}`);
             if (buildConfig.customModeConfig?.apiBaseUrl) {
               console.log(
-                `🌐 API Base URL: ${buildConfig.customModeConfig.apiBaseUrl}`
+                `ðŸŒ API Base URL: ${buildConfig.customModeConfig.apiBaseUrl}`
               );
             }
 
 
             if (config.server && config.server.hmr) {
-            console.log('🔧 VITE HMR CLIENT CONFIG 🔧');
+            console.log('ðŸ”§ VITE HMR CLIENT CONFIG ðŸ”§');
             console.log('clientHost:', config.server.hmr.clientHost);
             console.log('protocol:', config.server.hmr.protocol);
             console.log('path:', config.server.hmr.path);
@@ -714,9 +714,9 @@ export default ({ mode }) => {
 
       // EXCLUDE: Let these be handled normally (workspace packages)
       exclude: [
-        "@dashadmin/dash-admin",
-        "@dashadmin/dash-auto-admin",
-        "@dashadmin/dash-admin-state",
+        "dash-admin",
+        "dash-auto-admin",
+        "dash-admin-state",
         "@tanstack/react-query",
         "colorthief",
         "@nosferatu500/react-sortable-tree",
@@ -800,3 +800,4 @@ export default ({ mode }) => {
 
   return defineConfig(config);
 };
+
