@@ -37,6 +37,7 @@ public class MainActivity extends BridgeActivity {
     // Flag to track if we're on a Xiaomi/MIUI device
     private boolean isXiaomiDevice = false;
     
+    /*
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         // Detect Xiaomi devices before calling super (which initializes Capacitor)
@@ -85,7 +86,7 @@ public class MainActivity extends BridgeActivity {
         
         // Configure WebView for media capture
         configureWebViewForMediaCapture();
-        /*
+      
         // Add test crash button for Crashlytics setup
         Button crashButton = new Button(this);
         crashButton.setText("Test Crash");
@@ -99,8 +100,71 @@ public class MainActivity extends BridgeActivity {
             ViewGroup.LayoutParams.MATCH_PARENT,
             ViewGroup.LayoutParams.WRAP_CONTENT));
 
-        */
+    
     }
+
+    */
+
+       @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        // Detect Xiaomi devices before calling super (which initializes Capacitor)
+        detectXiaomiDevice();
+        
+        // Wrap super.onCreate in try-catch for Xiaomi-specific permission issues
+        try {
+            super.onCreate(savedInstanceState);
+        } catch (Exception e) {
+            Log.e(TAG, "Error in super.onCreate, attempting recovery", e);
+            handleCapacitorInitError(e);
+            // Try again after handling the error
+            try {
+                super.onCreate(savedInstanceState);
+            } catch (Exception e2) {
+                Log.e(TAG, "Recovery failed, continuing with limited functionality", e2);
+                FirebaseCrashlytics.getInstance().recordException(e2);
+            }
+        }
+        
+        // Register the VoiceRecorder plugin with error handling
+        safeRegisterPlugin(VoiceRecorder.class);
+        
+        // Initialize Pusher Push Notifications
+        try {
+            Log.d(TAG, "Initializing Pusher Push Notifications");
+            //PushNotifications.start(getApplicationContext(), "8e70908f-1020-47ed-b3bd-57d4c177f1f1");
+            Log.d(TAG, "Pusher Push Notifications initialized successfully");
+            
+            // Subscribe to the "hello" interest
+            //PushNotifications.addDeviceInterest("hello");
+            Log.d(TAG, "Subscribed to 'hello' interest");
+        } catch (Exception e) {
+            Log.e(TAG, "Error initializing Pusher Push Notifications", e);
+        }
+        
+        // Create notification channel for FCM
+        createNotificationChannel();
+        
+        // 🚀 REMOVED: requestMicrophonePermission() and configureWebViewForMediaCapture()
+        // They have been moved to the visible app lifecycle phase below.
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        Log.d(TAG, "App moving to onStart lifecycle window.");
+        
+        // 1. 🚀 Request system-level microphone permission when the view goes live
+        requestMicrophonePermission();
+        
+        // 2. 🚀 Safely bind web permissions to the layout view engine
+        if (this.bridge != null && this.bridge.getWebView() != null) {
+            Log.d(AUDIO_TAG, "Bridge interface confirmed active. Configuring WebView client.");
+            configureWebViewForMediaCapture();
+        } else {
+            Log.e(AUDIO_TAG, "WebView permissions registration skipped: bridge layer unavailable.");
+        }
+    }
+
     
     private void requestMicrophonePermission() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) 

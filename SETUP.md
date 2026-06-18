@@ -4,10 +4,10 @@ This is a **pnpm monorepo** (Turborepo) with the following apps:
 
 | App | Path | Purpose |
 |-----|------|---------|
-| `fablab-os` | `apps/fablab-os` | Main desktop/Electron app |
-| `fablab-os-app` | `apps/fablab-os-app` | Web app variant |
-| `fablab-os-web` | `apps/fablab-os-web` | Public web build |
-| `fablab-os-system` | `apps/fablab-os-system` | System/admin panel |
+| `kitchntabs` | `apps/kitchntabs` | Main desktop/Electron app |
+| `kitchntabs-app` | `apps/kitchntabs-app` | Web app variant |
+| `kitchntabs-web` | `apps/kitchntabs-web` | Public web build |
+| `kitchntabs-system` | `apps/kitchntabs-system` | System/admin panel |
 
 ---
 
@@ -90,12 +90,12 @@ This copies the `apps/demo` template into `apps/dash` and sets up the domain app
 
 | Target | Command |
 |--------|---------|
-| Web (fablab-os-app, local) | `pnpm dev:web:fablab-os-app:local` |
-| Web (fablab-os-app, dev) | `pnpm dev:web:fablab-os-app:development` |
-| Web (fablab-os-web, dev) | `pnpm dev:web:fablab-os-web:development` |
-| Web (fablab-os-system, dev) | `pnpm dev:web:fablab-os-system:development` |
-| Electron (dev) | `pnpm dev:electron:fablab-os:development` |
-| Android (dev) | `pnpm dev:android:fablab-os:development` |
+| Web (kitchntabs-app, local) | `pnpm dev:web:kitchntabs-app:local` |
+| Web (kitchntabs-app, dev) | `pnpm dev:web:kitchntabs-app:development` |
+| Web (kitchntabs-web, dev) | `pnpm dev:web:kitchntabs-web:development` |
+| Web (kitchntabs-system, dev) | `pnpm dev:web:kitchntabs-system:development` |
+| Electron (dev) | `pnpm dev:electron:kitchntabs:development` |
+| Android (dev) | `pnpm dev:android:kitchntabs:development` |
 
 ---
 

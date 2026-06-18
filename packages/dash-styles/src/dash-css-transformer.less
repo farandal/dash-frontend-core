@@ -376,8 +376,11 @@
   // Widths
   --min-body-width: 575px;
   --sidebar-mini-drawer-width: 100px;
-  --sidebar-large-width: 255px;
-  --sidebar-small-width: 60px;
+  // Layout dimensions are NOT runtime-injected like colors; they must reference the
+  // LESS vars so per-app overrides in apps/<app>/src/dash-variables.less take effect
+  // (the Vite `additionalData` imports dash defaults -> app overrides -> this transformer).
+  --sidebar-large-width: @sidebar-large-width;
+  --sidebar-small-width: @sidebar-small-width;
   --sidebar-horizontal-height: 120px;
 
   --app-sidebar-width: 230px;

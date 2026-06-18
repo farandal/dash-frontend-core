@@ -185,7 +185,9 @@ function getCustomModeConfig(customMode, envVars) {
         }
     };
 
-    const config = customModeConfigs[customMode] || {
+    // Match both bare keys ('production') and suffixed keys ('kitchntabs.production')
+    const modeSuffix = customMode ? customMode.split('.').pop() : '';
+    const config = customModeConfigs[customMode] || customModeConfigs[modeSuffix] || {
         apiBaseUrl: apiBaseUrl,
         environment: 'development',
         debugMode: true,
@@ -256,6 +258,23 @@ function validateConfig(config) {
     return errors;
 }
 
+function updateElectronMainEntry(appPath) {
+    const pkgPath = path.join(process.cwd(), 'package.json');
+
+    try {
+        const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
+        const mainEntry = `${appPath}/dist-electron/main/index.js`;
+
+        if (pkg.main !== mainEntry) {
+            pkg.main = mainEntry;
+            fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, 2) + '\n', 'utf8');
+            console.log(`📦 Updated package.json "main" to: ${mainEntry}`);
+        }
+    } catch (error) {
+        console.error('❌ Error updating package.json "main" entry:', error.message);
+    }
+}
+
 function writeBuildConfig(config) {
     const configPath = path.join(process.cwd(), 'build_config.json');
     
@@ -314,6 +333,10 @@ function main() {
 
     // Display configuration
     displayConfig(config);
+
+    // Keep the Electron entry point (package.json "main") in sync with APP_PATH,
+    // since electron.vite.config.mts always builds main/preload to `${APP_PATH}/dist-electron`
+    updateElectronMainEntry(config.appPath);
 
     // Write configuration file
     const success = writeBuildConfig(config);
@@ -375,5 +398,6 @@ module.exports = {
     getCustomModeConfig,
     validateConfig,
     writeBuildConfig,
+    updateElectronMainEntry,
     loadEnvFile
 };

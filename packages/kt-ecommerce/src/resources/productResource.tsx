@@ -39,7 +39,8 @@ const productResource: IDashAutoAdminResourceConfig =
 {
     roles: [DASHAppConstants.system.SYSTEM_ROLE, DASHAppConstants.system.TENANT_ROLE],
     component: ResourceTemplate,
-   
+    trash: true,
+
     showComponent: (resourceConfig) => (
         <ProductResourceShow resourceConfig={resourceConfig} />
     ),

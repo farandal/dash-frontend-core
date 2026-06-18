@@ -28,7 +28,7 @@ react-admin 5.14.6
   ÔööÔöÇÔö¼ @mui/material 7.3.10 peer
     ÔööÔöÇÔöÇ @mui/system 7.3.10
 
-fablab-os-app@1.0.0 C:\OSFABLAB\DASH\dash-frontend\apps\fablab-os
+kitchntabs-app@1.0.0 C:\OSFABLAB\DASH\dash-frontend\apps\kitchntabs
 
 dependencies:
 @mui/icons-material 7.3.10
@@ -56,7 +56,7 @@ dash-admin link:../../packages/dash-admin
     ÔööÔöÇÔö¼ @mui/material 7.3.10
       ÔööÔöÇÔöÇ @mui/system 7.3.10
 
-fablab-os-app@1.0.0 C:\OSFABLAB\DASH\dash-frontend\apps\fablab-os-app
+kitchntabs-app@1.0.0 C:\OSFABLAB\DASH\dash-frontend\apps\kitchntabs-app
 
 dependencies:
 @mui/icons-material 7.3.10
@@ -84,7 +84,7 @@ dash-admin link:../../packages/dash-admin
     ÔööÔöÇÔö¼ @mui/material 7.3.10
       ÔööÔöÇÔöÇ @mui/system 7.3.10
 
-fablab-os-app@1.0.0 C:\OSFABLAB\DASH\dash-frontend\apps\fablab-os-system
+kitchntabs-app@1.0.0 C:\OSFABLAB\DASH\dash-frontend\apps\kitchntabs-system
 
 dependencies:
 @mui/icons-material 7.3.10
@@ -112,7 +112,7 @@ dash-admin link:../../packages/dash-admin
     ÔööÔöÇÔö¼ @mui/material 7.3.10
       ÔööÔöÇÔöÇ @mui/system 7.3.10
 
-fablab-os-app@1.0.0 C:\OSFABLAB\DASH\dash-frontend\apps\fablab-os-web
+kitchntabs-app@1.0.0 C:\OSFABLAB\DASH\dash-frontend\apps\kitchntabs-web
 
 dependencies:
 @mui/icons-material 7.3.10

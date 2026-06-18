@@ -222,6 +222,7 @@ const Profile: FC = (_props) => {
 										</IconButton>
 											</div>*/}
                                    
+                                   {"<!-- F -->"}
 									<SingleImageUploader 
 										currentUrl={user?.image_path} 
 										onChange={(file: File) => {

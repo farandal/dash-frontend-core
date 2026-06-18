@@ -277,7 +277,6 @@ const ProductExport: React.FC<ProductExportProps> = () => {
 
       // Check if response is JSON (async export) or binary data (file download)
       const contentType = response.headers['content-type'];
-      debugger;
       if (contentType && contentType.includes('application/json')) {
         // Convert arraybuffer back to JSON for async response
         //const jsonString = new TextDecoder().decode(response.data);
@@ -354,27 +353,19 @@ const handleDownload = async (url: string, filename: string, jobId?: string) => 
     }, {
       maxRedirects: 0, // Don't follow redirects
       validateStatus: (status) => status >= 200 && status < 400, // Accept 3xx as valid
+      responseType: 'blob', // Required for binary files — without this axios corrupts binary data
     });
 
-    // Check if we got a redirect response with a location header
+    // Check if we got a redirect response with a location header (S3 signed URL)
     if (response.status >= 300 && response.status < 400 && response.headers.location) {
-      // Open the S3 URL directly - this bypasses CORS since it's a navigation, not an XHR
       window.open(response.headers.location, '_blank');
       notify('Descarga iniciada', { type: 'success' });
       return;
     }
 
-    // Check if response contains a download_url (JSON response)
-    if (response.data?.download_url) {
-      window.open(response.data.download_url, '_blank');
-      notify('Descarga iniciada', { type: 'success' });
-      return;
-    }
-
-    // If response is a blob (direct file download)
-    if (response.data instanceof Blob || response.headers['content-type']?.includes('application/')) {
-      const blob = new Blob([response.data]);
-      saveAs(blob, filename);
+    // If response is a blob (direct file download from local storage)
+    if (response.data instanceof Blob) {
+      saveAs(response.data, filename);
       notify('Archivo descargado exitosamente', { type: 'success' });
       return;
     }
