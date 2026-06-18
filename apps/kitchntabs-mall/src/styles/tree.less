@@ -1,0 +1,139 @@
+
+// Tree
+.dash-tree {
+  width: 100%;
+
+  [role="tree"] {
+    width: 100% !important;
+    height: auto !important;
+    min-height: 500px;
+  }
+
+  [role="treeitem"] {
+    width: 100% !important;
+  }
+
+  .row {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: 8px 12px;
+    transition: background-color 0.2s ease;
+
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.05);
+    }
+
+    // Drag indicator icon
+    .MuiSvgIcon-root[data-testid="DragIndicatorIcon"] {
+      flex-shrink: 0;
+      cursor: grab;
+
+      &:active {
+        cursor: grabbing;
+      }
+    }
+
+    // Folder icon container
+    div:has(.MuiSvgIcon-root[data-testid="FolderOpenIcon"]) {
+      flex-shrink: 0;
+    }
+
+    // Text content
+    .row-contents {
+      flex: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin: 0;
+      padding: 0 8px;
+    }
+
+    // Action buttons group
+    .MuiButtonGroup-root {
+      opacity: 0.7;
+      transition: opacity 0.2s ease;
+      margin-left: auto;
+      flex-shrink: 0;
+
+      &:hover {
+        opacity: 1;
+      }
+
+      // Individual action buttons
+      .MuiIconButton-root {
+        padding: 4px;
+
+        &:hover {
+          background-color: rgba(0, 0, 0, 0.08);
+        }
+      }
+    }
+  }
+
+  // Container that holds the virtualized list
+  & > div[style*="position: relative"] {
+    width: 100% !important;
+
+    & > div[style*="position: absolute"] {
+      width: 100% !important;
+    }
+
+    & > div[style*="width: 100%"] {
+      width: 100% !important;
+    }
+  }
+
+  // Responsive adjustments
+  @media (max-width: 768px) {
+    .row {
+      padding: 10px 6px;
+
+      .MuiButtonGroup-root {
+        // Show buttons by default on mobile for better usability
+        opacity: 1;
+      }
+
+      // Make text smaller on mobile
+      .row-contents {
+        font-size: 14px;
+      }
+    }
+  }
+
+  // Extra small screens
+  @media (max-width: 480px) {
+    .row {
+      .MuiButtonGroup-root {
+        // Stack buttons vertically on very small screens if needed
+        .MuiIconButton-root {
+          padding: 3px;
+
+          .MuiSvgIcon-root {
+            font-size: 18px;
+          }
+        }
+      }
+    }
+  }
+}
+
+// Ensure proper scrolling behavior
+div[role="tree"] {
+  overflow: auto !important;
+
+  &::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: var(--scroll_thumb-color);
+    border-radius: 2px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: var(--scroll_track);
+    border-radius: 0;
+  }
+}

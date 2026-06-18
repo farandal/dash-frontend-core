@@ -123,7 +123,7 @@ const systemResources: IAppResourceConfig[] = [
                 inShow: true,
                 inCreate: false,
             },
-            {
+            /*{
                 tab: 'Account',
                 label: 'Slug',
                 attribute: 'slug',
@@ -132,6 +132,18 @@ const systemResources: IAppResourceConfig[] = [
                 inEdit: false,
                 inShow: true,
                 inCreate: false,
+            },*/
+            {
+                tab: 'Account',
+                label: 'Slug (URL)',
+                attribute: 'slug',
+                type: String,
+                inList: false,
+                validate: (value: string) => {
+                    if (!value) throw new Error('El slug es requerido');
+                    if (!/^[a-z0-9-]+$/.test(value)) throw new Error('Solo letras minúsculas, números y guiones');
+                    if (value.length > 50) throw new Error('Máximo 50 caracteres');
+                },
             },
             {
                 tab: 'Account',
@@ -370,7 +382,7 @@ const systemResources: IAppResourceConfig[] = [
             )
         },
         model: 'system/tenant',
-        label: 'Laboratories',
+        label: 'resource.system.tenants.menu_list',
         trash: true,
         schema: tenantSystemAdminSchema,
         //references: [{ reference: 'roles', target: 'role', schema: rolesSchema }]

@@ -138,6 +138,17 @@ const LaravelEchoMgr = (): ILaravelEchoManager => {
     }
   }, [publicHook?.lastEvent]);
 
+  // Auto-clear lastEvent shortly after it's delivered. Currently-mounted consumers
+  // already captured the value in their effect closures by the time this runs, but
+  // any component that mounts later (e.g. after switching resources) sees null
+  // instead of replaying a stale notification. This ensures every event is acted on
+  // at most once, regardless of how many components observe lastEvent or when they mount.
+  useEffect(() => {
+    if (lastEvent === null) return;
+    const timeoutId = window.setTimeout(() => setLastEvent(null), 0);
+    return () => window.clearTimeout(timeoutId);
+  }, [lastEvent]);
+
   return { events, lastEvent, clear };
 };
 
