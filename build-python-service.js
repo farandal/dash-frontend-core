@@ -132,17 +132,23 @@ function prepareElectronConfigFiles(customMode) {
     }
   }
   
-  // Single target: config.yaml (platform-agnostic)
-  const targetPath = path.join(appsDir, 'config.yaml');
-  
+  // Copy to multiple targets:
+  // 1. Electron packaging (apps/kitchntabs/config.yaml)
+  // 2. Python service build (dash-python-service/config.{CUSTOM_MODE}.yaml)
+  const electronTarget = path.join(appsDir, 'config.yaml');
+  const pythonServiceTarget = path.join(PYTHON_SERVICE_DIR, sourceConfigName);
+
   console.log(`   Source: ${sourceConfigName}`);
-  console.log(`   Target: config.yaml`);
-  
-  // Simply copy the source config to config.yaml - no merging needed
-  fs.copyFileSync(sourceConfig, targetPath);
-  
-  console.log(`   ✅ Copied ${sourceConfigName} → config.yaml`);
-  console.log('   Config file prepared for Electron packaging.');
+  console.log(`   Electron Target: ${path.join(appsDir, 'config.yaml')}`);
+  console.log(`   Python Service Target: ${pythonServiceTarget}`);
+
+  // Copy the source config to both targets
+  fs.copyFileSync(sourceConfig, electronTarget);
+  fs.copyFileSync(sourceConfig, pythonServiceTarget);
+
+  console.log(`   ✅ Copied ${sourceConfigName} → config.yaml (Electron)`);
+  console.log(`   ✅ Copied ${sourceConfigName} → Python service`);
+  console.log('   Config files prepared for Electron packaging.');
 }
 
 // Check if Python service directory exists
