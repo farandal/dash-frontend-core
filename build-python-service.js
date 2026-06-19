@@ -75,8 +75,12 @@ function getDockerConfigArg(customMode) {
 // This ensures the Python service uses the correct API endpoints for the build
 function prepareElectronConfigFiles(customMode) {
   console.log('\n📋 Preparing Electron config file...');
-  
-  const appsDir = path.join(FRONTEND_DIR, 'apps', 'kitchntabs');
+
+  // Check both kitchntabs and kitchntabs-app directories
+  let appsDir = path.join(FRONTEND_DIR, 'apps', 'kitchntabs-app');
+  if (!fs.existsSync(appsDir)) {
+    appsDir = path.join(FRONTEND_DIR, 'apps', 'kitchntabs');
+  }
   
   // Primary: Use frontend config file matching CUSTOM_MODE exactly
   // e.g., CUSTOM_MODE=kitchntabs.development → config.kitchntabs.development.yaml
