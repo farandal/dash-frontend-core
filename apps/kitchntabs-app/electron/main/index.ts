@@ -257,7 +257,7 @@ const DEV_PYTHON_ENV: string = getDevPythonEnvPath();
 log.info(join(appPath, VITE_PROJECT_PATH, "dist/index.html"));
 log.info(join(appPath, VITE_PROJECT_PATH, "src/index.html"));
 log.info("BUILD_ENV:", BUILD_ENV);
-const indexHtml = BUILD_ENV === "prod" ? path.join(app.getAppPath(),"apps/kitchntabs/dist/index.html"): path.join(appPath,"src/index.html");
+const indexHtml = BUILD_ENV === "prod" ? path.join(app.getAppPath(),"apps/kitchntabs-app/dist/index.html"): path.join(appPath,"src/index.html");
 
 
 if (fs.existsSync(indexHtml)) {
