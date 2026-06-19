@@ -328,9 +328,9 @@ export const processCustomNotification = async (notification: any): Promise<{ al
     }
 
     if (play) {
-      
+
         console.log("🚨 Playing digital watch alarm for new order...");
-        
+
         // Retrieve settings from AuthPersistenceService
         let alarmSettings: AlarmSettings = {};
         try {
@@ -346,9 +346,33 @@ export const processCustomNotification = async (notification: any): Promise<{ al
         // Play the digital watch alarm
         // This returns a Promise that resolves when alarm is complete
         await playDigitalWatchAlarm(alarmSettings);
-        
+
         console.log("✅ Alarm sequence completed - TTS can now play");
-      
+
+        // Trigger TTS (text-to-speech) for notifications that play alarms
+        try {
+            const dashService = (window as any).DashIPCService;
+            if (dashService?.speak) {
+                let speechMessage = '';
+
+                // Determine message based on notification type
+                if (notification?.notificationPayload?.class === "MallStoreAssistanceNotification") {
+                    speechMessage = notification?.data?.message || "Asistencia requerida";
+                } else if (isConfirmedStatus) {
+                    speechMessage = notification?.data?.message || `Cocina, ${marketplace} confirmada`;
+                }
+
+                if (speechMessage) {
+                    console.log(`🔊 Sending TTS message: "${speechMessage}"`);
+                    dashService.speak({ message: speechMessage, lang: 'es' });
+                }
+            } else {
+                console.warn('DashIPCService.speak not available');
+            }
+        } catch (err) {
+            console.error('Error triggering TTS:', err);
+        }
+
         // Also show a browser notification if permissions allow
         if ('Notification' in window && Notification.permission === 'granted') {
             new Notification(`Nueva Orden de ${marketplace}`, {
@@ -357,7 +381,7 @@ export const processCustomNotification = async (notification: any): Promise<{ al
                 //tag: tag
             });
         }
-        
+
         return { alarmCompleted: true };
     }
     
