@@ -1,6 +1,6 @@
 const path = require('path');
 const fs = require('fs');
-const dashPackage = require('./apps/kitchntabs/package.json');
+const dashPackage = require('./apps/kitchntabs-app/package.json');
 
 const platform = process.platform;
 
@@ -69,7 +69,7 @@ module.exports = {
     const minimalPackage = {
       name: dashPackage.name,
       version: dashPackage.version,
-      main: 'apps/kitchntabs/dist-electron/main/index.js',
+      main: 'apps/kitchntabs-app/dist-electron/main/index.js',
       dependencies: {}  // Empty - all bundled by Vite
     };
     
@@ -157,9 +157,9 @@ module.exports = {
   files: [
   "electron-config.yaml",
   "resources/sounds/**/*",
-  "apps/kitchntabs/dist/**",
-  "apps/kitchntabs/dist-electron/**",
-  "apps/kitchntabs/electron-config.prod.yaml",
+  "apps/kitchntabs-app/dist/**",
+  "apps/kitchntabs-app/dist-electron/**",
+  "apps/kitchntabs-app/electron-config.prod.yaml",
   // Exclude all node_modules since Vite bundles everything
   "!**/node_modules/**",
   "!**/node_modules",
@@ -303,9 +303,9 @@ module.exports = {
     ]),
     // YAML configuration file - single config.yaml for all platforms
     // The correct config is prepared by build-python-service.js based on CUSTOM_MODE
-    // Source config (e.g., config.kitchntabs.ngrok.yaml) is copied to apps/dash/config.yaml
+    // Source config (e.g., config.kitchntabs.ngrok.yaml) is copied to apps/kitchntabs-app/config.yaml
     {
-      from: path.resolve(__dirname, 'apps/kitchntabs/config.yaml'),
+      from: path.resolve(__dirname, 'apps/kitchntabs-app/config.yaml'),
       to: 'config.yaml'
     },
     // Icons for runtime use
@@ -315,7 +315,7 @@ module.exports = {
     },
     // Sound files for notifications and welcome messages
     {
-      from: path.resolve(__dirname, 'apps/kitchntabs/electron/assets'),
+      from: path.resolve(__dirname, 'apps/kitchntabs-app/electron/assets'),
       to: 'sounds',
       filter: ['*.mp3', '*.wav', '*.ogg']
     },
