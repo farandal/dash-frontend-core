@@ -1,13 +1,103 @@
-# Building Electron App for Debian AMD64 on Windows
+# Building Electron App for Debian AMD64
 
-This guide walks through building and packaging the KitchenTabs Electron application for Debian AMD64 architecture on Windows using WSL2.
+This guide walks through building and packaging the KitchenTabs Electron application for Debian AMD64 architecture.
+
+- **Windows Users**: Use WSL2 (Ubuntu) to build Linux packages
+- **macOS Users**: Build directly on macOS using native tools
 
 ## Prerequisites
+
+### macOS
+
+- macOS 11+ (Intel or Apple Silicon)
+- Xcode Command Line Tools
+- Homebrew package manager
+- Node.js v20.19.0+
+- npm v9.6.7+
+
+Install Xcode Command Line Tools:
+```bash
+xcode-select --install
+```
+
+Install Homebrew (if not already installed):
+```bash
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+```
+
+Install build dependencies:
+```bash
+brew install ruby@3.0 node@20
+# Add Ruby to PATH if needed
+echo 'export PATH="/usr/local/opt/ruby@3.0/bin:$PATH"' >> ~/.zshrc
+```
+
+### Windows (using WSL2)
 
 - Windows 10/11 with WSL2 enabled
 - Ubuntu 20.04+ distribution installed in WSL2
 - Node.js v20.19.0+ (in WSL)
 - npm v9.6.7+ (in WSL)
+
+---
+
+## macOS Build Instructions
+
+### macOS Step 1: Install Build Tools
+
+```bash
+# Install fpm via gem (required for creating .deb packages)
+sudo gem install fpm
+
+# Install pnpm
+npm install -g pnpm@9.15.0
+
+# Verify installations
+fpm --version
+pnpm --version
+```
+
+### macOS Step 2: Navigate to Project
+
+```bash
+cd /path/to/KITCHNTABS/kitchntabs-frontend
+```
+
+### macOS Step 3: Build Release for Debian AMD64
+
+```bash
+# Production release (without publishing)
+pnpm config:electron:kitchntabs-app:production && \
+turbo build --filter=kitchntabs-app --no-cache && \
+node build-python-service.js && \
+electron-icon-builder --input=./assets/logo-squared.png --output=./ && \
+vite build -c electron.vite.config.mts && \
+cross-env NODE_OPTIONS=--max-old-space-size=8096 node build-electron.js \
+  --config electron-builder.config.js \
+  --linux deb --x64
+```
+
+Or use the npm script:
+
+```bash
+# Development build
+pnpm release:electron:kitchntabs-app:debian:amd64:development
+
+# Production build (no publishing)
+# Modify the script in package.json to remove --publish always, or run manually
+```
+
+### macOS Step 4: Locate Output
+
+The `.deb` package will be created at:
+
+```
+release/kitchntabs-1.3.15-amd64.deb
+```
+
+---
+
+## Windows Build Instructions (WSL2)
 
 ### Check WSL Distributions
 
@@ -179,9 +269,18 @@ Copy-Item -Path "\\wsl$\Ubuntu\mnt\c\KITCHNTABS\kitchntabs-frontend\release\kitc
 
 ## Troubleshooting
 
-### Issue: "fpm: command not found"
+### macOS: "fpm: command not found"
 
-**Solution:** Ensure fpm is installed:
+**Solution:** Install fpm via gem:
+```bash
+sudo gem install fpm
+# If using Ruby 3.0+:
+sudo gem install -n /usr/local/bin fpm
+```
+
+### Windows (WSL): "fpm: command not found"
+
+**Solution:** Ensure fpm is installed in WSL:
 ```bash
 sudo apt-get install -y ruby-dev
 sudo gem install fpm
@@ -197,6 +296,27 @@ cd ../kitchntabs-frontend
 ```
 
 If Docker isn't available, the build will proceed with a warning but may fail during packaging.
+
+### macOS: "permission denied" when installing fpm
+
+**Solution:** Use sudo or install in user directory:
+```bash
+# Option 1: Use sudo
+sudo gem install fpm
+
+# Option 2: Install in user directory
+gem install --user-install fpm
+# Then add to PATH:
+export PATH="~/.gem/ruby/3.0.0/bin:$PATH"
+```
+
+### macOS: "xcrun: error: SDK \"macosx\" cannot be located" (Apple Silicon)
+
+**Solution:** Install Xcode command line tools:
+```bash
+xcode-select --install
+sudo xcode-select --reset
+```
 
 ### Issue: "Cannot find module './apps/kitchntabs/package.json'"
 
@@ -303,3 +423,26 @@ For issues:
 5. Review the electron-builder config for file paths
 
 See `electron-builder.config.js` for advanced configuration options.
+
+## Platform Comparison
+
+| Task | macOS | Windows (WSL2) |
+|------|-------|----------------|
+| **Prerequisites** | Xcode CLT, Homebrew | WSL2, Ubuntu |
+| **Install fpm** | `brew install fpm` or `gem install fpm` | `sudo apt-get install ruby-dev` + `sudo gem install fpm` |
+| **Install pnpm** | `npm install -g pnpm@9.15.0` | `sudo npm install -g pnpm@9.15.0` |
+| **Build command** | Run directly in terminal | Run inside WSL with `wsl -d Ubuntu` or use the npm scripts |
+| **Output location** | `release/kitchntabs-*.deb` | `release/kitchntabs-*.deb` |
+| **Time to build** | ~5-10 minutes | ~5-10 minutes |
+
+## Running Builds from Windows PowerShell with WSL
+
+If you're on Windows and want to run the build from PowerShell without entering WSL:
+
+```powershell
+# Development build
+wsl -d Ubuntu -- bash -c "cd /mnt/c/KITCHNTABS/kitchntabs-frontend && pnpm release:electron:kitchntabs-app:debian:amd64:development"
+
+# Production build (without publishing)
+wsl -d Ubuntu -- bash -c "cd /mnt/c/KITCHNTABS/kitchntabs-frontend && pnpm config:electron:kitchntabs-app:production && turbo build --filter=kitchntabs-app --no-cache && node build-python-service.js && electron-icon-builder --input=./assets/logo-squared.png --output=./ && vite build -c electron.vite.config.mts && NODE_OPTIONS=--max-old-space-size=8096 node build-electron.js --config electron-builder.config.js --linux deb --x64"
+```
