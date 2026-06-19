@@ -503,15 +503,15 @@ const speakMessage = (message: string, lang?: string) => {
   try {
     const speechLang = lang || config?.SPEECH_LANGUAGE || 'es';
     log.info(`Speaking message: "${message}" (lang: ${speechLang})`);
-    
+
     let speechCmd: string;
     let speechArgs: string[];
-    
+
     if (BUILD_ENV === "prod") {
       // Production: use compiled speech service binary
       speechCmd = process.platform === 'win32' ? `"${SPEECH_SERVICE_PATH_PROD}"` : SPEECH_SERVICE_PATH_PROD;
       speechArgs = [message, speechLang];
-      
+
       // Verify binary exists
       if (!fs.existsSync(SPEECH_SERVICE_PATH_PROD)) {
         log.warn(`Speech service binary not found at: ${SPEECH_SERVICE_PATH_PROD}`);
@@ -523,22 +523,27 @@ const speakMessage = (message: string, lang?: string) => {
     } else {
       // Development: use Python interpreter
       speechCmd = process.platform === 'darwin' ? DEV_PYTHON_ENV : path.normalize(DEV_PYTHON_ENV);
-      speechArgs = [SPEECH_SERVICE_PATH_DEV, message, speechLang];
-      
+      // Quote arguments for Windows to handle spaces correctly
+      if (process.platform === 'win32') {
+        speechArgs = [SPEECH_SERVICE_PATH_DEV, `"${message}"`, speechLang];
+      } else {
+        speechArgs = [SPEECH_SERVICE_PATH_DEV, message, speechLang];
+      }
+
       // Verify Python env exists
       if (!fs.existsSync(speechCmd)) {
         log.error(`Python environment not found at: ${speechCmd}`);
         return;
       }
     }
-    
+
     log.info(`Speech command: ${speechCmd} ${speechArgs.join(' ')}`);
-    
+
     // Spawn the speech process
     speechProcess = spawn(speechCmd, speechArgs, {
       ...(process.platform === 'win32' && {
         shell: true,
-        windowsVerbatimArguments: true
+        windowsVerbatimArguments: false
       })
     });
     
@@ -967,7 +972,7 @@ async function createWindow() {
     log.info('Creating window in development mode');
 
     // Load from dev server in development
-    const devPort = process.env.PORT || '3006';
+    const devPort = process.env.VITE_DEV_PORT || process.env.PORT || '3006';
     win.loadURL(`http://localhost:${devPort}`);
     // Open DevTools
     win.webContents.openDevTools();
@@ -1311,12 +1316,18 @@ ipcMain.handle('ipc-speak', async (_event, payload: { text: string; lang?: strin
       // Production: use compiled binary
       servicePath = TTS_SERVICE_PATH_PROD_IPC;
       serviceCmd = process.platform === 'win32' ? `"${servicePath}"` : servicePath;
-      serviceArgs = [text, lang];
+      // Quote text argument for Windows to handle spaces correctly
+      serviceArgs = process.platform === 'win32' ? [`"${text}"`, lang] : [text, lang];
     } else {
       // Development: use Python interpreter
       serviceCmd = process.platform === 'darwin' ? DEV_PYTHON_ENV : path.normalize(DEV_PYTHON_ENV);
       servicePath = TTS_SERVICE_PATH_DEV_IPC;
-      serviceArgs = [servicePath, text, lang];
+      // Quote text argument for Windows to handle spaces correctly
+      if (process.platform === 'win32') {
+        serviceArgs = [servicePath, `"${text}"`, lang];
+      } else {
+        serviceArgs = [servicePath, text, lang];
+      }
     }
     
     // Check if service exists
