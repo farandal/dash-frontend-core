@@ -176,9 +176,9 @@ export default ({ mode }) => {
   );
 
   const isProduction =
-    configMode === "production" ||
-    mode.includes("production") ||
-    process.env.NODE_ENV === "production";
+    process.env.NODE_ENV === "production" ||
+    (configMode === "production" && !process.env.NODE_ENV?.includes("development")) ||
+    mode.includes("production");
 
   const isDevelopment = !isProduction;
 

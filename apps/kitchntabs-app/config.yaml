@@ -10,13 +10,13 @@ APP: "dash"
 AUTH_ENDPOINT: "api/ws/auth"
 
 SPAWN_BACKGROUND_SERVICE: true
-DEV_PYTHON_ENV: "../../../dash-python-service/pw_env/bin/python3.9"
+DEV_PYTHON_ENV: "../../../dash-python-service/pw_env/Scripts/python.exe"
 PYTHON_SERVICE_PATH_DEV: "../../../dash-python-service/src/kt_service.py"
 PRINT_SERVICE_PATH_DEV: "../../../dash-python-service/src/print_service.py"
-PYTHON_SERVICE_PATH_PROD: "./dash-python-service/kt_service"
-PRINT_SERVICE_PATH_PROD: "./dash-python-service/print_service"
+PYTHON_SERVICE_PATH_PROD: "./python-service/kt_service"
+PRINT_SERVICE_PATH_PROD: "./python-service/print_service"
 SPEECH_SERVICE_PATH_DEV: "../../../dash-python-service/src/tts_service.py"
-SPEECH_SERVICE_PATH_PROD: "./dash-python-service/tts_service"
+SPEECH_SERVICE_PATH_PROD: "./python-service/tts_service"
 
 # Poppler path for PDF conversion
 # Windows: C:\poppler-24.08.0\Library\bin
