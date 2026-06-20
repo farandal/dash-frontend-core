@@ -11,7 +11,7 @@ import ExportCashCountsButton from "../components/Export/ExportCashCountsButton"
 const cashCountResource: IAppResourceConfig[] = [
     {
         group: "resource.groups.cashier",
-        roles: [DASHAppConstants.system.TENANT_ROLE, DASHAppConstants.system.CLOSING_ROLE],
+        roles: [DASHAppConstants.system.TENANT_ROLE, "Cashier"],
         component: ResourceTemplate,
         model: "tab/cashcount",
         label: "resource.cashcount.label",
