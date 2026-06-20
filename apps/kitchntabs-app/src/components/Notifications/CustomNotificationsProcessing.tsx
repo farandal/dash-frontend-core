@@ -66,6 +66,7 @@ Example notification
 */
 
 import { AuthPersistenceService } from 'dash-auth';
+import { dashStorage } from 'dash-utils';
 
 // Audio context for better browser compatibility
 let audioContext: AudioContext | null = null;
@@ -303,6 +304,14 @@ export const processCustomNotification = async (notification: any): Promise<{ al
         }));
         
         return { alarmCompleted: false }; // No alarm for plan changes
+    }
+
+    // The backend flags self-service CREATED orders with alarm='true' so kitchen
+    // staff get alerted - but this same broadcast can reach the customer's own
+    // self-service kiosk session too. The guest's own device should never play
+    // that alert for its own order, regardless of which listener invoked us.
+    if (dashStorage.getItem('selfservice-session-hash')) {
+        return { alarmCompleted: false };
     }
 
     let marketplace = notification?.data?.marketplace?.system_marketplace?.name || "STORE" ;

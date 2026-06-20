@@ -172,12 +172,14 @@ const dataProvider = {
     try {
         if (isFormData) {
             const form: FormData = processFormData(apiResource, postData);
-            return await action(resourcePath, form, {
+            const response = await action(resourcePath, form, {
                 headers: { 'Content-Type': 'multipart/form-data' },
             });
+            return response.data;
         }
 
-        return await action(resourcePath, postData);
+        const response = await action(resourcePath, postData);
+        return response.data;
 
     } catch (e: unknown) {
         const error = e as AxiosError<IDashAutoAdminDefaultBackendStructure>;
@@ -219,12 +221,14 @@ const dataProvider = {
     try {
         if (isFormData) {
             const form: FormData = processFormData(apiResource, postData);
-            return await axios.put(resourcePath, form, {
+            const response = await axios.put(resourcePath, form, {
                 headers: { 'Content-Type': 'multipart/form-data' },
             });
+            return response.data;
         }
 
-        return await axios.put(resourcePath, postData);
+        const response = await axios.put(resourcePath, postData);
+        return response.data;
 
     } catch (e: unknown) {
         const error = e as AxiosError<IDashAutoAdminDefaultBackendStructure>;
