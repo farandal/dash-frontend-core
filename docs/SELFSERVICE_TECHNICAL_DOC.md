@@ -146,8 +146,8 @@ sequenceDiagram
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `id` | bigint | Primary key |
-| `hash` | string(10) | Unique 5-char identifier |
+| `id` | uuid | Primary key (UUIDv7, via `HasUuidV7` trait) |
+| `hash` | string(10) | Unique session identifier (5-char value, 10-char column) |
 | `tenant_id` | uuid | Foreign key to tenants |
 | `customer_name` | string | Optional customer name |
 | `table_number` | string | Table/location identifier |
@@ -157,7 +157,7 @@ sequenceDiagram
 | `updated_at` | timestamp | Last update |
 | `deleted_at` | timestamp | Soft delete |
 
-**File:** [SelfServiceSession.php](file:///Users/farandal/DASH-PW-PROJECT/dash-backend/domain/app/Models/SelfService/SelfServiceSession.php)
+**File:** [SelfServiceSession.php](kitchntabs-backend-domain/app/Models/SelfService/SelfServiceSession.php)
 
 ### Controllers
 
@@ -175,7 +175,7 @@ Handles session lifecycle management.
 | `getSessionAuth` | GET /{hash}/getSessionAuth | Validate & authenticate session |
 | `createClientSession` | POST /client_session/{tenantSlug} | Create session by tenant slug |
 
-**File:** [SelfServiceSessionController.php](file:///Users/farandal/DASH-PW-PROJECT/dash-backend/domain/app/Http/Controllers/API/SelfService/SelfServiceSessionController.php)
+**File:** [SelfServiceSessionController.php](kitchntabs-backend-domain/app/Http/Controllers/API/SelfService/SelfServiceSessionController.php)
 
 #### SelfServiceTabsController
 
@@ -187,11 +187,11 @@ Handles tab/order operations, extends base TabController.
 | `_preGetOne` | Load order items with products |
 | `downloadSaleNote` | Generate PDF receipt |
 
-**File:** [SelfServiceTabsController.php](file:///Users/farandal/DASH-PW-PROJECT/dash-backend/domain/app/Http/Controllers/API/SelfService/SelfServiceTabsController.php)
+**File:** [SelfServiceTabsController.php](kitchntabs-backend-domain/app/Http/Controllers/API/SelfService/SelfServiceTabsController.php)
 
 ### Routes
 
-**File:** [selfservice.php](file:///Users/farandal/DASH-PW-PROJECT/dash-backend/domain/routes/api/selfservice.php)
+**File:** [selfservice.php](kitchntabs-backend-domain/routes/api/selfservice.php)
 
 ```php
 // Public routes (no auth required)
@@ -220,7 +220,7 @@ Route::prefix('public/selfservice')->group(function () {
 
 Builds the authentication response with tenant data.
 
-**File:** [SelfServiceAuthResponseTrait.php](file:///Users/farandal/DASH-PW-PROJECT/dash-backend/domain/app/Http/Controllers/API/SelfService/Traits/SelfServiceAuthResponseTrait.php)
+**File:** [SelfServiceAuthResponseTrait.php](kitchntabs-backend-domain/app/Http/Controllers/API/SelfService/Traits/SelfServiceAuthResponseTrait.php)
 
 ---
 
@@ -249,7 +249,7 @@ flowchart TD
 
 **Purpose:** Validates session before rendering the app.
 
-**File:** [SelfServiceClientWrapper.tsx](file:///Users/farandal/DASH-PW-PROJECT/dash-frontend/apps/kitchntabs/src/components/selfservice/SelfServiceClientWrapper.tsx)
+**File:** [SelfServiceClientWrapper.tsx](kitchntabs-frontend/apps/kitchntabs-app/src/components/selfservice/SelfServiceClientWrapper.tsx)
 
 **Key Functions:**
 - Parses URL for tenant slug and session hash
@@ -262,7 +262,7 @@ flowchart TD
 
 **Purpose:** Provides guest authentication for React Admin.
 
-**File:** [DASHSelfServiceClientAuthProvider.tsx](file:///Users/farandal/DASH-PW-PROJECT/dash-frontend/apps/kitchntabs/src/dash-extensions/config/DASHSelfServiceClientAuthProvider.tsx)
+**File:** [DASHSelfServiceClientAuthProvider.tsx](kitchntabs-frontend/apps/kitchntabs-app/src/dash-extensions/config/DASHSelfServiceClientAuthProvider.tsx)
 
 **Key Functions:**
 - `getIdentity()`: Returns guest identity
@@ -273,7 +273,7 @@ flowchart TD
 
 **Purpose:** Maps resources to self-service API endpoints.
 
-**File:** [DASHSelfServiceClientDataProvider.tsx](file:///Users/farandal/DASH-PW-PROJECT/dash-frontend/apps/kitchntabs/src/dash-extensions/config/DASHSelfServiceClientDataProvider.tsx)
+**File:** [DASHSelfServiceClientDataProvider.tsx](kitchntabs-frontend/apps/kitchntabs-app/src/dash-extensions/config/DASHSelfServiceClientDataProvider.tsx)
 
 **Resource Mapping:**
 ```typescript
@@ -287,9 +287,11 @@ flowchart TD
 - Maps resource names to API paths
 - Disables delete operations
 
-### KitchnTabsBootstrap (Modified)
+### KitchnTabsWebBootstrap / SelfServiceRoutes
 
-**File:** [KitchnTabsBootstrap.tsx](file:///Users/farandal/DASH-PW-PROJECT/dash-frontend/apps/kitchntabs/src/KitchnTabsBootstrap.tsx)
+**Files:**
+- [KitchnTabsWebBootstrap.tsx](kitchntabs-frontend/apps/kitchntabs-app/src/KitchnTabsWebBootstrap.tsx)
+- [SelfServiceRoutes.tsx](kitchntabs-frontend/apps/kitchntabs-app/src/SelfServiceRoutes.tsx)
 
 **Changes:**
 - Detects `/selfservice/:tenantSlug/s/:sessionId` URL pattern
@@ -398,23 +400,29 @@ GET /api/public/selfservice/tab?selfservice_session=DFJNL
 
 ### self_service_sessions Table
 
+> PostgreSQL schema. The `id` is created as a bigint by
+> `2025_01_15_000001_create_self_service_sessions_table` and then converted to a
+> UUIDv7 primary key by `2026_01_09_204300_convert_self_service_sessions_to_uuid`.
+> All three migrations live in `kitchntabs-backend-domain/database/migrations/`.
+
 ```sql
 CREATE TABLE self_service_sessions (
-    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    id UUID PRIMARY KEY,                       -- UUIDv7, set by the model's HasUuidV7 trait
     hash VARCHAR(10) UNIQUE NOT NULL,
     tenant_id UUID NOT NULL,
     customer_name VARCHAR(255) NULL,
     table_number VARCHAR(50) NULL,
-    status ENUM('pending', 'active', 'completed', 'cancelled') DEFAULT 'pending',
-    meta JSON NULL,
+    status VARCHAR(255) NOT NULL DEFAULT 'pending',  -- CHECK in ('pending','active','completed','cancelled')
+    meta JSONB NULL,
     created_at TIMESTAMP NULL,
     updated_at TIMESTAMP NULL,
     deleted_at TIMESTAMP NULL,
-    
-    FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE,
-    INDEX idx_tenant_status (tenant_id, status),
-    INDEX idx_hash (hash)
+
+    FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE
 );
+
+CREATE INDEX self_service_sessions_tenant_id_status_index ON self_service_sessions (tenant_id, status);
+CREATE INDEX self_service_sessions_hash_index ON self_service_sessions (hash);
 ```
 
 ### Entity Relationship
@@ -435,7 +443,7 @@ erDiagram
     }
     
     SELF_SERVICE_SESSION {
-        bigint id PK
+        uuid id PK
         string hash UK
         uuid tenant_id FK
         string table_number

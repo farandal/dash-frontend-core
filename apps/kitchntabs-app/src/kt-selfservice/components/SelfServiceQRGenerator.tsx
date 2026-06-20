@@ -85,12 +85,33 @@ const SelfServiceQRGenerator: React.FC = () => {
             try {
                 const user = AuthPersistenceService.getUser();
                 const storedAuth = AuthPersistenceService.getAuth();
-                
-                // Try to get tenant info from auth.tenant first (from getAuth response)
-                // then fallback to user.tenant or systemValues.tenant
-                const tenant = storedAuth?.auth?.tenant || user?.tenant || null;
-                const slug = tenant?.slug || '';
-                const name = tenant?.name || '';
+                const systemValues = AuthPersistenceService.getSystemValues();
+
+                // Regular getAuth() always populates auth.tenant.
+                // getTenancyAuth() only populates auth.tenant when an X-Tenant-Id
+                // header was sent (i.e. an active tenant is selected); at the
+                // tenancy level auth.tenant is empty, so fall back to matching
+                // the user's own tenant_id against systemValues.tenants, which
+                // getTenancyAuth() always includes regardless of active selection.
+                let tenant = storedAuth?.auth?.tenant || null;
+                if (!tenant?.slug && user?.tenant_id && systemValues?.tenants?.length) {
+                    tenant = systemValues.tenants.find((t: any) => t.id === user.tenant_id) || null;
+                }
+
+                let slug = tenant?.slug || '';
+                let name = tenant?.name || '';
+
+                // Last resort: fetch the tenant directly by id (covers stale/missing cache).
+                if (!slug && user?.tenant_id) {
+                    try {
+                        const response = await axios.get(`/tenancy/tenants/${user.tenant_id}`);
+                        const fetchedTenant = response.data?.data || response.data;
+                        slug = fetchedTenant?.slug || '';
+                        name = fetchedTenant?.name || '';
+                    } catch (fetchErr) {
+                        console.error('Failed to fetch tenant by id:', fetchErr);
+                    }
+                }
 
                 if (!slug) {
                     setError('Tenant slug not found. Please configure your tenant\'s URL slug in Tenant settings and log in again.');
