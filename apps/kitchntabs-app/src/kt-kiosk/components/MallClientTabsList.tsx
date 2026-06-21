@@ -7,10 +7,14 @@ import CardHeader from "@mui/material/CardHeader";
 import Typography from "@mui/material/Typography";
 import ButtonGroup from "@mui/material/ButtonGroup";
 import Alert from "@mui/material/Alert";
+import Button from "@mui/material/Button";
+import CircularProgress from "@mui/material/CircularProgress";
 import React, { useEffect, useState } from "react";
-import { useRefresh, WithListContext, useTranslate } from "react-admin";
+import { useRefresh, WithListContext, useTranslate, useNotify } from "react-admin";
 import DashResourceButton from "dash-auto-admin/src/toolbar/buttons/DashResourceButton";
 import { toast } from 'react-toastify';
+import { useAxios } from 'dash-axios-hook';
+import { AuthPersistenceService } from 'dash-auth';
 import { useMallClientTabsContext } from './MallClientTabsContext';
 
 import OrderProductsView from "./OrderProductsView";
@@ -19,9 +23,28 @@ import OrderProductsView from "./OrderProductsView";
 const MallClientTabsList: React.FC<IDashAutoAdminDataGrid> = ({ resourceConfig }) => {
     // Use MallClientTabsContext for WebSocket events and tenant status tracking
     // This context subscribes to the WebSocket channel and provides lastEvent
-    const { lastEvent, tenantStatusesByTab } = useMallClientTabsContext();
+    const { lastEvent, tenantStatusesByTab, sessionHash } = useMallClientTabsContext();
     const refresh = useRefresh();
     const translate = useTranslate();
+    const notify = useNotify();
+    const axios = useAxios();
+    const [confirmingTabId, setConfirmingTabId] = useState<string | number | null>(null);
+
+    const userConfirmOrderEnabled = !!AuthPersistenceService.getSystemValues()?.selfservice?.user_confirm_order_enabled;
+
+    const handleConfirmOrder = async (tabId: string | number) => {
+        if (!sessionHash) return;
+
+        setConfirmingTabId(tabId);
+        try {
+            await axios.post(`/public/selfservice/${sessionHash}/tab/${tabId}/confirm`);
+            refresh();
+        } catch (error: any) {
+            notify(translate('mall.confirm_order_error', { error: error?.response?.data?.message || error.message }), { type: 'error' });
+        } finally {
+            setConfirmingTabId(null);
+        }
+    };
 
     const getStatusLabel = (status: string) => {
         return translate(`tab.status.${status.toLowerCase()}`, { _: status });
@@ -166,7 +189,24 @@ const MallClientTabsList: React.FC<IDashAutoAdminDataGrid> = ({ resourceConfig }
                                       
 
                                         <OrderProductsView resourceConfig={resourceConfig} record={record} attribute={undefined} method={"view"} />
-                                         
+
+                                        {userConfirmOrderEnabled && record.status === 'CREATED' && (
+                                            <Button
+                                                fullWidth
+                                                variant="outlined"
+                                                color="primary"
+                                                size="small"
+                                                sx={{ mt: 1 }}
+                                                disabled={confirmingTabId === record.id}
+                                                startIcon={confirmingTabId === record.id ? <CircularProgress size={16} color="inherit" /> : null}
+                                                onClick={() => handleConfirmOrder(record.id)}
+                                            >
+                                                {confirmingTabId === record.id
+                                                    ? translate('mall.confirming_own_order')
+                                                    : translate('mall.confirm_own_order')
+                                                }
+                                            </Button>
+                                        )}
                                     </CardContent>
                                 </Box>
                             </Box>
