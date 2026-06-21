@@ -25,36 +25,39 @@ const TENANCY_RESOURCE = "system/tenancy";
 const ListAutoSelectIds: React.FC<{ selectedIdsFn: (ids: any[]) => void }> = ({ selectedIdsFn }) => {
     const { data, isLoading } = useListContext();
     const { record } = useEditContext<any>();
-    const [finalSelectedIds, setFinalSelectedIds] = useState<any[]>([]);
     const [selectedIds, { select }] = useRecordSelection({ resource: TENANCY_RESOURCE });
 
+    // On load, select the record's current tenancy_ids
     useEffect(() => {
-        if (isLoading) return;
+        if (isLoading || !data?.length) return;
         const ids = Array.isArray(record?.tenancy_ids) ? [...new Set(record.tenancy_ids)] : [];
-        setFinalSelectedIds(ids);
-    }, [data, record, isLoading]);
+        if (ids.length > 0) {
+            select(ids);
+        }
+    }, [isLoading, data?.length, record?.id]);
 
+    // When selected IDs change, propagate to form
     useEffect(() => {
-        if (!selectedIds || !selectedIds.length) return;
-        if (selectedIdsFn) selectedIdsFn(selectedIds);
-    }, [selectedIds]);
-
-    useEffect(() => {
-        if (!finalSelectedIds) return;
-        select(finalSelectedIds);
-    }, [finalSelectedIds]);
+        if (selectedIdsFn && selectedIds?.length > 0) {
+            selectedIdsFn(selectedIds);
+        }
+    }, [selectedIds, selectedIdsFn]);
 
     return <></>;
 };
 
 export const SystemCheckoutGatewayTenancyAssociator: React.FC<IDashAutoAdminCustomFieldComponent> = () => {
     const { record } = useEditContext<any>();
-    const { setValue } = useFormContext();
+    const { setValue, watch } = useFormContext();
     const tenancy_ids = useController({ name: "tenancy_ids" });
+    const watchTenancyIds = watch("tenancy_ids");
 
     useEffect(() => {
-        setValue("tenancy_ids", Array.isArray(record?.tenancy_ids) ? record.tenancy_ids : []);
-    }, [record]);
+        if (record?.id) {
+            const ids = Array.isArray(record?.tenancy_ids) ? record.tenancy_ids : [];
+            setValue("tenancy_ids", ids);
+        }
+    }, [record?.id, setValue]);
 
     return (
         <>
