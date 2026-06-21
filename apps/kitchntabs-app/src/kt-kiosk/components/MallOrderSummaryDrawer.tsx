@@ -14,6 +14,10 @@ import {
 import CloseIcon from '@mui/icons-material/Close';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import ShoppingCartCheckoutIcon from '@mui/icons-material/ShoppingCartCheckout';
+import PaymentIcon from '@mui/icons-material/Payment';
+import { useNotify } from 'react-admin';
+import { useAxios } from 'dash-axios-hook';
+import { AuthPersistenceService } from 'dash-auth';
 import { useMallOrderCreate } from '../contexts/MallOrderCreateContext';
 import { MallCartItemsList } from './MallCartItemsList';
 
@@ -47,6 +51,41 @@ export const MallOrderSummaryDrawer: React.FC = () => {
     const { handleSubmit, formState } = useFormContext();
 
     const [isSubmitting, setIsSubmitting] = React.useState(false);
+
+    // Online checkout (Checkout Gateway Provider) — gated by tenant flags from getSessionAuth.
+    const notify = useNotify();
+    const axios = useAxios();
+    const [isPayingOnline, setIsPayingOnline] = React.useState(false);
+    const selfservice = AuthPersistenceService.getSystemValues()?.selfservice;
+    const onlineCheckoutAvailable = !!(selfservice?.checkout_gateway_enabled && selfservice?.checkout_gateway_available);
+
+    const payOnline = useCallback(async () => {
+        const sessionHash = selfservice?.session_hash;
+        if (!sessionHash) {
+            notify(translate('mall.checkout_error', { _: 'No active session for online payment' }), { type: 'error' });
+            return;
+        }
+        // Open the tab synchronously inside the click handler — opening after an await is
+        // popup-blocked by mobile browsers (notably iOS Safari).
+        const paymentTab = window.open('', '_blank');
+        setIsPayingOnline(true);
+        try {
+            const res: any = await axios.post(`/public/selfservice/${sessionHash}/checkout/session`, { amount: cartTotal });
+            const data = res?.data ?? res;
+            if (data?.redirect_url) {
+                if (paymentTab) paymentTab.location.href = data.redirect_url;
+                else window.location.href = data.redirect_url;
+            } else {
+                paymentTab?.close();
+                notify(translate('mall.checkout_error', { _: 'Could not start online payment' }), { type: 'error' });
+            }
+        } catch (error: any) {
+            paymentTab?.close();
+            notify(error?.response?.data?.message ?? translate('mall.checkout_error', { _: 'Could not start online payment' }), { type: 'error' });
+        } finally {
+            setIsPayingOnline(false);
+        }
+    }, [selfservice, cartTotal, axios, notify, translate]);
 
     // Use a ref to track the latest handleSubmitOrder function
     const handleSubmitOrderRef = useRef<(() => Promise<void>) | null>(null);
@@ -239,6 +278,24 @@ export const MallOrderSummaryDrawer: React.FC = () => {
                             : translate('mall.submit_order')
                         }
                     </Button>
+
+                    {/* Pay online (Checkout Gateway) - shown only when enabled + available */}
+                    {onlineCheckoutAvailable && (
+                        <Button
+                            fullWidth
+                            variant="contained"
+                            color="secondary"
+                            size="large"
+                            onClick={payOnline}
+                            disabled={isPayingOnline || cartItemCount === 0}
+                            startIcon={isPayingOnline ? <CircularProgress size={20} color="inherit" /> : <PaymentIcon />}
+                            sx={{ py: 1.5, borderRadius: 2, fontWeight: 700, fontSize: '1rem', mb: 1.5 }}
+                        >
+                            {isPayingOnline
+                                ? translate('mall.checkout_redirecting', { _: 'Redirigiendo...' })
+                                : translate('mall.pay_online', { _: 'Pagar en línea' })}
+                        </Button>
+                    )}
 
                     {/* Continue shopping button - Secondary action */}
                     <Button

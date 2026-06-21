@@ -19,6 +19,7 @@ export { default as stockTypeResource } from './stockTypeResource';
 export { default as marketplaceResource } from './marketplaceResource';
 export { default as systemMarketplaceResource } from './systemMarketplaceResource';
 export { default as systemCheckoutGatewayResource } from './systemCheckoutGatewayResource';
+export { default as checkoutGatewayResource } from './checkoutGatewayResource';
 export { default as pointOfSaleResource } from './pointOfSaleResource';
 export { default as systemPointOfSaleResource } from './systemPointOfSaleResource';
 export { default as pointOfSaleAssociationResource } from './pointOfSaleAssociationResource';
