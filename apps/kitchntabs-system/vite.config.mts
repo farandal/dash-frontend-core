@@ -499,6 +499,7 @@ export default ({ mode }) => {
       allowedHosts: [
         "pw-hmr.ngrok.dev",
         "pw-system.ngrok.dev",
+        "system-dev.kitchntabs.com",
         "localhost",
         "localhost:3000",
         "0.0.0.0",

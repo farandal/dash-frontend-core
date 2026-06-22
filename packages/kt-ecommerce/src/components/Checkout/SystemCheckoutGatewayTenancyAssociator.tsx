@@ -1,63 +1,86 @@
-import { Box } from "@mui/material";
+import { Box, Checkbox } from "@mui/material";
 import React, { useEffect, useState } from "react";
-import { useController, useFormContext } from "react-hook-form";
+import { useFormContext } from "react-hook-form";
 import {
     Loading,
     SearchInput,
     useEditContext,
     List,
     TopToolbar,
-    Datagrid,
-    TextField,
     useListContext,
-    useRecordSelection,
 } from "react-admin";
 import { PaginationComponent } from "dash-components";
 import { IDashAutoAdminCustomFieldComponent } from "dash-auto-admin";
 
 /**
  * Entitlement editor for a SystemCheckoutGateway: which TenancyAccounts may use this provider.
- * Mirrors SystemMarketplaceTenancyAssociator but reads/writes the checkout record's `tenancy_ids`
- * directly (the API returns them as a flat id array).
+ * Renders a searchable, paginated Datagrid with checkboxes that sync directly to form field.
  */
 const TENANCY_RESOURCE = "system/tenancy";
 
-const ListAutoSelectIds: React.FC<{ selectedIdsFn: (ids: any[]) => void }> = ({ selectedIdsFn }) => {
+// Renders paginated tenancy list with selectable checkboxes
+const TenancyListWithCheckboxes = ({ selectedIds, onToggle }: { selectedIds: Set<string>; onToggle: (id: string) => void }) => {
     const { data, isLoading } = useListContext();
-    const { record } = useEditContext<any>();
-    const [selectedIds, { select }] = useRecordSelection({ resource: TENANCY_RESOURCE });
 
-    // On load, select the record's current tenancy_ids
-    useEffect(() => {
-        if (isLoading || !data?.length) return;
-        const ids = Array.isArray(record?.tenancy_ids) ? [...new Set(record.tenancy_ids)] : [];
-        if (ids.length > 0) {
-            select(ids);
-        }
-    }, [isLoading, data?.length, record?.id]);
+    if (isLoading) return <Loading />;
+    if (!data) return null;
 
-    // When selected IDs change, propagate to form
-    useEffect(() => {
-        if (selectedIdsFn && selectedIds?.length > 0) {
-            selectedIdsFn(selectedIds);
-        }
-    }, [selectedIds, selectedIdsFn]);
-
-    return <></>;
+    return (
+        <Box sx={{ display: "flex", flexDirection: "column", gap: 0 }}>
+            {data.map((item: any) => (
+                <Box
+                    key={item.id}
+                    sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 2,
+                        padding: "12px",
+                        borderBottom: "1px solid #eee",
+                        "&:hover": { backgroundColor: "#f9f9f9" },
+                    }}
+                >
+                    <Checkbox
+                        checked={selectedIds.has(item.id)}
+                        onChange={() => onToggle(item.id)}
+                        size="small"
+                    />
+                    <Box sx={{ flex: 1 }}>
+                        <div style={{ fontWeight: 500 }}>{item.legal_name || item.public_name}</div>
+                        <div style={{ fontSize: "0.85em", color: "#666" }}>{item.slug}</div>
+                    </Box>
+                </Box>
+            ))}
+        </Box>
+    );
 };
 
 export const SystemCheckoutGatewayTenancyAssociator: React.FC<IDashAutoAdminCustomFieldComponent> = () => {
     const { record } = useEditContext<any>();
-    const { setValue, watch } = useFormContext();
-    const tenancy_ids = useController({ name: "tenancy_ids" });
-    const watchTenancyIds = watch("tenancy_ids");
+    const { setValue } = useFormContext();
+    const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 
+    // Initialize with record's tenancy_ids
     useEffect(() => {
         if (record?.id) {
             const ids = Array.isArray(record?.tenancy_ids) ? record.tenancy_ids : [];
+            setSelectedIds(new Set(ids));
             setValue("tenancy_ids", ids);
         }
     }, [record?.id, setValue]);
+
+    const toggleTenancy = (id: string) => {
+        setSelectedIds((prev) => {
+            const updated = new Set(prev);
+            if (updated.has(id)) {
+                updated.delete(id);
+            } else {
+                updated.add(id);
+            }
+            // Sync to form field immediately
+            setValue("tenancy_ids", Array.from(updated));
+            return updated;
+        });
+    };
 
     return (
         <>
@@ -75,12 +98,7 @@ export const SystemCheckoutGatewayTenancyAssociator: React.FC<IDashAutoAdminCust
                             empty={<Loading />}
                             emptyWhileLoading={true}
                         >
-                            <ListAutoSelectIds selectedIdsFn={(p) => tenancy_ids.field.onChange(p)} />
-                            <Datagrid bulkActionButtons={<></>}>
-                                <TextField source="id" />
-                                <TextField source="legal_name" label="Nombre Legal" />
-                                <TextField source="slug" label="Slug" />
-                            </Datagrid>
+                            <TenancyListWithCheckboxes selectedIds={selectedIds} onToggle={toggleTenancy} />
                         </List>
                     </Box>
                 </>

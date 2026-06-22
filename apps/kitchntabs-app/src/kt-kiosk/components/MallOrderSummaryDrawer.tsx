@@ -46,46 +46,13 @@ export const MallOrderSummaryDrawer: React.FC = () => {
 
     // Get DashAutoAdminForm context for accessing the form's save handler
     const { onSave } = useDashAutoAdminForm();
-    
+
     // Get form context for validation and getting form values
     const { handleSubmit, formState } = useFormContext();
 
     const [isSubmitting, setIsSubmitting] = React.useState(false);
 
-    // Online checkout (Checkout Gateway Provider) — gated by tenant flags from getSessionAuth.
-    const notify = useNotify();
-    const axios = useAxios();
-    const [isPayingOnline, setIsPayingOnline] = React.useState(false);
-    const selfservice = AuthPersistenceService.getSystemValues()?.selfservice;
-    const onlineCheckoutAvailable = !!(selfservice?.checkout_gateway_enabled && selfservice?.checkout_gateway_available);
-
-    const payOnline = useCallback(async () => {
-        const sessionHash = selfservice?.session_hash;
-        if (!sessionHash) {
-            notify(translate('mall.checkout_error', { _: 'No active session for online payment' }), { type: 'error' });
-            return;
-        }
-        // Open the tab synchronously inside the click handler — opening after an await is
-        // popup-blocked by mobile browsers (notably iOS Safari).
-        const paymentTab = window.open('', '_blank');
-        setIsPayingOnline(true);
-        try {
-            const res: any = await axios.post(`/public/selfservice/${sessionHash}/checkout/session`, { amount: cartTotal });
-            const data = res?.data ?? res;
-            if (data?.redirect_url) {
-                if (paymentTab) paymentTab.location.href = data.redirect_url;
-                else window.location.href = data.redirect_url;
-            } else {
-                paymentTab?.close();
-                notify(translate('mall.checkout_error', { _: 'Could not start online payment' }), { type: 'error' });
-            }
-        } catch (error: any) {
-            paymentTab?.close();
-            notify(error?.response?.data?.message ?? translate('mall.checkout_error', { _: 'Could not start online payment' }), { type: 'error' });
-        } finally {
-            setIsPayingOnline(false);
-        }
-    }, [selfservice, cartTotal, axios, notify, translate]);
+    // Note: Checkout functionality moved to order card component (displayed after order creation)
 
     // Use a ref to track the latest handleSubmitOrder function
     const handleSubmitOrderRef = useRef<(() => Promise<void>) | null>(null);
@@ -96,7 +63,7 @@ export const MallOrderSummaryDrawer: React.FC = () => {
 
     /**
      * Handle order submission directly from the drawer
-     * 
+     *
      * This function:
      * 1. Uses react-hook-form's handleSubmit to validate the form
      * 2. If validation passes, calls DashAutoAdminForm's onSave function
@@ -105,6 +72,7 @@ export const MallOrderSummaryDrawer: React.FC = () => {
      *    - dataProvider.create (API call)
      *    - onSubmit callback
      *    - onError if error (e.g., MISSING_SESSION_DATA triggers modal)
+     * 4. After order is created, close drawer. Order card will show with action buttons.
      */
     const handleSubmitOrder = useCallback(async () => {
         if (!onSave) {
@@ -122,8 +90,9 @@ export const MallOrderSummaryDrawer: React.FC = () => {
                     await onSave(values);
                 }
             })();
-            
-            // Close drawer after successful submission
+
+            // Order created successfully - close drawer
+            // The kiosk main view will show the created order with action buttons
             setIsCartDrawerOpen(false);
         } catch (error) {
             console.error('Error submitting order:', error);
@@ -274,28 +243,10 @@ export const MallOrderSummaryDrawer: React.FC = () => {
                         }}
                     >
                         {isSubmitting || formState.isSubmitting
-                            ? translate('mall.submitting_order') 
+                            ? translate('mall.submitting_order')
                             : translate('mall.submit_order')
                         }
                     </Button>
-
-                    {/* Pay online (Checkout Gateway) - shown only when enabled + available */}
-                    {onlineCheckoutAvailable && (
-                        <Button
-                            fullWidth
-                            variant="contained"
-                            color="secondary"
-                            size="large"
-                            onClick={payOnline}
-                            disabled={isPayingOnline || cartItemCount === 0}
-                            startIcon={isPayingOnline ? <CircularProgress size={20} color="inherit" /> : <PaymentIcon />}
-                            sx={{ py: 1.5, borderRadius: 2, fontWeight: 700, fontSize: '1rem', mb: 1.5 }}
-                        >
-                            {isPayingOnline
-                                ? translate('mall.checkout_redirecting', { _: 'Redirigiendo...' })
-                                : translate('mall.pay_online', { _: 'Pagar en línea' })}
-                        </Button>
-                    )}
 
                     {/* Continue shopping button - Secondary action */}
                     <Button
