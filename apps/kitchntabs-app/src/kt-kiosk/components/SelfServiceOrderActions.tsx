@@ -49,12 +49,39 @@ export const SelfServiceOrderActions: React.FC<IDashAutoAdminCustomFieldComponen
     const userConfirmEnabled = selfservice?.user_confirm_order_enabled;
     const sessionHash = selfservice?.session_hash;
 
-    // Don't show actions for orders that are paid or confirmed (already processing)
-    const isFinalized = record?.status && ['CONFIRMED', 'IN_PREPARATION', 'PREPARED', 'DELIVERED', 'CLOSED', 'CANCELLED'].includes(record.status);
+    // Check order status and payment state
     const isPaid = record?.order?.is_paid;
+    const isConfirmed = record?.status === 'CONFIRMED';
+    const isFinalized = record?.status && ['IN_PREPARATION', 'PREPARED', 'DELIVERED', 'CLOSED', 'CANCELLED'].includes(record.status);
 
-    if (!record || isFinalized || isPaid) {
+    if (!record) {
         return null;
+    }
+
+    // Show nothing if order is finalized (after confirmed)
+    if (isFinalized) {
+        return null;
+    }
+
+    // If order is paid, show paid badge and disable all actions
+    if (isPaid) {
+        return (
+            <Box sx={{ mt: 3, mb: 2 }}>
+                <Box
+                    sx={{
+                        p: 2,
+                        backgroundColor: '#d4edda',
+                        border: '1px solid #c3e6cb',
+                        borderRadius: 1,
+                        textAlign: 'center',
+                    }}
+                >
+                    <Typography variant="body2" sx={{ color: '#155724', fontWeight: 600 }}>
+                        ✓ {translate('mall.order_paid', { _: 'Pedido Pagado' })}
+                    </Typography>
+                </Box>
+            </Box>
+        );
     }
 
     const payOnline = useCallback(async () => {
@@ -167,8 +194,8 @@ export const SelfServiceOrderActions: React.FC<IDashAutoAdminCustomFieldComponen
                         </Button>
                     )}
 
-                    {/* Confirm Order - if enabled and not paid */}
-                    {userConfirmEnabled && !isPaid && (
+                    {/* Confirm Order - if enabled and not confirmed/paid */}
+                    {userConfirmEnabled && !isConfirmed && !isPaid && (
                         <Button
                             fullWidth
                             variant="contained"
@@ -189,22 +216,41 @@ export const SelfServiceOrderActions: React.FC<IDashAutoAdminCustomFieldComponen
                         </Button>
                     )}
 
-                    {/* Cancel Order - Secondary action */}
-                    <Button
-                        fullWidth
-                        variant="outlined"
-                        color="error"
-                        size="medium"
-                        onClick={() => setCancelDialogOpen(true)}
-                        disabled={isCanceling || isPayingOnline || isConfirming}
-                        startIcon={<CancelIcon />}
-                        sx={{
-                            py: 1.2,
-                            fontWeight: 600,
-                        }}
-                    >
-                        {translate('mall.cancel_order', { _: 'Cancelar Pedido' })}
-                    </Button>
+                    {/* Cancel Order - only if not confirmed and not paid */}
+                    {!isConfirmed && !isPaid && (
+                        <Button
+                            fullWidth
+                            variant="outlined"
+                            color="error"
+                            size="medium"
+                            onClick={() => setCancelDialogOpen(true)}
+                            disabled={isCanceling || isPayingOnline || isConfirming}
+                            startIcon={<CancelIcon />}
+                            sx={{
+                                py: 1.2,
+                                fontWeight: 600,
+                            }}
+                        >
+                            {translate('mall.cancel_order', { _: 'Cancelar Pedido' })}
+                        </Button>
+                    )}
+
+                    {/* Show locked message if confirmed */}
+                    {isConfirmed && (
+                        <Box
+                            sx={{
+                                p: 1.5,
+                                backgroundColor: '#f8f9fa',
+                                border: '1px solid #dee2e6',
+                                borderRadius: 1,
+                                textAlign: 'center',
+                            }}
+                        >
+                            <Typography variant="body2" sx={{ color: '#6c757d', fontWeight: 500 }}>
+                                {translate('mall.order_locked', { _: 'Pedido Confirmado - No se puede modificar' })}
+                            </Typography>
+                        </Box>
+                    )}
                 </Stack>
             </Box>
 

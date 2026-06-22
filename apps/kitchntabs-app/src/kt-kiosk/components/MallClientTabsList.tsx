@@ -234,11 +234,43 @@ const MallClientTabsList: React.FC<IDashAutoAdminDataGrid> = ({ resourceConfig }
 
                                         <OrderProductsView resourceConfig={resourceConfig} record={record} attribute={undefined} method={"view"} />
 
-                                        {/* Action buttons for CREATED orders */}
-                                        {record.status === 'CREATED' && (
+                                        {/* Show paid status badge */}
+                                        {record.order?.is_paid && (
+                                            <Box sx={{
+                                                mt: 1.5,
+                                                p: 1,
+                                                backgroundColor: '#d4edda',
+                                                border: '1px solid #c3e6cb',
+                                                borderRadius: 0.5,
+                                                textAlign: 'center'
+                                            }}>
+                                                <Typography variant="caption" sx={{ color: '#155724', fontWeight: 600 }}>
+                                                    ✓ {translate('mall.order_paid', { _: 'Pagado' })}
+                                                </Typography>
+                                            </Box>
+                                        )}
+
+                                        {/* Show locked message for confirmed orders */}
+                                        {record.status === 'CONFIRMED' && !record.order?.is_paid && (
+                                            <Box sx={{
+                                                mt: 1.5,
+                                                p: 1,
+                                                backgroundColor: '#f8f9fa',
+                                                border: '1px solid #dee2e6',
+                                                borderRadius: 0.5,
+                                                textAlign: 'center'
+                                            }}>
+                                                <Typography variant="caption" sx={{ color: '#6c757d', fontWeight: 500 }}>
+                                                    🔒 {translate('mall.order_locked', { _: 'Confirmado' })}
+                                                </Typography>
+                                            </Box>
+                                        )}
+
+                                        {/* Action buttons for CREATED orders only */}
+                                        {record.status === 'CREATED' && !record.order?.is_paid && (
                                             <Box sx={{ display: 'flex', gap: 1, mt: 1.5, flexDirection: { xs: 'column', sm: 'row' } }}>
                                                 {/* Pay Online - if enabled and not paid */}
-                                                {checkoutEnabled && checkoutAvailable && !record.order?.is_paid && (
+                                                {checkoutEnabled && checkoutAvailable && (
                                                     <Button
                                                         fullWidth
                                                         variant="contained"
