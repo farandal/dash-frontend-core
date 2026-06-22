@@ -930,10 +930,26 @@ export const MallOrderCreateProvider: React.FC<MallOrderCreateProviderProps> = (
         return parseFloat(product.prices[0].price) || 0;
     }, []);
     
+    // Helper to check if two modifier selections are identical
+    const modifiersAreEqual = useCallback((mod1: Record<number, number[]>, mod2: Record<number, number[]>): boolean => {
+        const keys1 = Object.keys(mod1).sort();
+        const keys2 = Object.keys(mod2).sort();
+
+        if (keys1.length !== keys2.length) return false;
+
+        return keys1.every(key => {
+            const arr1 = [...(mod1[Number(key)] || [])].sort();
+            const arr2 = [...(mod2[Number(key)] || [])].sort();
+
+            if (arr1.length !== arr2.length) return false;
+            return arr1.every((val, idx) => val === arr2[idx]);
+        });
+    }, []);
+
     // Cart operations
     const addToCart = useCallback((product: IMallProduct, modifiers: Record<number, number[]> = {}, note?: string) => {
         const basePrice = getProductPrice(product);
-        
+
         // Calculate modifier price adjustments
         let modifierTotal = 0;
         if (product.modifier_groups) {
@@ -947,30 +963,53 @@ export const MallOrderCreateProvider: React.FC<MallOrderCreateProviderProps> = (
                 });
             });
         }
-        
+
         const lineTotal = basePrice + modifierTotal;
-        
-        const newItem: IMallCartItem = {
-            uniqueId: `${product.id}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-            product,
-            quantity: 1,
-            selectedModifiers: modifiers,
-            note,
-            lineTotal,
-        };
-        
-        setCartItems(prev => [...prev, newItem]);
-        
-        // Show toast with product name if no modifiers were selected (direct add)
-        const hasModifiers = Object.keys(modifiers).length > 0 && 
-            Object.values(modifiers).some(arr => arr.length > 0);
-        
-        if (!hasModifiers) {
-            notify(translate('mall.product_added_with_name', { name: product.name }), { type: 'success' });
+
+        // Check if this product with same modifiers already exists in cart
+        const existingItemIndex = cartItems.findIndex(item =>
+            item.product.id === product.id && modifiersAreEqual(item.selectedModifiers, modifiers)
+        );
+
+        if (existingItemIndex >= 0) {
+            // Product with same modifiers exists - increase quantity
+            const existingItem = cartItems[existingItemIndex];
+            setCartItems(prev => prev.map((item, idx) => {
+                if (idx === existingItemIndex) {
+                    return {
+                        ...item,
+                        quantity: item.quantity + 1,
+                        lineTotal: (basePrice + modifierTotal) * (item.quantity + 1),
+                    };
+                }
+                return item;
+            }));
+
+            notify(translate('mall.product_quantity_increased', { name: product.name }), { type: 'success' });
         } else {
-            notify(translate('mall.product_added'), { type: 'success' });
+            // Different modifiers or new product - add as new line item
+            const newItem: IMallCartItem = {
+                uniqueId: `${product.id}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+                product,
+                quantity: 1,
+                selectedModifiers: modifiers,
+                note,
+                lineTotal,
+            };
+
+            setCartItems(prev => [...prev, newItem]);
+
+            // Show toast with product name if no modifiers were selected (direct add)
+            const hasModifiers = Object.keys(modifiers).length > 0 &&
+                Object.values(modifiers).some(arr => arr.length > 0);
+
+            if (!hasModifiers) {
+                notify(translate('mall.product_added_with_name', { name: product.name }), { type: 'success' });
+            } else {
+                notify(translate('mall.product_added'), { type: 'success' });
+            }
         }
-    }, [getProductPrice, notify, translate]);
+    }, [cartItems, getProductPrice, modifiersAreEqual, notify, translate]);
     
     const removeFromCart = useCallback((uniqueId: string) => {
         setCartItems(prev => prev.filter(item => item.uniqueId !== uniqueId));
