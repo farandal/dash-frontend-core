@@ -272,7 +272,9 @@ const MallClientAppResources = [
 │  ┌─────────────────────────────────────────────────────────────────────┐    │
 │  │  MallClientWrapper validates session with backend API               │    │
 │  │  - Checks session exists and is not expired                         │    │
-│  │  - Retrieves mall configuration and tenant list                     │    │
+│  │  - Retrieves mall configuration, tenant list, checkout flags        │    │
+│  │  - checkout_gateway_enabled: allows online payment                  │    │
+│  │  - checkout_gateway_available: active gateway configured            │    │
 │  └─────────────────────────────────────────────────────────────────────┘    │
 │                              │                                               │
 │                              ▼                                               │
@@ -284,11 +286,12 @@ const MallClientAppResources = [
 │  └─────────────────────────────────────────────────────────────────────┘    │
 │                              │                                               │
 │                              ▼                                               │
-│  STEP 4: Product Selection                                                   │
+│  STEP 4: Product Selection & Cart                                            │
 │  ┌─────────────────────────────────────────────────────────────────────┐    │
-│  │  Customer adds products from one or more stores                     │    │
+│  │  Customer adds products from one or more stores to cart             │    │
 │  │  - Products grouped by tenant for multi-restaurant orders           │    │
 │  │  - Modifiers and notes can be added                                 │    │
+│  │  - Cart drawer shows "Crear Pedido" button                          │    │
 │  └─────────────────────────────────────────────────────────────────────┘    │
 │                              │                                               │
 │                              ▼                                               │
@@ -296,29 +299,81 @@ const MallClientAppResources = [
 │  ┌─────────────────────────────────────────────────────────────────────┐    │
 │  │  Modal prompts for customer name and table number                   │    │
 │  │  - Data stored in localStorage for order creation                   │    │
-│  │  - Triggered by beforeSubmit validation                             │    │
+│  │  - Triggered by "Crear Pedido" button validation                    │    │
 │  └─────────────────────────────────────────────────────────────────────┘    │
 │                              │                                               │
 │                              ▼                                               │
-│  STEP 6: Order Submission                                                    │
+│  STEP 6: Order Creation                                                      │
 │  ┌─────────────────────────────────────────────────────────────────────┐    │
-│  │  POST /public/mall/tab                                              │    │
-│  │  - Creates master tab under mall manager tenant                     │    │
-│  │  - Creates tenant tabs for each restaurant                          │    │
-│  │  - Notifies restaurants via WebSocket and FCM                       │    │
+│  │  POST /public/selfservice/{hash}/tab                                │    │
+│  │  - Creates order (brokerable_type=SelfServiceSession)               │    │
+│  │  - Returns order_id and status=CREATED                              │    │
+│  │  - Cart drawer closes, order card displays with action buttons     │    │
+│  │  - Restaurants notified via WebSocket and FCM                       │    │
 │  └─────────────────────────────────────────────────────────────────────┘    │
 │                              │                                               │
 │                              ▼                                               │
-│  STEP 7: Real-Time Tracking                                                  │
+│  STEP 7: Payment (Conditional, based on tenant settings)                     │
+│  ┌─────────────────────────────────────────────────────────────────────┐    │
+│  │  Order card shows action buttons:                                   │    │
+│  │                                                                      │    │
+│  │  A) If checkout enabled + active gateway:                           │    │
+│  │  ┌──────────────────────────────────────────────────────────────┐   │    │
+│  │  │ Customer clicks "Pagar en línea"                             │   │    │
+│  │  │ POST /public/selfservice/{hash}/checkout/session (with id)  │   │    │
+│  │  │ - Creates CheckoutGatewayTransaction (pending)              │   │    │
+│  │  │ - Opens payment gateway in new tab (DashTest/Webpay/MP)     │   │    │
+│  │  │ - Kiosk tab waits for WebSocket notification               │   │    │
+│  │  │ - After payment: gateway redirects to return page           │   │    │
+│  │  │ - Return page shows 5-sec countdown + "Volver" button      │   │    │
+│  │  │ - Clicking/timeout returns to kiosk tab                    │   │    │
+│  │  │ - WebSocket notification fires, order status updates       │   │    │
+│  │  └──────────────────────────────────────────────────────────────┘   │    │
+│  │                                                                      │    │
+│  │  B) If checkout disabled or no gateway:                             │    │
+│  │  ┌──────────────────────────────────────────────────────────────┐   │    │
+│  │  │ "Pagar en línea" button not shown                            │   │    │
+│  │  │ Shows "Confirmar Pedido" (if self-confirm enabled)           │   │    │
+│  │  │ Shows "Cancelar Pedido" to cancel before confirmation        │   │    │
+│  │  │ Kitchen staff confirms order manually (if self-confirm off)  │   │    │
+│  │  └──────────────────────────────────────────────────────────────┘   │    │
+│  └─────────────────────────────────────────────────────────────────────┘    │
+│                              │                                               │
+│                              ▼                                               │
+│  STEP 8: Real-Time Tracking                                                  │
 │  ┌─────────────────────────────────────────────────────────────────────┐    │
 │  │  Customer sees order status updates in real-time                    │    │
 │  │  - Progress bars per restaurant                                     │    │
 │  │  - Toast notifications on status changes                            │    │
-│  │  - Status: CREATED → CONFIRMED → IN_PREPARATION → PREPARED → DELIVERED │
+│  │  - WebSocket updates order_status: CREATED → CONFIRMED →           │    │
+│  │           IN_PREPARATION → PREPARED → DELIVERED                    │    │
 │  └─────────────────────────────────────────────────────────────────────┘    │
 │                                                                              │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
+
+### Payment Flow Variations
+
+**Without Online Checkout (checkout_gateway_enabled = false):**
+1. Order created with status `CREATED`
+2. Only action: "Cancelar Pedido"
+3. Kitchen staff confirms manually (unless self-confirm enabled)
+4. Status moves to `CONFIRMED` → `IN_PREPARATION` → etc.
+
+**With Online Checkout (enabled + active gateway):**
+1. Order created with status `CREATED`
+2. Customer clicks "Pagar en línea" button on order card
+3. Checkout session created, new tab opens with payment gateway
+4. After payment success → transaction confirmed → order transitions to `CONFIRMED`
+5. WebSocket notifies kiosk tab instantly
+6. Customer redirected back with countdown timer
+
+**Return Page Flow:**
+- Checkout gateway redirects browser to `https://checkout.kitchntabs.com/{hash}/return/{provider}`
+- Return page runs `handleCallback()` → `confirmPayment()` → `completeTransaction()`
+- Shows 5-second countdown with "Volver Ahora" (Return Now) button
+- Clicking or timeout closes payment tab and returns to kiosk tab
+- Kiosk receives WebSocket notification, auto-updates order status
 
 ---
 
