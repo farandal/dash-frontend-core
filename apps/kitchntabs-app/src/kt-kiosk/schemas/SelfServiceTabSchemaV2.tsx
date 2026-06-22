@@ -7,6 +7,7 @@ import { MallOrderProducts, MallOrderProductsFieldV2 } from "../components";
 // Import Self-Service specific components
 import SelfServiceOrderVoucher from "../../kt-selfservice/components/SelfServiceOrderVoucher";
 import SelfServiceOrderTimeline from "../../kt-selfservice/components/SelfServiceOrderTimeline";
+import SelfServiceOrderActions from "../components/SelfServiceOrderActions";
 
 
 // Toolbar mediator: always at the top, only in create mode
@@ -91,6 +92,20 @@ const SelfServiceTabSchemaV2: IDashAutoAdminAttribute[] = [
         inCreate: false,
         inEdit: false,
         inShow: false,
+    },
+    // Order Actions - Pay Online, Confirm, Cancel
+    // Shown on order card after creation in Productos tab
+    {
+        attribute: 'actions',
+        tab: 'Productos',
+        label: '',
+        type: Object,
+        inCreate: false,
+        inEdit: true,  // Show in edit (after order created)
+        inShow: true,  // Show in show view
+        inList: false,
+        custom: true,
+        component: SelfServiceOrderActions,
     },
     // Order progress - Replaced with SelfServiceOrderTimeline
     {
