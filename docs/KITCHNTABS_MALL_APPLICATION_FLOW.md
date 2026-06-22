@@ -356,24 +356,46 @@ const MallClientAppResources = [
 
 **Without Online Checkout (checkout_gateway_enabled = false):**
 1. Order created with status `CREATED`
-2. Only action: "Cancelar Pedido"
-3. Kitchen staff confirms manually (unless self-confirm enabled)
-4. Status moves to `CONFIRMED` → `IN_PREPARATION` → etc.
+2. Customer sees list view with order card(s)
+3. Only actions shown: "Confirmar" (if self-confirm enabled)
+4. Kitchen staff confirms manually (unless self-confirm enabled)
+5. Status moves to `CONFIRMED` → `IN_PREPARATION` → etc.
 
 **With Online Checkout (enabled + active gateway):**
 1. Order created with status `CREATED`
-2. Customer clicks "Pagar en línea" button on order card
-3. Checkout session created, new tab opens with payment gateway
+2. Customer sees list view with action buttons:
+   - **"Pagar"** (compact list view) or **"Pagar en línea"** (detailed card view)
+   - **"Confirmar"** (if self-confirm enabled)
+3. Click "Pagar" → Checkout session created, new tab opens with payment gateway
 4. After payment success → transaction confirmed → order transitions to `CONFIRMED`
 5. WebSocket notifies kiosk tab instantly
 6. Customer redirected back with countdown timer
+
+### List View vs Card View
+
+**Order List View:**
+- Grid of order cards (1-3 columns depending on screen size)
+- Shows: Order #, products summary, status, action buttons
+- Quick-action buttons for CREATED orders:
+  - "Pagar" button (compact, if checkout enabled)
+  - "Confirmar" button (if self-confirm enabled)
+- Responsive: buttons stack vertically on mobile, horizontal on desktop
+
+**Order Card View (Click to open):**
+- Full order details: products, total, dates
+- Larger action buttons with full labels:
+  - "Pagar en línea" (green, primary action)
+  - "Confirmar Pedido" (blue, secondary action)
+  - "Cancelar Pedido" (red outline)
+- Progress tracking per restaurant/store
+- Timeline of status changes
 
 **Return Page Flow:**
 - Checkout gateway redirects browser to `https://checkout.kitchntabs.com/{hash}/return/{provider}`
 - Return page runs `handleCallback()` → `confirmPayment()` → `completeTransaction()`
 - Shows 5-second countdown with "Volver Ahora" (Return Now) button
 - Clicking or timeout closes payment tab and returns to kiosk tab
-- Kiosk receives WebSocket notification, auto-updates order status
+- Kiosk receives WebSocket notification, auto-updates order status in list view
 
 ---
 
