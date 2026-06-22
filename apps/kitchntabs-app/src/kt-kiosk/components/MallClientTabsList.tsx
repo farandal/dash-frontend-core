@@ -55,6 +55,10 @@ const MallClientTabsList: React.FC<IDashAutoAdminDataGrid> = ({ resourceConfig }
             return;
         }
 
+        // Build return URL from current app domain (where user will return after payment)
+        // This ensures return redirects back to app-dev.kitchntabs.com or app.kitchntabs.com
+        const returnUrl = `${window.location.protocol}//${window.location.host}/checkout/return/${sessionHash}`;
+
         // Open payment tab synchronously - mobile browsers block popups after async calls
         const paymentTab = window.open('', '_blank');
         setPayingTabId(tabId);
@@ -63,6 +67,7 @@ const MallClientTabsList: React.FC<IDashAutoAdminDataGrid> = ({ resourceConfig }
             const res = await axios.post(`/public/selfservice/${sessionHash}/checkout/session`, {
                 order_id: tabId,
                 amount: amount,
+                return_url: returnUrl,
             });
 
             const data = res?.data ?? res;

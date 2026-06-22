@@ -63,6 +63,10 @@ export const SelfServiceOrderActions: React.FC<IDashAutoAdminCustomFieldComponen
             return;
         }
 
+        // Build return URL from current app domain (where user will return after payment)
+        // This ensures return redirects back to app-dev.kitchntabs.com or app.kitchntabs.com
+        const returnUrl = `${window.location.protocol}//${window.location.host}/checkout/return/${sessionHash}`;
+
         // Open payment tab synchronously - mobile browsers block popups after async calls
         const paymentTab = window.open('', '_blank');
         setIsPayingOnline(true);
@@ -71,6 +75,7 @@ export const SelfServiceOrderActions: React.FC<IDashAutoAdminCustomFieldComponen
             const res = await axios.post(`/public/selfservice/${sessionHash}/checkout/session`, {
                 order_id: record.id,
                 amount: record.order?.total_amount || 0,
+                return_url: returnUrl,
             });
 
             const data = res?.data ?? res;
