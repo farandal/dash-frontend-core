@@ -292,6 +292,11 @@ const MallClientAppResources = [
 │  │  - Products grouped by tenant for multi-restaurant orders           │    │
 │  │  - Modifiers and notes can be added                                 │    │
 │  │  - Cart drawer shows "Crear Pedido" button                          │    │
+│  │  - Each cart line has a delete button (remove item)                 │    │
+│  │  - Smart add/merge: re-adding the SAME product with the SAME        │    │
+│  │    modifier selection increments that line's quantity; the same     │    │
+│  │    product with DIFFERENT modifiers becomes a new line              │    │
+│  │    (see MallOrderCreateContext.addToCart / modifiersAreEqual)       │    │
 │  └─────────────────────────────────────────────────────────────────────┘    │
 │                              │                                               │
 │                              ▼                                               │
@@ -315,19 +320,26 @@ const MallClientAppResources = [
 │                              ▼                                               │
 │  STEP 7: Payment (Conditional, based on tenant settings)                     │
 │  ┌─────────────────────────────────────────────────────────────────────┐    │
-│  │  Order card shows action buttons:                                   │    │
+│  │  Order card / list row shows action buttons:                        │    │
 │  │                                                                      │    │
 │  │  A) If checkout enabled + active gateway:                           │    │
 │  │  ┌──────────────────────────────────────────────────────────────┐   │    │
-│  │  │ Customer clicks "Pagar en línea"                             │   │    │
-│  │  │ POST /public/selfservice/{hash}/checkout/session (with id)  │   │    │
+│  │  │ Customer clicks "Pagar en línea" (card) / "Pagar" (list)    │   │    │
+│  │  │ Frontend builds return_url =                                 │   │    │
+│  │  │   {appOrigin}/selfservice/{hash}/tab/{orderId}              │   │    │
+│  │  │ POST /public/selfservice/{hash}/checkout/session            │   │    │
+│  │  │   { order_id, amount, return_url }                          │   │    │
+│  │  │ - Resolves tenant's default active CheckoutGateway          │   │    │
 │  │  │ - Creates CheckoutGatewayTransaction (pending)              │   │    │
-│  │  │ - Opens payment gateway in new tab (DashTest/Webpay/MP)     │   │    │
-│  │  │ - Kiosk tab waits for WebSocket notification               │   │    │
-│  │  │ - After payment: gateway redirects to return page           │   │    │
-│  │  │ - Return page shows 5-sec countdown + "Volver" button      │   │    │
-│  │  │ - Clicking/timeout returns to kiosk tab                    │   │    │
-│  │  │ - WebSocket notification fires, order status updates       │   │    │
+│  │  │ - Redirects the SAME tab to the gateway (no _blank)         │   │    │
+│  │  │   (DashTest demo = KitchnTabs-hosted "bank" page)           │   │    │
+│  │  │ - Customer approves/rejects on the gateway page             │   │    │
+│  │  │ - On approval the backend completion tail runs:             │   │    │
+│  │  │     Order.is_paid=true, Payment row created,                │   │    │
+│  │  │     tab auto-confirmed (CREATED → CONFIRMED),               │   │    │
+│  │  │     TabsNotificationService broadcasts to the kiosk         │   │    │
+│  │  │ - Browser is redirected back to the tab-detail page         │   │    │
+│  │  │   (same kiosk SPA, NOT a checkout.kitchntabs.com page)      │   │    │
 │  │  └──────────────────────────────────────────────────────────────┘   │    │
 │  │                                                                      │    │
 │  │  B) If checkout disabled or no gateway:                             │    │
@@ -340,17 +352,30 @@ const MallClientAppResources = [
 │  └─────────────────────────────────────────────────────────────────────┘    │
 │                              │                                               │
 │                              ▼                                               │
-│  STEP 8: Real-Time Tracking                                                  │
+│  STEP 8: Post-Payment State + Real-Time Tracking                             │
 │  ┌─────────────────────────────────────────────────────────────────────┐    │
-│  │  Customer sees order status updates in real-time                    │    │
-│  │  - Progress bars per restaurant                                     │    │
-│  │  - Toast notifications on status changes                            │    │
+│  │  Once paid (is_paid=true):                                          │    │
+│  │  - Card/list show a green "Pedido Pagado" badge                    │    │
+│  │  - "Pagar" and "Cancelar" buttons are hidden (no double-pay)       │    │
+│  │  Once confirmed (status=CONFIRMED):                                 │    │
+│  │  - Card/list show a "Pedido Confirmado" locked state               │    │
+│  │  - Cancel/modify disabled (kitchen has the order)                  │    │
+│  │  Customer sees order status updates in real-time:                  │    │
+│  │  - Progress bars per restaurant                                    │    │
+│  │  - Toast notifications on status changes                           │    │
 │  │  - WebSocket updates order_status: CREATED → CONFIRMED →           │    │
 │  │           IN_PREPARATION → PREPARED → DELIVERED                    │    │
 │  └─────────────────────────────────────────────────────────────────────┘    │
 │                                                                              │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
+
+> **Cache note (known gap):** the kiosk only invalidates the React-Query cache
+> when it returns with `?returned_from_payment=true`, but the live DashTest
+> return appends `?transaction={id}` instead. Until reconciled, returning from
+> payment can briefly show **stale** order data (pay/cancel still enabled) until
+> a manual refresh, even though the backend already marked the order paid +
+> confirmed. See FEAT-SYSTEM-CHECKOUT-GATEWAYS.md §1.1 "Known gap".
 
 ### Payment Flow Variations
 
@@ -366,10 +391,20 @@ const MallClientAppResources = [
 2. Customer sees list view with action buttons:
    - **"Pagar"** (compact list view) or **"Pagar en línea"** (detailed card view)
    - **"Confirmar"** (if self-confirm enabled)
-3. Click "Pagar" → Checkout session created, new tab opens with payment gateway
-4. After payment success → transaction confirmed → order transitions to `CONFIRMED`
-5. WebSocket notifies kiosk tab instantly
-6. Customer redirected back with countdown timer
+3. Click "Pagar" → checkout session created → **same tab** navigates to the
+   payment gateway (DashTest demo = a KitchnTabs-hosted "bank" page). No `_blank`.
+4. On approval the backend completion tail (`AbstractCheckoutGatewayProvider::
+   completeTransaction`) sets `Order.is_paid=true`, creates a `Payment` row, and
+   **auto-confirms the tab** (`CREATED → CONFIRMED`)
+5. WebSocket (`TabsNotificationService`) notifies the kiosk tab
+6. Browser is redirected back to the **tab-detail page** in the kiosk SPA
+   (`/selfservice/{hash}/tab/{orderId}`) — not a `checkout.kitchntabs.com` page,
+   and with no countdown screen
+7. The tab-detail view then shows the "Pedido Pagado" badge and hides pay/cancel
+
+> The "Pagar en línea / Pagar" button only appears while `status === 'CREATED'`
+> and `order.is_paid` is false. Once paid it is replaced by the paid badge;
+> once `CONFIRMED` the order is locked (no cancel/modify).
 
 ### List View vs Card View
 
@@ -383,19 +418,36 @@ const MallClientAppResources = [
 
 **Order Card View (Click to open):**
 - Full order details: products, total, dates
-- Larger action buttons with full labels:
+- Larger action buttons with full labels (only while `CREATED` + not paid):
   - "Pagar en línea" (green, primary action)
   - "Confirmar Pedido" (blue, secondary action)
   - "Cancelar Pedido" (red outline)
+- After payment: green "Pedido Pagado" badge, action buttons hidden
+- After confirmation: "Pedido Confirmado" locked state, cancel/modify disabled
 - Progress tracking per restaurant/store
 - Timeline of status changes
+- Component: `kt-kiosk/components/SelfServiceOrderActions.tsx`
 
-**Return Page Flow:**
-- Checkout gateway redirects browser to `https://checkout.kitchntabs.com/{hash}/return/{provider}`
-- Return page runs `handleCallback()` → `confirmPayment()` → `completeTransaction()`
-- Shows 5-second countdown with "Volver Ahora" (Return Now) button
-- Clicking or timeout closes payment tab and returns to kiosk tab
-- Kiosk receives WebSocket notification, auto-updates order status in list view
+**Return Page Flow (as built — DashTest):**
+- The kiosk navigates the **same tab** to the gateway; for DashTest this is a
+  KitchnTabs-hosted Blade "bank" page (`checkout/dashtest_pay.blade.php`)
+- The customer approves/rejects; `dashtestProcess()` runs `handleCallback()` →
+  `confirmPayment()` → `completeTransaction()` server-side in that request
+- The backend then `redirect()->away()` straight back to the frontend
+  `return_url` (the tab-detail page `/selfservice/{hash}/tab/{orderId}`),
+  appending `?transaction={id}`
+- There is **no** intermediate countdown/"Volver Ahora" screen and **no**
+  `checkout.kitchntabs.com` result page on this path
+- The kiosk also receives a `TabsNotificationService` WebSocket event and, where
+  the cache is refreshed, auto-updates the order to its paid/confirmed state
+
+> A generic `returnForSession()` web route (`/checkout/return/{hash}`) exists and
+> *would* append `?returned_from_payment=true` to drive cache invalidation, but it
+> is not on the DashTest critical path (the gateway returns directly to the SPA).
+> This param mismatch is the root of the "stale buttons after paying" issue noted
+> above. The planned `checkout.kitchntabs.com` branded Blade result page (with the
+> 5-second countdown) is the forward target, not yet wired — see
+> FEAT-SYSTEM-CHECKOUT-GATEWAYS.md §16 and §1.1.
 
 ---
 

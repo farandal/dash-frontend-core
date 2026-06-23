@@ -9,6 +9,7 @@ import {
     DialogContentText,
     DialogActions,
     Stack,
+    Typography,
 } from '@mui/material';
 import {
     Payment as PaymentIcon,
@@ -41,6 +42,11 @@ export const SelfServiceOrderActions: React.FC<IDashAutoAdminCustomFieldComponen
     const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
     const [isCanceling, setIsCanceling] = useState(false);
 
+    // NOTE: return-from-payment handling (cache refresh + success/failure dialog)
+    // lives globally in SelfServiceAppHookComponent, which always stays mounted
+    // and has access to useDialog/useQueryClient. Keeping it there avoids
+    // depending on this card being the page the gateway happens to land on.
+
     const selfservice = AuthPersistenceService.getSystemValues()?.selfservice;
     const onlineCheckoutAvailable = !!(
         selfservice?.checkout_gateway_enabled &&
@@ -52,14 +58,21 @@ export const SelfServiceOrderActions: React.FC<IDashAutoAdminCustomFieldComponen
     // Check order status and payment state
     const isPaid = record?.order?.is_paid;
     const isConfirmed = record?.status === 'CONFIRMED';
-    const isFinalized = record?.status && ['IN_PREPARATION', 'PREPARED', 'DELIVERED', 'CLOSED', 'CANCELLED'].includes(record.status);
+    const isCreated = record?.status === 'CREATED';
+    // Terminal states: the order is finished — nothing more to do here.
+    const isTerminal = record?.status && ['CLOSED', 'CANCELLED'].includes(record.status);
+
+    // The order can be paid online at ANY active step (CREATED → DELIVERED), as long as it is not
+    // already paid and not closed/cancelled — it must be paid before closing. (Staff can also
+    // settle it at the counter / staff app, which is outside the self-service module.)
+    const canPay = onlineCheckoutAvailable && !isPaid && !isTerminal;
 
     if (!record) {
         return null;
     }
 
-    // Show nothing if order is finalized (after confirmed)
-    if (isFinalized) {
+    // Show nothing once the order is closed/cancelled.
+    if (isTerminal) {
         return null;
     }
 
@@ -90,12 +103,16 @@ export const SelfServiceOrderActions: React.FC<IDashAutoAdminCustomFieldComponen
             return;
         }
 
+        // Guard: an order can be paid until it is closed/cancelled or already paid.
+        if (record?.order?.is_paid || ['CLOSED', 'CANCELLED'].includes(record?.status)) {
+            notify(translate('mall.checkout_not_payable', { _: 'Este pedido ya no puede pagarse en línea' }), { type: 'warning' });
+            return;
+        }
+
         // Build return URL to the order detail page after payment completes
         // Redirects directly to the tab/order detail, not a separate checkout page
         const returnUrl = `${window.location.protocol}//${window.location.host}/selfservice/${sessionHash}/tab/${record.id}`;
 
-        // Open payment tab synchronously - mobile browsers block popups after async calls
-        const paymentTab = window.open('', '_blank');
         setIsPayingOnline(true);
 
         try {
@@ -107,19 +124,12 @@ export const SelfServiceOrderActions: React.FC<IDashAutoAdminCustomFieldComponen
 
             const data = res?.data ?? res;
             if (data?.redirect_url) {
-                if (paymentTab) {
-                    paymentTab.location.href = data.redirect_url;
-                } else {
-                    window.location.href = data.redirect_url;
-                }
-                // Kiosk will receive WebSocket notification when payment is confirmed
-                notify(translate('mall.checkout_started', { _: 'Iniciando pago en línea...' }), { type: 'info' });
+                // Redirect to payment gateway in the same window/tab (no new tab)
+                window.location.href = data.redirect_url;
             } else {
-                paymentTab?.close();
                 notify(translate('mall.checkout_error', { _: 'No se pudo iniciar el pago' }), { type: 'error' });
             }
         } catch (error: any) {
-            paymentTab?.close();
             const message = error?.response?.data?.message || translate('mall.checkout_error', { _: 'Error al iniciar pago' });
             notify(message, { type: 'error' });
         } finally {
@@ -172,8 +182,8 @@ export const SelfServiceOrderActions: React.FC<IDashAutoAdminCustomFieldComponen
         <>
             <Box sx={{ mt: 3, mb: 2 }} className="kt-self-service-order-actions">
                 <Stack spacing={1.5}>
-                    {/* Pay Online - Primary action if enabled */}
-                    {onlineCheckoutAvailable && (
+                    {/* Pay Online - only while the order is CREATED and unpaid */}
+                    {canPay && (
                         <Button
                             fullWidth
                             variant="contained"
@@ -194,8 +204,8 @@ export const SelfServiceOrderActions: React.FC<IDashAutoAdminCustomFieldComponen
                         </Button>
                     )}
 
-                    {/* Confirm Order - if enabled and not confirmed/paid */}
-                    {userConfirmEnabled && !isConfirmed && !isPaid && (
+                    {/* Confirm Order - self-confirm only while still CREATED */}
+                    {userConfirmEnabled && isCreated && !isPaid && (
                         <Button
                             fullWidth
                             variant="contained"
@@ -216,8 +226,8 @@ export const SelfServiceOrderActions: React.FC<IDashAutoAdminCustomFieldComponen
                         </Button>
                     )}
 
-                    {/* Cancel Order - only if not confirmed and not paid */}
-                    {!isConfirmed && !isPaid && (
+                    {/* Cancel Order - only while still CREATED and unpaid */}
+                    {isCreated && !isPaid && (
                         <Button
                             fullWidth
                             variant="outlined"

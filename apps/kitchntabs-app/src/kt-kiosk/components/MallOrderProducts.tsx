@@ -343,6 +343,11 @@ const MallOrderEditItems: React.FC<{ tab: ITab }> = ({ tab }) => {
 const MallOrderProducts = ({ method, attribute, resourceConfig }: IDashAutoAdminCustomFieldComponent) => {
     const tab: ITab = useRecordContext();
 
+    // An order can only be modified while it is still CREATED and unpaid. Once it is paid
+    // (or has moved past CREATED — CONFIRMED, in preparation, etc.) the items are locked:
+    // we render the read-only view instead of the editable list (no quantity steppers / delete).
+    const isLocked = !!tab.order?.is_paid || (!!tab.status && tab.status !== 'CREATED');
+
     switch (method) {
         case "edit":
             return (
@@ -350,10 +355,12 @@ const MallOrderProducts = ({ method, attribute, resourceConfig }: IDashAutoAdmin
                     {/* Progress and notifications now get data from MallClientTabsContext */}
                     {/*<MallSessionOrderProgress tabId={tab.id} />
                     <MallSessionOrderNotifications tabId={tab.id} />*/}
-                    
-                    {/* Cart items list with inline editing */}
+
+                    {/* Cart items list with inline editing — read-only once paid/confirmed */}
                     <Box sx={{ mt: 2, backgroundColor: 'transparent' }} className="kt-mall-order-products-edit-items">
-                        <MallOrderEditItems tab={tab} />
+                        {isLocked
+                            ? <LocalOrderProductsView record={tab} resourceConfig={resourceConfig} attribute={undefined} method={"view"} />
+                            : <MallOrderEditItems tab={tab} />}
                     </Box>
                 </Box>
             );

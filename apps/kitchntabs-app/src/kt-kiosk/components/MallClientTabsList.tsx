@@ -59,8 +59,6 @@ const MallClientTabsList: React.FC<IDashAutoAdminDataGrid> = ({ resourceConfig }
         // Redirects directly to the tab/order detail, not a separate checkout page
         const returnUrl = `${window.location.protocol}//${window.location.host}/selfservice/${sessionHash}/tab/${tabId}`;
 
-        // Open payment tab synchronously - mobile browsers block popups after async calls
-        const paymentTab = window.open('', '_blank');
         setPayingTabId(tabId);
 
         try {
@@ -72,17 +70,12 @@ const MallClientTabsList: React.FC<IDashAutoAdminDataGrid> = ({ resourceConfig }
 
             const data = res?.data ?? res;
             if (data?.redirect_url) {
-                if (paymentTab) {
-                    paymentTab.location.href = data.redirect_url;
-                } else {
-                    window.location.href = data.redirect_url;
-                }
+                // Redirect to payment gateway in the same window/tab (no new tab)
+                window.location.href = data.redirect_url;
             } else {
-                paymentTab?.close();
                 notify(translate('mall.checkout_error', { _: 'No se pudo iniciar el pago' }), { type: 'error' });
             }
         } catch (error: any) {
-            paymentTab?.close();
             const message = error?.response?.data?.message || translate('mall.checkout_error', { _: 'Error al iniciar pago' });
             notify(message, { type: 'error' });
         } finally {
@@ -266,10 +259,11 @@ const MallClientTabsList: React.FC<IDashAutoAdminDataGrid> = ({ resourceConfig }
                                             </Box>
                                         )}
 
-                                        {/* Action buttons for CREATED orders only */}
-                                        {record.status === 'CREATED' && !record.order?.is_paid && (
+                                        {/* Actions: pay is available at any active step (until closed/cancelled);
+                                            confirm is self-confirm only while still CREATED. */}
+                                        {!record.order?.is_paid && !['CLOSED', 'CANCELLED'].includes(record.status) && (
                                             <Box sx={{ display: 'flex', gap: 1, mt: 1.5, flexDirection: { xs: 'column', sm: 'row' } }}>
-                                                {/* Pay Online - if enabled and not paid */}
+                                                {/* Pay Online - any active, unpaid order */}
                                                 {checkoutEnabled && checkoutAvailable && (
                                                     <Button
                                                         fullWidth
@@ -288,8 +282,8 @@ const MallClientTabsList: React.FC<IDashAutoAdminDataGrid> = ({ resourceConfig }
                                                     </Button>
                                                 )}
 
-                                                {/* Confirm Order - if enabled */}
-                                                {userConfirmOrderEnabled && (
+                                                {/* Confirm Order - self-confirm only while CREATED */}
+                                                {userConfirmOrderEnabled && record.status === 'CREATED' && (
                                                     <Button
                                                         fullWidth
                                                         variant="outlined"

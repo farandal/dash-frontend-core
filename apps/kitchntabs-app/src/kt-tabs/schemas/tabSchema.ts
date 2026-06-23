@@ -5,7 +5,7 @@ import TabStatus from "../components/TabStatus";
 import ViewMarketplaceDetail from "../components/Tab/ViewMarketplaceDetail";
 import OrderProductsField from "../components/tab2/OrderProductsField";
 import TabActionButtonsField from "../components/tab2/components/TabActionButtonsField";
-import TabOrderProductsSelector from "../components/Tab/TabOrderProductsSelector";
+import TabOrderProductsSelector from "../components/Tab/TabOrderProductsSelectorGuarded";
 import TabAgentToolbar from "../components/Tab/TabAgentToolbar";
 import ViewOrder from "../components/Tab/ViewOrder";
 import TabTotalAmountField from "../components/Tab/TabTotalAmountField";
