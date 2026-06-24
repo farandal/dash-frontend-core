@@ -14,6 +14,10 @@ import {
 import CloseIcon from '@mui/icons-material/Close';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import ShoppingCartCheckoutIcon from '@mui/icons-material/ShoppingCartCheckout';
+import PaymentIcon from '@mui/icons-material/Payment';
+import { useNotify } from 'react-admin';
+import { useAxios } from 'dash-axios-hook';
+import { AuthPersistenceService } from 'dash-auth';
 import { useMallOrderCreate } from '../contexts/MallOrderCreateContext';
 import { MallCartItemsList } from './MallCartItemsList';
 
@@ -42,11 +46,13 @@ export const MallOrderSummaryDrawer: React.FC = () => {
 
     // Get DashAutoAdminForm context for accessing the form's save handler
     const { onSave } = useDashAutoAdminForm();
-    
+
     // Get form context for validation and getting form values
     const { handleSubmit, formState } = useFormContext();
 
     const [isSubmitting, setIsSubmitting] = React.useState(false);
+
+    // Note: Checkout functionality moved to order card component (displayed after order creation)
 
     // Use a ref to track the latest handleSubmitOrder function
     const handleSubmitOrderRef = useRef<(() => Promise<void>) | null>(null);
@@ -57,7 +63,7 @@ export const MallOrderSummaryDrawer: React.FC = () => {
 
     /**
      * Handle order submission directly from the drawer
-     * 
+     *
      * This function:
      * 1. Uses react-hook-form's handleSubmit to validate the form
      * 2. If validation passes, calls DashAutoAdminForm's onSave function
@@ -66,6 +72,7 @@ export const MallOrderSummaryDrawer: React.FC = () => {
      *    - dataProvider.create (API call)
      *    - onSubmit callback
      *    - onError if error (e.g., MISSING_SESSION_DATA triggers modal)
+     * 4. After order is created, close drawer. Order card will show with action buttons.
      */
     const handleSubmitOrder = useCallback(async () => {
         if (!onSave) {
@@ -83,8 +90,9 @@ export const MallOrderSummaryDrawer: React.FC = () => {
                     await onSave(values);
                 }
             })();
-            
-            // Close drawer after successful submission
+
+            // Order created successfully - close drawer
+            // The kiosk main view will show the created order with action buttons
             setIsCartDrawerOpen(false);
         } catch (error) {
             console.error('Error submitting order:', error);
@@ -235,7 +243,7 @@ export const MallOrderSummaryDrawer: React.FC = () => {
                         }}
                     >
                         {isSubmitting || formState.isSubmitting
-                            ? translate('mall.submitting_order') 
+                            ? translate('mall.submitting_order')
                             : translate('mall.submit_order')
                         }
                     </Button>

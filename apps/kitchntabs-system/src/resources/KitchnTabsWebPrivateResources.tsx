@@ -37,6 +37,7 @@ export const KitchnTabsWebPrivateResources: ResourceManifest = {
     tenancyResources: () => import('./private/tenancyResources'),
 
     systemMarketplaceResource: () => import('kt-ecommerce/src/resources/systemMarketplaceResource'),
+    systemCheckoutGatewayResource: () => import('kt-ecommerce/src/resources/systemCheckoutGatewayResource'),
     systemPointOfSaleResource: () => import('kt-ecommerce/src/resources/systemPointOfSaleResource'),
     systemPaymentGatewayResource: () => import('kt-ecommerce/src/resources/systemPaymentGatewayResource'),
 

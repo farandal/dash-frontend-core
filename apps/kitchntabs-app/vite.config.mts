@@ -502,6 +502,7 @@ export default ({ mode }) => {
         "localhost",
         "localhost:3000",
         "app-dev.kitchntabs.com",
+        
         "0.0.0.0",
         // Add dynamic ngrok host from build config
         ...(buildConfig.customModeConfig?.apiBaseUrl

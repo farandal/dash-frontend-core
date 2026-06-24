@@ -447,17 +447,19 @@ export const CartItem: React.FC<CartItemProps> = ({
                         >
                             {isExpanded ? <ExpandLessIcon fontSize="small" /> : <ExpandMoreIcon fontSize="small" />}
                         </IconButton>
-                        {/* TODO: Remove from cart only when order is in confirmed state */}
-                        {/*removeFromCart && (
-                            <IconButton
-                                size="small"
-                                onClick={() => removeFromCart(item.uniqueId)}
-                                color="error"
-                                sx={{ p: isSmallScreen ? 0.25 : 0.5 }}
-                            >
-                                <DeleteOutlineIcon fontSize="small" />
-                            </IconButton>
-                        )*/}
+                        {/* Delete from cart */}
+                        {removeFromCart && (
+                            <Tooltip title={translate('mall.remove_item')}>
+                                <IconButton
+                                    size="small"
+                                    onClick={() => removeFromCart(item.uniqueId)}
+                                    color="error"
+                                    sx={{ p: isSmallScreen ? 0.25 : 0.5 }}
+                                >
+                                    <DeleteOutlineIcon fontSize="small" />
+                                </IconButton>
+                            </Tooltip>
+                        )}
                     </Box>
                 </Box>
 

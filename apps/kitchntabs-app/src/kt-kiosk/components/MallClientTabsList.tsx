@@ -29,8 +29,11 @@ const MallClientTabsList: React.FC<IDashAutoAdminDataGrid> = ({ resourceConfig }
     const notify = useNotify();
     const axios = useAxios();
     const [confirmingTabId, setConfirmingTabId] = useState<string | number | null>(null);
+    const [payingTabId, setPayingTabId] = useState<string | number | null>(null);
 
     const userConfirmOrderEnabled = !!AuthPersistenceService.getSystemValues()?.selfservice?.user_confirm_order_enabled;
+    const checkoutEnabled = !!AuthPersistenceService.getSystemValues()?.selfservice?.checkout_gateway_enabled;
+    const checkoutAvailable = !!AuthPersistenceService.getSystemValues()?.selfservice?.checkout_gateway_available;
 
     const handleConfirmOrder = async (tabId: string | number) => {
         if (!sessionHash) return;
@@ -43,6 +46,40 @@ const MallClientTabsList: React.FC<IDashAutoAdminDataGrid> = ({ resourceConfig }
             notify(translate('mall.confirm_order_error', { error: error?.response?.data?.message || error.message }), { type: 'error' });
         } finally {
             setConfirmingTabId(null);
+        }
+    };
+
+    const handlePayOnline = async (tabId: string | number, amount: number) => {
+        if (!sessionHash) {
+            notify(translate('mall.checkout_error', { _: 'No active session' }), { type: 'error' });
+            return;
+        }
+
+        // Build return URL to the order detail page after payment completes
+        // Redirects directly to the tab/order detail, not a separate checkout page
+        const returnUrl = `${window.location.protocol}//${window.location.host}/selfservice/${sessionHash}/tab/${tabId}`;
+
+        setPayingTabId(tabId);
+
+        try {
+            const res = await axios.post(`/public/selfservice/${sessionHash}/checkout/session`, {
+                order_id: tabId,
+                amount: amount,
+                return_url: returnUrl,
+            });
+
+            const data = res?.data ?? res;
+            if (data?.redirect_url) {
+                // Redirect to payment gateway in the same window/tab (no new tab)
+                window.location.href = data.redirect_url;
+            } else {
+                notify(translate('mall.checkout_error', { _: 'No se pudo iniciar el pago' }), { type: 'error' });
+            }
+        } catch (error: any) {
+            const message = error?.response?.data?.message || translate('mall.checkout_error', { _: 'Error al iniciar pago' });
+            notify(message, { type: 'error' });
+        } finally {
+            setPayingTabId(null);
         }
     };
 
@@ -190,22 +227,80 @@ const MallClientTabsList: React.FC<IDashAutoAdminDataGrid> = ({ resourceConfig }
 
                                         <OrderProductsView resourceConfig={resourceConfig} record={record} attribute={undefined} method={"view"} />
 
-                                        {userConfirmOrderEnabled && record.status === 'CREATED' && (
-                                            <Button
-                                                fullWidth
-                                                variant="outlined"
-                                                color="primary"
-                                                size="small"
-                                                sx={{ mt: 1 }}
-                                                disabled={confirmingTabId === record.id}
-                                                startIcon={confirmingTabId === record.id ? <CircularProgress size={16} color="inherit" /> : null}
-                                                onClick={() => handleConfirmOrder(record.id)}
-                                            >
-                                                {confirmingTabId === record.id
-                                                    ? translate('mall.confirming_own_order')
-                                                    : translate('mall.confirm_own_order')
-                                                }
-                                            </Button>
+                                        {/* Show paid status badge */}
+                                        {record.order?.is_paid && (
+                                            <Box sx={{
+                                                mt: 1.5,
+                                                p: 1,
+                                                backgroundColor: '#d4edda',
+                                                border: '1px solid #c3e6cb',
+                                                borderRadius: 0.5,
+                                                textAlign: 'center'
+                                            }}>
+                                                <Typography variant="caption" sx={{ color: '#155724', fontWeight: 600 }}>
+                                                    ✓ {translate('mall.order_paid', { _: 'Pagado' })}
+                                                </Typography>
+                                            </Box>
+                                        )}
+
+                                        {/* Show locked message for confirmed orders */}
+                                        {record.status === 'CONFIRMED' && !record.order?.is_paid && (
+                                            <Box sx={{
+                                                mt: 1.5,
+                                                p: 1,
+                                                backgroundColor: '#f8f9fa',
+                                                border: '1px solid #dee2e6',
+                                                borderRadius: 0.5,
+                                                textAlign: 'center'
+                                            }}>
+                                                <Typography variant="caption" sx={{ color: '#6c757d', fontWeight: 500 }}>
+                                                    🔒 {translate('mall.order_locked', { _: 'Confirmado' })}
+                                                </Typography>
+                                            </Box>
+                                        )}
+
+                                        {/* Actions: pay is available at any active step (until closed/cancelled);
+                                            confirm is self-confirm only while still CREATED. */}
+                                        {!record.order?.is_paid && !['CLOSED', 'CANCELLED'].includes(record.status) && (
+                                            <Box sx={{ display: 'flex', gap: 1, mt: 1.5, flexDirection: { xs: 'column', sm: 'row' } }}>
+                                                {/* Pay Online - any active, unpaid order */}
+                                                {checkoutEnabled && checkoutAvailable && (
+                                                    <Button
+                                                        fullWidth
+                                                        variant="contained"
+                                                        color="success"
+                                                        size="small"
+                                                        sx={{ flex: 1 }}
+                                                        disabled={payingTabId === record.id}
+                                                        startIcon={payingTabId === record.id ? <CircularProgress size={14} color="inherit" /> : null}
+                                                        onClick={() => handlePayOnline(record.id, record.order?.total_amount || 0)}
+                                                    >
+                                                        {payingTabId === record.id
+                                                            ? translate('mall.checkout_redirecting', { _: 'Pagando...' })
+                                                            : translate('mall.pay_online', { _: 'Pagar' })
+                                                        }
+                                                    </Button>
+                                                )}
+
+                                                {/* Confirm Order - self-confirm only while CREATED */}
+                                                {userConfirmOrderEnabled && record.status === 'CREATED' && (
+                                                    <Button
+                                                        fullWidth
+                                                        variant="outlined"
+                                                        color="primary"
+                                                        size="small"
+                                                        sx={{ flex: 1 }}
+                                                        disabled={confirmingTabId === record.id}
+                                                        startIcon={confirmingTabId === record.id ? <CircularProgress size={14} color="inherit" /> : null}
+                                                        onClick={() => handleConfirmOrder(record.id)}
+                                                    >
+                                                        {confirmingTabId === record.id
+                                                            ? translate('mall.confirming', { _: 'Confirmando...' })
+                                                            : translate('mall.confirm_own_order', { _: 'Confirmar' })
+                                                        }
+                                                    </Button>
+                                                )}
+                                            </Box>
                                         )}
                                     </CardContent>
                                 </Box>

@@ -53,6 +53,7 @@ export const KitchnTabsWebPrivateResources: ResourceManifest = {
     // Tenant ecommerce resources
     
     marketplaceResource: () => import('kt-ecommerce/src/resources/marketplaceResource'),
+    checkoutGatewayResource: () => import('kt-ecommerce/src/resources/checkoutGatewayResource'),
     pointOfSaleResource: () => import('kt-ecommerce/src/resources/pointOfSaleResource'),
     metadataFormatsResource: () => import('kt-ecommerce/src/resources/metadataFormatsResource'),
     //systemMarketplaceResource: () => import('kt-ecommerce/src/resources/systemMarketplaceResource'),
