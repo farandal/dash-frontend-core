@@ -20,6 +20,7 @@ import { useTranslate, useRecordContext, useNotify } from 'react-admin';
 import { useAxios } from 'dash-axios-hook';
 import { AuthPersistenceService } from 'dash-auth';
 import { IDashAutoAdminCustomFieldComponent } from 'dash-auto-admin';
+import { useSelfServiceCheckout } from '../hooks/useSelfServiceCheckout';
 
 /**
  * SelfServiceOrderActions - Display action buttons on self-service order card
@@ -37,7 +38,10 @@ export const SelfServiceOrderActions: React.FC<IDashAutoAdminCustomFieldComponen
     const notify = useNotify();
     const axios = useAxios();
 
-    const [isPayingOnline, setIsPayingOnline] = useState(false);
+    // Online payment (gateway fetch + optional selection screen + redirect) lives in the shared hook.
+    const { startPayment, payingOrderId, dialog: gatewayDialog } = useSelfServiceCheckout();
+    const isPayingOnline = payingOrderId === record?.id;
+
     const [isConfirming, setIsConfirming] = useState(false);
     const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
     const [isCanceling, setIsCanceling] = useState(false);
@@ -97,45 +101,16 @@ export const SelfServiceOrderActions: React.FC<IDashAutoAdminCustomFieldComponen
         );
     }
 
-    const payOnline = useCallback(async () => {
-        if (!sessionHash) {
-            notify(translate('mall.checkout_error', { _: 'No active session' }), { type: 'error' });
-            return;
-        }
-
+    const payOnline = useCallback(() => {
         // Guard: an order can be paid until it is closed/cancelled or already paid.
         if (record?.order?.is_paid || ['CLOSED', 'CANCELLED'].includes(record?.status)) {
             notify(translate('mall.checkout_not_payable', { _: 'Este pedido ya no puede pagarse en línea' }), { type: 'warning' });
             return;
         }
-
-        // Build return URL to the order detail page after payment completes
-        // Redirects directly to the tab/order detail, not a separate checkout page
-        const returnUrl = `${window.location.protocol}//${window.location.host}/selfservice/${sessionHash}/tab/${record.id}`;
-
-        setIsPayingOnline(true);
-
-        try {
-            const res = await axios.post(`/public/selfservice/${sessionHash}/checkout/session`, {
-                order_id: record.id,
-                amount: record.order?.total_amount || 0,
-                return_url: returnUrl,
-            });
-
-            const data = res?.data ?? res;
-            if (data?.redirect_url) {
-                // Redirect to payment gateway in the same window/tab (no new tab)
-                window.location.href = data.redirect_url;
-            } else {
-                notify(translate('mall.checkout_error', { _: 'No se pudo iniciar el pago' }), { type: 'error' });
-            }
-        } catch (error: any) {
-            const message = error?.response?.data?.message || translate('mall.checkout_error', { _: 'Error al iniciar pago' });
-            notify(message, { type: 'error' });
-        } finally {
-            setIsPayingOnline(false);
-        }
-    }, [sessionHash, record.id, record.order?.total_amount, axios, notify, translate]);
+        // The hook fetches the tenant's gateways and either pays directly (single) or opens the
+        // selection screen (multiple), then redirects.
+        startPayment(record.id, record.order?.total_amount || 0);
+    }, [record?.id, record?.order?.is_paid, record?.order?.total_amount, record?.status, startPayment, notify, translate]);
 
     const confirmOrder = useCallback(async () => {
         if (!sessionHash) {
@@ -286,6 +261,9 @@ export const SelfServiceOrderActions: React.FC<IDashAutoAdminCustomFieldComponen
                     </Button>
                 </DialogActions>
             </Dialog>
+
+            {/* Checkout gateway selection screen (only shown when the tenant has 2+ enabled) */}
+            {gatewayDialog}
         </>
     );
 };

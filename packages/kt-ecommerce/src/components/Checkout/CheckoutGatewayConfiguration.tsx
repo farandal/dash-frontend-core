@@ -11,7 +11,18 @@ import {
     CircularProgress,
     Typography,
     Divider,
+    Switch,
+    FormControlLabel,
 } from "@mui/material";
+
+/** Coerce a stored connection-param value (boolean / "1" / "true" / 1 / ...) to a real boolean. */
+const toBool = (value: any, fallback = false): boolean => {
+    if (value === undefined || value === null || value === "") return Boolean(fallback);
+    if (typeof value === "boolean") return value;
+    if (typeof value === "number") return value !== 0;
+    const s = String(value).toLowerCase();
+    return s === "1" || s === "true" || s === "yes" || s === "on";
+};
 import { useRecordContext, useNotify, useRefresh } from "react-admin";
 import { useAxios } from "dash-axios-hook";
 import { IDashAutoAdminCustomFieldComponent } from "dash-auto-admin";
@@ -46,9 +57,18 @@ const CheckoutGatewayConfiguration: React.FC<IDashAutoAdminCustomFieldComponent>
             .then((res: any) => {
                 if (!active) return;
                 const data = res?.data ?? res;
-                setFormat(data.format ?? []);
+                const fmt = data.format ?? [];
+                // Seed any unset field with its declared default (so a default-on switch like
+                // test_mode is reflected AND persisted on the next save).
+                const seeded: Record<string, any> = { ...(data.values ?? {}) };
+                fmt.forEach((f: any) => {
+                    if (seeded[f.name] === undefined && f.default !== undefined) {
+                        seeded[f.name] = f.default;
+                    }
+                });
+                setFormat(fmt);
                 setCapabilities(data.capabilities ?? null);
-                setValues({ ...(data.values ?? {}) });
+                setValues(seeded);
             })
             .catch((e: any) => notify(e?.response?.data?.message ?? "Error loading configuration", { type: "error" }))
             .finally(() => active && setLoading(false));
@@ -94,6 +114,108 @@ const CheckoutGatewayConfiguration: React.FC<IDashAutoAdminCustomFieldComponent>
         }
     };
 
+    // Schema-driven field renderer — maps a provider connection-param format entry to the right
+    // MUI input by `type` (the same vocabulary the tenant/marketplace settings use), so new field
+    // types render correctly without bespoke code. Falls back to a text field for unknown types.
+    const renderField = (f: any) => {
+        const label = f.label ?? f.name;
+        const help = f.description || undefined;
+        const required = !!f.required;
+
+        switch (f.type) {
+            case "boolean":
+                return (
+                    <FormControlLabel
+                        key={f.name}
+                        control={
+                            <Switch
+                                checked={toBool(values[f.name], f.default)}
+                                onChange={(e) => setField(f.name, e.target.checked)}
+                            />
+                        }
+                        label={label}
+                    />
+                );
+            case "select":
+                return (
+                    <MuiTextField
+                        key={f.name}
+                        select
+                        size="small"
+                        required={required}
+                        helperText={help}
+                        label={label}
+                        value={values[f.name] ?? f.default ?? ""}
+                        onChange={(e) => setField(f.name, e.target.value)}
+                    >
+                        {(f.options ?? []).map((opt: string) => (
+                            <MenuItem key={opt} value={opt}>
+                                {opt}
+                            </MenuItem>
+                        ))}
+                    </MuiTextField>
+                );
+            case "number":
+            case "integer":
+                return (
+                    <MuiTextField
+                        key={f.name}
+                        size="small"
+                        type="number"
+                        required={required}
+                        helperText={help}
+                        label={label}
+                        value={values[f.name] ?? f.default ?? ""}
+                        onChange={(e) =>
+                            setField(f.name, e.target.value === "" ? "" : Number(e.target.value))
+                        }
+                    />
+                );
+            case "textarea":
+                return (
+                    <MuiTextField
+                        key={f.name}
+                        size="small"
+                        multiline
+                        minRows={3}
+                        required={required}
+                        helperText={help}
+                        label={label}
+                        value={values[f.name] ?? f.default ?? ""}
+                        onChange={(e) => setField(f.name, e.target.value)}
+                    />
+                );
+            case "color":
+                return (
+                    <MuiTextField
+                        key={f.name}
+                        size="small"
+                        type="color"
+                        required={required}
+                        helperText={help}
+                        label={label}
+                        value={values[f.name] ?? f.default ?? "#000000"}
+                        onChange={(e) => setField(f.name, e.target.value)}
+                    />
+                );
+            case "password":
+            case "text":
+            default:
+                return (
+                    <MuiTextField
+                        key={f.name}
+                        size="small"
+                        type={f.type === "password" ? "password" : "text"}
+                        required={required}
+                        helperText={help}
+                        label={label}
+                        value={values[f.name] ?? f.default ?? ""}
+                        onChange={(e) => setField(f.name, e.target.value)}
+                    />
+                );
+        }
+    };
+
     if (loading) return <CircularProgress size={24} />;
 
     return (
@@ -106,33 +228,7 @@ const CheckoutGatewayConfiguration: React.FC<IDashAutoAdminCustomFieldComponent>
                 </Stack>
 
                 <Stack spacing={2}>
-                    {format.map((f) =>
-                        f.type === "select" ? (
-                            <MuiTextField
-                                key={f.name}
-                                select
-                                size="small"
-                                label={f.label ?? f.name}
-                                value={values[f.name] ?? f.default ?? ""}
-                                onChange={(e) => setField(f.name, e.target.value)}
-                            >
-                                {(f.options ?? []).map((opt: string) => (
-                                    <MenuItem key={opt} value={opt}>
-                                        {opt}
-                                    </MenuItem>
-                                ))}
-                            </MuiTextField>
-                        ) : (
-                            <MuiTextField
-                                key={f.name}
-                                size="small"
-                                type={f.type === "password" ? "password" : "text"}
-                                label={f.label ?? f.name}
-                                value={values[f.name] ?? ""}
-                                onChange={(e) => setField(f.name, e.target.value)}
-                            />
-                        )
-                    )}
+                    {format.map(renderField)}
                 </Stack>
 
                 <Stack direction="row" spacing={2} sx={{ mt: 3 }}>

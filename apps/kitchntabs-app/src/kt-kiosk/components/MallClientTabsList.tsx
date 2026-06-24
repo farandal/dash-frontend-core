@@ -16,6 +16,7 @@ import { toast } from 'react-toastify';
 import { useAxios } from 'dash-axios-hook';
 import { AuthPersistenceService } from 'dash-auth';
 import { useMallClientTabsContext } from './MallClientTabsContext';
+import { useSelfServiceCheckout } from '../hooks/useSelfServiceCheckout';
 
 import OrderProductsView from "./OrderProductsView";
 
@@ -29,7 +30,9 @@ const MallClientTabsList: React.FC<IDashAutoAdminDataGrid> = ({ resourceConfig }
     const notify = useNotify();
     const axios = useAxios();
     const [confirmingTabId, setConfirmingTabId] = useState<string | number | null>(null);
-    const [payingTabId, setPayingTabId] = useState<string | number | null>(null);
+
+    // Online payment (gateway fetch + optional selection screen + redirect) lives in the shared hook.
+    const { startPayment, payingOrderId: payingTabId, dialog: gatewayDialog } = useSelfServiceCheckout();
 
     const userConfirmOrderEnabled = !!AuthPersistenceService.getSystemValues()?.selfservice?.user_confirm_order_enabled;
     const checkoutEnabled = !!AuthPersistenceService.getSystemValues()?.selfservice?.checkout_gateway_enabled;
@@ -49,39 +52,9 @@ const MallClientTabsList: React.FC<IDashAutoAdminDataGrid> = ({ resourceConfig }
         }
     };
 
-    const handlePayOnline = async (tabId: string | number, amount: number) => {
-        if (!sessionHash) {
-            notify(translate('mall.checkout_error', { _: 'No active session' }), { type: 'error' });
-            return;
-        }
-
-        // Build return URL to the order detail page after payment completes
-        // Redirects directly to the tab/order detail, not a separate checkout page
-        const returnUrl = `${window.location.protocol}//${window.location.host}/selfservice/${sessionHash}/tab/${tabId}`;
-
-        setPayingTabId(tabId);
-
-        try {
-            const res = await axios.post(`/public/selfservice/${sessionHash}/checkout/session`, {
-                order_id: tabId,
-                amount: amount,
-                return_url: returnUrl,
-            });
-
-            const data = res?.data ?? res;
-            if (data?.redirect_url) {
-                // Redirect to payment gateway in the same window/tab (no new tab)
-                window.location.href = data.redirect_url;
-            } else {
-                notify(translate('mall.checkout_error', { _: 'No se pudo iniciar el pago' }), { type: 'error' });
-            }
-        } catch (error: any) {
-            const message = error?.response?.data?.message || translate('mall.checkout_error', { _: 'Error al iniciar pago' });
-            notify(message, { type: 'error' });
-        } finally {
-            setPayingTabId(null);
-        }
-    };
+    // Delegates to the shared hook: fetch gateways → pay directly (single) or show the selection
+    // screen (multiple) → same-tab redirect to the chosen gateway.
+    const handlePayOnline = (tabId: string | number, amount: number) => startPayment(tabId, amount);
 
     const getStatusLabel = (status: string) => {
         return translate(`tab.status.${status.toLowerCase()}`, { _: status });
@@ -152,6 +125,7 @@ const MallClientTabsList: React.FC<IDashAutoAdminDataGrid> = ({ resourceConfig }
     }, [lastEvent, refresh, translate]);
 
     return (
+        <>
         <WithListContext render={({ isPending, data }) => (
             <>
                 {data?.length === 0 && (
@@ -311,6 +285,10 @@ const MallClientTabsList: React.FC<IDashAutoAdminDataGrid> = ({ resourceConfig }
                 </Box>
             </>
         )} />
+
+        {/* Checkout gateway selection screen (only shown when the tenant has 2+ enabled) */}
+        {gatewayDialog}
+        </>
     );
 };
 
