@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import LaravelEchoContext, { ILaravelEchoContext } from 'dash-admin/src/contexts/com/LaravelEchoContext';
 
-import { useRefresh } from 'react-admin';
+import { useRedirect, useRefresh } from 'react-admin';
 import { useCapacitorAppStateRefresh, useDeviceStorageSync } from 'dash-utils';
 import DASHHeaderActions from '../components/DashHeaderActions';
 import { processCustomNotification } from '../components/Notifications/CustomNotificationsProcessing';
@@ -12,6 +12,7 @@ import { processCustomNotification } from '../components/Notifications/CustomNot
 const MainAppHookComponent = () => {
     const dispatch = useDispatch();
     const refresh = useRefresh();
+    const redirect = useRedirect();
 
     const HeaderToolBar: FC = useSelector(
         (state: IDASHAppState<any, any, any>) => state.common.headerToolBar,
@@ -45,11 +46,29 @@ const MainAppHookComponent = () => {
         };
 
         window.addEventListener('subscription_plan_changed' as any, handlePlanChange);
-        
+
         return () => {
             window.removeEventListener('subscription_plan_changed' as any, handlePlanChange);
         };
     }, [refresh]);
+
+    // Navigate to the referenced tab/order when an Android FCM notification is tapped.
+    // FCMContext (dash-admin) dispatches this event - it has no router context of its own.
+    useEffect(() => {
+        const handleNotificationTapped = (event: CustomEvent) => {
+            const tabId = event.detail?.notification?.data?.tab_id;
+            console.log('👆 MainAppHookComponent: FCM notification tapped, navigating to tab', tabId);
+            if (tabId) {
+                redirect('edit', 'tab/tab', tabId);
+            }
+        };
+
+        window.addEventListener('fcm-notification-tapped' as any, handleNotificationTapped);
+
+        return () => {
+            window.removeEventListener('fcm-notification-tapped' as any, handleNotificationTapped);
+        };
+    }, [redirect]);
 
     useEffect(() => {
         console.log('🔍 MainAppHookComponent: Setting up notification listener...');

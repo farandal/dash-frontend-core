@@ -219,6 +219,9 @@ export class FCMService {
       // Notification action performed listener
       await PushNotifications.addListener('pushNotificationActionPerformed', (notification: any) => {
         console.log('👆 Push notification action performed:', notification.actionId, notification.inputValue);
+        // This package is app-agnostic and has no router context, so it cannot navigate
+        // itself - it dispatches the raw payload for an app-level listener to act on.
+        window.dispatchEvent(new CustomEvent('fcm-notification-tapped', { detail: notification }));
       });
 
       console.log('✅ Push notification listeners added successfully');

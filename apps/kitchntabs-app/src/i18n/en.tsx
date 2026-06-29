@@ -1055,6 +1055,7 @@ const customEn = {
             dialog_title: "Voucher",
             load_error: "Error loading voucher",
             loading: "Generating voucher...",
+            pending_confirmation: "The voucher will be available once the order is confirmed.",
         },
         notifications: {
             title: "Notifications",

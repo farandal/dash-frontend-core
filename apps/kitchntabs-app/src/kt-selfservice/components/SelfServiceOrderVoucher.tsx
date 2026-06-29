@@ -17,12 +17,14 @@ import {
     Receipt as ReceiptIcon,
     Visibility as ViewIcon,
     PictureAsPdf as PdfIcon,
-    Close as CloseIcon
+    Close as CloseIcon,
+    HourglassEmpty as PendingIcon
 } from '@mui/icons-material';
 import { useRecordContext, useTranslate } from 'react-admin';
 import { useAxios } from 'dash-axios-hook';
 import { saveAs } from 'file-saver';
 import { IDashAutoAdminCustomFieldComponent } from 'dash-auto-admin';
+import { AuthPersistenceService } from 'dash-auth';
 import PDFViewer from '../../kt-kiosk/misc/PDFViewer';
 
 /**
@@ -41,26 +43,26 @@ const SelfServiceOrderVoucher: React.FC<IDashAutoAdminCustomFieldComponent> = ()
     const [pdfUrl, setPdfUrl] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
 
-    // Get session hash from URL
-    const getSessionHash = useCallback(() => {
-        const match = window.location.pathname.match(/\/selfservice\/([A-Z0-9]{5,})/i);
-        return match ? match[1] : '';
-    }, []);
-
     const buildDownloadUrl = useCallback(() => {
         if (!record?.id) return '';
-        const sessionHash = getSessionHash();
+        const sessionHash = AuthPersistenceService.getSystemValues()?.selfservice?.session_hash;
+        if (!sessionHash) return '';
         return `public/selfservice/${sessionHash}/tab/${record.id}/download-sale-note?regenerate=true`;
-    }, [record?.id, getSessionHash]);
+    }, [record?.id]);
 
     const loadPdf = useCallback(async () => {
         if (!record?.id) return;
-        
+
+        const downloadUrl = buildDownloadUrl();
+        if (!downloadUrl) {
+            setError(translate('selfservice.voucher.load_error'));
+            return;
+        }
+
         try {
             setLoading(true);
             setError(null);
-            
-            const downloadUrl = buildDownloadUrl();
+
             const response = await axios.get(downloadUrl, {
                 responseType: 'blob',
             });
@@ -87,8 +89,10 @@ const SelfServiceOrderVoucher: React.FC<IDashAutoAdminCustomFieldComponent> = ()
     };
 
     const handleDownload = async () => {
+        const url = buildDownloadUrl();
+        if (!url) return;
+
         try {
-            const url = buildDownloadUrl();
             const response = await axios.get(url, {
                 responseType: 'blob',
             });
@@ -105,6 +109,25 @@ const SelfServiceOrderVoucher: React.FC<IDashAutoAdminCustomFieldComponent> = ()
 
     // Only show if record exists and has an ID
     if (!record || !record.id) return null;
+
+    // The sale note/receipt isn't final while the order is still freshly CREATED (unconfirmed
+    // by staff) - items/totals can still change, so don't let the customer pull a voucher yet.
+    if (record.status === 'CREATED') {
+        return (
+            <Box sx={{ width: '100%', mb: 2 }}>
+                <Card variant="outlined" sx={{ borderRadius: 2 }}>
+                    <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
+                        <Stack direction="row" spacing={2} alignItems="center">
+                            <PendingIcon color="disabled" sx={{ fontSize: 32 }} />
+                            <Typography variant="body2" color="text.secondary">
+                                {translate('selfservice.voucher.pending_confirmation')}
+                            </Typography>
+                        </Stack>
+                    </CardContent>
+                </Card>
+            </Box>
+        );
+    }
 
     return (
         <Box sx={{ width: '100%', mb: 2 }}>

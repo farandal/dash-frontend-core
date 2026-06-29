@@ -1045,6 +1045,7 @@ const customEs = {
             dialog_title: "Comprobante",
             load_error: "Error cargando el comprobante",
             loading: "Generando comprobante...",
+            pending_confirmation: "El comprobante estará disponible una vez que el pedido sea confirmado.",
         },
         notifications: {
             title: "Notificaciones",

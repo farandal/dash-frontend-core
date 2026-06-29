@@ -79,6 +79,9 @@ const ViewOrder: React.FC<IDashAutoAdminCustomFieldComponent> = ({ method, attri
     const translate = useTranslate();
     const [tenantCurrency, setTenantCurrency] = useState<any>(null);
 
+    // Kitchen staff shouldn't see prices/totals - only the regular staff tab resource should.
+    const showPrice = resourceConfig?.model !== 'tab/kitchentab';
+
     useEffect(() => {
         const currency = getCurrencyFromAuth();
         setTenantCurrency(currency);
@@ -157,9 +160,11 @@ const ViewOrder: React.FC<IDashAutoAdminCustomFieldComponent> = ({ method, attri
                             color={statusColors[tab.status] || 'default'}
                             sx={{ mb: 1 }}
                         />
-                        <Typography variant="h4" color="primary.main" sx={{ fontWeight: 'bold' }}>
-                            {formatCurrencyWithTenant(order?.total_amount || 0, tenantCurrency)}
-                        </Typography>
+                        {showPrice && (
+                            <Typography variant="h4" color="primary.main" sx={{ fontWeight: 'bold' }}>
+                                {formatCurrencyWithTenant(order?.total_amount || 0, tenantCurrency)}
+                            </Typography>
+                        )}
                         {order?.is_paid && (
                             <Chip label={translate('tab.view_order.paid')} color="success" size="small" sx={{ mt: 1 }} />
                         )}
@@ -208,14 +213,18 @@ const ViewOrder: React.FC<IDashAutoAdminCustomFieldComponent> = ({ method, attri
                                                     <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
                                                         {item.quantity}x {item.product?.name || item.product_name || translate('tab.view_order.product_default')}
                                                     </Typography>
-                                                    <Typography variant="subtitle1" sx={{ fontWeight: 'bold', color: 'primary.main', whiteSpace: 'nowrap', ml: 1 }}>
-                                                        {formatCurrencyWithTenant(itemTotal, tenantCurrency)}
-                                                    </Typography>
+                                                    {showPrice && (
+                                                        <Typography variant="subtitle1" sx={{ fontWeight: 'bold', color: 'primary.main', whiteSpace: 'nowrap', ml: 1 }}>
+                                                            {formatCurrencyWithTenant(itemTotal, tenantCurrency)}
+                                                        </Typography>
+                                                    )}
                                                 </Box>
 
-                                                <Typography variant="body2" color="text.secondary">
-                                                    {formatCurrencyWithTenant(item.unit_price, tenantCurrency)} {translate('tab.view_order.unit_price_suffix')}
-                                                </Typography>
+                                                {showPrice && (
+                                                    <Typography variant="body2" color="text.secondary">
+                                                        {formatCurrencyWithTenant(item.unit_price, tenantCurrency)} {translate('tab.view_order.unit_price_suffix')}
+                                                    </Typography>
+                                                )}
 
                                                 {/* Note */}
                                                 {item.note && (
@@ -232,7 +241,7 @@ const ViewOrder: React.FC<IDashAutoAdminCustomFieldComponent> = ({ method, attri
                                                                 <Typography variant="body2" color="text.secondary">
                                                                     + {modifier.modifier_option?.name || `${translate('tab.view_order.option_default')} ${modIndex + 1}`}
                                                                 </Typography>
-                                                                {parseFloat(modifier.price_adjustment) !== 0 && (
+                                                                {showPrice && parseFloat(modifier.price_adjustment) !== 0 && (
                                                                     <Typography variant="body2" color="text.secondary">
                                                                         {parseFloat(modifier.price_adjustment) > 0 ? '+' : ''}
                                                                         {formatCurrencyWithTenant(modifier.price_adjustment, tenantCurrency)}
@@ -255,7 +264,7 @@ const ViewOrder: React.FC<IDashAutoAdminCustomFieldComponent> = ({ method, attri
             )}
 
             {/* Order Summary */}
-            {order && (
+            {showPrice && order && (
                 <Paper elevation={0} sx={{ p: 2, mt: 2, bgcolor: 'background.default', borderRadius: 2 }}>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
                         <Typography variant="body1">{translate('tab.view_order.subtotal')}</Typography>

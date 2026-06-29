@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useCallback, useMemo, useEffect, PropsWithChildren, useRef } from 'react';
-import { useDataProvider, useNotify, useTranslate } from 'react-admin';
+import { useDataProvider, useTranslate } from 'react-admin';
 import { useFormContext } from 'react-hook-form';
+import { toast } from 'react-toastify';
 import { useAxios } from 'dash-axios-hook';
 import { dashStorage } from 'dash-utils';
 import { useMediaQuery, useTheme } from '@mui/material';
@@ -314,7 +315,6 @@ export const MallOrderCreateProvider: React.FC<MallOrderCreateProviderProps> = (
 }) => {
     const dataProvider = useDataProvider();
     const axios = useAxios();
-    const notify = useNotify();
     const translate = useTranslate();
     
     // Get form context for syncing cart with form
@@ -985,7 +985,7 @@ export const MallOrderCreateProvider: React.FC<MallOrderCreateProviderProps> = (
                 return item;
             }));
 
-            notify(translate('mall.product_quantity_increased', { name: product.name }), { type: 'success' });
+            toast.success(translate('mall.product_quantity_increased', { name: product.name }));
         } else {
             // Different modifiers or new product - add as new line item
             const newItem: IMallCartItem = {
@@ -1004,12 +1004,12 @@ export const MallOrderCreateProvider: React.FC<MallOrderCreateProviderProps> = (
                 Object.values(modifiers).some(arr => arr.length > 0);
 
             if (!hasModifiers) {
-                notify(translate('mall.product_added_with_name', { name: product.name }), { type: 'success' });
+                toast.success(translate('mall.product_added_with_name', { name: product.name }));
             } else {
-                notify(translate('mall.product_added'), { type: 'success' });
+                toast.success(translate('mall.product_added'));
             }
         }
-    }, [cartItems, getProductPrice, modifiersAreEqual, notify, translate]);
+    }, [cartItems, getProductPrice, modifiersAreEqual, translate]);
     
     const removeFromCart = useCallback((uniqueId: string) => {
         setCartItems(prev => prev.filter(item => item.uniqueId !== uniqueId));
@@ -1077,8 +1077,8 @@ export const MallOrderCreateProvider: React.FC<MallOrderCreateProviderProps> = (
             return item;
         }));
         setEditingCartItemId(null);
-        notify(translate('mall.product_updated'), { type: 'success' });
-    }, [getProductPrice, notify, translate]);
+        toast.success(translate('mall.product_updated'));
+    }, [getProductPrice, translate]);
     
     // Edit an existing cart item (opens modifier modal in edit mode)
     const editCartItem = useCallback((uniqueId: string) => {
@@ -1215,18 +1215,17 @@ export const MallOrderCreateProvider: React.FC<MallOrderCreateProviderProps> = (
     // Request assistance
     const requestAssistance = useCallback(async () => {
         if (!selectedStore) {
-            notify(translate('mall.select_store_first'), { type: 'warning' });
+            toast.warning(translate('mall.select_store_first'));
             return;
         }
-        
+
         // Check cooldown
         const cooldownRemaining = getAssistanceCooldownRemaining(selectedStore.id);
         if (cooldownRemaining > 0) {
-            notify(
-                translate('tab.assistance.cooldown_remaining', { 
-                    time: formatCooldownTime(cooldownRemaining) 
-                }), 
-                { type: 'warning' }
+            toast.warning(
+                translate('tab.assistance.cooldown_remaining', {
+                    time: formatCooldownTime(cooldownRemaining)
+                })
             );
             return;
         }
@@ -1288,7 +1287,7 @@ export const MallOrderCreateProvider: React.FC<MallOrderCreateProviderProps> = (
             
         } catch (error: any) {
             if (error?.status === 429) {
-                notify(translate('tab.assistance.rate_limit'), { type: 'warning' });
+                toast.warning(translate('tab.assistance.rate_limit'));
             } else if (error?.status === 422) {
                 window.dispatchEvent(new CustomEvent('enter-public-order-data', {
                     detail: {
@@ -1296,12 +1295,12 @@ export const MallOrderCreateProvider: React.FC<MallOrderCreateProviderProps> = (
                     }
                 }));
             } else {
-                notify(error?.message || translate('tab.assistance.error_message'), { type: 'error' });
+                toast.error(error?.message || translate('tab.assistance.error_message'));
             }
         } finally {
             setIsAssistanceLoading(false);
         }
-    }, [selectedStore, storesPath, axios, notify, translate, assistanceCooldowns, getAssistanceCooldownRemaining, formatCooldownTime]);
+    }, [selectedStore, storesPath, axios, translate, assistanceCooldowns, getAssistanceCooldownRemaining, formatCooldownTime]);
     
     const contextValue: MallOrderCreateContextValue = {
         // Stores

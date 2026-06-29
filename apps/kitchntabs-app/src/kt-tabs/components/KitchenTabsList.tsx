@@ -303,6 +303,7 @@ const KitchenTabsList: React.FC<KitchenTabsListProps> = ({ resourceConfig, scrol
                                         showCloseButton={false}
                                         showEdit={false}
                                         showDownload={false}
+                                        showPrice={false}
                                     />
                                 </Box>
                             ))}

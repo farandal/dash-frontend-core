@@ -205,6 +205,7 @@ const TabActionButtonsFieldBase: React.FC<IDashAutoAdminCustomFieldComponent & {
                     showDownload={showDownload}
                     showPayment={showPaymentButton}
                     showClose={showCloseButton}
+                    showCancel={showCloseButton}
                     loading={actionLoading}
                     disabled={actionLoading}
                 />

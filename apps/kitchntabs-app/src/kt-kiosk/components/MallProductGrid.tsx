@@ -1,10 +1,10 @@
 import React, { useRef, useState, useCallback, useEffect } from 'react';
 import { useTranslate } from 'react-admin';
-import { 
-    Box, 
-    Grid, 
-    Typography, 
-    Skeleton, 
+import {
+    Box,
+    Grid,
+    Typography,
+    Skeleton,
     Card,
     CardMedia,
     CardContent,
@@ -20,6 +20,7 @@ import AddIcon from '@mui/icons-material/Add';
 import StarIcon from '@mui/icons-material/Star';
 import TuneIcon from '@mui/icons-material/Tune';
 import RestaurantIcon from '@mui/icons-material/Restaurant';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { useMallOrderCreate, IMallProduct } from '../contexts/MallOrderCreateContext';
 
 /**
@@ -34,15 +35,26 @@ const MallProductCard: React.FC<MallProductCardProps> = ({ product }) => {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
     const { addToCart, openModifierModal, formatPrice, getProductPrice } = useMallOrderCreate();
-    
+
     const startPosRef = useRef({ x: 0, y: 0 });
     const wasDraggingRef = useRef(false);
+
+    // Brief visual confirmation on the card itself when a no-modifier product is
+    // added directly (products with modifiers already get feedback via the modal opening).
+    const [justAdded, setJustAdded] = useState(false);
+
+    useEffect(() => {
+        if (!justAdded) return;
+        const timer = setTimeout(() => setJustAdded(false), 700);
+        return () => clearTimeout(timer);
+    }, [justAdded]);
 
     const handleAddToCart = () => {
         if (product.modifier_groups && product.modifier_groups.length > 0) {
             openModifierModal(product);
         } else {
             addToCart(product, {});
+            setJustAdded(true);
         }
     };
 
@@ -88,13 +100,20 @@ const MallProductCard: React.FC<MallProductCardProps> = ({ product }) => {
 
     return (
         <Card
-            className="kt-mall-product-card"
+            className={`kt-mall-product-card${justAdded ? ' kt-mall-product-card-just-added' : ''}`}
             onClick={handleCardClick}
             onMouseDown={handlePointerDown}
             onMouseMove={handlePointerMove}
             onTouchStart={handlePointerDown}
             onTouchMove={handlePointerMove}
         >
+            {/* Brief confirmation overlay shown right after a no-modifier product is added */}
+            {justAdded && (
+                <Box className="kt-mall-product-card-added-overlay">
+                    <CheckCircleIcon className="kt-mall-product-card-added-icon" />
+                </Box>
+            )}
+
             {/* Badges - Show on image for desktop, hide for mobile (will show in title area) */}
             {/*!isMobile && */(
                 <Box className="kt-mall-product-card-badges">

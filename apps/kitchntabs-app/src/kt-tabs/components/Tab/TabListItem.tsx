@@ -41,6 +41,7 @@ interface TabListItemProps {
     showEdit?: boolean;
     showPrint?: boolean;
     showDownload?: boolean;
+    showPrice?: boolean;
 }
 
 const TabListItem = memo<TabListItemProps>(({
@@ -62,6 +63,7 @@ const TabListItem = memo<TabListItemProps>(({
     showEdit = true,
     showPrint = true,
     showDownload = true,
+    showPrice = true,
 }) => {
     // Add loading state
     const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
@@ -376,8 +378,8 @@ const TabListItem = memo<TabListItemProps>(({
                     </Box>
                  
                     {/* Bottom fixed section - only price, status button moved to top */}
-                    {record.order ? (
-                        <Box sx={{ 
+                    {!showPrice ? null : record.order ? (
+                        <Box sx={{
                             position: 'absolute',
                             bottom: 0,
                             left: 0,

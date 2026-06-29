@@ -10,6 +10,11 @@ interface TabTotalAmountFieldProps extends IDashAutoAdminCustomFieldComponent {}
 const TabTotalAmountFieldView: React.FC<TabTotalAmountFieldProps> = (props) => {
     const record = useRecordContext<ITab>();
 
+    // Kitchen staff shouldn't see prices/totals - only the regular staff tab resource should.
+    if (props.resourceConfig?.model === 'tab/kitchentab') {
+        return null;
+    }
+
     if (!record?.order?.total_amount) {
         return null;
     }
