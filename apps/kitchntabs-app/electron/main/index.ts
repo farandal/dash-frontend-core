@@ -178,7 +178,7 @@ const VITE_PROJECT_PATH: string = config.VITE_PROJECT_PATH || 'apps/dash'
 log.info(`VITE_PROJECT_PATH: ${VITE_PROJECT_PATH}`);
 
 const SPAWN_PYTHON_SERVICE: boolean =
-  config?.SPAWN_PYTHON_SERVICE || false;
+  config?.SPAWN_BACKGROUND_SERVICE || config?.SPAWN_PYTHON_SERVICE || false;
 
 // Add .exe extension on Windows for production executables
 const addExeExtension = (filePath: string): string => {
@@ -987,14 +987,37 @@ async function createWindow() {
 
   win.webContents.on('did-finish-load', async () => {
     log.info('Window content finished loading');
-    
+
     win.webContents.setZoomFactor(0.7);
 
     showNotification("PinoyWok Dash Panel", "Application started successfully!");
-   
+
     log.info("userData",  app.getPath("userData"))
     log.info("LOG_FILE", logFile)
     log.info("PYTHON_SERVICE_PATH_PROD", PYTHON_SERVICE_PATH_PROD)
+
+    // Auto-start Python service if configured
+    if (SPAWN_PYTHON_SERVICE) {
+      log.info('SPAWN_PYTHON_SERVICE is enabled, attempting to auto-start Python service');
+      try {
+        // Get auth token from renderer process
+        const authToken = await win.webContents.executeJavaScript(
+          `window.localStorage.getItem('auth_token') || window.localStorage.getItem('token') || ''`
+        );
+
+        if (authToken) {
+          log.info('Auth token found, starting Python service');
+          await startPythonProcess(authToken, 'tenant.system');
+        } else {
+          log.warn('Auth token not found in localStorage, Python service auto-start deferred');
+          // Service will be started by the frontend when it's ready
+        }
+      } catch (error) {
+        log.error('Error attempting to auto-start Python service:', error);
+      }
+    } else {
+      log.info('SPAWN_PYTHON_SERVICE is disabled');
+    }
     });
 
   win.webContents.on('did-fail-load', (event, errorCode, errorDescription) => {
