@@ -21,7 +21,7 @@ import {
     usePathnameTracker,
     GlobalSmallLoader,
     DefaultInitializationErrorFallback,
-} from 'dash-boilerplate';
+} from '@dashadmin/dash-boilerplate';
 
 // Import ElectronUpdateNotification from local dash-extensions
 import { ElectronUpdateNotification } from './dash-extensions/components/ElectronUpdateNotification';

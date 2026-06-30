@@ -18,7 +18,7 @@ import {
     useUrlLocaleDetection,
     GlobalSmallLoader,
     DefaultInitializationErrorFallback,
-} from 'dash-boilerplate';
+} from '@dashadmin/dash-boilerplate';
 
 // Lazy load app-specific resource loaders (splits bundles)
 const KitchnTabsWebPrivateAppLoader = lazy(() => import('./KitchnTabsWebPrivateAppLoader'));

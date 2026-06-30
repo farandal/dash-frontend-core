@@ -10,7 +10,7 @@ import React from 'react';
 import { createRoot } from 'react-dom/client';
 
 // Import lightweight boilerplate components from shared package
-import { AppWrapperLight, GlobalSmallLoader } from 'dash-boilerplate';
+import { AppWrapperLight, GlobalSmallLoader } from '@dashadmin/dash-boilerplate';
 
 const rootElement = document.getElementById('root');
 if (!rootElement) { throw new Error('Root element not found'); }

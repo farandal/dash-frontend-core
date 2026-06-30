@@ -1,5 +1,5 @@
 import React, { lazy, Suspense, useMemo } from 'react';
-import { GlobalSmallLoader } from 'dash-boilerplate';
+import { GlobalSmallLoader } from '@dashadmin/dash-boilerplate';
 
 const KitchnTabsPrivateApp = lazy(() => import('./KitchnTabsPrivateApp'));
 const MainAppHookComponent = lazy(() => import('../contexts/MainAppHookComponent'));

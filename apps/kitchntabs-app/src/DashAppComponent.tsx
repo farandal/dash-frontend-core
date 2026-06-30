@@ -31,7 +31,7 @@ import {
 } from 'dash-admin-state';
 
 // Import CSS variable utility from dash-boilerplate
-import { getCssVariableNumber, initializeThemeEarly } from 'dash-boilerplate';
+import { getCssVariableNumber, initializeThemeEarly } from '@dashadmin/dash-boilerplate';
 
 /* Dependency Styles - now async loaded */
 import 'react-toastify/dist/ReactToastify.css';
@@ -44,7 +44,7 @@ import './assets/fonts/Montserrat-Regular.ttf';
 import './assets/fonts/Montserrat-SemiBold.ttf';
 
 /* App styles - now async loaded */
-import "dash-styles/dash.less";
+import "@dashadmin/dash-styles/dash.less";
 import './styles.less';
 
 // Import assets for initial state
