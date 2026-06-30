@@ -6,7 +6,7 @@
  * - Home page with product menu
  * - Tab/Order creation and tracking
  */
-import { ResourceManifest } from 'dash-app-common/src/components/DashResourceLoader';
+import { ResourceManifest } from 'dash-app-common/components/DashResourceLoader';
 
 /**
  * Self-Service Kiosk Resource Manifest

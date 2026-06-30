@@ -18,7 +18,7 @@ import {
     ButtonGroup,
 } from "@mui/material";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
-import DashResourceButton from "dash-auto-admin/src/toolbar/buttons/DashResourceButton";
+import DashResourceButton from "dash-auto-admin/toolbar/buttons/DashResourceButton";
 import { useTranslate } from "../hooks/usePolyglotTranslation";
 import TenancyAccountDelete from "./TenancyAccountDelete";
 

@@ -22,7 +22,7 @@ import { NotFound } from 'dash-components';
 import { dashStorage } from 'dash-utils';
 import { DASHAdminSystemConstants, getEnv } from 'dash-constants';
 import { IDashAutoAdminResourceConfig } from 'dash-auto-admin';
-import { useDashResourceManifest, isResourceManifest, isResourceArray, ResourceManifest } from 'dash-app-common/src/components/DashResourceLoader';
+import { useDashResourceManifest, isResourceManifest, isResourceArray, ResourceManifest } from 'dash-app-common/components/DashResourceLoader';
 import { useSelector } from 'react-redux';
 
 // Import from local dash-extensions
@@ -34,7 +34,7 @@ import GlobalSmallLoader from './dash-extensions/components/GlobalSmallLoader';
 import DASHLayoutSettings from './dash-extensions/config/DASHLayoutSettings';
 
 // Import from kt-pages
-import DASHLightWeightLogin from 'kt-pages/src/dash-pages/DASHLightWeightLogin';
+import DASHLightWeightLogin from 'kt-pages/dash-pages/DASHLightWeightLogin';
 
 // Lazy load heavy admin components
 const DASHAdmin = React.lazy(() => import('dash-admin').then(module => ({ default: module.DASHAdmin })));

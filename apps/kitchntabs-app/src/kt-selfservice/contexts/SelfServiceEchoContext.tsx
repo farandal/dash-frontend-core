@@ -5,7 +5,7 @@
  * Used for the QR Generator to listen for session activation events on a public channel.
  */
 import React, { createContext, useContext, useEffect, useState, FC } from 'react';
-import useLaravelEcho from 'dash-admin/src/contexts/com/useLaravelEcho';
+import useLaravelEcho from 'dash-admin/contexts/com/useLaravelEcho';
 
 // Context value interface
 export interface ISelfServiceEchoContext {

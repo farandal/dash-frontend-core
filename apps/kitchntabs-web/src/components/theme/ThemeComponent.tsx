@@ -2,10 +2,10 @@ import React from "react";
 import Footer from "./components/layout/footer/Footer";
 import Navbar from "./components/layout/header/Navbar";
 import Layout from "./components/layout/Layout";
-import { IDomainTheme } from "dash-admin/src/default-theme/DomainTheme";
+import { IDomainTheme } from "dash-admin/default-theme/DomainTheme";
 import { Box } from "@mui/material";
-import AppSidebarMaterial from "dash-admin/src/default-theme/menu/AppSidebarMaterial";
-import DomainHeader from "dash-admin/src/default-theme/DomainHeader";
+import AppSidebarMaterial from "dash-admin/default-theme/menu/AppSidebarMaterial";
+import DomainHeader from "dash-admin/default-theme/DomainHeader";
 
 //import HeroThree from "./themes/index-3/HeroThree";
 

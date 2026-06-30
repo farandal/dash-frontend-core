@@ -9,7 +9,7 @@ import { IDashAutoAdminAttribute } from "dash-auto-admin";
 import SubscriptionPlanAuditLog from "../../../components/billing/SubscriptionPlanAuditLog";
 
 // Import the base schema from dash-admin
-import baseSubscriptionPlanSchema from 'dash-admin/src/schemas/subscriptionPlan';
+import baseSubscriptionPlanSchema from 'dash-admin/schemas/subscriptionPlan';
 
 /**
  * Override the Audit tab to use the specialized SubscriptionPlanAuditLog

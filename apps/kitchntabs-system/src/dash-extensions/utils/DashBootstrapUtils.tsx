@@ -8,8 +8,8 @@ import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { AuthPersistenceService, syncDeviceStoreToLocalStorage, syncLocalStorageToDeviceStore } from 'dash-auth';
 import { DASH_REDUX_ACTIONS } from 'dash-admin-state';
-import { ACTION_UPDATE_AUTH } from 'dash-admin-state/src/redux/reducers/Auth';
-import DASHAuthenticationService from 'dash-admin/src/contexts/auth/DASHAuthenticationService';
+import { ACTION_UPDATE_AUTH } from 'dash-admin-state/redux/reducers/Auth';
+import DASHAuthenticationService from 'dash-admin/contexts/auth/DASHAuthenticationService';
 import { dashStorage } from 'dash-utils';
 
 /**

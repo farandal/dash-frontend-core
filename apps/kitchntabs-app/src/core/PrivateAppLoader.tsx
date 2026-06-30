@@ -4,7 +4,7 @@ import { GlobalSmallLoader } from 'dash-boilerplate';
 const KitchnTabsPrivateApp = lazy(() => import('./KitchnTabsPrivateApp'));
 const MainAppHookComponent = lazy(() => import('../contexts/MainAppHookComponent'));
 const LaravelEchoProvider = lazy(() => 
-  import('dash-admin/src/contexts/com/LaravelEchoContext').then(m => ({ default: m.LaravelEchoProvider }))
+  import('dash-admin/contexts/com/LaravelEchoContext').then(m => ({ default: m.LaravelEchoProvider }))
 );
 const SelfServiceEchoProvider = lazy(() => 
   import('../kt-selfservice/contexts/SelfServiceEchoContext').then(m => ({ default: m.SelfServiceEchoProvider }))

@@ -13,14 +13,14 @@
 import React from 'react';
 import { Provider } from 'react-redux';
 import { dashStorage } from 'dash-utils';
-import { applyPlatformBodyClasses } from 'dash-utils/src/utils/platformDetection';
+import { applyPlatformBodyClasses } from 'dash-utils';
 
 // These imports are now lazy-loaded instead of in the critical path
-import DASHAuthenticationService from 'dash-admin/src/contexts/auth/DASHAuthenticationService';
+import DASHAuthenticationService from 'dash-admin/contexts/auth/DASHAuthenticationService';
 import { AuthPersistenceService } from 'dash-auth';
 
 // Import store configuration
-import configureStore from 'dash-admin-state/src/redux/store';
+import configureStore from 'dash-admin-state/redux/store';
 import {
     IDASHAppState,
     defaultCommon,

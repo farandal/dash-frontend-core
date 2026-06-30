@@ -2,7 +2,7 @@
 import React from "react";
 import { IDashAutoAdminResourceConfig } from "dash-auto-admin";
 
-import ResourceTemplate from "dash-admin/src/templates/ResourceTemplate";
+import ResourceTemplate from "dash-admin/templates/ResourceTemplate";
 
 import { Kitchen, RestaurantMenu } from "@mui/icons-material";
 import tabSchema from "../schemas/tabSchema";
@@ -14,7 +14,7 @@ import KitchenTabsList from "../components/KitchenTabsList";
 import { TabsContext } from "../components/Tab/TabContext";
 
 import { SelectInput } from "react-admin";
-import { parseAxiosError } from "dash-admin/src/helpers/parseAxiosError";
+import { parseAxiosError } from "dash-admin/helpers/parseAxiosError";
 import {DASHAppConstants} from "dash-constants";
 import { Grid } from "@mui/material";
 

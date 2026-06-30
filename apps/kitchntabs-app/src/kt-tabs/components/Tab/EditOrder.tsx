@@ -11,7 +11,7 @@ import { useTabCache } from '../hooks/useProductsCache';
 import { saveAs } from 'file-saver';
 import { useTabActions } from '../hooks/useTabActions';
 import TabActionButtons from './TabActionsButtons';
-import dataProvider from 'dash-admin/src/providers/dataProvider';
+import dataProvider from 'dash-admin/providers/dataProvider';
 import { toast } from 'react-toastify';
 import { useAxios } from 'dash-axios-hook';
 import React from 'react';

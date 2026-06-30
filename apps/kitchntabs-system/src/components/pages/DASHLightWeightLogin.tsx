@@ -25,7 +25,7 @@ import { DASH_REDUX_ACTIONS } from 'dash-admin-state';
 import {DASHAppConstants} from 'dash-constants';
 
 import { AuthPersistenceService } from 'dash-auth';
-import DASHAuthenticationService from 'dash-admin/src/contexts/auth/DASHAuthenticationService';
+import DASHAuthenticationService from 'dash-admin/contexts/auth/DASHAuthenticationService';
 import { useTranslate } from '../hooks/usePolyglotTranslation';
 
 interface DASHLightWeightLoginProps {

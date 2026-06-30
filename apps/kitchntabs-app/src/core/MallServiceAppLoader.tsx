@@ -6,7 +6,7 @@ const KitchnTabsPrivateApp = lazy(() => import('../KitchnTabsWebPrivateApp')); /
 const MallServiceClientWrapper = lazy(() => import('../components/MallService/MallServiceClientWrapper'));
 const MallServiceAppHookComponent = lazy(() => import('../kt-mallservice/contexts/MallServiceAppHookComponent'));
 const LaravelEchoProvider = lazy(() => 
-  import('dash-admin/src/contexts/com/LaravelEchoContext').then(m => ({ default: m.LaravelEchoProvider }))
+  import('dash-admin/contexts/com/LaravelEchoContext').then(m => ({ default: m.LaravelEchoProvider }))
 );
 const MallServiceEchoProvider = lazy(() => 
   import('../kt-mallservice/contexts/MallServiceEchoContext').then(m => ({ default: m.MallServiceEchoProvider }))

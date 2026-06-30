@@ -8,8 +8,8 @@
  */
 import { AxiosError } from 'axios';
 import { processAxiosError } from 'dash-axios-hook';
-import { IDashAutoAdminDefaultBackendStructure } from 'dash-axios-hook/src/interfaces/IDashAutoAdminBackendError';
-import { getResourceConfig, processFormData, processPostData } from 'kt-utils/src/dataProviderUtils';
+import { IDashAutoAdminDefaultBackendStructure } from 'dash-axios-hook/interfaces/IDashAutoAdminBackendError';
+import { getResourceConfig, processFormData, processPostData } from 'kt-utils/dataProviderUtils';
 import genericDataProvider from "./DASHDataProvider";
 import { dashStorage } from 'dash-utils';
 

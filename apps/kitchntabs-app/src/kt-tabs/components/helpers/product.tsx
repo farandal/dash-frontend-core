@@ -1,4 +1,4 @@
-import { ICurrency } from "kt-ecommerce/src/interfaces";
+import { ICurrency } from "kt-ecommerce/interfaces";
 import { priceFormatter } from "dash-utils";
 
 export const getProductImage = (product: any) => {

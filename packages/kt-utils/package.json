@@ -1,32 +1,67 @@
 {
-    "name": "kt-utils",
-    "version": "1.0.0",
-    "private": true,
-    "main": "src/index.ts",
-    "type": "module",
-    "scripts": {
-        "lint": "eslint --ext .ts,.tsx .",
-        "format": "pnpm prettier --write .",
-        "typecheck": "tsc --noEmit"
-    },
-    "dependencies": {
-        "@mui/material": "^7.3.10",
-        "dash-admin": "workspace:*",
-        "dash-auth": "workspace:*",
-        "dash-auto-admin": "workspace:*",
-        "dash-axios-hook": "workspace:*",
-        "dash-constants": "workspace:*",
-        "dash-utils": "workspace:*",
-        "numeral": "^2.0.6",
-        "react": "latest",
-        "react-admin": "5.14.6"
-    },
-    "devDependencies": {
-        "@types/numeral": "^2.0.5",
-        "@types/react": "latest",
-        "dash-eslint": "workspace:*",
-        "dash-prettier": "workspace:*",
-        "dash-tsconfig": "workspace:*",
-        "typescript": "latest"
-    }
+	"name": "kt-utils",
+	"version": "1.0.2",
+	"main": "dist/index.js",
+	"type": "module",
+	"scripts": {
+		"lint": "eslint --ext .ts,.tsx .",
+		"format": "pnpm prettier --write .",
+		"typecheck": "tsc --noEmit",
+		"build": "tsup"
+	},
+	"dependencies": {
+		"@mui/material": "^7.3.10",
+		"dash-admin": "*",
+		"dash-auth": "*",
+		"dash-auto-admin": "*",
+		"dash-axios-hook": "*",
+		"dash-constants": "*",
+		"dash-utils": "*",
+		"numeral": "^2.0.6",
+		"react": "latest",
+		"react-admin": "5.14.6"
+	},
+	"devDependencies": {
+		"@types/numeral": "^2.0.5",
+		"@types/react": "latest",
+		"dash-eslint": "*",
+		"dash-prettier": "*",
+		"dash-tsconfig": "*",
+		"typescript": "latest"
+	},
+	"module": "dist/index.js",
+	"types": "./src/index.ts",
+	"exports": {
+		".": "./dist/index.js",
+		"./components": "./dist/components/index.js",
+		"./src/components": "./dist/components/index.js",
+		"./filters": "./dist/filters/index.js",
+		"./src/filters": "./dist/filters/index.js",
+		"./hooks": "./dist/hooks/index.js",
+		"./src/hooks": "./dist/hooks/index.js",
+		"./interfaces": "./dist/interfaces/index.js",
+		"./src/interfaces": "./dist/interfaces/index.js",
+		"./*": "./dist/*.js",
+		"./src/*": "./dist/*.js"
+	},
+	"publishConfig": {
+		"access": "public",
+		"registry": "http://localhost:4873"
+	},
+	"files": [
+		"dist",
+		"src"
+	],
+	"typesVersions": {
+		"*": {
+			"src/*": [
+				"src/*",
+				"src/*/index"
+			],
+			"*": [
+				"src/*",
+				"src/*/index"
+			]
+		}
+	}
 }

@@ -40,7 +40,7 @@ import { useAxios } from 'dash-axios-hook';
 import { QRCodeSVG, QRCodeCanvas } from 'qrcode.react';
 import { AuthPersistenceService } from 'dash-auth';
 // import { useSelfServiceEcho } from '../contexts/SelfServiceEchoContext';
-import { LaravelEchoContext } from 'dash-admin/src/contexts/com/LaravelEchoContext';
+import { LaravelEchoContext } from 'dash-admin/contexts/com/LaravelEchoContext';
 import { DASHAdminSystemConstants } from 'dash-constants';
 
 interface SessionData {

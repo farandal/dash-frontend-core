@@ -9,7 +9,7 @@ import ButtonGroup from "@mui/material/ButtonGroup";
 import Alert from "@mui/material/Alert";
 import React, { useEffect, useState } from "react";
 import { useRefresh, WithListContext } from "react-admin";
-import DashResourceButton from "dash-auto-admin/src/toolbar/buttons/DashResourceButton";
+import DashResourceButton from "dash-auto-admin/toolbar/buttons/DashResourceButton";
 import { toast } from 'react-toastify';
 import { useMallClientTabsContext } from './MallClientTabsContext';
 

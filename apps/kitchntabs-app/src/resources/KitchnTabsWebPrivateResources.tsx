@@ -22,20 +22,20 @@ export const KitchnTabsWebPrivateResources: ResourceManifest = {
     // ========================================================================
     // USER & PROFILE RESOURCES (from kt-ecommerce)
     // ========================================================================
-    profileResource: () => import('kt-ecommerce/src/resources/user/profileResource'),
-    userResource: () => import('kt-ecommerce/src/resources/user/userResource'),
+    profileResource: () => import('kt-ecommerce/resources/user/profileResource'),
+    userResource: () => import('kt-ecommerce/resources/user/userResource'),
 
     // ========================================================================
     // DASHBOARD RESOURCES (from kt-ecommerce)
     // ========================================================================
-    //dashboardResources: () => import('kt-ecommerce/src/resources/dashboard/dashboardResources'),
+    //dashboardResources: () => import('kt-ecommerce/resources/dashboard/dashboardResources'),
 
     // ========================================================================
     // GEOHIERARCHY RESOURCES (from kt-ecommerce)
     // ========================================================================
-    communeResource: () => import('kt-ecommerce/src/resources/geohierarchy/communeResource'),
-    countryResource: () => import('kt-ecommerce/src/resources/geohierarchy/countryResource'),
-    regionResource: () => import('kt-ecommerce/src/resources/geohierarchy/regionResource'),
+    communeResource: () => import('kt-ecommerce/resources/geohierarchy/communeResource'),
+    countryResource: () => import('kt-ecommerce/resources/geohierarchy/countryResource'),
+    regionResource: () => import('kt-ecommerce/resources/geohierarchy/regionResource'),
 
     // ========================================================================
     // MALL RESOURCES (from kt-mall)
@@ -46,31 +46,31 @@ export const KitchnTabsWebPrivateResources: ResourceManifest = {
     // ECOMMERCE RESOURCES (from kt-ecommerce)
     // ========================================================================
     // Essential ecommerce resources
-    productResource: () => import('kt-ecommerce/src/resources/productResource'),
-    categoryResource: () => import('kt-ecommerce/src/resources/categoryResource'),
-    galleryResource: () => import('kt-ecommerce/src/resources/galleryResource'),
-    brandResource: () => import('kt-ecommerce/src/resources/brandResource'),
-    currencyResource: () => import('kt-ecommerce/src/resources/currencyResource'),
-    pricelistResource: () => import('kt-ecommerce/src/resources/pricelistResource'),
-    stockTypeResource: () => import('kt-ecommerce/src/resources/stockTypeResource'),
-    modifierGroupResource: () => import('kt-ecommerce/src/resources/modifiersResource'),
+    productResource: () => import('kt-ecommerce/resources/productResource'),
+    categoryResource: () => import('kt-ecommerce/resources/categoryResource'),
+    galleryResource: () => import('kt-ecommerce/resources/galleryResource'),
+    brandResource: () => import('kt-ecommerce/resources/brandResource'),
+    currencyResource: () => import('kt-ecommerce/resources/currencyResource'),
+    pricelistResource: () => import('kt-ecommerce/resources/pricelistResource'),
+    stockTypeResource: () => import('kt-ecommerce/resources/stockTypeResource'),
+    modifierGroupResource: () => import('kt-ecommerce/resources/modifiersResource'),
     // Import/export resources
-    productImportTemplateResource: () => import('kt-ecommerce/src/resources/productImportTemplateResource'),
-    productImportInstanceResource: () => import('kt-ecommerce/src/resources/productImportInstanceResource'),
+    productImportTemplateResource: () => import('kt-ecommerce/resources/productImportTemplateResource'),
+    productImportInstanceResource: () => import('kt-ecommerce/resources/productImportInstanceResource'),
 
     // Tenant ecommerce resources
-    ecommerceTenantResource: () => import('kt-ecommerce/src/resources/ecommerceTenantResource'),
-    marketplaceResource: () => import('kt-ecommerce/src/resources/marketplaceResource'),
-    pointOfSaleResource: () => import('kt-ecommerce/src/resources/pointOfSaleResource'),
-    metadataFormatsResource: () => import('kt-ecommerce/src/resources/metadataFormatsResource'),
-    //systemMarketplaceResource: () => import('kt-ecommerce/src/resources/systemMarketplaceResource'),
-    //systemPointOfSaleResource: () => import('kt-ecommerce/src/resources/systemPointOfSaleResource'),
-    campaignResource: () => import('kt-ecommerce/src/resources/campaignResource'),
+    ecommerceTenantResource: () => import('kt-ecommerce/resources/ecommerceTenantResource'),
+    marketplaceResource: () => import('kt-ecommerce/resources/marketplaceResource'),
+    pointOfSaleResource: () => import('kt-ecommerce/resources/pointOfSaleResource'),
+    metadataFormatsResource: () => import('kt-ecommerce/resources/metadataFormatsResource'),
+    //systemMarketplaceResource: () => import('kt-ecommerce/resources/systemMarketplaceResource'),
+    //systemPointOfSaleResource: () => import('kt-ecommerce/resources/systemPointOfSaleResource'),
+    campaignResource: () => import('kt-ecommerce/resources/campaignResource'),
 
     // Order resources
-    //orderResource: () => import('kt-ecommerce/src/resources/orderResource'),
-    //deliveryDriverResource: () => import('kt-ecommerce/src/resources/delivery/deliveryDriverResource'),
-    //deliveryRouteResource: () => import('kt-ecommerce/src/resources/delivery/deliveryRouteResource'),
+    //orderResource: () => import('kt-ecommerce/resources/orderResource'),
+    //deliveryDriverResource: () => import('kt-ecommerce/resources/delivery/deliveryDriverResource'),
+    //deliveryRouteResource: () => import('kt-ecommerce/resources/delivery/deliveryRouteResource'),
 
     // ========================================================================
     // TABS RESOURCES (from kt-tabs)
@@ -80,12 +80,12 @@ export const KitchnTabsWebPrivateResources: ResourceManifest = {
     // ========================================================================
     // KIOSK RESOURCES (from kt-kiosk)
     // ========================================================================
-    //kioskResource: () => import('kt-kiosk/src/resources/kioskResource'),
+    //kioskResource: () => import('kt-kiosk/resources/kioskResource'),
     
     // ========================================================================
     // CASH COUNT RESOURCES (from kt-cashcount)
     // ========================================================================
-    cashCountResource: () => import('kt-cashcount/src/resources/cashCountResource'),
+    cashCountResource: () => import('kt-cashcount/resources/cashCountResource'),
 
     selfServiceResource: () => import('../kt-selfservice/resources/selfServiceResource'),
 

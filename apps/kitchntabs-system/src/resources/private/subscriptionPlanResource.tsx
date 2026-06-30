@@ -7,7 +7,7 @@
 import { IDashAutoAdminResourceConfig } from "dash-auto-admin";
 import { ResourceTemplate } from "dash-admin";
 import { DASHAppConstants } from "dash-constants";
-import { SubscriptionPlanFormatsProvider } from "dash-admin/src/contexts/SubscriptionPlanFormatsProvider";
+import { SubscriptionPlanFormatsProvider } from "dash-admin/contexts/SubscriptionPlanFormatsProvider";
 import CardMembershipIcon from "@mui/icons-material/CardMembership";
 import subscriptionPlanSchema from "./schemas/subscription_plan";
 

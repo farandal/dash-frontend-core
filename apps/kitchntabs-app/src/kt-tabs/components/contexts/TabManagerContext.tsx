@@ -5,7 +5,7 @@ import { ITab } from "../interfaces/ITab";
 import { toast } from 'react-toastify';
 import { useTranslate } from 'react-admin';
 import { useFieldArray, useFormContext, useWatch } from 'react-hook-form';
-import { Product } from 'kt-ecommerce/src/interfaces';
+import { Product } from 'kt-ecommerce/interfaces';
 import { VoiceAction } from '../voice/useVoiceAgent';
 
 

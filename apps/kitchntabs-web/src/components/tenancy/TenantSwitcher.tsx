@@ -28,12 +28,12 @@ import { AuthPersistenceService } from 'dash-auth';
 import { DASHAdminSystemConstants, getEnv } from 'dash-constants';
 import { useAxios } from 'dash-axios-hook';
 import { updateDomCssVariables } from 'dash-utils';
-import DASHLayoutSettings from 'dash-admin/src/theme/AppLayoutSetting';
+import DASHLayoutSettings from 'dash-admin/theme/AppLayoutSetting';
 import { useDispatch, useSelector } from 'react-redux';
-import { setPanelSettings } from 'dash-admin-state/src/redux/actions/Common';
+import { setPanelSettings } from 'dash-admin-state/redux/actions/Common';
 import { IDASHAppState } from 'dash-admin-state';
 import { useWindowSize } from 'dash-utils';
-import { setAuthEvent } from 'dash-admin/src/contexts/auth';
+import { setAuthEvent } from 'dash-admin/contexts/auth';
 
 // Default system logos — used to reset Redux panelSettings when switching to tenancy level
 import defaultHorizontalLogo from '../../assets/logo-horizontal.png';

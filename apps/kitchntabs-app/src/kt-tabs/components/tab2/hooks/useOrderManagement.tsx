@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { ProductItem, OrderManagementHookReturn } from '../types';
 import { calculateOrderTotal, createNewProduct, generateLineId } from '../utils';
-import useFormPersistence from 'dash-admin/src/hooks/useFormPersistance';
+import useFormPersistence from 'dash-admin/hooks/useFormPersistance';
 
 interface UseOrderManagementOptions {
     persistState?: boolean;

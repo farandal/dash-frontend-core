@@ -1,5 +1,5 @@
 import { IDashAutoAdminResourceConfig } from "dash-auto-admin";
-import ResourceTemplate from "dash-admin/src/templates/ResourceTemplate";
+import ResourceTemplate from "dash-admin/templates/ResourceTemplate";
 import React, { lazy } from "react";
 
 // Icons
@@ -26,7 +26,7 @@ import PaymentMethodsPage from "../../components/billing/PaymentMethodsPage";
 import TenancySubscriptionContext from "../../components/tenancy/TenancySubscriptionContext";
 import { Route } from "react-router-dom";
 import { DASHAppConstants } from "dash-constants";
-import Avatar from "dash-admin/src/components/avatar/Avatar";
+import Avatar from "dash-admin/components/avatar/Avatar";
 import { SelectInput } from "react-admin";
 import Person from "@mui/icons-material/Person";
 

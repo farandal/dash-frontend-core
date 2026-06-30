@@ -4,13 +4,13 @@ import { Clear as ClearIcon, Search as SearchIcon } from "@mui/icons-material";
 import { IDashAutoAdminCustomFieldComponent } from "dash-auto-admin";
 import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import { useFieldArray, useFormContext, useWatch } from "react-hook-form";
-import ImagePlaceHolder from 'kt-utils/src/components/ImagePlaceHolder/ImagePlaceHolder';
+import ImagePlaceHolder from 'kt-utils/components/ImagePlaceHolder/ImagePlaceHolder';
 import { toast } from 'react-toastify';
 import { ITab } from "../interfaces/ITab";
 import ProductModifiers from './ProductModifiers';
 import { useProductsCache, useTabCache } from '../hooks/useProductsCache';
 import { SaveButton, useNotify, useRedirect, useTranslate } from 'react-admin';
-import useWindowSize from 'dash-admin/src/hooks/window/useWindowSize';
+import useWindowSize from 'dash-admin/hooks/window/useWindowSize';
 import { priceFormatter } from "dash-utils";
 
 const placeholder = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII="

@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
-import useLaravelEcho from 'dash-admin/src/contexts/com/useLaravelEcho';
-import { useAuthContext } from 'dash-admin/src/contexts/auth/AuthContext';
-import type { IAuthContext } from 'dash-admin/src/contexts/auth';
-import { IDashNotificationPayloadBase } from 'dash-admin/src/interfaces/communication/INotification';
+import useLaravelEcho from 'dash-admin/contexts/com/useLaravelEcho';
+import { useAuthContext } from 'dash-admin/contexts/auth/AuthContext';
+import type { IAuthContext } from 'dash-admin/contexts/auth';
+import { IDashNotificationPayloadBase } from 'dash-admin/interfaces/communication/INotification';
 import { dashStorage } from 'dash-utils';
 // Define an interface for product status tracking
 interface IProductStatus {

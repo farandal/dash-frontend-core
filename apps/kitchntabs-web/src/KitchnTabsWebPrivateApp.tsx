@@ -22,7 +22,7 @@ import { NotFound } from 'dash-components';
 import { dashStorage } from 'dash-utils';
 import { DASHAdminSystemConstants, getEnv } from 'dash-constants';
 import { IDashAutoAdminResourceConfig } from 'dash-auto-admin';
-import { useDashResourceManifest, isResourceManifest, isResourceArray, ResourceManifest } from 'dash-app-common/src/components/DashResourceLoader';
+import { useDashResourceManifest, isResourceManifest, isResourceArray, ResourceManifest } from 'dash-app-common/components/DashResourceLoader';
 import { useSelector } from 'react-redux';
 
 // Import from local dash-extensions
@@ -34,7 +34,7 @@ import GlobalSmallLoader from './dash-extensions/components/GlobalSmallLoader';
 import DASHLayoutSettings from './dash-extensions/config/DASHLayoutSettings';
 
 // Import from kt-pages
-import DASHLightWeightLogin from 'kt-pages/src/dash-pages/DASHLightWeightLogin';
+import DASHLightWeightLogin from 'kt-pages/dash-pages/DASHLightWeightLogin';
 
 // Lazy load heavy admin components
 const DASHAdmin = React.lazy(() => import('dash-admin').then(module => ({ default: module.DASHAdmin })));
@@ -314,12 +314,12 @@ const KitchnTabsWebPrivateApp: React.FC<KitchnTabsWebPrivateAppProps> = ({
                     JsonCssVarValuesComp,
                     NotificationPreferencesComp
                 ] = await Promise.all([
-                    import('kt-ecommerce/src/components/Uber/UberStoreAvailability'),
-                    import('kt-ecommerce/src/components/Uber/BasicTokenGeneratorField'),
-                    import('dash-components/src/components/Json/Json'),
-                    import('dash-components/src/components/JsonColorSelector/JsonColorSelectorEnhanced'),
-                    import('dash-components/src/components/JsonColorSelector/JsonCssVarValues'),
-                    import('dash-components/src/components/NotificationPreferences/NotificationPreferences')
+                    import('kt-ecommerce/components/Uber/UberStoreAvailability'),
+                    import('kt-ecommerce/components/Uber/BasicTokenGeneratorField'),
+                    import('dash-components/components/Json/Json'),
+                    import('dash-components/components/JsonColorSelector/JsonColorSelectorEnhanced'),
+                    import('dash-components/components/JsonColorSelector/JsonCssVarValues'),
+                    import('dash-components/components/NotificationPreferences/NotificationPreferences')
                 ]);
 
                 setDashAutoAdminComponents({

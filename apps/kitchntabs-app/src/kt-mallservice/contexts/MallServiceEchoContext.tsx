@@ -7,7 +7,7 @@
  * Channel: session.{sessionHash} (public channel, no auth required for guests)
  */
 import React, { createContext, useContext, useEffect, useState, FC } from 'react';
-import useLaravelEcho from 'dash-admin/src/contexts/com/useLaravelEcho';
+import useLaravelEcho from 'dash-admin/contexts/com/useLaravelEcho';
 
 // Context value interface
 export interface IMallServiceEchoContext {

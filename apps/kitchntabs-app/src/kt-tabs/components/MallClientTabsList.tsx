@@ -13,11 +13,11 @@ import {
 } from "@mui/material";
 import React, { useContext, useEffect, useState } from "react";
 import { useGetOne, useRefresh, useTranslate, WithListContext } from "react-admin";
-import DashResourceButton from "dash-auto-admin/src/toolbar/buttons/DashResourceButton";
+import DashResourceButton from "dash-auto-admin/toolbar/buttons/DashResourceButton";
 import { toast } from 'react-toastify';
-import LaravelEchoContext from 'dash-admin/src/contexts/com/LaravelEchoContext';
-import type { ILaravelEchoContext } from 'dash-admin/src/contexts/com/LaravelEchoContext';
-import ImagePlaceHolder from 'kt-utils/src/components/ImagePlaceHolder/ImagePlaceHolder';
+import LaravelEchoContext from 'dash-admin/contexts/com/LaravelEchoContext';
+import type { ILaravelEchoContext } from 'dash-admin/contexts/com/LaravelEchoContext';
+import ImagePlaceHolder from 'kt-utils/components/ImagePlaceHolder/ImagePlaceHolder';
 import TabTimerClock from "./Misc/TabTimerClock";
 
 const placeholder = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII="

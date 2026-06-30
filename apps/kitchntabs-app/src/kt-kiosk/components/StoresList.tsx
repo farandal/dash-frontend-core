@@ -11,7 +11,7 @@ import {
 import React from "react";
 import { RaRecord, WithListContext, useRedirect } from "react-admin";
 import { Store } from "@mui/icons-material";
-import DashResourceButton from "dash-auto-admin/src/toolbar/buttons/DashResourceButton";
+import DashResourceButton from "dash-auto-admin/toolbar/buttons/DashResourceButton";
 
 const StoresList: React.FC<IDashAutoAdminDataGrid> = ({ resourceConfig }) => {
 

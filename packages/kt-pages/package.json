@@ -1,43 +1,80 @@
 {
-    "name": "kt-pages",
-    "version": "1.0.0",
-    "private": true,
-    "main": "src/index.ts",
-    "type": "module",
-    "scripts": {
-        "lint": "eslint --ext .ts,.tsx .",
-        "format": "pnpm prettier --write .",
-        "typecheck": "tsc --noEmit"
-    },
-    "dependencies": {
-        "@emotion/react": "latest",
-        "@emotion/styled": "latest",
-        "@mui/icons-material": "^7.3.10",
-        "@mui/material": "^7.3.10",
-        "dash-admin": "workspace:*",
-        "dash-admin-state": "workspace:*",
-        "dash-auth": "workspace:*",
-        "dash-auto-admin": "workspace:*",
-        "dash-axios-hook": "workspace:*",
-        "dash-components": "workspace:*",
-        "dash-constants": "workspace:*",
-        "dash-dialog": "workspace:*",
-        "dash-utils": "workspace:*",
-        "kt-utils": "workspace:*",
-        "react": "latest",
-        "react-admin": "5.14.6",
-        "react-dom": "latest",
-        "react-google-recaptcha": "^3.1.0",
-        "react-hook-form": "^7.54.0",
-        "react-intersection-observer": "^10.0.0",
-        "react-router-dom": "latest"
-    },
-    "devDependencies": {
-        "@types/react": "latest",
-        "@types/react-dom": "latest",
-        "dash-eslint": "workspace:*",
-        "dash-prettier": "workspace:*",
-        "dash-tsconfig": "workspace:*",
-        "typescript": "latest"
-    }
+	"name": "kt-pages",
+	"version": "1.0.2",
+	"main": "dist/index.js",
+	"type": "module",
+	"scripts": {
+		"lint": "eslint --ext .ts,.tsx .",
+		"format": "pnpm prettier --write .",
+		"typecheck": "tsc --noEmit",
+		"build": "tsup"
+	},
+	"dependencies": {
+		"@emotion/react": "latest",
+		"@emotion/styled": "latest",
+		"@mui/icons-material": "^7.3.10",
+		"@mui/material": "^7.3.10",
+		"dash-admin": "*",
+		"dash-admin-state": "*",
+		"dash-auth": "*",
+		"dash-auto-admin": "*",
+		"dash-axios-hook": "*",
+		"dash-components": "*",
+		"dash-constants": "*",
+		"dash-dialog": "*",
+		"dash-utils": "*",
+		"kt-utils": "workspace:*",
+		"react": "latest",
+		"react-admin": "5.14.6",
+		"react-dom": "latest",
+		"react-google-recaptcha": "^3.1.0",
+		"react-hook-form": "^7.54.0",
+		"react-intersection-observer": "^10.0.0",
+		"react-router-dom": "latest"
+	},
+	"devDependencies": {
+		"@types/react": "latest",
+		"@types/react-dom": "latest",
+		"dash-eslint": "*",
+		"dash-prettier": "*",
+		"dash-tsconfig": "*",
+		"typescript": "latest"
+	},
+	"module": "dist/index.js",
+	"types": "./src/index.ts",
+	"exports": {
+		".": "./dist/index.js",
+		"./dash-pages": "./dist/dash-pages/index.js",
+		"./src/dash-pages": "./dist/dash-pages/index.js",
+		"./pages": "./dist/pages/index.js",
+		"./src/pages": "./dist/pages/index.js",
+		"./pages/Account": "./dist/pages/Account/index.js",
+		"./src/pages/Account": "./dist/pages/Account/index.js",
+		"./pages/Misc": "./dist/pages/Misc/index.js",
+		"./src/pages/Misc": "./dist/pages/Misc/index.js",
+		"./pages/Static": "./dist/pages/Static/index.js",
+		"./src/pages/Static": "./dist/pages/Static/index.js",
+		"./*": "./dist/*.js",
+		"./src/*": "./dist/*.js"
+	},
+	"publishConfig": {
+		"access": "public",
+		"registry": "http://localhost:4873"
+	},
+	"files": [
+		"dist",
+		"src"
+	],
+	"typesVersions": {
+		"*": {
+			"src/*": [
+				"src/*",
+				"src/*/index"
+			],
+			"*": [
+				"src/*",
+				"src/*/index"
+			]
+		}
+	}
 }

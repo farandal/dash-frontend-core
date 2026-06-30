@@ -6,7 +6,7 @@
  * real-time updates about their order status.
  */
 import React, { createContext, useContext, useEffect, useState, FC, useMemo } from 'react';
-import useLaravelEcho from 'dash-admin/src/contexts/com/useLaravelEcho';
+import useLaravelEcho from 'dash-admin/contexts/com/useLaravelEcho';
 import { dashStorage } from 'dash-utils';
 
 // Product status interface for tracking individual product states

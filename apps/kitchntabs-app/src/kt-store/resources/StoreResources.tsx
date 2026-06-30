@@ -1,6 +1,6 @@
 import { IDashAutoAdminResourceConfig } from "dash-auto-admin";
 import BusinessIcon from "@mui/icons-material/Business";
-import ResourceTemplate from "dash-admin/src/templates/ResourceTemplate";
+import ResourceTemplate from "dash-admin/templates/ResourceTemplate";
 import {DASHAppConstants} from "dash-constants";
 import React from "react";
 import storeSchema from "../schemas/storeSchema";

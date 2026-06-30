@@ -1,7 +1,7 @@
 import React from 'react';
 import { Route } from 'react-router-dom';
 import { NotFound } from 'dash-components';
-import DASHSimpleLogin from 'kt-pages/src/dash-pages/DASHSimpleLogin';
+import DASHSimpleLogin from 'kt-pages/dash-pages/DASHSimpleLogin';
 
 // Direct import from specific file (avoid barrel exports for tree-shaking)
 import MallQRGenerator from '../../kt-mall/components/MallQRGenerator';

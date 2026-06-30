@@ -3,7 +3,7 @@ import React, { useEffect } from "react";
 import { useRecordContext, useNotify,useRefresh } from "react-admin";
 
 import { useAxios } from 'dash-axios-hook';
-import { Tenant } from "dash-admin/src/interfaces/Tenant";
+import { Tenant } from "dash-admin/interfaces/Tenant";
 
 interface SampleComponentProps extends IDashAutoAdminCustomFieldComponent {
 }

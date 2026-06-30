@@ -9,7 +9,7 @@ import React, { createContext, useContext, useState, useEffect, useCallback, use
 import { useRefresh, useNotify } from 'react-admin';
 import { IDashAutoAdminResourceConfig } from 'dash-auto-admin';
 // IMPORTANT: Import from 'dash-admin' package (not source path) to ensure same context instance as main app
-import LaravelEchoContext, { ILaravelEchoContext } from 'dash-admin/src/contexts/com/LaravelEchoContext';
+import LaravelEchoContext, { ILaravelEchoContext } from 'dash-admin/contexts/com/LaravelEchoContext';
 
 // ============ Types ============
 

@@ -17,7 +17,7 @@ import { useDispatch } from 'react-redux';
 import { DASH_REDUX_ACTIONS } from 'dash-admin-state';
 
 import React from 'react';
-import { useAuthContext } from 'dash-admin/src/contexts/auth';
+import { useAuthContext } from 'dash-admin/contexts/auth';
 import { useAxios } from 'dash-axios-hook';
 import { SingleImageUploader } from 'dash-components';
 

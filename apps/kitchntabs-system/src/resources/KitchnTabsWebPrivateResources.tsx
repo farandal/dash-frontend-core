@@ -21,7 +21,7 @@ export const KitchnTabsWebPrivateResources: ResourceManifest = {
     // SYSTEM RESOURCES (from dash-admin)
     // ========================================================================
     // Core system resources from dash-admin (users, roles, permissions, etc.)
-    systemResources: () => import('dash-admin/src/systemResources'),
+    systemResources: () => import('dash-admin/systemResources'),
 
     // ========================================================================
     // SUBSCRIPTION PLAN OVERRIDE (KitchnTabs-specific)
@@ -36,10 +36,10 @@ export const KitchnTabsWebPrivateResources: ResourceManifest = {
     //privateWebResources: () => import('kt-web/src/resources/privateWebResources'),
     tenancyResources: () => import('./private/tenancyResources'),
 
-    systemMarketplaceResource: () => import('kt-ecommerce/src/resources/systemMarketplaceResource'),
-    systemCheckoutGatewayResource: () => import('kt-ecommerce/src/resources/systemCheckoutGatewayResource'),
-    systemPointOfSaleResource: () => import('kt-ecommerce/src/resources/systemPointOfSaleResource'),
-    systemPaymentGatewayResource: () => import('kt-ecommerce/src/resources/systemPaymentGatewayResource'),
+    systemMarketplaceResource: () => import('kt-ecommerce/resources/systemMarketplaceResource'),
+    systemCheckoutGatewayResource: () => import('kt-ecommerce/resources/systemCheckoutGatewayResource'),
+    systemPointOfSaleResource: () => import('kt-ecommerce/resources/systemPointOfSaleResource'),
+    systemPaymentGatewayResource: () => import('kt-ecommerce/resources/systemPaymentGatewayResource'),
 
     
 };

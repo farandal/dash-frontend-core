@@ -20,13 +20,13 @@ export const KitchnTabsMallResources: ResourceManifest = {
     // SYSTEM RESOURCES (from dash-admin)
     // ========================================================================
     // Core system resources from dash-admin (users, roles, permissions, etc.)
-    //systemResources: () => import('dash-admin/src/systemResources'),
+    //systemResources: () => import('dash-admin/systemResources'),
 
     // ========================================================================
     // USER & PROFILE RESOURCES (from kt-ecommerce)
     // ========================================================================
-    //profileResource: () => import('kt-ecommerce/src/resources/user/profileResource'),
-    //userResource: () => import('kt-ecommerce/src/resources/user/userResource'),
+    //profileResource: () => import('kt-ecommerce/resources/user/profileResource'),
+    //userResource: () => import('kt-ecommerce/resources/user/userResource'),
 
     // ========================================================================
     // MALL RESOURCES (from local kt-mall)

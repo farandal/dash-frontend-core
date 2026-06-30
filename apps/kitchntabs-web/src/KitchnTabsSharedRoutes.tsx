@@ -4,9 +4,9 @@
 import React, { Suspense } from 'react';
 import { Route } from 'react-router-dom';
 import { Box } from '@mui/material';
-import RecoverPassword from 'dash-admin/src/pages/RecoverPassword';
-import ChangePassword from 'dash-admin/src/pages/ChangePassword';
-import VerifyAccount from 'dash-admin/src/pages/VerifyAccount';
+import RecoverPassword from 'dash-admin/pages/RecoverPassword';
+import ChangePassword from 'dash-admin/pages/ChangePassword';
+import VerifyAccount from 'dash-admin/pages/VerifyAccount';
 //import MallAppWrapper from 'kt-mall/src/components/MallAppWrapper';
 //import MallClientWrapper from 'kt-mall/src/components/MallClientWrapper';
 //import { NotFound } from 'dash-components';
@@ -18,9 +18,9 @@ import Register from './components/pages/Register';
 import SignUp from './components/pages/SignUp';
 
 // Lazy load shared components
-const MarketplaceCallback = React.lazy(() => import('kt-ecommerce/src/components/Marketplace/MarketplaceCallback'));
-const SignUpSuccess = React.lazy(() => import('kt-pages/src/pages/Account/SignUpSuccess'));
-const Legal = React.lazy(() => import('kt-pages/src/pages/Static/Legal'));
+const MarketplaceCallback = React.lazy(() => import('kt-ecommerce/components/Marketplace/MarketplaceCallback'));
+const SignUpSuccess = React.lazy(() => import('kt-pages/pages/Account/SignUpSuccess'));
+const Legal = React.lazy(() => import('kt-pages/pages/Static/Legal'));
 
 
 const KitchnTabsSharedRoutes = () => [

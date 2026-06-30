@@ -1,8 +1,8 @@
 import { IDashAutoAdminResourceConfig } from "dash-auto-admin";
 import { useNotify, useRecordContext, useRefresh } from "react-admin";
 import { useContext, useEffect } from "react";
-import LaravelEchoContext from 'dash-admin/src/contexts/com/LaravelEchoContext';
-import type { ILaravelEchoContext } from 'dash-admin/src/contexts/com/LaravelEchoContext';
+import LaravelEchoContext from 'dash-admin/contexts/com/LaravelEchoContext';
+import type { ILaravelEchoContext } from 'dash-admin/contexts/com/LaravelEchoContext';
 import { App as CapacitorApp } from '@capacitor/app';
 
 

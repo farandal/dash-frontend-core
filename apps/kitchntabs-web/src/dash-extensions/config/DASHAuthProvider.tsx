@@ -1,11 +1,11 @@
-import { getCookie, removeCookie, setCookie } from 'dash-admin/src/utils/cookies';
+import { getCookie, removeCookie, setCookie } from 'dash-admin/utils/cookies';
 import  { DASHAdminSystemConstants,getEnv } from 'dash-constants';
 
-import { setAuthEvent } from 'dash-admin/src/contexts/auth';
+import { setAuthEvent } from 'dash-admin/contexts/auth';
 import { AuthPersistenceService, syncDeviceStoreToLocalStorage, syncLocalStorageToDeviceStore } from 'dash-auth';
 import {DASHAppConstants} from 'dash-constants';
 import { useAxios } from 'dash-axios-hook';
-import { logoutFromStorage } from 'kt-utils/src/authProviderUtils';
+import { logoutFromStorage } from 'kt-utils/authProviderUtils';
 import { dashStorage } from 'dash-utils';
 
 const authProvider = {

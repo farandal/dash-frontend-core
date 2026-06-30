@@ -1,18 +1,18 @@
 import React, { Suspense } from 'react';
 import { Route } from 'react-router-dom';
 import { Box } from '@mui/material';
-import RecoverPassword from 'dash-admin/src/pages/RecoverPassword';
-import ChangePassword from 'dash-admin/src/pages/ChangePassword';
-import VerifyAccount from 'dash-admin/src/pages/VerifyAccount';
+import RecoverPassword from 'dash-admin/pages/RecoverPassword';
+import ChangePassword from 'dash-admin/pages/ChangePassword';
+import VerifyAccount from 'dash-admin/pages/VerifyAccount';
 import GlobalSmallLoader from '../components/GlobalSmallLoader';
 
 // Lazy load shared components from kt-* packages
-const MarketplaceCallback = React.lazy(() => import('kt-ecommerce/src/components/Marketplace/MarketplaceCallback'));
-const Register = React.lazy(() => import('kt-pages/src/pages/Account/Register'));
-const SignUp = React.lazy(() => import('kt-pages/src/pages/Account/SignUp'));
-const SignUpSuccess = React.lazy(() => import('kt-pages/src/pages/Account/SignUpSuccess'));
-const Legal = React.lazy(() => import('kt-pages/src/pages/Static/Legal'));
-const DASHLanding = React.lazy(() => import('kt-pages/src/dash-pages/DASHLanding'));
+const MarketplaceCallback = React.lazy(() => import('kt-ecommerce/components/Marketplace/MarketplaceCallback'));
+const Register = React.lazy(() => import('kt-pages/pages/Account/Register'));
+const SignUp = React.lazy(() => import('kt-pages/pages/Account/SignUp'));
+const SignUpSuccess = React.lazy(() => import('kt-pages/pages/Account/SignUpSuccess'));
+const Legal = React.lazy(() => import('kt-pages/pages/Static/Legal'));
+const DASHLanding = React.lazy(() => import('kt-pages/dash-pages/DASHLanding'));
 
 
 // Shared routes factory function

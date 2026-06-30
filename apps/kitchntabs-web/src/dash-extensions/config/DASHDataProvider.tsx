@@ -1,9 +1,9 @@
 import { AxiosError } from 'axios';
 import queryString from 'query-string';
 import { processAxiosError, useAxios } from 'dash-axios-hook';
-import { cacheInvalidatorHash } from 'dash-admin/src/utils/cache/CacheInvalidatorContext';
-import { IDashAutoAdminDefaultBackendStructure } from 'dash-axios-hook/src/interfaces/IDashAutoAdminBackendError';
-import { getResourceConfig, processFormData, processPostData } from 'kt-utils/src/dataProviderUtils';
+import { cacheInvalidatorHash } from 'dash-admin/utils/cache/CacheInvalidatorContext';
+import { IDashAutoAdminDefaultBackendStructure } from 'dash-axios-hook/interfaces/IDashAutoAdminBackendError';
+import { getResourceConfig, processFormData, processPostData } from 'kt-utils/dataProviderUtils';
 import { dashStorage } from 'dash-utils';
 
 

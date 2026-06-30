@@ -1,6 +1,6 @@
 import React, { lazy, Suspense } from 'react';
 import { QrCode } from '@mui/icons-material';
-import ResourceTemplate from 'dash-admin/src/templates/ResourceTemplate';
+import ResourceTemplate from 'dash-admin/templates/ResourceTemplate';
 import { IDashAutoAdminResourceConfig } from 'dash-auto-admin';
 import { CircularProgress, Box } from '@mui/material';
 

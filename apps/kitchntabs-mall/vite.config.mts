@@ -521,10 +521,20 @@ export default ({ mode }) => {
     },
 
     resolve: {
-      alias: {
-        "@app": path.resolve(currentPath, "./src"),
-        "@packages": path.resolve(currentPath, "../../packages"),
-      },
+      alias: [
+        { find: "@app", replacement: path.resolve(currentPath, "./src") },
+        { find: "@dash-styles-src", replacement: path.resolve(currentPath, "../../node_modules/dash-styles/src") },
+        // react-beautiful-dnd is unmaintained on React 18/19; map to the @hello-pangea/dnd drop-in.
+        { find: "react-beautiful-dnd", replacement: "@hello-pangea/dnd" },
+        // kt-* are workspace turbo packages developed in THIS repo: consume their SOURCE
+        // (instant HMR; Vite scans their deps). The optional "/src" is stripped so both
+        // "kt-x/foo" and "kt-x/src/foo" resolve to packages/kt-x/src/foo.
+        ...["kt-cashcount", "kt-ecommerce", "kt-kiosk", "kt-pages", "kt-utils"].map((n) => ({
+          find: new RegExp(`^${n}(?:/src)?(/.*)?$`),
+          replacement: path.resolve(currentPath, `../../packages/${n}/src$1`),
+        })),
+        { find: "@packages", replacement: path.resolve(currentPath, "../../packages") },
+      ],
       dedupe: ["react", "react-dom", "query-string"],
     },
 
@@ -570,11 +580,6 @@ export default ({ mode }) => {
       react({
         jsxRuntime: "automatic",
         jsxImportSource: "react",
-        babel: {
-          plugins: [
-            ["@babel/plugin-transform-react-jsx", { runtime: "automatic" }],
-          ],
-        },
       }),
       svgr(),
 
@@ -641,6 +646,27 @@ export default ({ mode }) => {
         "react",
         "react-dom",
         "react-dom/client",
+        "react-is",
+        "is-mobile",
+        "@ant-design/icons",
+        "@ant-design/icons-svg",
+        "antd",
+        "react-color",
+        "react-draggable",
+        "react-number-format",
+        "numeral",
+        "file-saver",
+        "react-feather",
+        "react-spinners",
+        "react-chartjs-2",
+        "chart.js",
+        "react-json-viewer",
+        "react-google-recaptcha",
+        "react-places-autocomplete",
+        "react-drag-drop-files",
+        "mui-nested-menu",
+        "node-polyglot",
+        "jsonexport",
         "react/jsx-runtime",
         "react/jsx-dev-runtime",
         "react-router-dom",
@@ -660,6 +686,9 @@ export default ({ mode }) => {
         "dayjs/plugin/customParseFormat",
         "dayjs/plugin/utc",
         "dayjs/plugin/timezone",
+        "dayjs/plugin/isBetween",
+        "dayjs/plugin/localizedFormat",
+        "dayjs/plugin/weekOfYear",
         // Add these to fix the sync external store issue
         "use-sync-external-store",
         "use-sync-external-store/shim",
@@ -679,7 +708,8 @@ export default ({ mode }) => {
         "ra-data-simple-rest",
         "ra-i18n-polyglot",
         "ra-language-english",
-        
+        "ra-language-spanish",
+
         // Other commonly lazy-loaded packages
         "redux",
         "redux-saga",
@@ -745,9 +775,9 @@ export default ({ mode }) => {
         less: {
           javascriptEnabled: true,
           additionalData: `
-            @import "../../../packages/dash-styles/src/dash-variables.less";
+            @import "@dash-styles-src/dash-variables.less";
             @import '@app/dash-variables.less';
-            @import "../../../packages/dash-styles/src/dash-css-transformer.less";
+            @import "@dash-styles-src/dash-css-transformer.less";
           `,
         },
       },

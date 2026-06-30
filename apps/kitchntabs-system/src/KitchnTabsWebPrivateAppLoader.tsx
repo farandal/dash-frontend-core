@@ -1,13 +1,13 @@
 import React, { lazy, Suspense, useMemo, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import { setPanelSettings } from 'dash-admin-state/src/redux/actions/Common';
+import { setPanelSettings } from 'dash-admin-state/redux/actions/Common';
 import { GlobalSmallLoader } from 'dash-boilerplate';
 import Dashboard from './components/Dashboard';
 
 const KitchnTabsWebPrivateApp = lazy(() => import('./KitchnTabsWebPrivateApp'));
 const MainAppHookComponent = lazy(() => import('./contexts/MainAppHookComponent'));
 const LaravelEchoProvider = lazy(() => 
-  import('dash-admin/src/contexts/com/LaravelEchoContext').then(m => ({ default: m.LaravelEchoProvider }))
+  import('dash-admin/contexts/com/LaravelEchoContext').then(m => ({ default: m.LaravelEchoProvider }))
 );
 
 /**

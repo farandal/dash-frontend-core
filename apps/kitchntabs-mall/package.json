@@ -38,19 +38,19 @@
     "@tanstack/react-query": "latest",
     "axios": "^1.11.0",
     "clsx": "^2.1.1",
-    "dash-admin-state": "workspace:*",
-    "dash-app-common": "workspace:*",
-    "dash-auth": "workspace:*",
-    "dash-auto-admin": "workspace:*",
-    "dash-axios-hook": "workspace:*",
-    "dash-components": "workspace:*",
-    "dash-constants": "workspace:*",
-    "dash-dialog": "workspace:*",
-    "dash-interfaces": "workspace:*",
-    "dash-modal": "workspace:*",
-    "dash-styles": "workspace:*",
-    "dash-tsconfig": "workspace:*",
-    "dash-utils": "workspace:*",
+    "dash-admin-state": "0.0.2",
+    "dash-app-common": "1.0.2",
+    "dash-auth": "latest",
+    "dash-auto-admin": "1.0.2",
+    "dash-axios-hook": "0.0.2",
+    "dash-components": "1.0.2",
+    "dash-constants": "0.0.2",
+    "dash-dialog": "1.0.2",
+    "dash-interfaces": "latest",
+    "dash-modal": "latest",
+    "dash-styles": "latest",
+    "dash-tsconfig": "latest",
+    "dash-utils": "0.0.2",
     "js-cookie": "latest",
     "kt-cashcount": "workspace:*",
     "kt-ecommerce": "workspace:*",
@@ -75,7 +75,7 @@
     "react-toastify": "latest",
     "redux": "latest",
     "redux-persist": "latest",
-    "dash-admin": "workspace:*"
+    "dash-admin": "1.0.2"
   },
   "packageManager": "pnpm@9.15.0",
   "devDependencies": {
@@ -84,8 +84,8 @@
     "@types/react-dom": "latest",
     "@vitejs/plugin-react": "^4.3.4",
     "cross-env": "^7.0.3",
-    "dash-eslint": "workspace:*",
-    "dash-prettier": "workspace:*",
+    "dash-eslint": "latest",
+    "dash-prettier": "latest",
     "less": "latest",
     "less-loader": "latest",
     "typescript": "latest",
@@ -93,4 +93,3 @@
     "vite-plugin-svgr": "latest"
   }
 }
-

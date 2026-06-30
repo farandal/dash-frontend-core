@@ -6,7 +6,7 @@ import { useState, useEffect } from "react";
 import { Loading, useDataProvider, useEditContext, useGetList, useRecordContext, useRefresh } from "react-admin";
 
 import { useFieldArray, useFormContext, useFormState } from "react-hook-form";
-import ImagePlaceHolder from 'kt-utils/src/components/ImagePlaceHolder/ImagePlaceHolder';
+import ImagePlaceHolder from 'kt-utils/components/ImagePlaceHolder/ImagePlaceHolder';
 import { Add as AddIcon, Remove as RemoveIcon, Delete as DeleteIcon, ArrowForward } from '@mui/icons-material'
 import { toast } from 'react-toastify';
 import { ITab } from "./interfaces/ITab";

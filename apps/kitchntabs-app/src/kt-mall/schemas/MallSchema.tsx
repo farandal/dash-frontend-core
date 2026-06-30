@@ -1,5 +1,5 @@
 
-import SearchableSelectChipsControlRecordContext from "dash-components/src/components/SearchableSelects/RASearchableSelectChipsRecordContext";
+import SearchableSelectChipsControlRecordContext from "dash-components/components/SearchableSelects/RASearchableSelectChipsRecordContext";
 import SystemMallTenantAssociator from "../components/SystemMallTenantAssociator";
 const MallSchema = [
     {

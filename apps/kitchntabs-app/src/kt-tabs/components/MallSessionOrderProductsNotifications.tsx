@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { Box, Typography, Chip, Alert, Card, CardContent, LinearProgress } from "@mui/material";
-import LaravelEchoContext, { ILaravelEchoContext } from 'dash-admin/src/contexts/com/LaravelEchoContext';
+import LaravelEchoContext, { ILaravelEchoContext } from 'dash-admin/contexts/com/LaravelEchoContext';
 import {useAxios} from "dash-axios-hook"
 import { useTranslate } from 'react-admin';
 // Types for mall session notifications

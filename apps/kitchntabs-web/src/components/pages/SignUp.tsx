@@ -28,11 +28,11 @@ import {
 import HomeIcon from '@mui/icons-material/Home';
 
 import { DASH_REDUX_ACTIONS, IDASHAppState } from 'dash-admin-state';
-import DictionaryContext from 'dash-admin/src/contexts/dictionary/DictionaryContext';
+import DictionaryContext from 'dash-admin/contexts/dictionary/DictionaryContext';
 import { useAxios } from 'dash-axios-hook';
 import { useDialog } from 'dash-dialog';
 import {DASHAdminSystemConstants} from 'dash-constants';
-import { RutValidator, RutValidatorWithoutDots } from 'dash-admin/src/utils/validators';
+import { RutValidator, RutValidatorWithoutDots } from 'dash-admin/utils/validators';
 import { useSystemConfig, SystemConfigData } from '../../hooks/useSystemConfig';
 
 interface SignUpFormData {

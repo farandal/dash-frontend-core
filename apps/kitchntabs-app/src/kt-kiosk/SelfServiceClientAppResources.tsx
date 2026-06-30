@@ -1,6 +1,6 @@
 import React from 'react';
 import { IDashAutoAdminResourceConfig } from 'dash-auto-admin';
-import ResourceTemplate from 'dash-admin/src/templates/ResourceTemplate';
+import ResourceTemplate from 'dash-admin/templates/ResourceTemplate';
 import { RestaurantMenu } from '@mui/icons-material';
 import { dashStorage } from 'dash-utils';
 

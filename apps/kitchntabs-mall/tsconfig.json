@@ -1,5 +1,5 @@
 {
-  "extends": "../../packages/dash-tsconfig/base.json",
+  "extends": "dash-tsconfig/base.json",
   "exclude": [
     "./src/**/*.spec.ts",
     "./src/**/*.spec.tsx",

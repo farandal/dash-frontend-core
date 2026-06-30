@@ -1,7 +1,7 @@
 import { IDashAutoAdminCustomFieldComponent } from "dash-auto-admin";
 import { useShowContext } from "react-admin";
 import { ITab } from "../interfaces/ITab";
-import MUISimpleJsonTable from "dash-admin/src/components/misc/MuiSimpleJsonTable";
+import MUISimpleJsonTable from "dash-admin/components/misc/MuiSimpleJsonTable";
 import { Accordion, AccordionSummary, AccordionDetails, Typography } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 const ViewMarketplaceDetail: React.FC<IDashAutoAdminCustomFieldComponent> = ({ method, attribute, resourceConfig }) => {

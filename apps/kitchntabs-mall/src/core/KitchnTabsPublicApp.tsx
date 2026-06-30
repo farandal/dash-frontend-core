@@ -11,7 +11,7 @@ import { DASHAdminSystemConstants, getEnv } from 'dash-constants';
 import { dashStorage } from 'dash-utils';
 
 // Import from kt-pages
-//import CustomLogin from 'kt-pages/src/pages/Account/CustomLogin';
+//import CustomLogin from 'kt-pages/pages/Account/CustomLogin';
 // TODO: Load this from dash-admin, not kt-pages. 
 import DASHLightWeightLogin from '@kt-pages/dash-pages/DASHLightWeightLogin';
 

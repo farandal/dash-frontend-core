@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { Box, Typography, LinearProgress, Divider, Chip, Paper } from '@mui/material';
 import { useTranslate } from 'react-admin';
 import { useAxios } from 'dash-axios-hook';
-import LaravelEchoContext, { ILaravelEchoContext } from 'dash-admin/src/contexts/com/LaravelEchoContext';
+import LaravelEchoContext, { ILaravelEchoContext } from 'dash-admin/contexts/com/LaravelEchoContext';
 
 interface MallSessionOrderProgressProps {
     sessionHash: string | null;

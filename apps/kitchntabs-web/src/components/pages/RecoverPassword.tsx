@@ -6,7 +6,7 @@ import HomeIcon from '@mui/icons-material/Home';
 
 import { dashStorage } from 'dash-utils';
 import { useAxios } from 'dash-axios-hook';
-import { clearAllCookies } from 'dash-admin/src/utils/cookies';
+import { clearAllCookies } from 'dash-admin/utils/cookies';
 
 const RecoverPassword = ({  }: {  }) => {
 	const [email, setEmail] = useState('');

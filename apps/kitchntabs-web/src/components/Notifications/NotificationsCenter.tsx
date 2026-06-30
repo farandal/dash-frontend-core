@@ -24,7 +24,7 @@ import {
     DragIndicator as DragIcon
 } from '@mui/icons-material';
 import React, { useContext, useCallback, useEffect, useState } from 'react';
-import LaravelEchoContext, { ILaravelEchoContext } from "dash-admin/src/contexts/com/LaravelEchoContext";
+import LaravelEchoContext, { ILaravelEchoContext } from "dash-admin/contexts/com/LaravelEchoContext";
 
 interface ProcessedNotification {
     id: string;

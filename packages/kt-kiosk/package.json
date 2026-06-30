@@ -1,36 +1,51 @@
 {
-    "name": "kt-kiosk",
-    "version": "1.0.0",
-    "private": true,
-    "main": "src/index.ts",
-    "type": "module",
-    "scripts": {
-        "lint": "eslint --ext .ts,.tsx .",
-        "format": "pnpm prettier --write .",
-        "typecheck": "tsc --noEmit"
-    },
-    "dependencies": {
-        "@emotion/react": "latest",
-        "@emotion/styled": "latest",
-        "@mui/icons-material": "^7.3.10",
-        "@mui/material": "^7.3.10",
-        "dash-admin": "workspace:*",
-        "dash-auto-admin": "workspace:*",
-        "dash-constants": "workspace:*",
-        "dash-utils": "workspace:*",
-        "kt-utils": "workspace:*",
-        "kt-ecommerce": "workspace:*",
-    
-        "react": "latest",
-        "react-admin": "5.14.6",
-        "react-dom": "latest"
-    },
-    "devDependencies": {
-        "@types/react": "latest",
-        "@types/react-dom": "latest",
-        "dash-eslint": "workspace:*",
-        "dash-prettier": "workspace:*",
-        "dash-tsconfig": "workspace:*",
-        "typescript": "latest"
-    }
+	"name": "kt-kiosk",
+	"version": "1.0.0",
+	"main": "dist/index.cjs",
+	"type": "module",
+	"scripts": {
+		"lint": "eslint --ext .ts,.tsx .",
+		"format": "pnpm prettier --write .",
+		"typecheck": "tsc --noEmit",
+		"build": "tsup"
+	},
+	"dependencies": {
+		"@emotion/react": "latest",
+		"@emotion/styled": "latest",
+		"@mui/icons-material": "^7.3.10",
+		"@mui/material": "^7.3.10",
+		"dash-admin": "*",
+		"dash-auto-admin": "*",
+		"dash-constants": "*",
+		"dash-utils": "*",
+		"kt-utils": "workspace:*",
+		"kt-ecommerce": "workspace:*",
+		"react": "latest",
+		"react-admin": "5.14.6",
+		"react-dom": "latest"
+	},
+	"devDependencies": {
+		"@types/react": "latest",
+		"@types/react-dom": "latest",
+		"dash-eslint": "*",
+		"dash-prettier": "*",
+		"dash-tsconfig": "*",
+		"typescript": "latest"
+	},
+	"module": "dist/index.js",
+	"types": "dist/index.d.ts",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"import": "./dist/index.js",
+			"require": "./dist/index.cjs"
+		}
+	},
+	"publishConfig": {
+		"access": "public",
+		"registry": "http://localhost:4873"
+	},
+	"files": [
+		"dist"
+	]
 }

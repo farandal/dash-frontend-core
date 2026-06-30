@@ -1,9 +1,9 @@
 
 
-import TenantImage from "kt-ecommerce/src/components/TenantImage";
-import TenantMarketplaceAssociation from "kt-ecommerce/src/components/TenantMarketplaceAssociation";
-import TenantPointOfSaleAssociation from "kt-ecommerce/src/components/TenantPointOfSaleAssociation";
-import TenantSettings from "kt-ecommerce/src/components/TenantSettings";
+import TenantImage from "kt-ecommerce/components/TenantImage";
+import TenantMarketplaceAssociation from "kt-ecommerce/components/TenantMarketplaceAssociation";
+import TenantPointOfSaleAssociation from "kt-ecommerce/components/TenantPointOfSaleAssociation";
+import TenantSettings from "kt-ecommerce/components/TenantSettings";
 import { ColorPallete, ThemePallete } from "kt-utils";
 import { IDashAutoAdminAttribute } from "dash-auto-admin";
 import { SelectArrayInput, SelectInput } from "react-admin";

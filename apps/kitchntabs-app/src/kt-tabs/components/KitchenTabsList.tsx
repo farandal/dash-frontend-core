@@ -21,14 +21,14 @@ import React, { useContext, useEffect, useState } from "react";
 import { useDataProvider, useGetIdentity, useGetOne, useRefresh, useTranslate, useUpdate, WithListContext } from "react-admin";
 import PrintIcon from '@mui/icons-material/Print';
 
-import DashResourceButton from "dash-auto-admin/src/toolbar/buttons/DashResourceButton";
+import DashResourceButton from "dash-auto-admin/toolbar/buttons/DashResourceButton";
 import { toast } from 'react-toastify';
 import { useAxios } from 'dash-axios-hook';
 import { ArrowForward } from "@mui/icons-material";
-import LaravelEchoContext from 'dash-admin/src/contexts/com/LaravelEchoContext';
-import type { ILaravelEchoContext } from 'dash-admin/src/contexts/com/LaravelEchoContext';
-import type { IDashNotificationPayloadBase as INotificationPayload } from 'dash-admin/src/interfaces/communication/INotification';
-import { useAuthContext } from 'dash-admin/src/contexts/auth/AuthContext';
+import LaravelEchoContext from 'dash-admin/contexts/com/LaravelEchoContext';
+import type { ILaravelEchoContext } from 'dash-admin/contexts/com/LaravelEchoContext';
+import type { IDashNotificationPayloadBase as INotificationPayload } from 'dash-admin/interfaces/communication/INotification';
+import { useAuthContext } from 'dash-admin/contexts/auth/AuthContext';
 import { ITabStatusChange } from "./interfaces/ITabNotificationFormat";
 
 import { ImagePlaceHolder as ImagePlaceHolder } from 'kt-utils';

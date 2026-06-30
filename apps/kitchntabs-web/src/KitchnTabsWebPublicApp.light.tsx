@@ -10,7 +10,7 @@ import { Routes, BrowserRouter, HashRouter, Route } from 'react-router-dom';
 import { Box } from '@mui/material';
 import { DASHAdminSystemConstants, getEnv } from 'dash-constants';
 import { useDispatch } from 'react-redux';
-import { setResources } from 'dash-admin-state/src/redux/actions/Resources';
+import { setResources } from 'dash-admin-state/redux/actions/Resources';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 // Import from shared dash-boilerplate package
@@ -22,7 +22,7 @@ import {
 
 // Use dash-admin's I18nBridgeProvider as the single source of truth for i18n
 // This works for both public and private apps since AppMaterialMenu uses this context
-import { I18nBridgeProvider, useI18nBridge } from 'dash-admin/src/contexts/I18nBridgeContext';
+import { I18nBridgeProvider, useI18nBridge } from 'dash-admin/contexts/I18nBridgeContext';
 
 // App-specific imports
 import { dashPublicRoutes } from '@app/KitchnTabsWebPublicRoutes';

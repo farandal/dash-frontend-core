@@ -8,11 +8,11 @@ import { useNavigate } from 'react-router-dom';
 import { useNotify } from 'react-admin';
 import ReCAPTCHA from 'react-google-recaptcha';
 import { DASH_REDUX_ACTIONS } from 'dash-admin-state';
-import DictionaryContext from 'dash-admin/src/contexts/dictionary/DictionaryContext';
+import DictionaryContext from 'dash-admin/contexts/dictionary/DictionaryContext';
 import { useAxios } from 'dash-axios-hook';
 import { useDialog } from 'dash-dialog';
 import {DASHAppConstants} from 'dash-constants';
-import { RutValidator, RutValidatorWithoutDots } from 'dash-admin/src/utils/validators';
+import { RutValidator, RutValidatorWithoutDots } from 'dash-admin/utils/validators';
 
 interface RegisterPageProps {
 

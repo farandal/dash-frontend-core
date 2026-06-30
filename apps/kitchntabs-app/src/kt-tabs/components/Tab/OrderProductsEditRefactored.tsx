@@ -9,9 +9,9 @@ import { ITab } from "../interfaces/ITab";
 import ProductModifiers from './ProductModifiers';
 import { SEARCH_CONFIG, useTabManager, PaginationMode, PAGINATION_CONFIG, INFINITE_SCROLL_CONFIG } from '../contexts/TabManagerContext';
 import { useNotify, useRedirect, useTranslate } from 'react-admin';
-import useWindowSize from 'dash-admin/src/hooks/window/useWindowSize';
+import useWindowSize from 'dash-admin/hooks/window/useWindowSize';
 import { useEffect, useState, useMemo } from "react";
-import { Product } from "kt-ecommerce/src/interfaces";
+import { Product } from "kt-ecommerce/interfaces";
 import { ImagePlaceHolder } from "kt-utils";
 import { priceFormatter } from "dash-utils";
 

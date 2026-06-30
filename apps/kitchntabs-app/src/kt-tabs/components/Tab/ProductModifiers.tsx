@@ -1,5 +1,5 @@
 import { Product } from "kt-ecommerce";
-import ImagePlaceHolder from 'kt-utils/src/components/ImagePlaceHolder/ImagePlaceHolder';
+import ImagePlaceHolder from 'kt-utils/components/ImagePlaceHolder/ImagePlaceHolder';
 import { IDashAutoAdminCustomFieldComponent } from "dash-auto-admin";
 import { useState, useEffect } from "react";
 import { Button, Loading, useEditContext, useGetList, useRecordContext, useShowContext } from "react-admin";

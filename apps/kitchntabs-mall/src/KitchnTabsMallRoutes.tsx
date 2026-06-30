@@ -1,7 +1,7 @@
 import React, { Suspense } from 'react';
 import { Route } from 'react-router-dom';
 import { NotFound } from 'dash-components';
-import DASHLightWeightLogin from 'kt-pages/src/dash-pages/DASHLightWeightLogin';
+import DASHLightWeightLogin from 'kt-pages/dash-pages/DASHLightWeightLogin';
 import GlobalSmallLoader from './dash-extensions/components/GlobalSmallLoader';
 
 // Lazy load shared components

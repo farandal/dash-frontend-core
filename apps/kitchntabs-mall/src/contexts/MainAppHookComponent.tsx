@@ -2,7 +2,7 @@ import { DASH_REDUX_ACTIONS, IDASHAppState } from 'dash-admin-state';
 import { FC, useContext, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import LaravelEchoContext, { ILaravelEchoContext } from 'dash-admin/src/contexts/com/LaravelEchoContext';
+import LaravelEchoContext, { ILaravelEchoContext } from 'dash-admin/contexts/com/LaravelEchoContext';
 
 import { useRefresh } from 'react-admin';
 import { useCapacitorAppStateRefresh, useDeviceStorageSync } from 'dash-utils';

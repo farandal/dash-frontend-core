@@ -2,7 +2,7 @@ import React, { useEffect, useState, useContext } from 'react';
 import { Box, Typography, Alert, LinearProgress } from "@mui/material";
 import { useAxios } from "dash-axios-hook";
 import { useTranslate } from 'react-admin';
-import LaravelEchoContext, { ILaravelEchoContext } from 'dash-admin/src/contexts/com/LaravelEchoContext';
+import LaravelEchoContext, { ILaravelEchoContext } from 'dash-admin/contexts/com/LaravelEchoContext';
 
 interface MallSessionNotification {
     id: number;

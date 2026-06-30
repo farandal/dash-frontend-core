@@ -1,7 +1,7 @@
 import { CircularProgress } from "@mui/material";
 import { IDashAutoAdminDataGrid } from "dash-auto-admin";
-import useAutoAdminLoadingStateMediator from "dash-auto-admin/src/hooks/useAutoAdminLoadingStateMediator";
-import AutoDataGrid from "dash-auto-admin/src/mui/AutoDataGrid";
+import useAutoAdminLoadingStateMediator from "dash-auto-admin/hooks/useAutoAdminLoadingStateMediator";
+import AutoDataGrid from "dash-auto-admin/mui/AutoDataGrid";
 import { useState, useEffect } from "react";
 import { useListContext, useUnselectAll } from "react-admin";
 import { useLocation } from "react-router";

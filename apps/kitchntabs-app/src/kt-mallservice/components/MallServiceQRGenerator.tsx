@@ -41,7 +41,7 @@ import {
 import { useNotify, Title, useTranslate } from 'react-admin';
 import { useAxios } from 'dash-axios-hook';
 import { AuthPersistenceService } from 'dash-auth';
-import { LaravelEchoContext } from 'dash-admin/src/contexts/com/LaravelEchoContext';
+import { LaravelEchoContext } from 'dash-admin/contexts/com/LaravelEchoContext';
 import { DASHAdminSystemConstants } from 'dash-constants';
 
 interface MallQRGeneratorProps {}

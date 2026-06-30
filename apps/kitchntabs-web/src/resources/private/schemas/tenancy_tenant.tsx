@@ -1,20 +1,20 @@
 
 
-import TenantImage from "kt-ecommerce/src/components/TenantImage";
-import TenantMarketplaceAssociation from "kt-ecommerce/src/components/TenantMarketplaceAssociation";
-import TenantPointOfSaleAssociation from "kt-ecommerce/src/components/TenantPointOfSaleAssociation";
-//import TenantSettings from "kt-ecommerce/src/components/TenantSettings";
+import TenantImage from "kt-ecommerce/components/TenantImage";
+import TenantMarketplaceAssociation from "kt-ecommerce/components/TenantMarketplaceAssociation";
+import TenantPointOfSaleAssociation from "kt-ecommerce/components/TenantPointOfSaleAssociation";
+//import TenantSettings from "kt-ecommerce/components/TenantSettings";
 import { ColorPallete, ThemePallete } from "kt-utils";
 import { IDashAutoAdminAttribute } from "dash-auto-admin";
 import { SelectArrayInput, SelectInput } from "react-admin";
-import TenantSettings from "dash-admin/src/components/tenant/TenantSettings";
+import TenantSettings from "dash-admin/components/tenant/TenantSettings";
 
-import TenantAttributes from "dash-admin/src/components/tenant/TenantAttributes";
-import TenantTheme from "dash-admin/src/components/tenant/TenantTheme";
-import TenantStoreStatus from "kt-ecommerce/src/components/TenantStoreStatus";
-import TenantStoreSchedule from "kt-ecommerce/src/components/TenantStoreSchedule";
-import TenantAlarmSettings from "kt-ecommerce/src/components/TenantAlarmSettings";
-import TenantTests from "kt-ecommerce/src/components/TenantTests";
+import TenantAttributes from "dash-admin/components/tenant/TenantAttributes";
+import TenantTheme from "dash-admin/components/tenant/TenantTheme";
+import TenantStoreStatus from "kt-ecommerce/components/TenantStoreStatus";
+import TenantStoreSchedule from "kt-ecommerce/components/TenantStoreSchedule";
+import TenantAlarmSettings from "kt-ecommerce/components/TenantAlarmSettings";
+import TenantTests from "kt-ecommerce/components/TenantTests";
 /**
  * Schema for Tenancy Tenant management
  * API Endpoint: /api/tenancy/tenants

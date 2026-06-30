@@ -6,7 +6,7 @@
  * - Home page with product menu from multiple stores
  * - Tab/Order creation and tracking
  */
-import { ResourceManifest } from 'dash-app-common/src/components/DashResourceLoader';
+import { ResourceManifest } from 'dash-app-common/components/DashResourceLoader';
 
 /**
  * Mall Service Resource Manifest

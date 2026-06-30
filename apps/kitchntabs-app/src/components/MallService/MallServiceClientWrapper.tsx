@@ -17,7 +17,7 @@ import { Box, Typography, CircularProgress } from '@mui/material';
 import { useAxios } from 'dash-axios-hook';
 import { useDispatch } from 'react-redux';
 import { DASH_REDUX_ACTIONS } from 'dash-admin-state';
-import { ACTION_UPDATE_AUTH } from 'dash-admin-state/src/redux/reducers/Auth';
+import { ACTION_UPDATE_AUTH } from 'dash-admin-state/redux/reducers/Auth';
 import { dashStorage } from 'dash-utils';
 import { AuthPersistenceService } from 'dash-auth';
 import { MallAppMediator } from '../../kt-kiosk/components';

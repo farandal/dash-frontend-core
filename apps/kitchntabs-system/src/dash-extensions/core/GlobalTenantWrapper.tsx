@@ -1,7 +1,7 @@
 import { AuthPersistenceService } from "dash-auth";
 import { DASH_REDUX_ACTIONS } from "dash-admin-state";
 import { useDispatch } from "react-redux";
-import DashThemeContext from 'dash-admin/src/default-theme/DashThemeContext';
+import DashThemeContext from 'dash-admin/default-theme/DashThemeContext';
 import React, { PropsWithChildren, useEffect } from "react";
 
 export interface IGlobalTenantWrapper extends PropsWithChildren {

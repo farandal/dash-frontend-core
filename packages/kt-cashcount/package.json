@@ -1,38 +1,75 @@
 {
-    "name": "kt-cashcount",
-    "version": "1.0.0",
-    "private": true,
-    "main": "src/index.ts",
-    "type": "module",
-    "scripts": {
-        "lint": "eslint --ext .ts,.tsx .",
-        "format": "pnpm prettier --write .",
-        "typecheck": "tsc --noEmit"
-    },
-    "dependencies": {
-        "@emotion/react": "latest",
-        "@emotion/styled": "latest",
-        "@mui/icons-material": "^7.3.10",
-        "@mui/material": "^7.3.10",
-        "dash-admin": "workspace:*",
-        "dash-auto-admin": "workspace:*",
-        "dash-axios-hook":  "workspace:*",
-        "dash-constants": "workspace:*",
-        "dash-dialog": "workspace:*",
-        "dash-utils": "workspace:*",
-        "kt-utils": "workspace:*",
-        "kt-ecommerce": "workspace:*",
-        "react": "latest",
-        "react-admin": "5.14.6",
-        "react-dom": "latest",
-        "react-hook-form": "^7.54.0"
-    },
-    "devDependencies": {
-        "@types/react": "latest",
-        "@types/react-dom": "latest",
-        "dash-eslint": "workspace:*",
-        "dash-prettier": "workspace:*",
-        "dash-tsconfig": "workspace:*",
-        "typescript": "latest"
-    }
+	"name": "kt-cashcount",
+	"version": "1.0.2",
+	"main": "dist/index.js",
+	"type": "module",
+	"scripts": {
+		"lint": "eslint --ext .ts,.tsx .",
+		"format": "pnpm prettier --write .",
+		"typecheck": "tsc --noEmit",
+		"build": "tsup"
+	},
+	"dependencies": {
+		"@emotion/react": "latest",
+		"@emotion/styled": "latest",
+		"@mui/icons-material": "^7.3.10",
+		"@mui/material": "^7.3.10",
+		"dash-admin": "*",
+		"dash-auto-admin": "*",
+		"dash-axios-hook": "*",
+		"dash-constants": "*",
+		"dash-dialog": "*",
+		"dash-utils": "*",
+		"kt-utils": "workspace:*",
+		"kt-ecommerce": "workspace:*",
+		"react": "latest",
+		"react-admin": "5.14.6",
+		"react-dom": "latest",
+		"react-hook-form": "^7.54.0"
+	},
+	"devDependencies": {
+		"@types/react": "latest",
+		"@types/react-dom": "latest",
+		"dash-eslint": "*",
+		"dash-prettier": "*",
+		"dash-tsconfig": "*",
+		"typescript": "latest"
+	},
+	"module": "dist/index.js",
+	"types": "./src/index.ts",
+	"exports": {
+		".": "./dist/index.js",
+		"./components": "./dist/components/index.js",
+		"./src/components": "./dist/components/index.js",
+		"./components/Export": "./dist/components/Export/index.js",
+		"./src/components/Export": "./dist/components/Export/index.js",
+		"./components/hooks": "./dist/components/hooks/index.js",
+		"./src/components/hooks": "./dist/components/hooks/index.js",
+		"./resources": "./dist/resources/index.js",
+		"./src/resources": "./dist/resources/index.js",
+		"./schemas": "./dist/schemas/index.js",
+		"./src/schemas": "./dist/schemas/index.js",
+		"./*": "./dist/*.js",
+		"./src/*": "./dist/*.js"
+	},
+	"publishConfig": {
+		"access": "public",
+		"registry": "http://localhost:4873"
+	},
+	"files": [
+		"dist",
+		"src"
+	],
+	"typesVersions": {
+		"*": {
+			"src/*": [
+				"src/*",
+				"src/*/index"
+			],
+			"*": [
+				"src/*",
+				"src/*/index"
+			]
+		}
+	}
 }

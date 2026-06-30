@@ -7,15 +7,20 @@ const path = require('path');
 
 function usage() {
   console.log(`Usage:
-  node scripts/cloudflare-tunnel-route.js <app-path>
+  node scripts/cloudflare-tunnel-route.js <app-path> [--domain <domain>]
 
 Example:
   node scripts/cloudflare-tunnel-route.js apps/kitchntabs-web
+  DOMAIN=fablabos node scripts/cloudflare-tunnel-route.js apps/kitchntabs-web
 
 Behavior:
-  - Reads VITE_APP_FRONTEND_URL and VITE_DEV_PORT from <app-path>/.env.kitchntabs.tunnel.
+  - Detects the domain (kitchntabs, fablabos, or reddorada) from:
+    1. DOMAIN environment variable, OR
+    2. First matching .env.<domain>.tunnel file in <app-path>, OR
+    3. Default: kitchntabs
+  - Reads VITE_APP_FRONTEND_URL and VITE_DEV_PORT from <app-path>/.env.<domain>.tunnel.
   - Reads CF_API_TOKEN / CF_ACCOUNT_ID / CF_TUNNEL_NAME / CF_ZONE_NAME / CF_ZONE_ID from the
-    sibling ../dash-backend-docker/.env (no Cloudflare secrets are duplicated into this repo).
+    sibling ../dash-backend-docker/.env.<domain> (no Cloudflare secrets are duplicated).
   - Looks up the existing named tunnel (created by dash-backend-docker's tunnel script) and
     merges a single ingress rule for this app's hostname -> http://localhost:<port>, leaving
     every other hostname route (api-dev, ws-dev, other apps) untouched.
@@ -179,9 +184,31 @@ async function main() {
   }
 
   const repoRoot = path.join(__dirname, '..');
-  const appEnvFile = path.join(repoRoot, appPath, '.env.kitchntabs.tunnel');
+
+  // Try to extract the domain from a DOMAIN env var, or infer from VITE_APP_FRONTEND_URL in the env file
+  let domain = process.env.DOMAIN;
+
+  // If no DOMAIN env var, try common patterns from the app name or look for .env.<domain>.tunnel files
+  if (!domain) {
+    // Try to match .env.<domain>.tunnel files in the app directory
+    const appDir = path.join(repoRoot, appPath);
+    if (fs.existsSync(appDir)) {
+      const files = fs.readdirSync(appDir);
+      const tunnelFiles = files.filter(f => f.match(/^\.env\.(.+)\.tunnel$/));
+      if (tunnelFiles.length > 0) {
+        const match = tunnelFiles[0].match(/^\.env\.(.+)\.tunnel$/);
+        if (match) domain = match[1];
+      }
+    }
+  }
+
+  // Fallback to 'kitchntabs' if still not found
+  if (!domain) domain = 'kitchntabs';
+
+  const appEnvFile = path.join(repoRoot, appPath, `.env.${domain}.tunnel`);
   if (!fs.existsSync(appEnvFile)) {
     console.error(`Tunnel env file not found: ${appEnvFile}`);
+    console.error(`Set DOMAIN env var or ensure .env.${domain}.tunnel exists in ${appPath}`);
     process.exit(1);
   }
 
@@ -197,11 +224,12 @@ async function main() {
   const hostname = frontendUrl.replace(/^https?:\/\//, '').replace(/\/+$/, '');
   const service = `http://localhost:${devPort}`;
 
-  const backendEnvFile = path.join(repoRoot, '..', 'dash-backend-docker', '.env');
+  const backendEnvFile = path.join(repoRoot, '..', 'dash-backend-docker', `.env.${domain}`);
   if (!fs.existsSync(backendEnvFile)) {
     console.error(
       `Cloudflare credentials not found — expected ${backendEnvFile} (sibling dash-backend-docker repo).`
     );
+    console.error(`Domain detected as: ${domain}`);
     process.exit(1);
   }
 
@@ -214,6 +242,8 @@ async function main() {
 
   if (!apiToken || !accountId) {
     console.error(`CF_API_TOKEN / CF_ACCOUNT_ID not set in ${backendEnvFile}.`);
+    console.error(`Domain: ${domain}`);
+    console.error(`To set up Cloudflare tunnel, configure .env.${domain} in dash-backend-docker/`);
     process.exit(1);
   }
 

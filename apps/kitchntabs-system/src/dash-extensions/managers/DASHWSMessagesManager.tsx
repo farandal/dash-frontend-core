@@ -2,15 +2,15 @@ import { processCustomNotification } from '../../components/Notifications/Custom
 import { useContext, useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { Notification } from 'react-admin';
-import type { ILaravelEchoManager } from 'dash-admin/src/contexts/com/LaravelEchoMgr';
-import { NotificationComponent } from 'dash-admin/src/contexts/com/components/NotificationRenderer';
-import { NotificationWrapper } from 'dash-admin/src/contexts/com/components/NotificationsWidget';
-import useLaravelEcho from 'dash-admin/src/contexts/com/useLaravelEcho';
-import { getCookie } from 'dash-admin/src/utils/cookies';
-import { useAuthContext } from 'dash-admin/src/contexts/auth/AuthContext';
-import type { IAuthContext } from 'dash-admin/src/contexts/auth';
+import type { ILaravelEchoManager } from 'dash-admin/contexts/com/LaravelEchoMgr';
+import { NotificationComponent } from 'dash-admin/contexts/com/components/NotificationRenderer';
+import { NotificationWrapper } from 'dash-admin/contexts/com/components/NotificationsWidget';
+import useLaravelEcho from 'dash-admin/contexts/com/useLaravelEcho';
+import { getCookie } from 'dash-admin/utils/cookies';
+import { useAuthContext } from 'dash-admin/contexts/auth/AuthContext';
+import type { IAuthContext } from 'dash-admin/contexts/auth';
 import { set } from 'react-hook-form';
-import { IDashNotificationPayloadBase } from 'dash-admin/src/interfaces/communication/INotification';
+import { IDashNotificationPayloadBase } from 'dash-admin/interfaces/communication/INotification';
 
 
 export const CustomReactAdminNotification = () => {

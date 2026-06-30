@@ -26,10 +26,10 @@ import {
 import { useAxios } from 'dash-axios-hook';
 import { Clear } from "@mui/icons-material";
 import DASHModal from "dash-modal";
-import LaravelEchoContext from 'dash-admin/src/contexts/com/LaravelEchoContext';
-import type { ILaravelEchoContext } from 'dash-admin/src/contexts/com/LaravelEchoContext';
-import type { IDashNotificationPayloadBase as INotificationPayload } from 'dash-admin/src/interfaces/communication/INotification';
-import { useAuthContext } from 'dash-admin/src/contexts/auth/AuthContext';
+import LaravelEchoContext from 'dash-admin/contexts/com/LaravelEchoContext';
+import type { ILaravelEchoContext } from 'dash-admin/contexts/com/LaravelEchoContext';
+import type { IDashNotificationPayloadBase as INotificationPayload } from 'dash-admin/interfaces/communication/INotification';
+import { useAuthContext } from 'dash-admin/contexts/auth/AuthContext';
 import { ITabStatusChange } from "./interfaces/ITabNotificationFormat";
 import QueueStatusIndicator from './Queue/QueueStatusIndicator';
 import { IOperationQueue, OperationQueue } from "./Queue/OperationQueue";

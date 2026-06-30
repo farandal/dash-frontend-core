@@ -17,10 +17,10 @@ import { ResourceManifest } from 'dash-app-common';
 
 export const KitchnTabsWebTenantPrivateResources: ResourceManifest = {
 
-    marketplaceResource: () => import('kt-ecommerce/src/resources/marketplaceResource'),
-    pointOfSaleResource: () => import('kt-ecommerce/src/resources/pointOfSaleResource'),
-    metadataFormatsResource: () => import('kt-ecommerce/src/resources/metadataFormatsResource'),
-    campaignResource: () => import('kt-ecommerce/src/resources/campaignResource'),
+    marketplaceResource: () => import('kt-ecommerce/resources/marketplaceResource'),
+    pointOfSaleResource: () => import('kt-ecommerce/resources/pointOfSaleResource'),
+    metadataFormatsResource: () => import('kt-ecommerce/resources/metadataFormatsResource'),
+    campaignResource: () => import('kt-ecommerce/resources/campaignResource'),
  
 };
 

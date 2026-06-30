@@ -4,7 +4,7 @@ import { useRecordContext, useNotify, useTranslate, useLocale } from "react-admi
 import { useAxios } from 'dash-axios-hook';
 import { useDialog } from "dash-dialog";
 // IMPORTANT: Import from 'dash-admin' package to ensure same context instance as main app
-import LaravelEchoContext, { ILaravelEchoContext } from 'dash-admin/src/contexts/com/LaravelEchoContext';
+import LaravelEchoContext, { ILaravelEchoContext } from 'dash-admin/contexts/com/LaravelEchoContext';
 import {
     Card,
     CardContent,

@@ -11,7 +11,7 @@ import Button from "@mui/material/Button";
 import CircularProgress from "@mui/material/CircularProgress";
 import React, { useEffect, useState } from "react";
 import { useRefresh, WithListContext, useTranslate, useNotify } from "react-admin";
-import DashResourceButton from "dash-auto-admin/src/toolbar/buttons/DashResourceButton";
+import DashResourceButton from "dash-auto-admin/toolbar/buttons/DashResourceButton";
 import { toast } from 'react-toastify';
 import { useAxios } from 'dash-axios-hook';
 import { AuthPersistenceService } from 'dash-auth';

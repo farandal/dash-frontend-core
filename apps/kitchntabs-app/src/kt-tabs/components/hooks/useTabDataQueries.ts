@@ -13,9 +13,9 @@
 import { useGetList } from 'react-admin';
 import { useMemo, useEffect } from 'react';
 // Assuming Product interface is available here or we use any for now if import fails
-// In TabManagerContext it is: import { Product } from 'kt-ecommerce/src/interfaces';
+// In TabManagerContext it is: import { Product } from 'kt-ecommerce/interfaces';
 // We will try to use the same import.
-import { Product } from 'kt-ecommerce/src/interfaces';
+import { Product } from 'kt-ecommerce/interfaces';
 
 // =====================================
 // CACHE CONFIGURATION

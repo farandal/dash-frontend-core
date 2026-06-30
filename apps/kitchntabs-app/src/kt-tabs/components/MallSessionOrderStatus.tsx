@@ -5,7 +5,7 @@ import { useFieldArray, useFormContext, useWatch } from "react-hook-form";
 import MallSessionOrderProductsNotifications from './MallSessionOrderProductsNotifications';
 import MallSessionOrderProgress from './MallSessionOrderProgress';
 import { useAxios } from 'dash-axios-hook';
-import LaravelEchoContext, { ILaravelEchoContext } from 'dash-admin/src/contexts/com/LaravelEchoContext';
+import LaravelEchoContext, { ILaravelEchoContext } from 'dash-admin/contexts/com/LaravelEchoContext';
 import { useRecordContext, useTranslate } from 'react-admin';
 import { ITab } from '../tab2/types';
 import { dashStorage } from 'dash-utils';

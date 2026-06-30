@@ -2,7 +2,7 @@ import React from 'react';
 import { ButtonGroup, IconButton } from '@mui/material';
 import { Download, Payment, Print } from '@mui/icons-material';
 import { useTranslate } from 'react-admin';
-import DashResourceButton from 'dash-auto-admin/src/toolbar/buttons/DashResourceButton';
+import DashResourceButton from 'dash-auto-admin/toolbar/buttons/DashResourceButton';
 import { ITab } from '../components/interfaces/ITab';
 
 
