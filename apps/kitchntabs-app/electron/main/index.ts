@@ -510,7 +510,7 @@ const speakMessage = (message: string, lang?: string) => {
     if (BUILD_ENV === "prod") {
       // Production: use compiled speech service binary
       speechCmd = process.platform === 'win32' ? `"${SPEECH_SERVICE_PATH_PROD}"` : SPEECH_SERVICE_PATH_PROD;
-      speechArgs = [message, speechLang];
+      speechArgs = process.platform === 'win32' ? [`"${message}"`, speechLang] : [message, speechLang];
 
       // Verify binary exists
       if (!fs.existsSync(SPEECH_SERVICE_PATH_PROD)) {
@@ -1001,11 +1001,13 @@ async function createWindow() {
       log.info('SPAWN_PYTHON_SERVICE is enabled, attempting to auto-start Python service');
       try {
         // Get auth token from renderer process
-        const authToken = await win.webContents.executeJavaScript(
+        let authToken = await win.webContents.executeJavaScript(
           `window.localStorage.getItem('auth_token') || window.localStorage.getItem('token') || ''`
         );
 
         if (authToken) {
+          // Strip any surrounding quotes from the token (localStorage might have quoted it)
+          authToken = authToken.replace(/^"|"$/g, '');
           log.info('Auth token found, starting Python service');
           await startPythonProcess(authToken, 'tenant.system');
         } else {
