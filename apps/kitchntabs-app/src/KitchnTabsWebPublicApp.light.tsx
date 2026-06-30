@@ -18,7 +18,7 @@ import {
     GlobalSmallLoader,
     DashThemeProviderLight,
     createSimpleI18nProvider,
-} from '@dashadmin/dash-boilerplate';
+} from 'dash-boilerplate';
 
 // Use dash-admin's I18nBridgeProvider as the single source of truth for i18n
 // This works for both public and private apps since AppMaterialMenu uses this context
@@ -31,7 +31,7 @@ import ThemeComponent from './components/theme/ThemeComponent';
 // Import translations
 import customEnglish from './i18n/en';
 import customSpanish from './i18n/es';
-import { defaultComponentOverrides } from '@dashadmin/dash-styles';
+import { defaultComponentOverrides } from 'dash-styles';
 
 interface KitchnTabsPublicAppProps {}
 

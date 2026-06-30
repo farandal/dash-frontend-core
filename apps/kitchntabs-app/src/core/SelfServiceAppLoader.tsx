@@ -1,5 +1,5 @@
 import React, { lazy, Suspense, useMemo } from 'react';
-import { GlobalSmallLoader } from '@dashadmin/dash-boilerplate';
+import { GlobalSmallLoader } from 'dash-boilerplate';
 import DASHSelfServiceWSMessagesManager from '../dash-extensions/managers/DASHSelfServiceWSMessagesManager';
 import { DashThemeProviderLight } from '../dash-extensions/components/DashThemeProviderLight';
 

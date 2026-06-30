@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 import { setPanelSettings } from 'dash-admin-state/redux/actions/Common';
 import { setResources as setReduxResources } from 'dash-admin-state/redux/actions/Resources';
 import { loadResourcesFromManifest, clearResourceCache } from 'dash-app-common/components/DashResourceLoader';
-import { GlobalSmallLoader } from '@dashadmin/dash-boilerplate';
+import { GlobalSmallLoader } from 'dash-boilerplate';
 import Dashboard from './components/Dashboard';
 import { dashStorage } from 'dash-utils';
 import type { TenantSwitchEventDetail } from './components/tenancy/TenantSwitcher';
