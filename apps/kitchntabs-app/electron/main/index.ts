@@ -671,8 +671,8 @@ const startPythonProcess = async (t: string, c: string) => {
       args = [
         token,
         channel,
-        PYTHON_SERVICE_CONFIG_PATH_PROD,
-        logFile
+        `"${PYTHON_SERVICE_CONFIG_PATH_PROD}"`,
+        `"${logFile}"`
       ];
 
       log.info(`Python service command: ${pythonCmd}`);
@@ -699,8 +699,8 @@ const startPythonProcess = async (t: string, c: string) => {
         scriptPath,
         token,
         channel,
-        configFile,
-        logFile
+        `"${configFile}"`,
+        `"${logFile}"`
      ];
     
      log.info(`Python dev command: ${pythonCmd}`);
@@ -1269,13 +1269,13 @@ ipcMain.handle('ipc-print', async (_event, url: string) => {
       servicePath = PRINT_SERVICE_PATH_PROD_IPC;
       serviceCmd = process.platform === 'win32' ? `"${servicePath}"` : servicePath;
       // Args: print_service <url_or_test> <config> <log>
-      serviceArgs = [printArg, configFile, logFile];
+      serviceArgs = [printArg, `"${configFile}"`, `"${logFile}"`];
     } else {
       // Development: use Python interpreter
       serviceCmd = process.platform === 'darwin' ? DEV_PYTHON_ENV : path.normalize(DEV_PYTHON_ENV);
       servicePath = PRINT_SERVICE_PATH_DEV_IPC;
       // Args: python print_service.py <url_or_test> <config> <log>
-      serviceArgs = [servicePath, printArg, configFile, logFile];
+      serviceArgs = [servicePath, printArg, `"${configFile}"`, `"${logFile}"`];
     }
     
     // Check if service exists
