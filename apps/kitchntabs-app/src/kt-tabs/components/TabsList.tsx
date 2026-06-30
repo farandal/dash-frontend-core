@@ -17,6 +17,7 @@ import {
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import React, { useContext, useEffect, useState, useCallback, useMemo } from "react";
+import DashQueryClientContext from 'dash-admin/contexts/DashQueryClientContext';
 import {
     useDataProvider,
     useRefresh,
@@ -68,7 +69,13 @@ const KitchenTabsList: React.FC<TabsListProps> = ({ resourceConfig, scrollMethod
     // Get auth context with system values
     const { user, auth } = useAuthContext();
     const { events, lastEvent } = useContext<ILaravelEchoContext>(LaravelEchoContext);
-    
+
+    // Check if QueryClient is available
+    const queryClientContext = useContext(DashQueryClientContext);
+    if (!queryClientContext?.queryClient) {
+        return null;
+    }
+
     // State to store our own list data
     const [listData, setListData] = useState<any[]>([]);
     

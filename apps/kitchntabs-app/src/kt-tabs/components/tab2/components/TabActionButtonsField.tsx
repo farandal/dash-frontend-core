@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, useContext } from 'react';
 import { Box, Typography, TextField, FormControl, InputLabel, Select, MenuItem, InputAdornment, IconButton, Alert, Chip, Radio, Button } from '@mui/material';
 import { useRecordContext, useRefresh, useTranslate } from 'react-admin';
 import { IDashAutoAdminCustomFieldComponent } from 'dash-auto-admin';
@@ -8,6 +8,7 @@ import TabActionButtons from '../../Tab/TabActionsButtons';
 import { calculateServiceFee } from '../utils';
 import { ITab } from '../../interfaces/ITab';
 import useTabActions from '../hooks/useTabActions';
+import DashQueryClientContext from 'dash-admin/contexts/DashQueryClientContext';
 
 const TabActionButtonsFieldBase: React.FC<IDashAutoAdminCustomFieldComponent & {
     record?: ITab;
@@ -34,6 +35,12 @@ const TabActionButtonsFieldBase: React.FC<IDashAutoAdminCustomFieldComponent & {
     size = 'large'
 }) => {
     const translate = useTranslate();
+
+    // Check if QueryClient is available
+    const queryClientContext = useContext(DashQueryClientContext);
+    if (!queryClientContext?.queryClient) {
+        return null;
+    }
 
         // Add state for close dialog
     const [closeDialogOpen, setCloseDialogOpen] = useState(false);

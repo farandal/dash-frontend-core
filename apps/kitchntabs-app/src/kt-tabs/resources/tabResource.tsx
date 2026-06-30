@@ -209,10 +209,6 @@ const resources: IDashAutoAdminResourceConfig[] = [
            )
        },
        paramsFormatter(params) {
-
-           // cleanup payload:
-            debugger;
-
            return params;
        },
     },

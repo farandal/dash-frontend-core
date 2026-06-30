@@ -63,13 +63,25 @@ const CustomReactAdminNotification = (props?: any) => {
     return <div {...props} />;
 };
 
-// Create persister for localStorage
-export const localStoragePersister = createAsyncStoragePersister({
-    storage: window.localStorage,
-    key: 'KITCHNTABS_QUERY_CACHE', // Unique key for your app
-    serialize: (data) => JSON.stringify(data),
-    deserialize: (data) => JSON.parse(data),
-});
+// Create persister for localStorage - moved to be created lazily inside component
+let localStoragePersister: any = null;
+
+const getLocalStoragePersister = () => {
+    if (!localStoragePersister) {
+        try {
+            localStoragePersister = createAsyncStoragePersister({
+                storage: window.localStorage,
+                key: 'KITCHNTABS_QUERY_CACHE', // Unique key for your app
+                serialize: (data) => JSON.stringify(data),
+                deserialize: (data) => JSON.parse(data),
+            });
+        } catch (error) {
+            console.warn('Failed to create localStorage persister, cache persistence will be disabled:', error);
+            return null;
+        }
+    }
+    return localStoragePersister;
+};
 
 
 const KitchnTabsWebPrivateApp: React.FC<KitchnTabsWebPrivateAppProps> = ({
@@ -415,7 +427,7 @@ const KitchnTabsWebPrivateApp: React.FC<KitchnTabsWebPrivateAppProps> = ({
                 //dashAutoAdminComponents={null}
                 dashAutoAdminComponents={dashAutoAdminComponents}
                 queryClient={customQueryClient}
-                queryPersister={localStoragePersister}
+                queryPersister={getLocalStoragePersister()}
                 CustomEchoProvider={customEchoProvider}
             >
             

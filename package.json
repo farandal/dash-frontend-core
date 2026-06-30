@@ -4,8 +4,8 @@
   "author": "Francisco Aranda <farandal@gmail.com>",
   "license": "MIT",
   "private": true,
-  "version": "1.3.15",
-  "main": "apps/kitchntabs/dist-electron/main/index.js",
+  "version": "1.3.26",
+  "main": "apps/kitchntabs-app/dist-electron/main/index.js",
   "scripts": {
     "new": "chmod +x ./new.sh && sh ./new.sh",
     "_CONFIG": "CONFIG, set build config variables by setting the CUSTOM_MODE (.env.{CUSTOM_MODE}), TARGET_TYPE ['mobile', 'desktop', 'web'] and PLATFORM ['android', 'ios', 'web', 'electron']",
@@ -61,6 +61,8 @@
     "dev:web:kitchntabs-app:local": "pnpm config:web:kitchntabs-app:local && pnpm dev-kt-app",
     "dev:web:kitchntabs-app:development": "pnpm config:web:kitchntabs-app:development && pnpm dev-kt-app",
     "dev:web:kitchntabs-app:tunnel": "pnpm config:web:kitchntabs-app:tunnel && pnpm tunnel:web:kitchntabs-app && pnpm dev-kt-app",
+    "dev:web:kitchntabs-app:production": "pnpm config:web:kitchntabs-app:production && pnpm dev-kt-app",
+    
     "dev:web:kitchntabs:local": "pnpm config:web:kitchntabs-app:local && pnpm dev-kt",
     "kt-mall:web:local": "pnpm config:web:kitchntabs-mall:local && pnpm dev-kt-mall",
     "kt-mall:web:development": "pnpm config:web:kitchntabs-mall:development && pnpm dev-kt-mall",
@@ -111,7 +113,7 @@
     "release:electron:kitchntabs-app:development:win": "pnpm config:electron:kitchntabs-app:development && node build-python-service.js && electron-icon-builder --input=./assets/logo-squared.png --output=./ && vite build -c electron.vite.config.mts && turbo build --filter=kitchntabs-app --no-cache && cross-env NODE_OPTIONS=--max-old-space-size=8096 node build-electron.js --config electron-builder.config.js",
     "release:electron:kitchntabs-app:production:win": "pnpm config:electron:kitchntabs-app:production && node build-python-service.js && electron-icon-builder --input=./assets/logo-squared.png --output=./ && vite build -c electron.vite.config.mts && turbo build --filter=kitchntabs-app --no-cache && cross-env NODE_OPTIONS=--max-old-space-size=8096 node build-electron.js --config electron-builder.config.js",
     "release:electron:kitchntabs:development:win": "cross-env MODE=development CUSTOM_MODE=kitchntabs.development TARGET_TYPE=desktop PLATFORM=electron APP_PATH=apps/kitchntabs NODE_OPTIONS=--max-old-space-size=4048 node build_config.js && node build-python-service.js && electron-icon-builder --input=./assets/logo-squared.png --output=./ && vite build -c electron.vite.config.mts && turbo build --filter=kitchntabs-app  --no-cache && cross-env NODE_OPTIONS=--max-old-space-size=8096 node build-electron.js --config electron-builder.config.js",
-    "release:electron:kitchntabs:production:win": "cross-env MODE=production CUSTOM_MODE=kitchntabs.production TARGET_TYPE=desktop PLATFORM=electron APP_PATH=apps/kitchntabs NODE_OPTIONS=--max-old-space-size=4048 node build_config.js && node build-python-service.js && electron-icon-builder --input=./assets/logo-squared.png --output=./ && vite build -c electron.vite.config.mts && turbo build --filter=kitchntabs-app  --no-cache && cross-env NODE_OPTIONS=--max-old-space-size=8096 node build-electron.js --config electron-builder.config.js",
+    "release:electron:kitchntabs:production:win": "cross-env MODE=production CUSTOM_MODE=kitchntabs.production TARGET_TYPE=desktop PLATFORM=electron APP_PATH=apps/kitchntabs-app NODE_OPTIONS=--max-old-space-size=4048 node build_config.js && node build-python-service.js && electron-icon-builder --input=./assets/logo-squared.png --output=./ && vite build -c electron.vite.config.mts && turbo build --filter=kitchntabs-app  --no-cache && cross-env NODE_OPTIONS=--max-old-space-size=8096 node build-electron.js --config electron-builder.config.js",
     "release:electron:kitchntabs:ngrok:web": "pnpm config:electron:kitchntabs:development && turbo build",
     "release:electron:kitchntabs:ngrok:app": "cross-env NODE_OPTIONS=--max-old-space-size=8096 node build-electron.js --config electron-builder.config.js",
     "release:electron:kitchntabs:debian": "pnpm config:electron:kitchntabs:production && node build-python-service.js && electron-icon-builder --input=./assets/logo-squared.png --output=./ && vite build -c electron.vite.config.mts && turbo build  --filter=kitchntabs-app  --no-cache && cross-env NODE_OPTIONS=--max-old-space-size=8096 node build-electron.js --config electron-builder.config.js --linux deb --armv7l --arm64",
