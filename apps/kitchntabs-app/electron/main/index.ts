@@ -669,10 +669,10 @@ const startPythonProcess = async (t: string, c: string) => {
       log.info(`✅ Python service binary found at: ${binaryPath}`);
       
       args = [
-        process.platform === 'win32' ? `"${token}"` : token,       
+        token,
         channel,
-        process.platform === 'win32' ? `"${PYTHON_SERVICE_CONFIG_PATH_PROD}"` : PYTHON_SERVICE_CONFIG_PATH_PROD,        
-        process.platform === 'win32' ? `"${logFile}"` : logFile     
+        PYTHON_SERVICE_CONFIG_PATH_PROD,
+        logFile
       ];
 
       log.info(`Python service command: ${pythonCmd}`);
@@ -697,10 +697,10 @@ const startPythonProcess = async (t: string, c: string) => {
 
       args = [
         scriptPath,
-        process.platform === 'win32' ? `"${token}"` : token,       
+        token,
         channel,
-        process.platform === 'win32' ? `"${configFile}"` : configFile,        
-        process.platform === 'win32' ? `"${logFile}"` : logFile     
+        configFile,
+        logFile
      ];
     
      log.info(`Python dev command: ${pythonCmd}`);
