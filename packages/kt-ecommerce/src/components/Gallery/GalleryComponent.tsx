@@ -14,7 +14,6 @@ import { IGalleryComponent } from "./Interfaces";
 import * as Icons from "@mui/icons-material";
 import { Loading, SearchInput } from "react-admin";
 import { useUpdate } from "react-admin";
-import { ListManager } from "react-18-beautiful-dnd-grid";
 
 
 import { List } from "react-admin";
@@ -210,12 +209,8 @@ export const GalleryComponent: React.FC<IGalleryComponent> = ({
             </Box>
             
             {galleryImages && <>
-                {/* @ts-ignore */}
-                <ListManager<typeof ImageListItem>
-                    items={galleryImages}
-                    direction="horizontal"
-                    maxItems={4}
-                    render={(item:IGalleryImage, index: number) => <ImageListItem
+                <Box sx={{ display: 'flex', overflowX: 'auto', gap: 1, pb: 1 }}>
+                    {galleryImages.map((item: IGalleryImage, index: number) => <ImageListItem
                             key={item.id.toString()}
                             style={{
                                  width: THUMB_SIZE[0],
@@ -269,9 +264,8 @@ export const GalleryComponent: React.FC<IGalleryComponent> = ({
                                 actionPosition="right"
                             />
                         </ImageListItem>
-                    }
-                    onDragEnd={onDragEnd}
-                />
+                    )}
+                </Box>
 
 
             </>

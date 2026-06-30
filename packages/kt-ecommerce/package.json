@@ -39,7 +39,6 @@
 		"mobile-drag-drop": "^3.0.0-rc.0",
 		"moment": "^2.30.1",
 		"react": "latest",
-		"react-18-beautiful-dnd-grid": "*",
 		"react-admin": "5.14.6",
 		"react-arborist": "^3.4.3",
 		"react-chartjs-2": "^5.3.1",

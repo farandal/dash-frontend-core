@@ -15,7 +15,7 @@ import {
   Chip
 } from "@mui/material";
 import * as Icons from "@mui/icons-material";
-import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd';
+import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
 import { IDashAutoAdminCustomFieldComponent } from "dash-auto-admin";
 import { FunctionField, Loading, useEditContext, useRecordContext, useShowContext } from "react-admin";
 

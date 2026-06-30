@@ -12,7 +12,6 @@ import { useController, useFormContext } from "react-hook-form";
 
 import { Loading, SearchInput, useEditContext } from "react-admin";
 import { useUpdate } from "react-admin";
-import { ListManager } from "react-18-beautiful-dnd-grid/src"
 
 
 import { List } from "react-admin";
