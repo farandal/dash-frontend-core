@@ -1,14 +1,14 @@
-import React, { useCallback, useState, useContext } from 'react';
+import React, { useCallback, useState, useEffect, Suspense } from 'react';
 import { Box, Typography, TextField, FormControl, InputLabel, Select, MenuItem, InputAdornment, IconButton, Alert, Chip, Radio, Button } from '@mui/material';
 import { useRecordContext, useRefresh, useTranslate } from 'react-admin';
 import { IDashAutoAdminCustomFieldComponent } from 'dash-auto-admin';
 import { Clear } from '@mui/icons-material';
+import { useQueryClient } from '@tanstack/react-query';
 import DASHModal from 'dash-modal';
 import TabActionButtons from '../../Tab/TabActionsButtons';
 import { calculateServiceFee } from '../utils';
 import { ITab } from '../../interfaces/ITab';
 import useTabActions from '../hooks/useTabActions';
-import DashQueryClientContext from 'dash-admin/contexts/DashQueryClientContext';
 
 const TabActionButtonsFieldBase: React.FC<IDashAutoAdminCustomFieldComponent & {
     record?: ITab;
@@ -35,44 +35,90 @@ const TabActionButtonsFieldBase: React.FC<IDashAutoAdminCustomFieldComponent & {
     size = 'large'
 }) => {
     const translate = useTranslate();
+    const [tabActionsError, setTabActionsError] = useState<string | null>(null);
 
-    // Check if QueryClient is available
-    const queryClientContext = useContext(DashQueryClientContext);
-    if (!queryClientContext?.queryClient) {
-        return null;
-    }
-
-        // Add state for close dialog
+    // Dialog state
     const [closeDialogOpen, setCloseDialogOpen] = useState(false);
     const [closeTabForDialog, setCloseTabForDialog] = useState<ITab | null>(null);
-
-    // Dialog state - only for payment dialog now
     const [selectedTab, setSelectedTab] = useState<ITab | null>(null);
     const [paymentDialogOpen, setPaymentDialogOpen] = useState(false);
     const [closingStatus, setClosingStatus] = useState<string>("CLOSED");
-
-    // Payment method state for payment dialog
     const [paymentMethod, setPaymentMethod] = useState<string>("");
     const [serviceFeeValue, setServiceFeeValue] = useState(0);
-
     const [actionLoading, setActionLoading] = useState(false);
 
-    // Use the tab actions hook
+    // Check if QueryClient is available
+    let queryClientAvailable = false;
+    try {
+        console.log('[TabActionButtonsField] Checking QueryClient availability...');
+        useQueryClient();
+        queryClientAvailable = true;
+        console.log('[TabActionButtonsField] ✅ QueryClient is available');
+    } catch (err) {
+        const errorMsg = err instanceof Error ? err.message : String(err);
+        console.error('[TabActionButtonsField] ❌ QueryClient not available:', errorMsg);
+        queryClientAvailable = false;
+        if (!tabActionsError) {
+            setTabActionsError(errorMsg);
+        }
+    }
+
+    // Try to initialize useTabActions only if QueryClient is available
+    let tabActions: any = null;
+    if (queryClientAvailable) {
+        try {
+            console.log('[TabActionButtonsField] Initializing useTabActions...');
+            tabActions = useTabActions(onTabClosed);
+            console.log('[TabActionButtonsField] ✅ useTabActions initialized successfully');
+            // Clear any previous errors
+            if (tabActionsError) {
+                setTabActionsError(null);
+            }
+        } catch (err) {
+            const errorMsg = err instanceof Error ? err.message : String(err);
+            console.error('[TabActionButtonsField] ❌ Failed to initialize useTabActions:', errorMsg, err);
+            if (!tabActionsError) {
+                setTabActionsError(errorMsg);
+            }
+        }
+    } else {
+        console.log('[TabActionButtonsField] QueryClient not available, using fallback');
+    }
+
+    // Provide fallback if initialization failed
+    if (!tabActions) {
+        tabActions = {
+            paymentMethods: [],
+            loadingPaymentMethods: false,
+            paymentMethodsError: tabActionsError || 'QueryClient not available',
+            availableClosingStatuses: [],
+            defaultServiceFeePercentage: 0,
+            getDefaultPaymentMethod: () => null,
+            getPaymentMethodByValue: () => null,
+            isPaymentMethodDeferred: () => false,
+            downloadTab: async () => {},
+            printTab: async () => {},
+            closeTab: async () => {},
+            updatePayment: async () => {},
+            closeTabWithStatus: async () => {},
+        };
+    }
+
     const {
-        paymentMethods,
-        loadingPaymentMethods,
-        paymentMethodsError,
-        availableClosingStatuses,
-        defaultServiceFeePercentage,
-        getDefaultPaymentMethod,
-        getPaymentMethodByValue,
-        isPaymentMethodDeferred,
-        downloadTab,
-        printTab,
-        closeTab, // Simple close function
-        updatePayment,
-        closeTabWithStatus
-    } = useTabActions(onTabClosed);
+        paymentMethods = [],
+        loadingPaymentMethods = false,
+        paymentMethodsError = null,
+        availableClosingStatuses = [],
+        defaultServiceFeePercentage = 0,
+        getDefaultPaymentMethod = () => null,
+        getPaymentMethodByValue = () => null,
+        isPaymentMethodDeferred = () => false,
+        downloadTab = async () => {},
+        printTab = async () => {},
+        closeTab = async () => {},
+        updatePayment = async () => {},
+        closeTabWithStatus = async () => {},
+    } = tabActions || {};
 
     // Simple close handler - just closes the tab
     /*const handleClose = useCallback((tab: ITab) => {
@@ -179,6 +225,7 @@ const TabActionButtonsFieldBase: React.FC<IDashAutoAdminCustomFieldComponent & {
     };
 
     if (!record) {
+        console.log('[TabActionButtonsField] No record provided, returning null');
         return null;
     }
 
@@ -197,14 +244,19 @@ const TabActionButtonsFieldBase: React.FC<IDashAutoAdminCustomFieldComponent & {
 
      return (
         <>
+            {tabActionsError && (
+                <Alert severity="warning" sx={{ mb: 2 }}>
+                    Tab actions temporarily unavailable: {tabActionsError}
+                </Alert>
+            )}
             <Box sx={{ display: 'flex', gap: 1}}>
                 <TabActionButtons
                     tab={record}
                     resourceConfig={resourceConfig}
-                    onPrint={showPrint ? handlePrintWrapper : undefined}
-                    onDownload={showDownload ? handleDownloadWrapper : undefined}
-                    onCancel={showCloseButton ? (tab: ITab) => handleCancel(tab) : undefined}
-                    onPayment={showPaymentButton ? (tab: ITab) => handleOpenPaymentDialog(tab) : undefined}
+                    onPrint={showPrint && !tabActionsError ? handlePrintWrapper : undefined}
+                    onDownload={showDownload && !tabActionsError ? handleDownloadWrapper : undefined}
+                    onCancel={showCloseButton && !tabActionsError ? (tab: ITab) => handleCancel(tab) : undefined}
+                    onPayment={showPaymentButton && !tabActionsError ? (tab: ITab) => handleOpenPaymentDialog(tab) : undefined}
                     size={size}
                     showView={showView}
                     showEdit={showEdit}
@@ -213,8 +265,8 @@ const TabActionButtonsFieldBase: React.FC<IDashAutoAdminCustomFieldComponent & {
                     showPayment={showPaymentButton}
                     showClose={showCloseButton}
                     showCancel={showCloseButton}
-                    loading={actionLoading}
-                    disabled={actionLoading}
+                    loading={actionLoading || !!tabActionsError}
+                    disabled={actionLoading || !!tabActionsError}
                 />
             </Box>
 

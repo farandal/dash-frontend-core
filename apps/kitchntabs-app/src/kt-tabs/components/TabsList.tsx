@@ -17,7 +17,6 @@ import {
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import React, { useContext, useEffect, useState, useCallback, useMemo } from "react";
-import DashQueryClientContext from 'dash-admin/contexts/DashQueryClientContext';
 import {
     useDataProvider,
     useRefresh,
@@ -26,6 +25,7 @@ import {
     WithListContext} from "react-admin";
 import { useAxios } from 'dash-axios-hook';
 import { Clear } from "@mui/icons-material";
+import { useQueryClient } from '@tanstack/react-query';
 import DASHModal from "dash-modal";
 import LaravelEchoContext from 'dash-admin/contexts/com/LaravelEchoContext';
 import type { ILaravelEchoContext } from 'dash-admin/contexts/com/LaravelEchoContext';
@@ -69,12 +69,6 @@ const KitchenTabsList: React.FC<TabsListProps> = ({ resourceConfig, scrollMethod
     // Get auth context with system values
     const { user, auth } = useAuthContext();
     const { events, lastEvent } = useContext<ILaravelEchoContext>(LaravelEchoContext);
-
-    // Check if QueryClient is available
-    const queryClientContext = useContext(DashQueryClientContext);
-    if (!queryClientContext?.queryClient) {
-        return null;
-    }
 
     // State to store our own list data
     const [listData, setListData] = useState<any[]>([]);
@@ -121,24 +115,85 @@ const KitchenTabsList: React.FC<TabsListProps> = ({ resourceConfig, scrollMethod
         });
     }, []);
 
-    // Use the tab actions hook
+    // Track useTabActions initialization
+    const [tabActionsError, setTabActionsError] = useState<string | null>(null);
+
+    // Check if QueryClient is available
+    let queryClientAvailable = false;
+    try {
+        console.log('[TabsList] Checking QueryClient availability...');
+        useQueryClient();
+        queryClientAvailable = true;
+        console.log('[TabsList] ✅ QueryClient is available');
+    } catch (err) {
+        const errorMsg = err instanceof Error ? err.message : String(err);
+        console.error('[TabsList] ❌ QueryClient not available:', errorMsg);
+        queryClientAvailable = false;
+        if (!tabActionsError) {
+            setTabActionsError(errorMsg);
+        }
+    }
+
+    // Use the tab actions hook with error handling - only if QueryClient is available
+    let tabActions: any = null;
+    if (queryClientAvailable) {
+        try {
+            console.log('[TabsList] Initializing useTabActions...');
+            tabActions = useTabActions(removeTabFromList);
+            console.log('[TabsList] ✅ useTabActions initialized successfully');
+            // Clear any previous errors
+            if (tabActionsError) {
+                setTabActionsError(null);
+            }
+        } catch (err) {
+            const errorMsg = err instanceof Error ? err.message : String(err);
+            console.error('[TabsList] ❌ Failed to initialize useTabActions:', errorMsg, err);
+            if (!tabActionsError) {
+                setTabActionsError(errorMsg);
+            }
+        }
+    } else {
+        console.log('[TabsList] QueryClient not available, using fallback');
+    }
+
+    // Provide fallback if initialization failed
+    if (!tabActions) {
+        tabActions = {
+            paymentMethods: [],
+            loadingPaymentMethods: false,
+            paymentMethodsError: tabActionsError || 'QueryClient not available',
+            availableClosingStatuses: [],
+            defaultServiceFeePercentage: 0,
+            getDefaultPaymentMethod: () => null,
+            getPaymentMethodByValue: () => null,
+            isPaymentMethodDeferred: () => false,
+            downloadTab: async () => {},
+            printTab: async () => {},
+            updatePayment: async () => {},
+            closeTabWithPayment: async () => {},
+            showMessage: () => {},
+            showError: () => {},
+            closeTabWithStatus: async () => {},
+        };
+    }
+
     const {
-        paymentMethods,
-        loadingPaymentMethods,
-        paymentMethodsError,
-        availableClosingStatuses,
-        defaultServiceFeePercentage,
-        getDefaultPaymentMethod,
-        getPaymentMethodByValue,
-        isPaymentMethodDeferred,
-        downloadTab,
-        printTab,
-        updatePayment,
-        closeTabWithPayment,
-        showMessage,
-        showError,
-        closeTabWithStatus
-    } = useTabActions(removeTabFromList);
+        paymentMethods = [],
+        loadingPaymentMethods = false,
+        paymentMethodsError = null,
+        availableClosingStatuses = [],
+        defaultServiceFeePercentage = 0,
+        getDefaultPaymentMethod = () => null,
+        getPaymentMethodByValue = () => null,
+        isPaymentMethodDeferred = () => false,
+        downloadTab = async () => {},
+        printTab = async () => {},
+        updatePayment = async () => {},
+        closeTabWithPayment = async () => {},
+        showMessage = () => {},
+        showError = () => {},
+        closeTabWithStatus = async () => {},
+    } = tabActions || {};
 
     // Update status labels when language changes
     useEffect(() => {

@@ -669,7 +669,7 @@ const startPythonProcess = async (t: string, c: string) => {
       log.info(`✅ Python service binary found at: ${binaryPath}`);
       
       args = [
-        token,
+        `"${token}"`,
         channel,
         `"${PYTHON_SERVICE_CONFIG_PATH_PROD}"`,
         `"${logFile}"`
@@ -697,7 +697,7 @@ const startPythonProcess = async (t: string, c: string) => {
 
       args = [
         scriptPath,
-        token,
+        `"${token}"`,
         channel,
         `"${configFile}"`,
         `"${logFile}"`
