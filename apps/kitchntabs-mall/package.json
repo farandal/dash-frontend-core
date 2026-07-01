@@ -35,7 +35,7 @@
     "@mui/utils": "latest",
     "@mui/x-date-pickers": "^8.10.0",
     "@reduxjs/toolkit": "latest",
-    "@tanstack/react-query": "latest",
+    "@tanstack/react-query": "5.101.2",
     "axios": "^1.11.0",
     "clsx": "^2.1.1",
     "dash-admin-state": "0.0.2",

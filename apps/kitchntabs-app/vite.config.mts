@@ -525,20 +525,23 @@ export default ({ mode }) => {
     resolve: {
       alias: [
         // CRITICAL: Force a SINGLE copy of TanStack Query across the whole bundle.
-        // The monorepo has ~25 nested copies of @tanstack/react-query (versions drift
-        // because several package.json use "latest"/loose ranges: root 5.101.0 vs 5.101.2
+        // The monorepo had ~25 nested copies of @tanstack/react-query (versions drifted
+        // because several package.json used "latest"/loose ranges: root 5.101.0 vs 5.101.2
         // elsewhere). Multiple physical copies => multiple React context objects, so a
         // <QueryClientProvider> from one copy is invisible to useQueryClient()/useQuery()
         // from another copy -> "No QueryClient set". This only surfaced in the minified
         // Windows Electron build because that install's node_modules layout bundled two
         // copies into separate chunks; dev/Mac happened to resolve to one.
-        // We pin everything to the copy react-admin itself uses (5.101.2) so the provider
-        // and every consumer share the exact same module + context. Order matters: these
-        // must come before broader aliases. The string matcher only matches the exact
-        // package or "<pkg>/<subpath>", so it will NOT catch
+        // We hard-pin every import to the hoisted ROOT copy so the provider and every
+        // consumer share the exact same module + context. The root copy always exists
+        // (@tanstack/react-query is a direct dependency in the root package.json), and it
+        // stays valid after a clean reinstall (the pnpm.overrides pin in root package.json
+        // collapses the whole tree to a single 5.101.2 version, which hoists to root).
+        // Order matters: these must come before broader aliases. The string matcher only
+        // matches the exact package or "<pkg>/<subpath>", so it will NOT catch
         // @tanstack/react-query-persist-client or @tanstack/react-query-devtools.
-        { find: "@tanstack/react-query", replacement: path.resolve(currentPath, "../../node_modules/react-admin/node_modules/@tanstack/react-query") },
-        { find: "@tanstack/query-core", replacement: path.resolve(currentPath, "../../node_modules/react-admin/node_modules/@tanstack/query-core") },
+        { find: "@tanstack/react-query", replacement: path.resolve(currentPath, "../../node_modules/@tanstack/react-query") },
+        { find: "@tanstack/query-core", replacement: path.resolve(currentPath, "../../node_modules/@tanstack/query-core") },
         { find: "@app", replacement: path.resolve(currentPath, "./src") },
         { find: "@dash-styles-src", replacement: path.resolve(currentPath, "../../node_modules/dash-styles/src") },
         // react-beautiful-dnd is unmaintained on React 18/19; map to the @hello-pangea/dnd drop-in.
