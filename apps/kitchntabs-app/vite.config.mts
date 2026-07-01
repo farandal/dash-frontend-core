@@ -542,26 +542,10 @@ export default ({ mode }) => {
         // @tanstack/react-query-persist-client or @tanstack/react-query-devtools.
         { find: "@tanstack/react-query", replacement: path.resolve(currentPath, "../../node_modules/@tanstack/react-query") },
         { find: "@tanstack/query-core", replacement: path.resolve(currentPath, "../../node_modules/@tanstack/query-core") },
-        // Map unscoped dash-* package names to their @dashadmin/ scoped equivalents on npm.
-        // Code still imports "dash-admin", "dash-components", etc. — no source changes needed.
-        // Subpath imports (e.g. "dash-admin/contexts/foo") are handled by the string prefix
-        // matchers below — Vite replaces the matched prefix and keeps the rest of the path.
-        { find: "dash-admin", replacement: "@dashadmin/dash-admin" },
-        { find: "dash-admin-state", replacement: "@dashadmin/dash-admin-state" },
-        { find: "dash-app-common", replacement: "@dashadmin/dash-app-common" },
-        { find: "dash-auth", replacement: "@dashadmin/dash-auth" },
-        { find: "dash-auto-admin", replacement: "@dashadmin/dash-auto-admin" },
-        { find: "dash-axios-hook", replacement: "@dashadmin/dash-axios-hook" },
-        { find: "dash-boilerplate", replacement: "@dashadmin/dash-boilerplate" },
-        { find: "dash-components", replacement: "@dashadmin/dash-components" },
-        { find: "dash-constants", replacement: "@dashadmin/dash-constants" },
-        { find: "dash-dialog", replacement: "@dashadmin/dash-dialog" },
-        { find: "dash-icons", replacement: "@dashadmin/dash-icons" },
-        { find: "dash-info", replacement: "@dashadmin/dash-info" },
-        { find: "dash-interfaces", replacement: "@dashadmin/dash-interfaces" },
-        { find: "dash-modal", replacement: "@dashadmin/dash-modal" },
-        { find: "dash-styles", replacement: "@dashadmin/dash-styles" },
-        { find: "dash-utils", replacement: "@dashadmin/dash-utils" },
+        // dash-* → @dashadmin/dash-* shims are handled at the pnpm level via
+        // "dash-foo": "npm:@dashadmin/dash-foo@x.y.z" in pnpm.overrides (root package.json).
+        // pnpm creates real node_modules/dash-* directories that point to the scoped packages,
+        // so no Vite aliases are needed here — they would also be invisible to tsconfig/esbuild.
         { find: "@app", replacement: path.resolve(currentPath, "./src") },
         { find: "@dash-styles-src", replacement: path.resolve(currentPath, "../../node_modules/dash-styles/src") },
         // react-beautiful-dnd is unmaintained on React 18/19; map to the @hello-pangea/dnd drop-in.
