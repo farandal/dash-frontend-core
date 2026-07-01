@@ -37,7 +37,12 @@ module.exports = {
   appId: 'com.kitchntab.app',
   productName: 'kitchntabs',
   executableName: 'kitchntabs',  // This sets the binary name on Linux
-  asar: false,
+  asar: true,
+  // NOTE: asarUnpack is defined once, lower in this config (near deb/extraResources).
+  // Python binaries, config.yaml, sounds and icons are delivered to the `resources/`
+  // dir via extraResources (Mac/Win) and the afterPack hook (Linux) — i.e. OUTSIDE
+  // app.asar — and are accessed at runtime via process.resourcesPath, so they do not
+  // need to be unpacked from the archive.
   npmRebuild: false, // Disable native dependency rebuild - not needed for this app
   nodeGypRebuild: false, // Disable node-gyp rebuild
   buildDependenciesFromSource: false, // Don't build dependencies from source
@@ -48,7 +53,7 @@ module.exports = {
     region: 'us-east-2',
     path: 'releases/',
     acl: 'private',
-    timeout: 120000 // 2 minutes request timeout
+    timeout: 600000 // 10 minutes — needed for 235MB .deb file upload
   },
   // Explicit electron version - required when node_modules is hidden during build
   electronVersion: '36.7.4',

@@ -819,7 +819,7 @@ export default ({ mode }) => {
 
     esbuild: {
       target: "es2020",
-      //drop: isProduction ? ['console', 'debugger'] : [],
+      drop: isProduction ? ['console', 'debugger'] : [],
       define: {
         global: "globalThis",
         "process.platform": JSON.stringify(process.platform),

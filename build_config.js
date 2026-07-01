@@ -209,7 +209,11 @@ function getCustomModeConfig(customMode, envVars) {
         VITE_APP_FRONTEND_URL: envVars.VITE_APP_FRONTEND_URL,
         VITE_DEV_PORT: process.env.VITE_DEV_PORT || envVars.VITE_DEV_PORT,
         VITE_HMR_PORT: process.env.VITE_HMR_PORT || envVars.VITE_HMR_PORT,
-        VITE_HMR_HOST: envVars.VITE_HMR_HOST
+        VITE_HMR_HOST: envVars.VITE_HMR_HOST,
+        // UI/UX feature flags. process.env takes precedence so a release
+        // script (e.g. Raspberry Pi) can override the .env value inline:
+        //   cross-env VITE_PAGE_TRANSITIONS=false pnpm config:electron:...
+        VITE_PAGE_TRANSITIONS: process.env.VITE_PAGE_TRANSITIONS || envVars.VITE_PAGE_TRANSITIONS
     };
 
     return config;

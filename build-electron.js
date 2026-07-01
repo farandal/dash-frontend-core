@@ -51,6 +51,8 @@ if (fs.existsSync(packageJsonPath)) {
   const minimalPkg = {
     name: realPkg.name,
     version: realPkg.version,
+    description: realPkg.description,
+    author: realPkg.author,
     main: realPkg.main,
     dependencies: {}
   };

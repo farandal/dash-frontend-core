@@ -317,10 +317,15 @@ const logFile = path.join(logDir, logFileName);
 log.info(`logFile: ${logFile}`);
 log.info(`lockFile: ${lockFile}`);
 
-// Configure electron-log with the correct path
-log.transports.file.level = "info";
+// Configure electron-log with environment-aware levels
+// Production: only errors and warnings; Development: debug everything
+const isProduction = BUILD_ENV === 'prod' || process.env.NODE_ENV === 'production';
+const consoleLogLevel = isProduction ? 'error' : 'debug';
+const fileLogLevel = isProduction ? 'warn' : 'info';
+
+log.transports.file.level = fileLogLevel;
 log.transports.file.resolvePathFn = () => logFile;
-log.transports.console.level = "debug";
+log.transports.console.level = consoleLogLevel;
 /*log.catchErrors({
   showDialog: false,
   onError(error) {

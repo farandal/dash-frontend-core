@@ -55,6 +55,7 @@ export default defineConfig(({ command }) => {
 
   const isServe = command === 'serve'
   const isBuild = command === 'build'
+  const isProduction = process.env.NODE_ENV === 'production' || process.env.BUILD_ENV === 'prod'
   const sourcemap = isServe || !!process.env.VSCODE_DEBUG
 
   return {
@@ -92,7 +93,7 @@ export default defineConfig(({ command }) => {
           vite: {
             build: {
               //sourcemap,
-              minify: false, // Keep it false for better debugging
+              minify: isProduction ? 'esbuild' : false,
               outDir: `${APP_PATH}/dist-electron/main`,
               rollupOptions: {
                 // Only externalize 'electron' - bundle everything else including electron-updater
@@ -119,7 +120,7 @@ export default defineConfig(({ command }) => {
           vite: {
             build: {
               //sourcemap: sourcemap ? 'inline' : undefined, // #332
-              minify: false, // Keep it false for easier debugging
+              minify: isProduction ? 'esbuild' : false,
               outDir: `${APP_PATH}/dist-electron/preload`,
               rollupOptions: {
                 // Only externalize native modules - bundle everything else
