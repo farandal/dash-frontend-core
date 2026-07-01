@@ -2,6 +2,7 @@ import { PropsWithChildren, useEffect, useState, useRef } from "react";
 import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
 
 import { AnimatePresence } from "framer-motion";
+import { DASHAdminSystemConstants } from "dash-constants";
 import MotionWrapper from "./layout/MotionWrapper";
 
 /**
@@ -72,7 +73,10 @@ const RoutingWrapper: React.FC<IDASHRoutingWrapper> = ({
 export const AnimatedRoutesWrapper: React.FC<PropsWithChildren> = ({ children }) => {
     const location = useLocation();
     let method = "wait";
-    let transitionEnabled = true;
+    // Driven by env: DASHAdminSystemConstants.system.PAGE_TRANSITIONS reads
+    // `<PREFIX>PAGE_TRANSITIONS` (default true). Set to false for Raspberry Pi
+    // / low-powered terminals to skip framer-motion route animations.
+    let transitionEnabled = DASHAdminSystemConstants.system.PAGE_TRANSITIONS;
     const pathParts = location.pathname.split('/');
     const lastPart = pathParts[pathParts.length - 1];
     const [show, setShow] = useState(true); // Initialize as true

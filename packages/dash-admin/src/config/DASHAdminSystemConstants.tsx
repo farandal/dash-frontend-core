@@ -53,8 +53,9 @@ const system = {
   DEFAULT_PER_PAGE: Number(getEnv('DEFAULT_PER_PAGE')) || null,
   //URL_PREFIX: getEnv('DASH_ADMIN_URL_PREFIX') || '#/',
   URL_PREFIX: getEnv('DASH_ADMIN_URL_PREFIX') || '/',
-  //PAGE_TRANSITIONS: JSON.parse(getEnv('PAGE_TRANSITIONS')) || false,
-  PAGE_TRANSITIONS: false,
+  // Route/page transition animations. Disable via env for low-powered devices
+  // (Raspberry Pi). Defaults true when unset; only "false" turns it off.
+  PAGE_TRANSITIONS: String(getEnv('PAGE_TRANSITIONS') ?? 'true').toLowerCase() !== 'false',
 
   GOOGLE_SIGNUP: JSON.parse(getEnv('APP_GOOGLE_SIGNUP')) || false,
   RECAPTCHA_ENABLED: JSON.parse(getEnv('APP_RECAPTCHA_ENABLED')) || false,

@@ -53,8 +53,10 @@ const system = {
   DEFAULT_PER_PAGE: Number(getEnv('DEFAULT_PER_PAGE')) || null,
   //URL_PREFIX: getEnv('DASH_ADMIN_URL_PREFIX') || '#/',
   URL_PREFIX: getEnv('DASH_ADMIN_URL_PREFIX') || '/',
-  //PAGE_TRANSITIONS: JSON.parse(getEnv('PAGE_TRANSITIONS')) || false,
-  PAGE_TRANSITIONS: false,
+  // Route/page transition animations (framer-motion). Disable for low-powered
+  // devices such as Raspberry Pi via env `<PREFIX>PAGE_TRANSITIONS=false`.
+  // Defaults to true when unset; only the literal "false" turns it off.
+  PAGE_TRANSITIONS: String(getEnv('PAGE_TRANSITIONS') ?? 'true').toLowerCase() !== 'false',
 
   GOOGLE_SIGNUP: JSON.parse(getEnv('APP_GOOGLE_SIGNUP')) || false,
   GOOGLE_CLIENT_ID: getEnv('APP_GOOGLE_CLIENT_ID') || '',
