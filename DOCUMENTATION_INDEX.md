@@ -90,6 +90,23 @@ Covers production-only settings:
 
 ---
 
+## 🌍 Environment Configuration System
+
+### [ENVIRONMENT_CONFIGURATION_SYSTEM.md](https://github.com/kitchntabs/kitchntabs-github-io/blob/main/docs/N4-Build-Toolchain/N4-Build-Toolchain_ENVIRONMENT_CONFIGURATION_SYSTEM.md)
+
+Complete technical guide to the build-time environment key system (in docs repo):
+
+- **End-to-end data flow** — how `.env`, `build_config.js`, and vite's `define` work together
+- **Precedence rules** — library default → .env file → release script override
+- **PAGE_TRANSITIONS example** — environment-driven flag for Raspberry Pi animations
+- **Recipe for adding new keys** — step-by-step pattern with code examples
+- **Mermaid diagrams** — visual flow from source to runtime
+- **Troubleshooting** — why flags don't take effect and how to debug
+
+Covers all 6 core environment keys and boolean parsing best practices.
+
+---
+
 ## 📦 Asar (App Archive) Compression
 
 ### [ASAR_TEST_PLAN.md](ASAR_TEST_PLAN.md)
