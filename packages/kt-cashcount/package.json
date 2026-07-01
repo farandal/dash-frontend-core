@@ -14,12 +14,7 @@
 		"@emotion/styled": "latest",
 		"@mui/icons-material": "^7.3.10",
 		"@mui/material": "^7.3.10",
-		"dash-admin": "*",
-		"dash-auto-admin": "*",
-		"dash-axios-hook": "*",
-		"dash-constants": "*",
-		"dash-dialog": "*",
-		"dash-utils": "*",
+		
 		"kt-utils": "workspace:*",
 		"kt-ecommerce": "workspace:*",
 		"react": "latest",
@@ -30,9 +25,9 @@
 	"devDependencies": {
 		"@types/react": "latest",
 		"@types/react-dom": "latest",
-		"dash-eslint": "*",
-		"dash-prettier": "*",
-		"dash-tsconfig": "*",
+      "@dashadmin/dash-eslint": "1.3.26",
+      "@dashadmin/dash-prettier": "1.3.26",
+      "@dashadmin/dash-tsconfig": "1.3.26",
 		"typescript": "latest"
 	},
 	"module": "dist/index.js",
