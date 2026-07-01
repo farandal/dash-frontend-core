@@ -140,35 +140,8 @@ const promptHidden = (query) => {
   console.log(`\nWorkspace packages (${pkgNames.length}):`);
   pkgNames.forEach(n => console.log(`  ${n} → ${SCOPE}/${n}@${PUBLISH_VERSION}`));
 
-  // Step 1: Unpublish existing @dashadmin/* packages
-  console.log('\n── Step 1: Unpublishing existing @dashadmin/* packages ──────────────────');
-
-  let existingPkgs = [];
-  try {
-    const raw = execSync(
-      `npm search ${SCOPE} --registry ${REGISTRY} --json`,
-      { env: { ...process.env, npm_config_userconfig: NPMRC_PATH }, encoding: 'utf8', stdio: 'pipe' }
-    );
-    existingPkgs = JSON.parse(raw).map(p => p.name);
-  } catch {
-    console.log('  (search failed — continuing without unpublish list)');
-  }
-
-  for (const pkg of existingPkgs) {
-    process.stdout.write(`  Unpublishing ${pkg} ... `);
-    try {
-      execSync(`npm unpublish ${pkg} --force --registry ${REGISTRY}`, {
-        env: { ...process.env, npm_config_userconfig: NPMRC_PATH },
-        stdio: 'pipe', encoding: 'utf8',
-      });
-      console.log('done');
-    } catch (e) {
-      console.log(`skipped (${(e.stderr || e.message || '').split('\n')[0].trim()})`);
-    }
-  }
-
-  // Step 2: Build packages
-  console.log('\n── Step 2: Building packages ────────────────────────────────────────────');
+  // Step 1: Build packages
+  console.log('\n── Step 1: Building packages ────────────────────────────────────────────');
   try {
     execSync('pnpm turbo build --filter=\'./packages/*\'', { cwd: ROOT, stdio: 'inherit' });
   } catch {
@@ -176,8 +149,8 @@ const promptHidden = (query) => {
     process.exit(1);
   }
 
-  // Step 3: Transform + publish
-  console.log('\n── Step 3: Publishing to npm ────────────────────────────────────────────');
+  // Step 2: Transform + publish
+  console.log('\n── Step 2: Publishing to npm ────────────────────────────────────────────');
 
   const published = [];
   const failed = [];
