@@ -66,7 +66,7 @@ Example notification
 */
 
 import { AuthPersistenceService } from 'dash-auth';
-import { dashStorage } from 'dash-utils';
+import { dashStorage, speak } from 'dash-utils';
 
 // Audio context for better browser compatibility
 let audioContext: AudioContext | null = null;
@@ -358,25 +358,21 @@ export const processCustomNotification = async (notification: any): Promise<{ al
 
         console.log("✅ Alarm sequence completed - TTS can now play");
 
-        // Trigger TTS (text-to-speech) for notifications that play alarms
+        // Trigger TTS (text-to-speech) for notifications that play alarms.
+        // Routed by platform: native Android plugin, Electron+Python, or no-op web.
         try {
-            const dashService = (window as any).DashIPCService;
-            if (dashService?.speak) {
-                let speechMessage = '';
+            let speechMessage = '';
 
-                // Determine message based on notification type
-                if (notification?.notificationPayload?.class === "MallStoreAssistanceNotification") {
-                    speechMessage = notification?.data?.message || "Asistencia requerida";
-                } else if (isConfirmedStatus) {
-                    speechMessage = notification?.data?.message || `Cocina, ${marketplace} confirmada`;
-                }
+            // Determine message based on notification type
+            if (notification?.notificationPayload?.class === "MallStoreAssistanceNotification") {
+                speechMessage = notification?.data?.message || "Asistencia requerida";
+            } else if (isConfirmedStatus) {
+                speechMessage = notification?.data?.message || `Cocina, ${marketplace} confirmada`;
+            }
 
-                if (speechMessage) {
-                    console.log(`🔊 Sending TTS message: "${speechMessage}"`);
-                    dashService.speak({ message: speechMessage, lang: 'es' });
-                }
-            } else {
-                console.warn('DashIPCService.speak not available');
+            if (speechMessage) {
+                console.log(`🔊 Sending TTS message: "${speechMessage}"`);
+                speak(speechMessage, 'es');
             }
         } catch (err) {
             console.error('Error triggering TTS:', err);

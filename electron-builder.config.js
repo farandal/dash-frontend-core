@@ -33,10 +33,22 @@ const ARCH_MAP = {
  * All dependencies are bundled by Vite, so we don't need node_modules collection.
  * We use beforeBuild hook to create a minimal package.json that bypasses dependency scanning.
  */
+// -----------------------------------------------------------------------------
+// Domain identity (env-overridable). Lets a different brand/domain rebrand the
+// packaged app without editing this file (mirrors the de-branded core config),
+// and keeps Linux window association consistent: the .desktop file name,
+// StartupWMClass and the runtime WM_CLASS all derive from EXECUTABLE_NAME.
+// -----------------------------------------------------------------------------
+const APP_ID = process.env.APP_ID || 'com.kitchntab.app';
+const PRODUCT_NAME = process.env.PRODUCT_NAME || 'kitchntabs';
+const APP_NAME = process.env.APP_NAME || 'KitchenTabs';
+// Linux binary name + WM_CLASS base — keep lowercase and space-free.
+const EXECUTABLE_NAME = process.env.EXECUTABLE_NAME || PRODUCT_NAME;
+
 module.exports = {
-  appId: 'com.kitchntab.app',
-  productName: 'kitchntabs',
-  executableName: 'kitchntabs',  // This sets the binary name on Linux
+  appId: APP_ID,
+  productName: PRODUCT_NAME,
+  executableName: EXECUTABLE_NAME,  // This sets the binary name on Linux
   asar: true,
   // NOTE: asarUnpack is defined once, lower in this config (near deb/extraResources).
   // Python binaries, config.yaml, sounds and icons are delivered to the `resources/`
@@ -249,14 +261,18 @@ module.exports = {
   linux: {
     icon: path.resolve(__dirname, 'icons/png'),
     category: 'Office',
-    executableName: 'kitchntabs',
+    executableName: EXECUTABLE_NAME,
+    // Sync the generated .desktop file name + StartupWMClass with Electron's
+    // runtime WM_CLASS so desktop environments associate the running window
+    // with its launcher icon (taskbar grouping / dock icon).
+    syncDesktopName: true,
     desktop: {
       entry: {
-        Name: 'KitchenTabs',
-        Comment: 'KitchenTabs POS Terminal',
+        Name: APP_NAME,
+        Comment: `${APP_NAME} POS Terminal`,
         Categories: 'Office;Finance;',
         Keywords: 'pos;kitchen;restaurant;orders;',
-        StartupWMClass: 'kitchntabs',
+        StartupWMClass: EXECUTABLE_NAME,
         Terminal: 'false'
       }
     },

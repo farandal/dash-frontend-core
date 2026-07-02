@@ -11,7 +11,8 @@ const config: CapacitorConfig = {
   android: {
     allowMixedContent: true,
     captureInput: true,
-    webContentsDebuggingEnabled: true,
+    // WebView inspector overhead only in dev builds; disabled in production.
+    webContentsDebuggingEnabled: process.env.NODE_ENV !== 'production',
   },
   plugins: {
     PushNotifications: {

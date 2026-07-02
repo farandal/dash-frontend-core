@@ -182,7 +182,7 @@ function verifyAndInjectRequiredAssets() {
   let stringsXml = `<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">KitchnTabs</string>
-    <string name="title_activity_main">MainActivity</string>
+    <string name="title_activity_main">KitchnTabs</string>
     <string name="package_name">com.kitchntabs.app</string>
     <string name="default_notification_channel_id">default_channel_id</string>
     <string name="default_notification_channel_name">App Notifications</string>

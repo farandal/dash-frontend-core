@@ -10,7 +10,7 @@ import { AuthPersistenceService, syncDeviceStoreToLocalStorage, syncLocalStorage
 import { DASH_REDUX_ACTIONS } from 'dash-admin-state';
 import { ACTION_UPDATE_AUTH } from 'dash-admin-state/redux/reducers/Auth';
 import DASHAuthenticationService from 'dash-admin/contexts/auth/DASHAuthenticationService';
-import { dashStorage } from 'dash-utils';
+import { dashStorage, speak } from 'dash-utils';
 
 /**
  * Hook to initialize Redux auth state from persisted localStorage data
@@ -130,7 +130,7 @@ export const useAppInitialization = () => {
                         })
                     );
 
-                    window.DashIPCService?.speak(`${initResult.user?.name}, Bienvenido!`);
+                    speak(`${initResult.user?.name}, Bienvenido!`, 'es');
 
                     await syncLocalStorageToDeviceStore();
                     setInitializationError(null);

@@ -14,6 +14,12 @@ interface IBuildConfig {
   platform?: string;
   appPath?: string;
   buildId?: string;
+  customModeConfig?: {
+    envVars?: {
+      DISABLE_GPU?: string;
+      [key: string]: string | undefined;
+    };
+  };
 }
 
 const loadBuildConfig = (): IBuildConfig => {
@@ -91,6 +97,16 @@ export default defineConfig(({ command }) => {
             }
           },
           vite: {
+            // Bake the GPU flag into the compiled main bundle at build time —
+            // the packaged app's OS process won't carry the shell env var that
+            // was only set during the earlier `config:electron:...` step, so
+            // `process.env.DISABLE_GPU` must become a literal here, the same
+            // way VITE_PAGE_TRANSITIONS is baked into the renderer.
+            define: {
+              'process.env.DISABLE_GPU': JSON.stringify(
+                buildConfig.customModeConfig?.envVars?.DISABLE_GPU || process.env.DISABLE_GPU || ''
+              ),
+            },
             build: {
               //sourcemap,
               minify: isProduction ? 'esbuild' : false,

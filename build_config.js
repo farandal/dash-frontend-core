@@ -213,7 +213,13 @@ function getCustomModeConfig(customMode, envVars) {
         // UI/UX feature flags. process.env takes precedence so a release
         // script (e.g. Raspberry Pi) can override the .env value inline:
         //   cross-env VITE_PAGE_TRANSITIONS=false pnpm config:electron:...
-        VITE_PAGE_TRANSITIONS: process.env.VITE_PAGE_TRANSITIONS || envVars.VITE_PAGE_TRANSITIONS
+        VITE_PAGE_TRANSITIONS: process.env.VITE_PAGE_TRANSITIONS || envVars.VITE_PAGE_TRANSITIONS,
+        // Electron main-process GPU flag. Baked into the compiled main bundle
+        // via electron.vite.config.mts's `define` (main process runs as plain
+        // Node.js at install time, so a shell env var set only during this
+        // build_config.js step wouldn't otherwise reach the packaged app):
+        //   cross-env DISABLE_GPU=true pnpm config:electron:...
+        DISABLE_GPU: process.env.DISABLE_GPU || envVars.DISABLE_GPU
     };
 
     return config;

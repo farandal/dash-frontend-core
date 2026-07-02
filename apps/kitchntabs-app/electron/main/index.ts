@@ -202,6 +202,27 @@ const getResourcesPath = (): string => {
 const resourcesPath = getResourcesPath();
 log.info(`resourcesPath: ${resourcesPath}`);
 
+// PyInstaller onefile binaries re-extract their entire bundled runtime to a
+// fresh temp directory on every spawn. On memory-constrained Linux devices
+// (e.g. Raspberry Pi) /tmp is often a small RAM-backed tmpfs (as little as
+// ~450MB), which fills up after a few spawns of a large bundle (kt_service
+// alone extracts 100MB+) and makes the bootloader fail with
+// "decompression resulted in return code -1". Redirect extraction to
+// userData instead — it lives on the main disk partition, not RAM/swap.
+const getPythonServiceEnv = (): NodeJS.ProcessEnv => {
+  if (process.platform !== 'linux') {
+    return process.env;
+  }
+  const pyinstallerTmpDir = path.join(app.getPath('userData'), 'pyinstaller-tmp');
+  try {
+    fs.mkdirSync(pyinstallerTmpDir, { recursive: true });
+  } catch (err) {
+    log.error(`Failed to create PyInstaller TMPDIR at ${pyinstallerTmpDir}:`, err);
+    return process.env;
+  }
+  return { ...process.env, TMPDIR: pyinstallerTmpDir };
+};
+
 // Python service binary path
 // In production: 
 //   macOS: .app/Contents/Resources/python-service/kt_service
@@ -546,6 +567,7 @@ const speakMessage = (message: string, lang?: string) => {
 
     // Spawn the speech process
     speechProcess = spawn(speechCmd, speechArgs, {
+      env: getPythonServiceEnv(),
       ...(process.platform === 'win32' && {
         shell: true,
         windowsVerbatimArguments: false
@@ -715,6 +737,7 @@ const startPythonProcess = async (t: string, c: string) => {
     
     // Spawn the process with proper quoted paths for Windows
     pythonProcess = spawn(pythonCmd, args, {
+      env: getPythonServiceEnv(),
       ...(process.platform === 'win32' && {
         shell: true,
         windowsVerbatimArguments: true
@@ -832,6 +855,7 @@ const printOrder = (id: string) => {
       printProcess = spawn(config.PRINT_SERVICE_PATH_PROD, [id, configFile, logFile], {
         //cwd: PYTHON_SCRIPT_DIR,
         stdio: "pipe",
+        env: getPythonServiceEnv(),
       });
 
       log.info(BUILD_ENV, config.PRINT_SERVICE_PATH_PROD)
@@ -920,7 +944,11 @@ async function createWindow() {
 
   //if (process.platform === 'win32') {
   app.commandLine.appendSwitch('enable-transparent-visuals');
-  app.commandLine.appendSwitch('disable-gpu');
+  // GPU is only disabled on low-power ARM targets (Raspberry Pi Debian builds
+  // set DISABLE_GPU=true); desktop x64/mac/win keep GPU acceleration enabled.
+  if (process.env.DISABLE_GPU === 'true') {
+    app.commandLine.appendSwitch('disable-gpu');
+  }
   //}
   
   //cleanup();
@@ -1178,6 +1206,7 @@ const runServiceWithOutput = (serviceCmd: string, serviceArgs: string[], timeout
     let timedOut = false;
     
     const serviceProcess = spawn(serviceCmd, serviceArgs, {
+      env: getPythonServiceEnv(),
       ...(process.platform === 'win32' && {
         shell: true,
         windowsVerbatimArguments: true
