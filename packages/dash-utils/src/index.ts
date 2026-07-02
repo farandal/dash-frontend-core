@@ -78,6 +78,9 @@ export {
     type DashIPCServiceType
 } from './utils/dashIPCService';
 
+// Text-to-speech (platform-routed: native Android / Electron+Python / no-op web)
+export { speak, speakAsync } from './utils/speechService';
+
 // Stored Theme
 export {
     getStoredTheme,

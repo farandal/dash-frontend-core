@@ -8,7 +8,8 @@
  *   node scripts/publish-npm.mjs [--version X.Y.Z] [--dry-run]
  *
  * Environment:
- *   NPM_TOKEN — npm authentication token (optional; prompted interactively if not set)
+ *   NPM_TOKEN — npm authentication token. Read from the shell env if set, else
+ *   loaded from a root .env file (gitignored), else prompted interactively.
  *
  * Options:
  *   --version X.Y.Z   Publish version (defaults to package.json version)
@@ -35,6 +36,24 @@ const ROOT = path.join(__dirname, '..');
 const PACKAGES_DIR = path.join(ROOT, 'packages');
 const SCOPE = '@dashadmin';
 const REGISTRY = 'https://registry.npmjs.org';
+
+// Load a root .env file (gitignored) into process.env, without overriding
+// anything already set in the shell. Minimal parser — no dotenv dependency,
+// matches the style already used by build_config.js's loadEnvFile().
+const loadDotEnv = () => {
+  const envPath = path.join(ROOT, '.env');
+  if (!fs.existsSync(envPath)) return;
+  const content = fs.readFileSync(envPath, 'utf8');
+  for (const line of content.split('\n')) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith('#')) continue;
+    const [key, ...rest] = trimmed.split('=');
+    if (!key || rest.length === 0) continue;
+    const value = rest.join('=').replace(/^["']|["']$/g, '');
+    if (process.env[key] === undefined) process.env[key] = value;
+  }
+};
+loadDotEnv();
 
 // ── Interactive prompt for sensitive input ────────────────────────────────────
 const promptHidden = (query) => {
@@ -65,21 +84,42 @@ const promptHidden = (query) => {
   });
 };
 
+// Bump the patch component of a semver string: "1.3.29" -> "1.3.30"
+const bumpPatch = (version) => {
+  const parts = version.split('.').map(Number);
+  while (parts.length < 3) parts.push(0);
+  parts[2] += 1;
+  return parts.join('.');
+};
+
 // ── Main execution (async) ────────────────────────────────────────────────────
 (async () => {
-  // Read default version from package.json
+  // Root package.json's version is the single source of truth every published
+  // package aligns to. Bump it here (not just read it) so every real run gets
+  // a fresh version automatically — no more remembering --version by hand and
+  // no more accidental re-publishes of an already-used version.
   const rootPkgPath = path.join(ROOT, 'package.json');
   const rootPkg = JSON.parse(fs.readFileSync(rootPkgPath, 'utf8'));
-  const DEFAULT_VERSION = rootPkg.version;
 
   // Args parsing
   const args = process.argv.slice(2);
-  let PUBLISH_VERSION = DEFAULT_VERSION;
+  let PUBLISH_VERSION = null;
   let DRY_RUN = false;
 
   for (let i = 0; i < args.length; i++) {
     if (args[i] === '--version') { PUBLISH_VERSION = args[++i]; continue; }
     if (args[i] === '--dry-run') { DRY_RUN = true; continue; }
+  }
+
+  if (PUBLISH_VERSION) {
+    console.log(`Using explicit --version ${PUBLISH_VERSION} (root package.json left untouched)`);
+  } else {
+    PUBLISH_VERSION = bumpPatch(rootPkg.version);
+    console.log(`No --version given — bumping root package.json ${rootPkg.version} -> ${PUBLISH_VERSION}`);
+    if (!DRY_RUN) {
+      rootPkg.version = PUBLISH_VERSION;
+      fs.writeFileSync(rootPkgPath, JSON.stringify(rootPkg, null, 2) + '\n');
+    }
   }
 
   // NPM Token (interactive prompt if not in env)
