@@ -1353,6 +1353,27 @@ const customEn = {
             emailPlaceholder: "Enter your email",
             createStore: "CREATE STORE"
         },
+        prerelease: {
+            title: "🚀 The revolution in kitchen management is coming!",
+            description: "Kitchntabs is in its alpha phase, and we are putting the final touches on the best tool for your business.",
+            callToAction: "Leave us your email and we will let you know as soon as we are ready, so you can sign up and start creating your store.",
+            form: {
+                name: "Name",
+                nameRequired: "Name is required",
+                email: "Email",
+                emailRequired: "Email is required",
+                emailInvalid: "Email is not valid",
+                contactPhone: "Contact Phone (optional)",
+                businessWebsite: "Business Website (optional)",
+                businessInstagram: "Business Instagram (optional)",
+                send: "Send",
+                error: "We could not register your details. Please try again."
+            },
+            success: {
+                title: "Thank you for your interest! 🎉",
+                message: "We have registered your details. We will let you know as soon as we are ready so you can create your store. Check your inbox: we sent you a welcome message."
+            }
+        },
         what: {
             title: "What is KitchnTabs?",
             description: "KitchnTabs is a technological platform designed for food courts and restaurants, that allows digitalizing, ordering and synchronizing the entire ordering process, from taking orders to preparation and delivery, connecting kitchen, service and administration in real time."
@@ -1535,6 +1556,16 @@ const customEn = {
     signup: {
         title: "Create Your Account",
         accountInformation: "Account Information",
+
+        // Pre-release invitation gate
+        invitation: {
+            title: "Invitation access",
+            description: "KitchnTabs is in alpha phase. Enter your invitation code to create your store.",
+            codeLabel: "Invitation code",
+            submit: "Continue",
+            invalidCode: "The invitation code is not valid.",
+            back: "Back to home"
+        },
         
         // Form fields
         email: "Email",

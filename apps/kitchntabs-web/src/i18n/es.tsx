@@ -1349,6 +1349,27 @@ const customEs = {
             emailPlaceholder: "Ingresa tu correo electrónico",
             createStore: "CREAR TIENDA"
         },
+        prerelease: {
+            title: "🚀 ¡La revolución en la gestión de tu cocina está por llegar!",
+            description: "Kitchntabs está en su fase alfa, y estamos ultimando detalles para ofrecerte la mejor herramienta para tu negocio.",
+            callToAction: "Déjanos tu correo electrónico y te avisaremos en cuanto estemos listos para que puedas registrarte y comenzar a crear tu tienda.",
+            form: {
+                name: "Nombre",
+                nameRequired: "El nombre es obligatorio",
+                email: "Correo electrónico",
+                emailRequired: "El correo electrónico es obligatorio",
+                emailInvalid: "El correo electrónico no es válido",
+                contactPhone: "Teléfono de contacto (opcional)",
+                businessWebsite: "Sitio web del negocio (opcional)",
+                businessInstagram: "Instagram del negocio (opcional)",
+                send: "Enviar",
+                error: "No pudimos registrar tus datos. Por favor inténtalo nuevamente."
+            },
+            success: {
+                title: "¡Gracias por tu interés! 🎉",
+                message: "Hemos registrado tus datos. Te avisaremos en cuanto estemos listos para que puedas crear tu tienda. Revisa tu correo: te enviamos un mensaje de bienvenida."
+            }
+        },
         what: {
             title: "¿Qué es KitchnTabs?",
             description: "KitchnTabs es una plataforma tecnológica diseñada para patios de comida y restaurantes, que permite digitalizar, ordenar y sincronizar todo el proceso de pedidos, desde la toma de comandas hasta la preparación y entrega, conectando a cocina, atención y administración en tiempo real."
@@ -1531,6 +1552,16 @@ const customEs = {
     signup: {
         title: "Crea Tu Cuenta",
         accountInformation: "Información de la Cuenta",
+
+        // Pre-release invitation gate
+        invitation: {
+            title: "Acceso con invitación",
+            description: "KitchnTabs está en fase alfa. Ingresa tu código de invitación para crear tu tienda.",
+            codeLabel: "Código de invitación",
+            submit: "Continuar",
+            invalidCode: "El código de invitación no es válido.",
+            back: "Volver al inicio"
+        },
         
         // Form fields
         email: "Correo Electrónico",

@@ -214,6 +214,11 @@ function getCustomModeConfig(customMode, envVars) {
         // script (e.g. Raspberry Pi) can override the .env value inline:
         //   cross-env VITE_PAGE_TRANSITIONS=false pnpm config:electron:...
         VITE_PAGE_TRANSITIONS: process.env.VITE_PAGE_TRANSITIONS || envVars.VITE_PAGE_TRANSITIONS,
+        // Release stage flag: 'pre-release' swaps the landing CTA for an email
+        // capture form, gates /signup behind an invitation code and hides Plans.
+        // Any other value (or unset) behaves as full 'release'.
+        VITE_APP_RELEASE_STAGE: process.env.VITE_APP_RELEASE_STAGE || envVars.VITE_APP_RELEASE_STAGE,
+        VITE_APP_PRERELEASE_INVITATION_CODE: process.env.VITE_APP_PRERELEASE_INVITATION_CODE || envVars.VITE_APP_PRERELEASE_INVITATION_CODE,
         // Electron main-process GPU flag. Baked into the compiled main bundle
         // via electron.vite.config.mts's `define` (main process runs as plain
         // Node.js at install time, so a shell env var set only during this

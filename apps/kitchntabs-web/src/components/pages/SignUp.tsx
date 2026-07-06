@@ -34,6 +34,8 @@ import { useDialog } from 'dash-dialog';
 import {DASHAdminSystemConstants} from 'dash-constants';
 import { RutValidator, RutValidatorWithoutDots } from 'dash-admin/utils/validators';
 import { useSystemConfig, SystemConfigData } from '../../hooks/useSystemConfig';
+import { isPreRelease } from '@app/utils/releaseStage';
+import PreReleaseInvitationGate from '../prerelease/PreReleaseInvitationGate';
 
 interface SignUpFormData {
     email: string;
@@ -65,6 +67,9 @@ const SignUpPage = (props) => {
     const [recpatcha, setRecaptcha] = useState(null);
     const [loading, setLoading] = useState(false);
     const [googleAuthLoading, setGoogleAuthLoading] = useState(false);
+
+    // Pre-release: gate the signup form behind an invitation code
+    const [invitationVerified, setInvitationVerified] = useState(!isPreRelease());
     
     // Use cached system config query
     const { data: systemConfigResponse, isLoading: systemConfigLoading } = useSystemConfig();
@@ -770,6 +775,11 @@ const SignUpPage = (props) => {
             </form>
   
     );
+
+    // Pre-release: ask for the invitation code before showing the signup form
+    if (!invitationVerified) {
+        return <PreReleaseInvitationGate onVerified={() => setInvitationVerified(true)} />;
+    }
 
     // If Google client ID is configured, wrap with OAuth provider
     if (googleClientId) {

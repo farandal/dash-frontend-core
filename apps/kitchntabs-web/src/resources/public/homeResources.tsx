@@ -4,6 +4,7 @@ import HomeIcon from "@mui/icons-material/Home";
 import PriceCheckIcon from "@mui/icons-material/PriceCheck";
 import React from "react";
 import Home from "@app/components/pages/Home";
+import { isPreRelease } from "@app/utils/releaseStage";
 
 export const HomeResources: IDashAutoAdminResourceConfig[] = [
     {
@@ -18,7 +19,8 @@ export const HomeResources: IDashAutoAdminResourceConfig[] = [
         menuOnly: true,
         redirect: "/",
     },
-    {
+    // Plans is hidden while in pre-release mode
+    ...(isPreRelease() ? [] : [{
         roles: ["*"],
         model: "plans",
         path: "/plans",
@@ -28,7 +30,7 @@ export const HomeResources: IDashAutoAdminResourceConfig[] = [
         icon: <PriceCheckIcon />,
         menuOnly: true,
         redirect: "/plans",
-    }
+    }]),
 ];
 
 export default HomeResources;

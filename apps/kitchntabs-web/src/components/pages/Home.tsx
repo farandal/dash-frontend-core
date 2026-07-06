@@ -15,11 +15,23 @@ import HeroThree from "../theme/themes/index-3/HeroThree";
 import Screenshot from "../theme/components/screenshot/Screenshot";
 import Download from "../theme/pages/Download";
 import CtaSignup from "../theme/components/cta/CtaSignup";
+import PreReleaseHero from "../prerelease/PreReleaseHero";
+import { isPreRelease } from "@app/utils/releaseStage";
 
 export default function HomeThree() {
   const theme = useTheme();
   const isLightMode = theme.palette.mode === "light";
   const translate = useTranslate();
+
+  if (isPreRelease()) {
+    return (
+      <>
+        <PreReleaseHero />
+        <Promo />
+        <VideoPromo />
+      </>
+    );
+  }
 
   return (
     <>

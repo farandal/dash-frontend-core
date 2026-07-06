@@ -1,5 +1,6 @@
-import { Route } from 'react-router-dom';
+import { Navigate, Route } from 'react-router-dom';
 import KitchnTabsSharedRoutes from './KitchnTabsSharedRoutes';
+import { isPreRelease } from '@app/utils/releaseStage';
 import Home from './components/pages/Home';
 import Privacy from './components/pages/Privacy';
 import { GlobalSmallLoader } from './dash-extensions/components';
@@ -48,7 +49,7 @@ export const dashPublicRoutes = () => [
      <Route
         key="plans"
         path='/plans'
-        element={<Plans/>}
+        element={isPreRelease() ? <Navigate to="/" replace /> : <Plans/>}
     />,
     <Route
         key="signup"

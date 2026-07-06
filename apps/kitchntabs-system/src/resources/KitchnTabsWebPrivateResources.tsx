@@ -36,6 +36,11 @@ export const KitchnTabsWebPrivateResources: ResourceManifest = {
     //privateWebResources: () => import('kt-web/src/resources/privateWebResources'),
     tenancyResources: () => import('./private/tenancyResources'),
 
+    // ========================================================================
+    // PRE-RELEASE SIGNUPS (landing page interest capture, system admin only)
+    // ========================================================================
+    prereleaseSignupResource: () => import('./private/prereleaseSignupResource'),
+
     systemMarketplaceResource: () => import('kt-ecommerce/resources/systemMarketplaceResource'),
     systemCheckoutGatewayResource: () => import('kt-ecommerce/resources/systemCheckoutGatewayResource'),
     systemPointOfSaleResource: () => import('kt-ecommerce/resources/systemPointOfSaleResource'),
