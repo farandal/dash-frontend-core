@@ -26,7 +26,7 @@ export default function HomeThree() {
       <HeroThree />
       <Promo />
       <VideoPromo />
-      <Download />
+      {/*<Download />*/}
       <CtaSignup bgColor={true} />
       {/*<Promo />
       <Features />

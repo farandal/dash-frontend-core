@@ -5,7 +5,7 @@
   "license": "MIT",
   "private": true,
   "version": "1.3.40",
-  "main": "apps/kitchntabs-app/dist-electron/main/index.js",
+  "main": "apps/kitchntabs-web/dist-electron/main/index.js",
   "scripts": {
     "new": "chmod +x ./new.sh && sh ./new.sh",
     "_CONFIG": "CONFIG, set build config variables by setting the CUSTOM_MODE (.env.{CUSTOM_MODE}), TARGET_TYPE ['mobile', 'desktop', 'web'] and PLATFORM ['android', 'ios', 'web', 'electron']",
@@ -69,6 +69,7 @@
     "kt-mall:web:dist:ngrok": "pnpm config:web:kitchntabs-mall:ngrok && pnpm prod-kt-mall",
     "dev:web:kt:local": "pnpm config:web:kitchntabs:local && pnpm dev",
     "dev:web:kitchntabs-web:development": "pnpm config:web:kitchntabs-web:development && pnpm dev-kt-web",
+    "dev:web:kitchntabs-web:production": "pnpm config:web:kitchntabs-web:production && pnpm dev-kt-web",
     "dev:web:kitchntabs-web:tunnel": "pnpm config:web:kitchntabs-web:tunnel && pnpm tunnel:web:kitchntabs-web && pnpm dev-kt-web",
     "build:web:kitchntabs-web:production": "pnpm config:web:kitchntabs-web:production && pnpm prod-kt-web",
     "dev:web:kitchntabs-system:development": "pnpm config:web:kitchntabs-system:development && pnpm dev-kt-system",

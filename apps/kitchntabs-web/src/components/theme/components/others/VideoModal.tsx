@@ -49,7 +49,7 @@ export default function VideoModal({ isOpen, onClose }) {
         {/* Responsive 16:9 container */}
         <div style={{ position: "relative", paddingTop: "56.25%" }}>
           <ReactPlayer
-            src="https://youtu.be/abGlqHP6eHY"
+            src="https://youtu.be/PMWn4CTGXso"
             playing={play}
             controls
             width="100%"

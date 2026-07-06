@@ -146,7 +146,7 @@ const detectPlatform = (buildConfig: IBuildConfig) => {
   };
 };
 
-export default ({ mode }) => {
+export default ({ mode, command }) => {
   console.log("=== VITE BUILD CONFIGURATION ===");
 
   // Load build configuration
@@ -175,10 +175,16 @@ export default ({ mode }) => {
     process.argv.filter((arg) => arg.includes("platform"))
   );
 
+  // Only treat this as a "production build" when Vite is actually building
+  // (`vite build`). When serving (`vite`/`vite dev`), always use development
+  // semantics (JSX dev runtime, HMR over ws, sourcemaps) even if MODE/CUSTOM_MODE
+  // point at a production env file for API/WS endpoints — otherwise the dev
+  // server breaks (jsxDEV missing, wss HMR failing without a local cert).
   const isProduction =
-    configMode === "production" ||
-    mode.includes("production") ||
-    process.env.NODE_ENV === "production";
+    command === "build" &&
+    (configMode === "production" ||
+      mode.includes("production") ||
+      process.env.NODE_ENV === "production");
 
   const isDevelopment = !isProduction;
 

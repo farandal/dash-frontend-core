@@ -64,9 +64,9 @@ export default function VideoPromo() {
             >
               <PlayArrowIcon sx={{ fontSize: 40 }} />
             </IconButton>
-            <Typography variant="h5" sx={{ color: 'white', mt: 2 }}>
+            {/*<Typography variant="h5" sx={{ color: 'white', mt: 2 }}>
               {translate('landing.vision.title')}
-            </Typography>
+            </Typography>*/}
           </Box>
         </Container>
         <VideoModal isOpen={isOpen} onClose={() => setIsOpen(false)} />
