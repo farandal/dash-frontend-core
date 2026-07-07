@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import ReactPlayer from "react-player";
 
 export default function VideoModal({ isOpen, onClose }) {
@@ -15,7 +16,11 @@ export default function VideoModal({ isOpen, onClose }) {
 
   if (!isOpen) return null;
 
-  return (
+  // Rendered via portal into document.body: some ancestor sections use
+  // `contain: layout style` (MuiBox theme override), which creates a new
+  // containing block for `position: fixed` descendants and would otherwise
+  // pin this overlay to that section instead of centering on the viewport.
+  return createPortal(
     <div
       className="modal-overlay"
       style={{
@@ -58,6 +63,7 @@ export default function VideoModal({ isOpen, onClose }) {
           />
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

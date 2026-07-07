@@ -13,6 +13,7 @@ import Plans from './components/pages/Plans';
 import Security from './components/pages/Security';
 import RecoverPassword from './components/pages/RecoverPassword';
 import ChangePassword from './components/pages/ChangePassword';
+import PreReleaseSignUp from './components/pages/PreReleaseSignUp';
 
 
 
@@ -50,6 +51,15 @@ export const dashPublicRoutes = () => [
         key="plans"
         path='/plans'
         element={isPreRelease() ? <Navigate to="/" replace /> : <Plans/>}
+    />,
+    <Route
+        key="prerelease-signup"
+        path='/prerelease-signup'
+        element={
+            <Suspense fallback={<GlobalSmallLoader />}>
+                <PreReleaseSignUp />
+            </Suspense>
+        }
     />,
     <Route
         key="signup"

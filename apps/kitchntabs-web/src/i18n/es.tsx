@@ -1362,6 +1362,7 @@ const customEs = {
                 contactPhone: "Teléfono de contacto (opcional)",
                 businessWebsite: "Sitio web del negocio (opcional)",
                 businessInstagram: "Instagram del negocio (opcional)",
+                continue: "Continuar",
                 send: "Enviar",
                 error: "No pudimos registrar tus datos. Por favor inténtalo nuevamente."
             },
@@ -1417,6 +1418,9 @@ const customEs = {
                 title: "Escala con el crecimiento del patio",
                 description: "La plataforma incorpora progresivamente nuevas funcionalidades como pagos digitales, integración con marketplaces, control de inventarios y logística."
             }
+        },
+        videoPromo: {
+            title: "Video introductorio"
         },
         vision: {
             title: "Nuestra Visión",

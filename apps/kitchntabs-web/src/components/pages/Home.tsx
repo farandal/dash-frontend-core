@@ -27,8 +27,9 @@ export default function HomeThree() {
     return (
       <>
         <PreReleaseHero />
+        {/*<VideoPromo />*/}
         <Promo />
-        <VideoPromo />
+
       </>
     );
   }
@@ -36,8 +37,9 @@ export default function HomeThree() {
   return (
     <>
       <HeroThree />
-      <Promo />
-      <VideoPromo />
+
+      {/*<VideoPromo />*/}
+       <Promo />
       {/*<Download />*/}
       <CtaSignup bgColor={true} />
       {/*<Promo />

@@ -1,113 +1,48 @@
-import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { useSelector } from 'react-redux';
-import { Alert, Box, Button, CircularProgress, TextField, Typography } from '@mui/material';
-import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
-import { IDASHAppState } from 'dash-admin-state';
-import { useAxios } from 'dash-axios-hook';
+import { useNavigate } from 'react-router-dom';
+import { Box, Button, TextField } from '@mui/material';
 import { useTranslate } from '@app/components/hooks/usePolyglotTranslation';
 
-interface PreReleaseSignupData {
-    name: string;
+interface PreReleaseEmailFormData {
     email: string;
-    contact_phone?: string;
-    business_website?: string;
-    business_instagram?: string;
 }
 
 /**
- * Pre-release email capture form: posts interested users to the public
- * /prerelease/signup endpoint together with the current UI language, so the
- * backend can send the welcome email in the right locale.
+ * Pre-release email capture on the landing hero: just the email input.
+ * Submitting navigates to /prerelease-signup with the email prefilled, where
+ * the full form (name, phone, website, instagram) is completed on its own page.
  */
 export default function PreReleaseSignupForm() {
     const translate = useTranslate();
-    const axios = useAxios();
-    const [loading, setLoading] = useState(false);
-    const [submitted, setSubmitted] = useState(false);
-    const [submitError, setSubmitError] = useState<string | null>(null);
-
-    const settings = useSelector((state: IDASHAppState<any, any, any>) => state.settings);
-    const currentLocale = settings?.locale || 'es';
+    const navigate = useNavigate();
 
     const {
         register,
         handleSubmit,
-        setError,
         formState: { errors },
-    } = useForm<PreReleaseSignupData>();
+    } = useForm<PreReleaseEmailFormData>();
 
-    async function onSubmit(data: PreReleaseSignupData) {
-        try {
-            setLoading(true);
-            setSubmitError(null);
-
-            await axios.post('/prerelease/register', {
-                name: data.name,
-                email: data.email,
-                contact_phone: data.contact_phone || null,
-                business_website: data.business_website || null,
-                business_instagram: data.business_instagram || null,
-                preferred_language: currentLocale,
-            });
-
-            setSubmitted(true);
-        } catch (error: any) {
-            console.error('Pre-release signup error:', error);
-            const responseErrors = error.response?.data?.errors;
-            if (responseErrors) {
-                for (const key in responseErrors) {
-                    setError(key as keyof PreReleaseSignupData, {
-                        type: 'custom',
-                        message: Array.isArray(responseErrors[key]) ? responseErrors[key][0] : responseErrors[key],
-                    });
-                }
-            } else {
-                setSubmitError(error.response?.data?.message || translate('landing.prerelease.form.error'));
-            }
-        } finally {
-            setLoading(false);
-        }
-    }
-
-    if (submitted) {
-        return (
-            <Box
-                sx={{
-                    textAlign: 'center',
-                    p: { xs: 3, sm: 4 },
-                    borderRadius: '12px',
-                    backgroundColor: 'rgba(155, 193, 60, 0.12)',
-                    border: '1px solid rgba(155, 193, 60, 0.5)',
-                }}
-            >
-                <CheckCircleOutlineIcon sx={{ fontSize: 56, color: '#9bc13c', mb: 1 }} />
-                <Typography variant="h5" sx={{ fontWeight: 700, mb: 1 }}>
-                    {translate('landing.prerelease.success.title')}
-                </Typography>
-                <Typography sx={{ color: 'text.secondary' }}>
-                    {translate('landing.prerelease.success.message')}
-                </Typography>
-            </Box>
-        );
+    function onSubmit(data: PreReleaseEmailFormData) {
+        navigate('/prerelease-signup', { state: { email: data.email } });
     }
 
     return (
-        <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-            <TextField
-                label={translate('landing.prerelease.form.name')}
-                required
-                fullWidth
-                size="medium"
-                {...register('name', { required: translate('landing.prerelease.form.nameRequired') })}
-                error={!!errors.name}
-                helperText={errors.name?.message}
-            />
+        <Box
+            component="form"
+            onSubmit={handleSubmit(onSubmit)}
+            sx={{
+                display: 'flex',
+                flexDirection: { xs: 'column', sm: 'row' },
+                gap: 2,
+                alignItems: 'stretch',
+            }}
+        >
             <TextField
                 label={translate('landing.prerelease.form.email')}
                 required
                 fullWidth
                 size="medium"
+                autoFocus
                 inputProps={{ type: 'email' }}
                 {...register('email', {
                     required: translate('landing.prerelease.form.emailRequired'),
@@ -118,53 +53,24 @@ export default function PreReleaseSignupForm() {
                 })}
                 error={!!errors.email}
                 helperText={errors.email?.message}
+                sx={{ flex: 1, minWidth: '250px' }}
             />
-            <TextField
-                label={translate('landing.prerelease.form.contactPhone')}
-                fullWidth
-                size="medium"
-                placeholder="+569 1234 5678"
-                {...register('contact_phone')}
-                error={!!errors.contact_phone}
-                helperText={errors.contact_phone?.message}
-            />
-            <TextField
-                label={translate('landing.prerelease.form.businessWebsite')}
-                fullWidth
-                size="medium"
-                placeholder="https://"
-                {...register('business_website')}
-                error={!!errors.business_website}
-                helperText={errors.business_website?.message}
-            />
-            <TextField
-                label={translate('landing.prerelease.form.businessInstagram')}
-                fullWidth
-                size="medium"
-                placeholder="@"
-                {...register('business_instagram')}
-                error={!!errors.business_instagram}
-                helperText={errors.business_instagram?.message}
-            />
-
-            {submitError && <Alert severity="error">{submitError}</Alert>}
-
             <Button
                 type="submit"
                 variant="contained"
                 size="large"
-                disabled={loading}
                 sx={{
                     borderRadius: '8px',
                     padding: '12px 28px',
                     fontWeight: 600,
                     fontSize: '0.95rem',
+                    whiteSpace: 'nowrap',
                     backgroundColor: '#9bc13c',
                     textTransform: 'none',
                     '&:hover': { backgroundColor: '#7faa00' },
                 }}
             >
-                {loading ? <CircularProgress size={24} sx={{ color: '#fff' }} /> : translate('landing.prerelease.form.send')}
+                {translate('landing.prerelease.form.continue')}
             </Button>
         </Box>
     );

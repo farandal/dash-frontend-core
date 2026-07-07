@@ -1366,6 +1366,7 @@ const customEn = {
                 contactPhone: "Contact Phone (optional)",
                 businessWebsite: "Business Website (optional)",
                 businessInstagram: "Business Instagram (optional)",
+                continue: "Continue",
                 send: "Send",
                 error: "We could not register your details. Please try again."
             },
@@ -1421,6 +1422,9 @@ const customEn = {
                 title: "Scale with Food Court Growth",
                 description: "The platform progressively incorporates new functionalities such as digital payments, marketplace integration, inventory control and logistics."
             }
+        },
+        videoPromo: {
+            title: "Introductory video"
         },
         vision: {
             title: "Our Vision",
