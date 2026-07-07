@@ -9,9 +9,11 @@ export const logoutFromStorage = async () => {
 	removeCookie('token');
 	dashStorage.removeItem('user');
 	dashStorage.removeItem('auth');
+	dashStorage.removeItem('token');
+	dashStorage.removeItem('refreshToken'); // Clear refresh token for security
 	dashStorage.setItem('authenticated', 'false');
 	dashStorage.setItem('roles', null); // before it was guest role.
-	
+
 	// Clear auth data from device store (Electron/Capacitor)
 	await clearDeviceStoreAuth();
 };
@@ -39,6 +41,11 @@ export default {
                 setCookie('token', loginResponse.data.token);
 
 				dashStorage.setItem('token', loginResponse.data.token);
+
+				// Store refresh token for automatic token refresh
+				if (loginResponse.data.refresh_token) {
+					dashStorage.setItem('refreshToken', loginResponse.data.refresh_token);
+				}
 
 				try {
 					let { data: auth } = await axios.get('/auth/getauth');

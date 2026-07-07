@@ -2,6 +2,23 @@ import axios from 'axios';
 import constants from 'dash-constants/src/DASHAdminSystemConstants';
 import { dashStorage } from 'dash-utils';
 
+// Track refresh state to prevent multiple simultaneous refresh attempts
+let isRefreshing = false;
+let failedQueue: Array<{ resolve: (token: string) => void; reject: (error: any) => void }> = [];
+
+const processQueue = (error: any, token?: string) => {
+	failedQueue.forEach(prom => {
+		if (error) {
+			prom.reject(error);
+		} else {
+			prom.resolve(token!);
+		}
+	});
+
+	isRefreshing = false;
+	failedQueue = [];
+};
+
 export const initAxios = () => {
 	let CSRFAuth = false;
 
@@ -36,8 +53,74 @@ export const initAxios = () => {
 			//console.log("Axios Success", response);
 			return response;
 		},
-		(error) => {
-			window.dispatchEvent(new MessageEvent('GlobalError', { data: {error:error} }));
+		async (error) => {
+			const originalRequest = error.config;
+
+			// Skip refresh for auth-related endpoints to prevent infinite loops
+			const authEndpoints = ['/login', '/auth/refresh', '/logout', '/register'];
+			const isAuthEndpoint = authEndpoints.some(endpoint =>
+				originalRequest.url?.includes(endpoint)
+			);
+
+			// Handle 401 Unauthorized
+			if (error.response?.status === 401 && !isAuthEndpoint && !originalRequest._retry) {
+				if (isRefreshing) {
+					// If already refreshing, queue this request
+					return new Promise((resolve, reject) => {
+						failedQueue.push({ resolve, reject });
+					}).then(token => {
+						originalRequest.headers.Authorization = 'Bearer ' + token;
+						return instance(originalRequest);
+					}).catch(err => {
+						return Promise.reject(err);
+					});
+				}
+
+				originalRequest._retry = true;
+				isRefreshing = true;
+
+				try {
+					const refreshToken = dashStorage.getItem('refreshToken');
+
+					if (!refreshToken) {
+						// No refresh token available, logout user
+						await handleAuthFailure();
+						return Promise.reject(error);
+					}
+
+					// Attempt to refresh the access token
+					const refreshResponse = await axios.post(
+						`${constants.system.ADMIN_API_URL}/auth/refresh`,
+						{ refresh_token: refreshToken }
+					);
+
+					const { token, refresh_token } = refreshResponse.data;
+
+					// Store new tokens
+					dashStorage.setItem('token', token);
+					dashStorage.setItem('refreshToken', refresh_token);
+
+					// Update original request with new token
+					originalRequest.headers.Authorization = 'Bearer ' + token;
+
+					// Process queued requests
+					processQueue(null, token);
+
+					// Retry original request
+					return instance(originalRequest);
+				} catch (refreshError) {
+					// Refresh failed, logout user
+					await handleAuthFailure();
+					processQueue(refreshError, null);
+					return Promise.reject(refreshError);
+				}
+			}
+
+			// Dispatch global error event for other errors
+			if (error.response?.status !== 401) {
+				window.dispatchEvent(new MessageEvent('GlobalError', { data: { error } }));
+			}
+
 			if (error.response && error.response.status === 422) {
 				/**
 				 * Error Handling This is important for the system to parse Form field errors within AutoAdmin.
@@ -45,12 +128,32 @@ export const initAxios = () => {
 				 **/
 				return Promise.reject(error.response.data?.errors || error);
 			}
+
 			return Promise.reject(error);
 		},
 	);
 
 	return instance;
 };
+
+// Helper function to handle authentication failure
+async function handleAuthFailure() {
+	// Clear auth data
+	dashStorage.removeItem('token');
+	dashStorage.removeItem('refreshToken');
+	dashStorage.removeItem('user');
+	dashStorage.removeItem('auth');
+	dashStorage.removeItem('authenticated');
+	dashStorage.removeItem('roles');
+
+	// Dispatch logout event
+	window.dispatchEvent(new MessageEvent('auth:logout'));
+
+	// Redirect to login if not already there
+	if (!window.location.pathname.includes('/login')) {
+		window.location.href = '/login';
+	}
+}
 
 const useAxios = () => {
 	const axios = initAxios();
