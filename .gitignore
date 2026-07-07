@@ -30,3 +30,9 @@ typecheck_output*.txt
 **/dash_process.lock
 **/logs/
 **/output/
+
+# build-electron.js temporarily renames these mid-build to work around an
+# electron-builder pnpm-workspace parsing bug; they must never be committed -
+# doing so once already leaked a 23k-line stale pnpm-lock.yaml into git history.
+*.build-backup
+package.json.backup
