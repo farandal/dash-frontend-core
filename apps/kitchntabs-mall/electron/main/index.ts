@@ -612,7 +612,8 @@ const speakMessage = (message: string, lang?: string) => {
     speechProcess = spawn(speechCmd, speechArgs, {
       ...(process.platform === 'win32' && {
         shell: true,
-        windowsVerbatimArguments: true
+        windowsVerbatimArguments: true,
+        windowsHide: true  // Hide console window on Windows
       })
     });
     
@@ -800,7 +801,8 @@ const startPythonProcess = async (t: string, c: string) => {
       stdio: ['ignore', serviceOut, serviceErr],
       ...(process.platform === 'win32' && {
         shell: true,
-        windowsVerbatimArguments: true
+        windowsVerbatimArguments: true,
+        windowsHide: true  // Hide console window on Windows
       })
     });
     pythonProcess.unref();
@@ -895,6 +897,7 @@ const printOrder = (id: string) => {
       printProcess = spawn(config.PRINT_SERVICE_PATH_PROD, [id, configFile, logFile], {
         //cwd: PYTHON_SCRIPT_DIR,
         stdio: "pipe",
+        ...(process.platform === 'win32' && { windowsHide: true })  // Hide console on Windows
       });
 
       log.info(BUILD_ENV, config.PRINT_SERVICE_PATH_PROD)
@@ -909,6 +912,7 @@ const printOrder = (id: string) => {
       printProcess = spawn(DEV_PYTHON_ENV, [config.PRINT_SERVICE_PATH_DEV], {
         //cwd: PYTHON_SCRIPT_DIR,.
         stdio: "pipe",
+        ...(process.platform === 'win32' && { windowsHide: true })  // Hide console on Windows
       });
       log.info(BUILD_ENV, DEV_PYTHON_ENV, config.PRINT_SERVICE_PATH_DEV, id, path.normalize(configFile), path.normalize(logFile))
 
