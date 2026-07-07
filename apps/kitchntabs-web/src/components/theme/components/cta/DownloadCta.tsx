@@ -229,7 +229,7 @@ export default function DownloadCta() {
           </Typography>
           <Button
             variant="outlined"
-            href="https://panel.kitchntabs.com"
+            href="https://app.kitchntabs.com"
             target="_blank"
             sx={{ borderRadius: 2 }}
           >
