@@ -10,3 +10,29 @@
 .auto-admin-grouped-form {
     padding: 0 !important;
 }
+
+// ============================================================================
+// Tab Admin datagrid — scoped style override hook
+// ----------------------------------------------------------------------------
+// The `tab/tab-admin` resource sets dataGridProps.className = 'kt-tab-admin-table',
+// which react-admin applies to the <table> element. Style it here so we can
+// customize the rows WITHOUT changing the global --component-bg variable (which
+// would affect every card/table in the app). Tune the values below to taste.
+// ============================================================================
+.kt-tab-admin-table {
+    // Row background (override the default var(--component-bg) that renders dark)
+    .RaDatagrid-rowEven,
+    .RaDatagrid-rowOdd {
+        background-color: var(--bodybg-primary);
+    }
+
+    // Slightly differentiate alternating rows for readability
+    .RaDatagrid-rowOdd {
+        background-color: color-mix(in srgb, var(--bodybg-primary) 88%, #000 12%);
+    }
+
+    // Hover state
+    .RaDatagrid-row:hover {
+        background-color: color-mix(in srgb, var(--bodybg-primary) 80%, #fff 20%) !important;
+    }
+}

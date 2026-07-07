@@ -1,6 +1,36 @@
 
 
 
+/**
+ * Palette overrides for the system app.
+ *
+ * NOTE: kitchntabs-system's `dash-variables.less` uses the LESS `@var` convention
+ * and is imported BEFORE dash-css-transformer.less. The transformer emits every
+ * color as a LITERAL (it only references @vars for the two sidebar dimensions),
+ * so `@color` overrides in dash-variables.less are DEAD. This file is imported
+ * AFTER the transformer, so a plain :root here wins the cascade — put color
+ * overrides here, not in dash-variables.less.
+ */
+:root {
+    // Brand-purple datagrid header + active pagination pill, white text
+    // (overrides the neon-green #69de00 transformer fallback; not tenant-injected).
+    --table-header-bg--light: #8f00cb;
+    --table-header-bg--dark: #5c0086;
+    --table-header-color--light: #ffffff;
+    --table-header-color--dark: #ffffff;
+
+    // Harmonized with kitchntabs-app / kitchntabs-web
+    --primary-contrast--light: #ffffff;   // white on the purple primary (was dark navy)
+    --primary-contrast--dark: #ffffff;
+    --secondary-color--light: #7faa00;     // unified green secondary (was orange)
+    --secondary-color--dark: #8fbf3f;
+    --secondary-contrast--light: #ffffff;
+    --secondary-contrast--dark: #ffffff;
+    --highlight-color--light: #96b500;     // refined olive (was the acid #d4ff00)
+    --highlight-color--dark: #a6c800;
+    --light-color--dark: #2d2640;          // fix leftover `red`
+}
+
 html[data-theme='light'] {
 
     body,

@@ -68,6 +68,11 @@ process.env.DIST = distVite;
 let pythonProcess: any;
 let printProcess: any;
 let soundProcess: any;
+// Serializes startPythonProcess() so only one kt_service is ever spawned, even
+// when the main-process auto-start and the renderer's start-bg-service IPC race.
+let isStartingPython = false;
+// True only in the app that actually spawned the (machine-wide, shared) service.
+let ownsPythonService = false;
 
 dotenv.config();
 let config: any = {};
@@ -278,10 +283,129 @@ log.info(`Python binary exists: ${fs.existsSync(PYTHON_SERVICE_PATH_PROD)}`);
 log.info(`Python config exists: ${fs.existsSync(PYTHON_SERVICE_CONFIG_PATH_PROD)}`);
 log.info('========================');
 
+// ---------------------------------------------------------------------------
+// Machine-wide single kt_service, shared across all KitchnTabs electron apps.
+//
+// Several electron apps (e.g. kitchntabs-app + kitchntabs-mall) can run at once
+// but must share ONE kt_service. Coordination lives in a shared state file at an
+// app-agnostic path (each app's userData differs, so it can't coordinate them).
+// The service is reference-counted by electron PID: the first app spawns it
+// (detached, so it survives that app), each additional app registers and reuses
+// it, and it is killed only when the LAST app exits. A mkdir-based mutex
+// serialises read-modify-write of the state file across processes.
+// ---------------------------------------------------------------------------
+const sharedServiceDir = path.join(app.getPath('appData'), 'kitchntabs-shared');
+try {
+  fs.mkdirSync(sharedServiceDir, { recursive: true });
+} catch (e) {
+  log.error('Failed to create shared service dir:', e);
+}
+const serviceStateFile = path.join(sharedServiceDir, 'kt_service.json');
+const serviceStateMutexDir = path.join(sharedServiceDir, 'kt_service.lock.d');
+const serviceLogFile = path.join(sharedServiceDir, 'kt_service.log');
+
+// Legacy per-app lock path — kept only so a stale file from older builds is cleaned up.
 const lockFile =
   isDev
     ? path.join(appPath, "./dash_process.lock")
     : path.join(app.getPath("userData"), "dash_process.lock");
+
+interface ServiceState {
+  servicePid?: number;              // PID of the running kt_service (if any)
+  apps: number[];                   // electron main-process PIDs currently using it
+  starting?: { by: number; at: number }; // a spawn in progress (reservation)
+}
+
+// Cross-process critical section guarding the state file (atomic mkdir mutex).
+const withServiceStateLock = async <T>(fn: () => T): Promise<T> => {
+  const deadline = Date.now() + 5000;
+  for (;;) {
+    try {
+      fs.mkdirSync(serviceStateMutexDir);
+      break;
+    } catch (e: any) {
+      if (e.code !== 'EEXIST') { log.error('Service state mutex error:', e); break; }
+      // Reclaim a stale mutex left by a crashed process.
+      try {
+        const st = fs.statSync(serviceStateMutexDir);
+        if (Date.now() - st.mtimeMs > 10000) { fs.rmdirSync(serviceStateMutexDir); continue; }
+      } catch { /* ignore */ }
+      if (Date.now() > deadline) { log.warn('Service state mutex timed out; proceeding best-effort'); break; }
+      await wait(0.05);
+    }
+  }
+  try {
+    return fn();
+  } finally {
+    try { fs.rmdirSync(serviceStateMutexDir); } catch { /* ignore */ }
+  }
+};
+
+const readServiceState = (): ServiceState => {
+  try {
+    const parsed = JSON.parse(fs.readFileSync(serviceStateFile, 'utf8'));
+    return {
+      servicePid: parsed.servicePid,
+      apps: Array.isArray(parsed.apps) ? parsed.apps : [],
+      starting: parsed.starting,
+    };
+  } catch {
+    return { apps: [] };
+  }
+};
+
+const writeServiceState = (state: ServiceState): void => {
+  try { fs.writeFileSync(serviceStateFile, JSON.stringify(state)); }
+  catch (e) { log.error('Failed to write service state:', e); }
+};
+
+// Drop app PIDs that are no longer running, a dead service PID, and a stale reservation.
+const pruneServiceState = (state: ServiceState): ServiceState => {
+  const apps = state.apps.filter(pid => pid === process.pid || isProcessRunning(pid));
+  const servicePid = state.servicePid && isProcessRunning(state.servicePid) ? state.servicePid : undefined;
+  let starting = state.starting;
+  if (starting && (Date.now() - starting.at > 15000 || !isProcessRunning(starting.by))) starting = undefined;
+  return { servicePid, apps, starting };
+};
+
+const killByPid = (pid: number): void => {
+  try {
+    if (process.platform === 'win32') {
+      spawn('taskkill', ['/pid', pid.toString(), '/f', '/t']);
+    } else {
+      process.kill(pid, 'SIGTERM');
+    }
+  } catch (e) {
+    log.error(`Failed to signal service PID ${pid}:`, e);
+  }
+};
+
+// Stop the shared kt_service by its recorded PID and clear it from state.
+// Used for explicit stop and power-resume restart (does NOT deregister the app).
+const stopSharedService = async (): Promise<void> => {
+  let servicePid: number | undefined;
+  await withServiceStateLock(() => {
+    const state = pruneServiceState(readServiceState());
+    servicePid = state.servicePid;
+    state.servicePid = undefined;
+    state.starting = undefined;
+    writeServiceState(state);
+  });
+  if (servicePid && isProcessRunning(servicePid)) {
+    log.info(`Stopping shared kt_service (PID: ${servicePid})`);
+    killByPid(servicePid);
+    await wait(3);
+    if (isProcessRunning(servicePid)) {
+      if (process.platform === 'win32') {
+        spawn('taskkill', ['/pid', String(servicePid), '/f', '/t']);
+      } else {
+        try { process.kill(servicePid, 'SIGKILL'); } catch { /* ignore */ }
+      }
+    }
+  }
+  pythonProcess = null;
+  ownsPythonService = false;
+};
 
 // Create log directory if it doesn't exist
 const ensureLogDirectory = () => {
@@ -404,60 +528,23 @@ async function wait(seconds: number): Promise<void> {
   });
 }
 
-// Function to check if a process with a given PID is running
+// Function to check if a process with a given PID is running.
+// Signal 0 tests for existence without killing and works on Windows too under
+// Node (the old win32 `spawn('tasklist')` path read an async stream synchronously
+// and never actually detected the process — which broke reference counting there).
 function isProcessRunning(pid: number): boolean {
+  if (!pid || Number.isNaN(pid)) return false;
   try {
-    // For Windows, use a different approach than process.kill(pid, 0)
-    if (process.platform === 'win32') {
-      const result = spawn('tasklist', ['/FI', `PID eq ${pid}`], { 
-        windowsHide: true,
-        stdio: ['ignore', 'pipe', 'ignore']
-      });
-      const output = result.stdout.toString();
-      return output.includes(pid.toString());
-    } else {
-      // On Unix-like systems, process.kill with signal 0 checks if process exists
-      process.kill(pid, 0);
-      return true;
-    }
-  } catch (e) {
-    return false;
+    process.kill(pid, 0);
+    return true;
+  } catch (e: any) {
+    // EPERM = the process exists but we lack permission to signal it → still running.
+    return !!(e && e.code === 'EPERM');
   }
 }
 
-// Function to check and acquire a lock for the Python process
-function checkAndAcquireLock(): boolean {
-  // Check if lock file exists
-  if (fs.existsSync(lockFile)) {
-    try {
-      // Read PID from lock file
-      const pid = parseInt(fs.readFileSync(lockFile, 'utf8'), 10);
-      
-      // Check if process with this PID is still running
-      if (isProcessRunning(pid)) {
-        log.info(`Process with PID ${pid} is already running`);
-        showNotification("Info", "Subprocess is already running");
-        return false;
-      } else {
-        log.info(`Found stale lock file for PID ${pid}. Removing it.`);
-        // Process not running, so remove the stale lock file
-        fs.unlinkSync(lockFile);
-      }
-    } catch (error) {
-      log.error("Error checking lock file:", error);
-      // If there's an error reading the lock file, assume it's corrupted and remove it
-      try {
-        fs.unlinkSync(lockFile);
-      } catch (e) {
-        log.error("Error removing corrupted lock file:", e);
-        return false;
-      }
-    }
-  }
-  
-  // At this point, either no lock file exists or we've removed a stale one
-  return true;
-}
+// checkAndAcquireLock() was removed — superseded by the machine-wide,
+// reference-counted service state (withServiceStateLock / readServiceState above).
 
 // Helper function to get the sound path
 const getSoundPath = (soundName: string): string => {
@@ -575,46 +662,56 @@ const playWelcomeMessage = () => {
 
 // Update the startPythonProcess function to forward subprocess output to renderer
 const startPythonProcess = async (t: string, c: string) => {
-  // Check if we can acquire a lock
-  if (!checkAndAcquireLock()) {
-    //log.info("Cannot start a new process as one is already running");
-    await killProcess();
-    //return;
+  // Guarantee a single kt_service instance. Two triggers race to start it — the
+  // main-process auto-start on `did-finish-load` and the renderer's
+  // `start-bg-service` IPC — and the old check-then-spawn lock had a TOCTOU gap
+  // (both callers passed checkAndAcquireLock() before either wrote the lock file
+  // after spawn), leaving two kt_service processes. These synchronous guards
+  // (set before any `await`, so the single-threaded event loop can't interleave
+  // two starts) make concurrent/duplicate calls no-ops.
+  if (isStartingPython) {
+    log.info("Python service start already in progress — ignoring duplicate request");
+    return;
   }
+  if (pythonProcess) {
+    log.info(`Python service already running (PID: ${pythonProcess.pid}) — ignoring duplicate request`);
+    return;
+  }
+  isStartingPython = true;
+  let decision: 'reuse' | 'spawn' = 'reuse';
 
-  showNotification('info', "Starting subprocess");
+  try {
+  // Machine-wide coordination: register this app and reuse the shared kt_service
+  // if one is already running (or is being started by another app right now).
+  decision = await withServiceStateLock<'reuse' | 'spawn'>(() => {
+    const state = pruneServiceState(readServiceState());
+    if (!state.apps.includes(process.pid)) state.apps.push(process.pid);
+
+    const serviceAlive = !!(state.servicePid && isProcessRunning(state.servicePid));
+    const anotherStarting = !!(state.starting && (Date.now() - state.starting.at < 15000) && isProcessRunning(state.starting.by));
+
+    if (serviceAlive || anotherStarting) {
+      writeServiceState(state);
+      return 'reuse';
+    }
+    // Reserve the spawn so a second app doesn't also spawn during the window
+    // before we can record the child PID.
+    state.starting = { by: process.pid, at: Date.now() };
+    writeServiceState(state);
+    return 'spawn';
+  });
+
   token = t;
   channel = c;
 
-  // Track if we've seen a successful connection
-  let connectionEstablished = false;
+  if (decision === 'reuse') {
+    const { servicePid } = readServiceState();
+    log.info(`Reusing shared kt_service (PID: ${servicePid ?? 'starting'}) — not spawning a duplicate`);
+    return;
+  }
 
-  const outputFunction = (data: any) => {
-    const stdout = data.toString();
-    log.info(`> ${stdout}`);
-    
-    // Check for successful WebSocket connection
-    if (!connectionEstablished && (
-      stdout.includes('Connected successfully') || 
-      stdout.includes('connection_established') ||
-      stdout.includes('subscription_succeeded')
-    )) {
-      connectionEstablished = true;
-      showNotification("KitchnTabs", "✅ Background service connected successfully!");
-      // Note: Welcome audio is now handled by the Python service using gTTS
-    }
-    
-    // Send subprocess stdout to renderer
-    if (win && win.webContents) {
-      win.webContents.send('subprocess-output', {
-        type: 'stdout',
-        message: stdout,
-        timestamp: new Date().toISOString(),
-        pid: pythonProcess?.pid
-      });
-    }
-  };
- 
+  showNotification('info', "Starting subprocess");
+
   // Use a try-catch block to handle potential errors
   try {
     let pythonCmd, scriptPath, args;
@@ -689,113 +786,102 @@ const startPythonProcess = async (t: string, c: string) => {
 
     }
     log.info("Spawning", `> ${pythonCmd}`);
-    
-    // Spawn the process with proper quoted paths for Windows
+
+    // Spawn DETACHED with stdio redirected to the shared log file (not parent
+    // pipes) and unref()'d, so the single kt_service survives the app that
+    // started it — other apps keep using it until the LAST app exits. (Piping
+    // stdout to the parent would kill the service with a broken pipe once that
+    // app quit; live stdout streaming to the renderer is traded for file logs.)
+    const serviceOut = fs.openSync(serviceLogFile, 'a');
+    const serviceErr = fs.openSync(serviceLogFile, 'a');
     pythonProcess = spawn(pythonCmd, args, {
+      env: getPythonServiceEnv(),
+      detached: true,
+      stdio: ['ignore', serviceOut, serviceErr],
       ...(process.platform === 'win32' && {
         shell: true,
         windowsVerbatimArguments: true
       })
     });
+    pythonProcess.unref();
 
     log.info('Python process command:', pythonCmd, 'args:', args);
 
-    // Handle process output
-    pythonProcess.stdout.on("data", outputFunction);
-    pythonProcess.stderr.on("data", (data) => {
-      const stderr = data.toString();
-      log.error(`> ${stderr}`);
-      
-      // Show notification for critical errors
-      if (stderr.includes('Error') || stderr.includes('Exception') || stderr.includes('Traceback')) {
-        showNotification("⚠️ Python Service Warning", stderr.substring(0, 200));
-      }
-      
-      // Send subprocess stderr to renderer
-      if (win && win.webContents) {
-        win.webContents.send('subprocess-output', {
-          type: 'stderr',
-          message: stderr,
-          timestamp: new Date().toISOString(),
-          pid: pythonProcess?.pid
-        });
-      }
-    });
-
-    // Update event handlers for process termination
-    pythonProcess.on("close", (code) => {
-      log.info(`Python process exited with code ${code}`);
-      
-      // Show notification based on exit code
+    // The spawner still receives exit/error events while it is alive, so it can
+    // clear the shared servicePid if the service dies.
+    pythonProcess.on("exit", async (code: any) => {
+      log.info(`kt_service exited with code ${code}`);
       if (code !== 0 && code !== null) {
-        showNotification("❌ Python Service Stopped", 
-          `The background service exited unexpectedly with code ${code}.\n\nCheck the logs for more details.`);
+        showNotification("❌ Python Service Stopped",
+          `The background service exited unexpectedly with code ${code}.`);
       }
-      
-      // Send process termination message to renderer
-      if (win && win.webContents) {
-        win.webContents.send('subprocess-output', {
-          type: 'exit',
-          message: `Process exited with code ${code}`,
-          timestamp: new Date().toISOString(),
-          exitCode: code
-        });
-      }
-      
-      releaseLock();
+      const exitedPid = pythonProcess?.pid;
       pythonProcess = null;
+      ownsPythonService = false;
+      await withServiceStateLock(() => {
+        const state = pruneServiceState(readServiceState());
+        if (state.servicePid === exitedPid) state.servicePid = undefined;
+        writeServiceState(state);
+      });
     });
 
-    pythonProcess.on("error", (err: NodeJS.ErrnoException) => {
+    pythonProcess.on("error", async (err: NodeJS.ErrnoException) => {
       log.error("Python process error:", err);
-      
-      // Provide specific error messages based on error type
-      let errorTitle = "❌ Failed to Start Python Service";
       let errorMessage = `Error: ${err.message}`;
-      
       if (err.code === 'ENOENT') {
-        errorMessage = `The Python service executable was not found.\n\nPath: ${pythonCmd}\n\nThis usually means:\n- The application was not installed correctly\n- The binary is missing or corrupted\n- Permission issues`;
+        errorMessage = `The Python service executable was not found.\n\nPath: ${pythonCmd}`;
       } else if (err.code === 'EACCES') {
-        errorMessage = `Permission denied when trying to execute Python service.\n\nPath: ${pythonCmd}\n\nTry running the application with appropriate permissions.`;
+        errorMessage = `Permission denied executing the Python service.\n\nPath: ${pythonCmd}`;
       } else if (err.code === 'EPERM') {
-        errorMessage = `Operation not permitted. The system blocked execution of the Python service.\n\nOn macOS, you may need to allow the app in System Preferences > Security & Privacy.`;
+        errorMessage = `Operation not permitted starting the Python service.`;
       }
-      
-      showNotification(errorTitle, errorMessage);
-      
-      // Send process error message to renderer
-      if (win && win.webContents) {
-        win.webContents.send('subprocess-output', {
-          type: 'error',
-          message: `Process error: ${err.message}`,
-          timestamp: new Date().toISOString(),
-          error: err.toString(),
-          code: err.code
-        });
-      }
-      
-      releaseLock();
+      showNotification("❌ Failed to Start Python Service", errorMessage);
+      const failedPid = pythonProcess?.pid;
       pythonProcess = null;
+      ownsPythonService = false;
+      await withServiceStateLock(() => {
+        const state = pruneServiceState(readServiceState());
+        if (state.servicePid === failedPid) state.servicePid = undefined;
+        if (state.starting && state.starting.by === process.pid) state.starting = undefined;
+        writeServiceState(state);
+      });
     });
 
-    // Create lock file with PID
+    // Record the running service PID (and clear our spawn reservation) so other
+    // apps reuse it instead of spawning their own.
     if (pythonProcess && pythonProcess.pid) {
-      log.info("Process ID:", pythonProcess.pid);
-      try {
-        fs.writeFileSync(lockFile, pythonProcess.pid.toString());
-        showNotification("Info", `Python service started (PID: ${pythonProcess.pid})`);
-      } catch (err) {
-        log.error(`Failed to write lock file: ${err}`);
-      }
+      log.info("kt_service PID:", pythonProcess.pid);
+      ownsPythonService = true;
+      const servicePid = pythonProcess.pid;
+      await withServiceStateLock(() => {
+        const state = pruneServiceState(readServiceState());
+        state.servicePid = servicePid;
+        state.starting = undefined;
+        if (!state.apps.includes(process.pid)) state.apps.push(process.pid);
+        writeServiceState(state);
+      });
+      showNotification("Info", `Python service started (PID: ${servicePid})`);
     } else {
-      log.error("Failed to get process ID - spawn may have failed silently");
+      log.error("Failed to get service PID - spawn may have failed silently");
       showNotification("⚠️ Warning", "Python process started but couldn't get PID. Check if the binary is executable.");
     }
   } catch (error: any) {
     log.error("Error starting Python process:", error);
-    showNotification("❌ Error Starting Python Service", 
+    showNotification("❌ Error Starting Python Service",
       `An unexpected error occurred: ${error.message}\n\nCheck the logs for more details.`);
-    releaseLock();
+  }
+  } finally {
+    // If we reserved a spawn but never got a running service (missing binary,
+    // spawn error, exception), release the reservation so another app can spawn.
+    if (decision === 'spawn' && !pythonProcess) {
+      await withServiceStateLock(() => {
+        const state = pruneServiceState(readServiceState());
+        if (state.starting && state.starting.by === process.pid) state.starting = undefined;
+        writeServiceState(state);
+      });
+    }
+    // Always clear the start guard so a later legitimate (re)start can proceed.
+    isStartingPython = false;
   }
 };
 
@@ -1005,7 +1091,8 @@ async function createWindow() {
    
     await wait(5);
     if (token && channel) {
-    await killProcess();
+    // Force-restart the shared service (don't deregister this app).
+    await stopSharedService();
     await startPythonProcess(token, channel);
     }
   });
@@ -1340,19 +1427,14 @@ ipcMain.handle('ipc-speak', async (_event, payload: { text: string; lang?: strin
 const cleanup = async () => {
   log.info("Running cleanup process");
 
-  // Kill Python process if it exists
-  if (pythonProcess) {
-    try {
-      log.info(`Killing Python process with PID: ${pythonProcess.pid}`);
-      await killProcess(); // <-- Await here!
-      log.info("Python process cleanup completed");
-    } catch (error) {
-      log.error("Error during Python process cleanup:", error);
-      releaseLock();
-    }
-  } else {
-    // Even if pythonProcess is null, we should check and remove any lock file
-    releaseLock();
+  // Always deregister this app from the shared kt_service (every app is
+  // registered, whether or not it holds the child handle). This stops the
+  // service only when we are the last app still open.
+  try {
+    await killProcess();
+    log.info("Service deregistration completed");
+  } catch (error) {
+    log.error("Error during service cleanup:", error);
   }
 
   // Kill print process if it exists
@@ -1654,71 +1736,45 @@ if (process.platform === 'win32') {
   });
 }
 
-const killProcess = async () => {
-  log.info("Killing Python process:");
-  if (pythonProcess) {
-    try {
-      log.info(`Attempting to kill Python process with PID: ${pythonProcess.pid}`);
-      pythonProcess.kill('SIGTERM');
-      await wait(5);
-      
-      // Check if process is still running after the wait
-      if (pythonProcess.pid && isProcessRunning(pythonProcess.pid)) {
-        log.info(`Process still running after SIGTERM, using force kill`);
-        if (process.platform === 'win32') {
-          spawn('taskkill', ['/pid', pythonProcess.pid.toString(), '/f', '/t']);
-        } else {
-          process.kill(pythonProcess.pid, 'SIGKILL');
-        }
-      }
-    } catch (error) {
-      log.error("Error killing Python process:", error);
-      showNotification("Error", "Error closing sub process");
-    } finally {
-      releaseLock();
-      pythonProcess = null;
-      log.info("Python process reference cleared");
-    }
+// Deregister this app from the shared kt_service. The service is stopped ONLY
+// when this was the last app using it; otherwise it keeps running for the others.
+const killProcess = async (): Promise<boolean> => {
+  let lastApp = false;
+  await withServiceStateLock(() => {
+    const state = pruneServiceState(readServiceState());
+    state.apps = state.apps.filter(pid => pid !== process.pid);
+    lastApp = state.apps.length === 0;
+    writeServiceState(state);
+  });
+
+  if (lastApp) {
+    log.info("Last app closing — stopping the shared kt_service");
+    await stopSharedService();
   } else {
-    log.info("No Python process to kill");
-    // Even if pythonProcess is null, we should check and remove any lock file
-    releaseLock();
+    log.info("Other apps still running — leaving the shared kt_service up");
+    // We may hold the child handle, but must NOT kill the surviving service.
+    pythonProcess = null;
+    ownsPythonService = false;
   }
-  
-  return true; // Return success status
+  return true;
 }
 
+// Explicit "stop background service" (renderer stop-bg-service). This is a
+// deliberate user action, so it stops the shared service for the whole machine
+// (not just this app). Apps stay registered; a later start re-spawns it.
 const stopPythonProcess = async () => {
   showNotification('Info', "Stopping background service");
-  
+
   try {
-    const success = await killProcess();
-    if (success) {
-      showNotification("Info", "Background service stopped successfully");
-      // Reset token and channel when service is intentionally stopped
-      token = null;
-      channel = null;
-      return true;
-    } else {
-      showNotification("Warning", "Service may not have stopped properly");
-      return false;
-    }
+    await stopSharedService();
+    showNotification("Info", "Background service stopped successfully");
+    // Reset token and channel when service is intentionally stopped
+    token = null;
+    channel = null;
+    return true;
   } catch (error) {
     log.error("Error in stopPythonProcess:", error);
     showNotification("Error", "Failed to stop background service");
     return false;
-  }
-}
-
-
-// Function to release the lock when the process terminates
-function releaseLock(): void {
-  if (fs.existsSync(lockFile)) {
-    try {
-      fs.unlinkSync(lockFile);
-      log.info("Lock file removed successfully");
-    } catch (error) {
-      log.error("Error removing lock file:", error);
-    }
   }
 }

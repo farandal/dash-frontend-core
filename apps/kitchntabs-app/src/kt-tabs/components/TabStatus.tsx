@@ -2,7 +2,7 @@ import { Product } from "kt-ecommerce";
 import { CardMedia, CardContent, ListItem, List, IconButton, Typography, Box, Grid, Card, TextField, CardHeader, Chip, CircularProgress, MenuItem } from "@mui/material";
 
 import { IDashAutoAdminCustomFieldComponent } from "dash-auto-admin";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Loading, useDataProvider, useEditContext, useGetList, useRecordContext, useRefresh, useTranslate } from "react-admin";
 
 import { useFieldArray, useFormContext, useFormState } from "react-hook-form";
@@ -34,9 +34,24 @@ const ItemEdit: React.FC<IDashAutoAdminCustomFieldComponent> = (props) => {
 
     const status = watch('status');
 
+    // Keep the displayed status in sync with the record's status.
+    // Seed it on first load AND re-sync whenever the record's status changes
+    // on the server — e.g. another device advances the tab (Preparation → Prepared)
+    // and the websocket-driven refresh() in TabsEditProvider refetches the record.
+    // The field is bound to the react-hook-form value, which the previous
+    // `if (!status)` guard only seeded once, so external status changes never
+    // reached the open edit view. Local changes persist immediately via
+    // updateTabStatus(), so re-syncing from the record can't clobber an unsaved
+    // selection and won't cause a loop (record and form converge to the same value).
+    const syncedRecordStatus = useRef<string | undefined>(undefined);
     useEffect(() => {
-        if (!status && record?.status) {
-            setValue('status', record.status);
+        const recordStatus = record?.status;
+        if (!recordStatus) return;
+        if (recordStatus !== syncedRecordStatus.current) {
+            syncedRecordStatus.current = recordStatus;
+            if (recordStatus !== status) {
+                setValue('status', recordStatus);
+            }
         }
     }, [record, setValue, status]);
 

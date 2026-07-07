@@ -69,6 +69,10 @@ const resources: IDashAutoAdminResourceConfig[] = [
         exporter: false,
        
         dataGridProps: {
+            // Custom hook class on the RA <Datagrid> table so the domain app can
+            // scope row/background style overrides (see app styles.less) without
+            // touching the global --component-bg variable.
+            className: 'kt-tab-admin-table',
             bulkActionButtons: false,
             rowClick:false,
         },

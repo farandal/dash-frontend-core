@@ -21,14 +21,16 @@
   --primary-color--light: #8f00cb;
   --primary-color--dark: #8f00cb;
 
-  --primary-contrast--light: #00044c;
-  --primary-contrast--dark: #00044c;
+  // White reads far better on the purple primary than the old dark navy (#00044c)
+  --primary-contrast--light: #460064;
+  --primary-contrast--dark: #460064;
 
+  // Unified green secondary across all three apps (was orange #df7722 in dark)
   --secondary-color--light: #7faa00;
-  --secondary-color--dark: #df7722;
+  --secondary-color--dark: #8fbf3f;
 
-  --secondary-contrast--light: #E65100;
-  --secondary-contrast--dark: #c4b7a4;
+  --secondary-contrast--light: #FFFFFF;
+  --secondary-contrast--dark: #FFFFFF;
 
   --bodybg-primary--light: #efefef;
   --bodybg-secondary--light: #ffffff;
@@ -46,7 +48,7 @@
   --text-color--dark: #F3F0FF;
 
   --light-color--light: #F8F4FF;
-  --light-color--dark: red;
+  --light-color--dark: #2d2640;
 
   --highlight-color--light: rgb(150, 181, 0);
   --highlight-color--dark: rgb(150, 181, 0);
@@ -66,8 +68,9 @@
   --btn-bg--light: #7faa00;
   --btn-bg--dark: #7faa00;
 
-  --btn-hover-bg--light: #7faa00;
-  --btn-hover-bg--dark: #7faa00;
+  // Darker green so the hover state is actually perceptible (was identical to bg)
+  --btn-hover-bg--light: #6b9200;
+  --btn-hover-bg--dark: #6b9200;
 
   --btn-color--light: #FFFFFF;
   --btn-color--dark: #F8F4FF;
@@ -75,8 +78,12 @@
   --tab-selected-bg--light: #979797;
   --tab-selected-bg--dark: #8f00cb;
 
+  // Brand-purple datagrid header + active pagination pill, white text.
+  // Overrides the neon-green #69de00 transformer fallback (not tenant-injected).
   --table-header-color--dark: #fff;
-  --table-header-color--light: #000;
+  --table-header-color--light: #fff;
+  --table-header-bg--light: #8f00cb;
+  --table-header-bg--dark: #5c0086;
   // ========================================
   // BACKGROUND COLORS
   // ========================================
