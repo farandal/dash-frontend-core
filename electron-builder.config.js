@@ -131,7 +131,7 @@ module.exports = {
       fs.mkdirSync(destDir, { recursive: true });
       
       // Services to copy
-      const services = ['kt_service', 'print_service', 'tts_service'];
+      const services = ['kt_service', 'print_service', 'tts_service', 'kt_status_tray'];
       
       for (const service of services) {
         // Source: Docker-built binary for this architecture
@@ -255,7 +255,8 @@ module.exports = {
     binaries: [
       'Contents/Resources/python-service/kt_service',
       'Contents/Resources/python-service/print_service',
-      'Contents/Resources/python-service/tts_service'
+      'Contents/Resources/python-service/tts_service',
+      'Contents/Resources/python-service/kt_status_tray'
     ]
   },
   linux: {
@@ -305,7 +306,7 @@ module.exports = {
   extraResources: [
     // Python service executables - for macOS and Windows
     // Linux uses afterPack hook for architecture-specific binaries
-    // All services: kt_service, print_service, tts_service
+    // All services: kt_service, print_service, tts_service, kt_status_tray
     ...(process.platform === 'win32' ? [
       {
         from: path.resolve(__dirname, '../dash-python-service/kt_service'),
@@ -316,7 +317,7 @@ module.exports = {
       {
         from: path.resolve(__dirname, '../dash-python-service/kt_service'),
         to: 'python-service',
-        filter: ['**/kt_service', '**/print_service', '**/tts_service']  // All service binaries
+        filter: ['**/kt_service', '**/print_service', '**/tts_service', '**/kt_status_tray']  // All service binaries
       }
     ] : [
       // Linux: Placeholder - actual binary copied in afterPack hook

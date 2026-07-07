@@ -4,6 +4,7 @@ import { release } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { update } from "./update";
+import { TrayCoordinator } from "./TrayCoordinator";
 import * as dotenv from "dotenv";
 import * as path from "path";
 import YAML from "yaml";
@@ -68,6 +69,7 @@ process.env.DIST = distVite;
 let pythonProcess: any;
 let printProcess: any;
 let soundProcess: any;
+let trayCoordinator: TrayCoordinator | null = null;
 // Serializes startPythonProcess() so only one kt_service is ever spawned, even
 // when the main-process auto-start and the renderer's start-bg-service IPC race.
 let isStartingPython = false;
@@ -1169,10 +1171,33 @@ async function createWindow() {
     log.error("Error in update function:", error);
   }
 
+  // Initialize tray coordinator for multi-app reference counting
+  try {
+    // Mirrors PYTHON_SERVICE_PATH_PROD: packaged apps get the binary from
+    // resources/python-service/ (Resources/python-service on macOS); in dev it
+    // comes from dash-python-service's native build-service.js output dir.
+    const trayBinaryPath = addExeExtension(
+      app.isPackaged
+        ? path.join(resourcesPath, './python-service/kt_status_tray')
+        : path.join(appPath, '../../../dash-python-service/kt_service/kt_status_tray')
+    );
+    log.info(`[TrayCoordinator] Resolved tray binary path: ${trayBinaryPath}`);
+
+    if (fs.existsSync(trayBinaryPath)) {
+      trayCoordinator = new TrayCoordinator('kitchntabs-app', trayBinaryPath);
+      await trayCoordinator.initialize();
+      log.info(`[TrayCoordinator] Initialized - tray PID: ${trayCoordinator.getTrayPid()}`);
+    } else {
+      log.warn(`[TrayCoordinator] Tray binary not found at ${trayBinaryPath}`);
+    }
+  } catch (error) {
+    log.error(`[TrayCoordinator] Failed to initialize:`, error);
+  }
+
   powerMonitor.on("resume", async () => {
     log.info("System has resumed from suspension.");
     showNotification("Info", "System has resumed from suspension");
-   
+
     await wait(5);
     if (token && channel) {
     // Force-restart the shared service (don't deregister this app).
@@ -1182,7 +1207,7 @@ async function createWindow() {
   });
 
 
- 
+
 }
 
 /* handle ipc messages */
@@ -1554,6 +1579,17 @@ const cleanup = async () => {
       fs.unlinkSync(lockFile);
     } catch (error) {
       log.error("Error removing lock file:", error);
+    }
+  }
+
+  // Cleanup tray coordinator (deregister this app and kill tray if last app)
+  if (trayCoordinator) {
+    try {
+      log.info("Cleaning up tray coordinator");
+      await trayCoordinator.cleanup();
+      log.info("Tray coordinator cleanup completed");
+    } catch (error) {
+      log.error("Error during tray coordinator cleanup:", error);
     }
   }
 };

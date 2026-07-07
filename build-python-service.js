@@ -163,17 +163,26 @@ function checkPythonServiceDir() {
   return true;
 }
 
+// kt_status_tray needs PyQt6/Qt6, which has no working wheels for GLIBC 2.28
+// (Debian Buster). It's intentionally left out of requirements-armv7l-buster.txt,
+// so don't treat it as required there or the buster arch will "never complete"
+// and force a full Docker rebuild on every run.
+function getRequiredServices(arch) {
+  const base = ['kt_service', 'print_service', 'tts_service'];
+  return arch.includes('buster') ? base : [...base, 'kt_status_tray'];
+}
+
 // Check if Docker builds exist for required architectures
 // Returns { arch: { complete: boolean, missing: string[] } }
 function checkDockerBuilds(archs, configArg) {
   const results = {};
-  const requiredServices = ['kt_service', 'print_service', 'tts_service'];
-  
+
   for (const arch of archs) {
     const archDir = path.join(DOCKER_BUILDS_DIR, arch);
+    const requiredServices = getRequiredServices(arch);
     const missingServices = [];
     let totalSize = 0;
-    
+
     for (const service of requiredServices) {
       const binaryPath = path.join(archDir, service);
       if (fs.existsSync(binaryPath)) {
@@ -281,7 +290,7 @@ function buildNativePythonService(config) {
 // Verify the built executable exists (all services)
 function verifyBuild() {
   const exeExt = process.platform === 'win32' ? '.exe' : '';
-  const requiredServices = ['kt_service', 'print_service', 'tts_service'];
+  const requiredServices = ['kt_service', 'print_service', 'tts_service', 'kt_status_tray'];
   const serviceDir = path.join(PYTHON_SERVICE_DIR, 'kt_service');
   
   let allVerified = true;
@@ -315,13 +324,13 @@ function verifyBuild() {
 // Verify Docker builds exist (all services)
 function verifyDockerBuilds(archs) {
   let allComplete = true;
-  const requiredServices = ['kt_service', 'print_service', 'tts_service'];
-  
+
   for (const arch of archs) {
     const archDir = path.join(DOCKER_BUILDS_DIR, arch);
+    const requiredServices = getRequiredServices(arch);
     let archComplete = true;
     let totalSize = 0;
-    
+
     for (const service of requiredServices) {
       const binaryPath = path.join(archDir, service);
       if (fs.existsSync(binaryPath)) {
