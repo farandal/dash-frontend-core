@@ -107,6 +107,21 @@ You only need to do this once per machine/architecture. After that, `node build-
 
 > ⚠️ **Apple Silicon vs Intel**: `pw_env` built on an M-series Mac produces **arm64** binaries only. To also produce x64 binaries you need a second `pw_env` built under a Rosetta (`arch -x86_64`) shell, or a real Intel Mac. Same logic applies in reverse.
 
+### Standalone Python-only build (skip the Electron app entirely)
+
+`dash-python-service/package.json` exposes its own scripts around `build-service.js`, useful when you just want to sanity-check the Python side (e.g. rerun `kt_status_tray` by hand after a code change) without doing a full Electron repackage each time:
+
+```bash
+cd ~/DASH-FRAMEWORK/dash-python-service
+npm run build:prod   # node build-service.js --custom-mode=kitchntabs.prod --service=all
+```
+
+Builds natively for whatever machine you run it on (macOS binaries on a Mac, Windows binaries on Windows) into `dash-python-service/kt_service/`. Requires `pw_env` to already exist with `requirements.txt` installed (see above) — it does **not** create the venv for you.
+
+> ⚠️ **`--service=all` (and `build:kt` / `build:print` / `build:tts`) don't actually do anything different** — `build-service.js` never reads that flag. Every invocation always builds all 4 binaries (`kt_service`, `print_service`, `tts_service`, `kt_status_tray`) in one pass. Don't rely on `build:kt` etc. to build only one service.
+
+> This only produces the Python binaries — it does not build or package the Electron app. The `pnpm release:electron:...` scripts in `kitchntabs-frontend-refactored` already call this same pipeline automatically (via `build-python-service.js` → `build-service.js`) as one of their build steps, so you don't need to run this separately as part of a normal release build.
+
 ### Linux ARM (Docker cross-compile)
 
 No manual setup needed beyond Docker + buildx — `build-python-service.js` invokes `dash-python-service/build-docker.js` automatically whenever the electron-builder CLI args target Linux (`--linux deb --arm64` etc.). To pre-build manually:

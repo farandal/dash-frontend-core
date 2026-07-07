@@ -4,7 +4,7 @@
   "author": "Francisco Aranda <farandal@gmail.com>",
   "license": "MIT",
   "private": true,
-  "version": "1.3.43",
+  "version": "1.3.45",
   "main": "apps/kitchntabs-app/dist-electron/main/index.js",
   "scripts": {
     "new": "chmod +x ./new.sh && sh ./new.sh",
