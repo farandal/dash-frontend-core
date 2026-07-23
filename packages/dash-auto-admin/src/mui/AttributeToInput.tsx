@@ -143,10 +143,18 @@ const useRecordByMethod = (method: string, mode?: string) => {
     // Always call both hooks, but handle when they're not available
     const editContext = useSafeEditContext();
     const recordContext = useSafeRecordContext();
-    
+
     // Return the appropriate context based on method
     if (method === 'edit' || mode === 'edit') {
-        return editContext;
+        // useEditContext() returns react-admin's EditControllerResult — an object
+        // shaped { record, resource, save, isLoading, ... } — NOT the record itself.
+        // Returning it directly meant every consumer downstream (UserAction, custom
+        // field components reading record.settings / record[attributePath] / record.id)
+        // was silently reading properties off the wrong object and always getting
+        // undefined, with no error — they'd see the edit-context wrapper, not the
+        // entity being edited. Unwrap .record here, falling back to recordContext if
+        // the edit context isn't ready yet (e.g. still loading).
+        return editContext?.record ?? recordContext;
     }
     return recordContext;
 };
