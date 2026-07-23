@@ -13,7 +13,7 @@
     "config:web:kitchntabs:development": "cross-env MODE=development CUSTOM_MODE=kitchntabs.development TARGET_TYPE=web PLATFORM=web APP_PATH=apps/kitchntabs node build_config.js",
     "config:web:kitchntabs:local": "cross-env MODE=development CUSTOM_MODE=kitchntabs.local TARGET_TYPE=web PLATFORM=web APP_PATH=apps/kitchntabs node build_config.js",
     "config:web:kitchntabs-app:local": "cross-env MODE=development CUSTOM_MODE=kitchntabs.local TARGET_TYPE=web PLATFORM=web APP_PATH=apps/kitchntabs-app VITE_DEV_PORT=3010 VITE_HMR_PORT=4440 node build_config.js",
-    "config:web:kitchntabs-app:development": "cross-env MODE=development CUSTOM_MODE=kitchntabs.development TARGET_TYPE=web PLATFORM=web APP_PATH=apps/kitchntabs-app VITE_DEV_PORT=3010 VITE_HMR_PORT=4440 node build_config.js",
+    "config:web:kitchntabs-app:development": "cross-env MODE=development CUSTOM_MODE=kitchntabs.development TARGET_TYPE=web PLATFORM=web APP_PATH=apps/kitchntabs-app node build_config.js",
     "config:web:kitchntabs-app:production": "cross-env MODE=production CUSTOM_MODE=kitchntabs.production TARGET_TYPE=web PLATFORM=web APP_PATH=apps/kitchntabs-app node build_config.js",
     "config:web:kitchntabs-app:tunnel": "cross-env MODE=development CUSTOM_MODE=kitchntabs.tunnel TARGET_TYPE=web PLATFORM=web APP_PATH=apps/kitchntabs-app node build_config.js",
     "config:web:kitchntabs-web:development": "cross-env MODE=development CUSTOM_MODE=kitchntabs.development TARGET_TYPE=web PLATFORM=web APP_PATH=apps/kitchntabs-web node build_config.js",
