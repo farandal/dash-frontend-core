@@ -1,4 +1,4 @@
-package com.kitchntabs.app;
+package com.dash.app;
 
 import android.Manifest;
 import android.app.NotificationChannel;

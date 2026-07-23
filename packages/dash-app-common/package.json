@@ -1,9 +1,8 @@
 {
 	"name": "dash-app-common",
-	"version": "1.0.0",
+	"version": "1.0.2",
 	"description": "Common defaults and utilities for Dash applications - provides pre-configured components, extensions, pages, filters, and schemas",
-	"private": true,
-	"main": "src/index.ts",
+	"main": "dist/index.js",
 	"type": "module",
 	"scripts": {
 		"lint": "eslint --ext .ts,.tsx .",
@@ -11,7 +10,8 @@
 		"lint:check": "pnpm prettier --check .",
 		"lint:fix": "pnpm prettier --write .",
 		"check-updates": "pnpm npm-check-updates",
-		"updates-packages": "pnpm npm-check-updates -u"
+		"updates-packages": "pnpm npm-check-updates -u",
+		"build": "tsup"
 	},
 	"browserslist": {
 		"production": [
@@ -56,5 +56,78 @@
 	},
 	"eslintConfig": {
 		"extends": "react-app"
+	},
+	"module": "dist/index.js",
+	"types": "./src/index.ts",
+	"exports": {
+		".": "./dist/index.js",
+		"./defaults": "./dist/defaults/index.js",
+		"./src/defaults": "./dist/defaults/index.js",
+		"./defaults/extensions": "./dist/defaults/extensions/index.js",
+		"./src/defaults/extensions": "./dist/defaults/extensions/index.js",
+		"./defaults/extensions/bootstrap": "./dist/defaults/extensions/bootstrap/index.js",
+		"./src/defaults/extensions/bootstrap": "./dist/defaults/extensions/bootstrap/index.js",
+		"./defaults/extensions/components": "./dist/defaults/extensions/components/index.js",
+		"./src/defaults/extensions/components": "./dist/defaults/extensions/components/index.js",
+		"./defaults/extensions/electron": "./dist/defaults/extensions/electron/index.js",
+		"./src/defaults/extensions/electron": "./dist/defaults/extensions/electron/index.js",
+		"./defaults/extensions/hooks": "./dist/defaults/extensions/hooks/index.js",
+		"./src/defaults/extensions/hooks": "./dist/defaults/extensions/hooks/index.js",
+		"./defaults/extensions/i18n": "./dist/defaults/extensions/i18n/index.js",
+		"./src/defaults/extensions/i18n": "./dist/defaults/extensions/i18n/index.js",
+		"./defaults/extensions/layout": "./dist/defaults/extensions/layout/index.js",
+		"./src/defaults/extensions/layout": "./dist/defaults/extensions/layout/index.js",
+		"./defaults/extensions/managers": "./dist/defaults/extensions/managers/index.js",
+		"./src/defaults/extensions/managers": "./dist/defaults/extensions/managers/index.js",
+		"./defaults/extensions/providers": "./dist/defaults/extensions/providers/index.js",
+		"./src/defaults/extensions/providers": "./dist/defaults/extensions/providers/index.js",
+		"./defaults/extensions/router": "./dist/defaults/extensions/router/index.js",
+		"./src/defaults/extensions/router": "./dist/defaults/extensions/router/index.js",
+		"./defaults/extensions/state": "./dist/defaults/extensions/state/index.js",
+		"./src/defaults/extensions/state": "./dist/defaults/extensions/state/index.js",
+		"./defaults/extensions/styles": "./dist/defaults/extensions/styles/index.js",
+		"./src/defaults/extensions/styles": "./dist/defaults/extensions/styles/index.js",
+		"./defaults/extensions/theme": "./dist/defaults/extensions/theme/index.js",
+		"./src/defaults/extensions/theme": "./dist/defaults/extensions/theme/index.js",
+		"./defaults/extensions/utils": "./dist/defaults/extensions/utils/index.js",
+		"./src/defaults/extensions/utils": "./dist/defaults/extensions/utils/index.js",
+		"./defaults/filters": "./dist/defaults/filters/index.js",
+		"./src/defaults/filters": "./dist/defaults/filters/index.js",
+		"./defaults/filters/demo": "./dist/defaults/filters/demo/index.js",
+		"./src/defaults/filters/demo": "./dist/defaults/filters/demo/index.js",
+		"./defaults/pages": "./dist/defaults/pages/index.js",
+		"./src/defaults/pages": "./dist/defaults/pages/index.js",
+		"./defaults/pages/Account": "./dist/defaults/pages/Account/index.js",
+		"./src/defaults/pages/Account": "./dist/defaults/pages/Account/index.js",
+		"./defaults/pages/Misc": "./dist/defaults/pages/Misc/index.js",
+		"./src/defaults/pages/Misc": "./dist/defaults/pages/Misc/index.js",
+		"./defaults/pages/Static": "./dist/defaults/pages/Static/index.js",
+		"./src/defaults/pages/Static": "./dist/defaults/pages/Static/index.js",
+		"./defaults/schemas": "./dist/defaults/schemas/index.js",
+		"./src/defaults/schemas": "./dist/defaults/schemas/index.js",
+		"./defaults/schemas/demo": "./dist/defaults/schemas/demo/index.js",
+		"./src/defaults/schemas/demo": "./dist/defaults/schemas/demo/index.js",
+		"./*": "./dist/*.js",
+		"./src/*": "./dist/*.js"
+	},
+	"publishConfig": {
+		"access": "public",
+		"registry": "http://localhost:4873"
+	},
+	"files": [
+		"dist",
+		"src"
+	],
+	"typesVersions": {
+		"*": {
+			"src/*": [
+				"src/*",
+				"src/*/index"
+			],
+			"*": [
+				"src/*",
+				"src/*/index"
+			]
+		}
 	}
 }

@@ -41,7 +41,7 @@ function readBuildConfig() {
   if (!fs.existsSync(BUILD_CONFIG_PATH)) {
     console.warn('⚠️  build_config.json not found. Using defaults.');
     return {
-      customMode: 'kitchntabs.prod',
+      customMode: 'dash.prod',
       platform: process.platform
     };
   }
@@ -49,14 +49,14 @@ function readBuildConfig() {
   try {
     const config = JSON.parse(fs.readFileSync(BUILD_CONFIG_PATH, 'utf8'));
     return {
-      customMode: config.customMode || 'kitchntabs.prod',
+      customMode: config.customMode || 'dash.prod',
       platform: config.platform || process.platform,
       mode: config.mode || 'production'
     };
   } catch (error) {
     console.error('❌ Error reading build_config.json:', error.message);
     return {
-      customMode: 'kitchntabs.prod',
+      customMode: 'dash.prod',
       platform: process.platform
     };
   }
@@ -76,15 +76,15 @@ function getDockerConfigArg(customMode) {
 function prepareElectronConfigFiles(customMode) {
   console.log('\n📋 Preparing Electron config file...');
 
-  // Check both kitchntabs and kitchntabs-app directories
-  let appsDir = path.join(FRONTEND_DIR, 'apps', 'kitchntabs-app');
+  // Check both dash and dash-app directories
+  let appsDir = path.join(FRONTEND_DIR, 'apps', 'dash-app');
   if (!fs.existsSync(appsDir)) {
-    appsDir = path.join(FRONTEND_DIR, 'apps', 'kitchntabs');
+    appsDir = path.join(FRONTEND_DIR, 'apps', 'dash');
   }
   
   // Primary: Use frontend config file matching CUSTOM_MODE exactly
-  // e.g., CUSTOM_MODE=kitchntabs.development → config.kitchntabs.development.yaml
-  // e.g., CUSTOM_MODE=kitchntabs.production → config.kitchntabs.production.yaml
+  // e.g., CUSTOM_MODE=dash.development → config.dash.development.yaml
+  // e.g., CUSTOM_MODE=dash.production → config.dash.production.yaml
   let sourceConfigName = customMode ? `config.${customMode}.yaml` : null;
   let sourceConfig = sourceConfigName ? path.join(appsDir, sourceConfigName) : null;
   
@@ -104,11 +104,11 @@ function prepareElectronConfigFiles(customMode) {
       console.log(`   ⚠️  Frontend config not found: ${sourceConfigName || 'undefined'}`);
       console.log(`   Trying legacy Python service configs...`);
       
-      if (customMode && customMode.includes('kitchntabs')) {
+      if (customMode && customMode.includes('dash')) {
         if (customMode.includes('development') || customMode.includes('ngrok')) {
-          sourceConfigName = 'config.kitchntabs.ngrok.yaml';
+          sourceConfigName = 'config.dash.ngrok.yaml';
         } else {
-          sourceConfigName = 'config.kitchntabs.prod.yaml';
+          sourceConfigName = 'config.dash.prod.yaml';
         }
       } else if (customMode && customMode.includes('pinoywok')) {
         if (customMode.includes('ngrok') || customMode.includes('development')) {
@@ -133,7 +133,7 @@ function prepareElectronConfigFiles(customMode) {
   }
   
   // Copy to multiple targets:
-  // 1. Electron packaging (apps/kitchntabs/config.yaml)
+  // 1. Electron packaging (apps/dash/config.yaml)
   // 2. Python service build (dash-python-service/config.{CUSTOM_MODE}.yaml)
   const electronTarget = path.join(appsDir, 'config.yaml');
   const pythonServiceTarget = path.join(PYTHON_SERVICE_DIR, sourceConfigName);

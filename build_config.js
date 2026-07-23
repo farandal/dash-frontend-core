@@ -185,7 +185,7 @@ function getCustomModeConfig(customMode, envVars) {
         }
     };
 
-    // Match both bare keys ('production') and suffixed keys ('kitchntabs.production')
+    // Match both bare keys ('production') and suffixed keys ('dash.production')
     const modeSuffix = customMode ? customMode.split('.').pop() : '';
     const config = customModeConfigs[customMode] || customModeConfigs[modeSuffix] || {
         apiBaseUrl: apiBaseUrl,
@@ -218,8 +218,8 @@ function getCustomModeConfig(customMode, envVars) {
 function getDefaultApiUrl(customMode) {
     const defaults = {
         'pinoywok.ngrok': 'https://pw-api.ngrok.dev',
-        'staging': 'https://staging-api.kitchntabs.com',
-        'production': 'https://api.kitchntabs.com'
+        'staging': 'https://staging-api.dash.com',
+        'production': 'https://api.dash.com'
     };
     
     return defaults[customMode] || 'http://localhost:8000';
@@ -368,19 +368,19 @@ if (process.argv.includes('--help') || process.argv.includes('-h')) {
 Build Configuration Generator
 
 Usage:
-  MODE=production CUSTOM_MODE=pinoywok.ngrok TARGET_TYPE=mobile PLATFORM=android APP_PATH=apps/kitchntabs node build_config.js
+  MODE=production CUSTOM_MODE=pinoywok.ngrok TARGET_TYPE=mobile PLATFORM=android APP_PATH=apps/dash node build_config.js
 
 Environment Variables:
   MODE              Build mode (development|staging|production)
   CUSTOM_MODE       Custom configuration mode
   TARGET_TYPE       Target platform type (mobile|desktop|web)
   PLATFORM          Specific platform (android|ios|web|electron)
-  APP_PATH          Path to the app directory (e.g., apps/kitchntabs)
+  APP_PATH          Path to the app directory (e.g., apps/dash)
   NODE_OPTIONS      Node.js options (e.g., --max-old-space-size=4048)
 
 Examples:
-  MODE=production TARGET_TYPE=mobile PLATFORM=android APP_PATH=apps/kitchntabs node build_config.js
-  MODE=development CUSTOM_MODE=kitchntabs.development TARGET_TYPE=desktop APP_PATH=apps/kitchntabs node build_config.js
+  MODE=production TARGET_TYPE=mobile PLATFORM=android APP_PATH=apps/dash node build_config.js
+  MODE=development CUSTOM_MODE=dash.development TARGET_TYPE=desktop APP_PATH=apps/dash node build_config.js
   MODE=staging TARGET_TYPE=web APP_PATH=apps/dash node build_config.js
 `);
     process.exit(0);

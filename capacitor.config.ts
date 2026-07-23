@@ -1,9 +1,9 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'com.kitchntabs.app',
-  appName: 'KitchnTabs',
-  webDir: 'apps/kitchntabs-app/dist',
+  appId: 'com.dash.app',
+  appName: 'DashAdmin',
+  webDir: 'apps/dash-app/dist',
 
   server: {
     androidScheme: process.env.NODE_ENV === 'production' ? 'https' : 'http'

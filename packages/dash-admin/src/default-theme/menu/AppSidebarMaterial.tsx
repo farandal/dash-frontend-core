@@ -305,7 +305,7 @@ const AppSidebarMaterial: React.FC<AppSidebarMaterialProps> = (props) => {
     
     return (
         <Box sx={{ display: 'flex' }}>
-          
+       
             <MuiDrawer
                 variant={localNavSize === "small" ? 'temporary' : 'permanent'}
                 anchor={sidebarPosition}

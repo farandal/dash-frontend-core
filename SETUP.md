@@ -4,10 +4,10 @@ This is a **pnpm monorepo** (Turborepo) with the following apps:
 
 | App | Path | Purpose |
 |-----|------|---------|
-| `kitchntabs` | `apps/kitchntabs` | Main desktop/Electron app |
-| `kitchntabs-app` | `apps/kitchntabs-app` | Web app variant |
-| `kitchntabs-web` | `apps/kitchntabs-web` | Public web build |
-| `kitchntabs-system` | `apps/kitchntabs-system` | System/admin panel |
+| `dash` | `apps/dash` | Main desktop/Electron app |
+| `dash-app` | `apps/dash-app` | Web app variant |
+| `dash-web` | `apps/dash-web` | Public web build |
+| `dash-system` | `apps/dash-system` | System/admin panel |
 
 ---
 
@@ -90,12 +90,12 @@ This copies the `apps/demo` template into `apps/dash` and sets up the domain app
 
 | Target | Command |
 |--------|---------|
-| Web (kitchntabs-app, local) | `pnpm dev:web:kitchntabs-app:local` |
-| Web (kitchntabs-app, dev) | `pnpm dev:web:kitchntabs-app:development` |
-| Web (kitchntabs-web, dev) | `pnpm dev:web:kitchntabs-web:development` |
-| Web (kitchntabs-system, dev) | `pnpm dev:web:kitchntabs-system:development` |
-| Electron (dev) | `pnpm dev:electron:kitchntabs:development` |
-| Android (dev) | `pnpm dev:android:kitchntabs:development` |
+| Web (dash-app, local) | `pnpm dev:web:dash-app:local` |
+| Web (dash-app, dev) | `pnpm dev:web:dash-app:development` |
+| Web (dash-web, dev) | `pnpm dev:web:dash-web:development` |
+| Web (dash-system, dev) | `pnpm dev:web:dash-system:development` |
+| Electron (dev) | `pnpm dev:electron:dash:development` |
+| Android (dev) | `pnpm dev:android:dash:development` |
 
 ---
 

@@ -35,11 +35,10 @@
 		],
 		"noFallthroughCasesInSwitch": true,
 		"useDefineForClassFields": true,
-		
+
         "allowJs": true,
-        "noEmit": true,
-        "incremental": true
-        
+        "noEmit": true
+
 	},
 	"exclude": [
 		"node_modules",

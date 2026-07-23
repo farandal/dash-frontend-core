@@ -91,7 +91,7 @@ import {
 import { IDashAutoAdminResourceConfig } from 'dash-auto-admin';
 import ResourceTemplate from './templates/ResourceTemplate';
 import { JSX, useMemo, useCallback } from 'react';
-import { useDashThemeContext } from '../src/default-theme/DashThemeContext';
+import { useDashThemeContext } from './default-theme/DashThemeContext';
 import { DASHAdminSystemConstants } from 'dash-constants';
 
 interface IAsyncResources extends AdminUIProps {

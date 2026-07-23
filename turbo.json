@@ -43,6 +43,11 @@
         "deploy": {
           "dependsOn": ["build", "test", "lint"],
           "outputs": []
+        },
+        "publish:local": {
+          "dependsOn": ["build"],
+          "cache": false,
+          "outputs": []
         }
       }
 }

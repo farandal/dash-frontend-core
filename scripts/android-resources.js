@@ -181,9 +181,9 @@ function verifyAndInjectRequiredAssets() {
   const stringsFile = path.join(VALUES_PATH, 'strings.xml');
   let stringsXml = `<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">KitchnTabs</string>
+    <string name="app_name">DashAdmin</string>
     <string name="title_activity_main">MainActivity</string>
-    <string name="package_name">com.kitchntabs.app</string>
+    <string name="package_name">com.dash.app</string>
     <string name="default_notification_channel_id">default_channel_id</string>
     <string name="default_notification_channel_name">App Notifications</string>
     <string name="default_notification_channel_description">General application alerts</string>

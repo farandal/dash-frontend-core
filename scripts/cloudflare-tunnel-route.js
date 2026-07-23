@@ -10,10 +10,10 @@ function usage() {
   node scripts/cloudflare-tunnel-route.js <app-path>
 
 Example:
-  node scripts/cloudflare-tunnel-route.js apps/kitchntabs-web
+  node scripts/cloudflare-tunnel-route.js apps/dash-web
 
 Behavior:
-  - Reads VITE_APP_FRONTEND_URL and VITE_DEV_PORT from <app-path>/.env.kitchntabs.tunnel.
+  - Reads VITE_APP_FRONTEND_URL and VITE_DEV_PORT from <app-path>/.env.dash.tunnel.
   - Reads CF_API_TOKEN / CF_ACCOUNT_ID / CF_TUNNEL_NAME / CF_ZONE_NAME / CF_ZONE_ID from the
     sibling ../dash-backend-docker/.env (no Cloudflare secrets are duplicated into this repo).
   - Looks up the existing named tunnel (created by dash-backend-docker's tunnel script) and
@@ -179,7 +179,7 @@ async function main() {
   }
 
   const repoRoot = path.join(__dirname, '..');
-  const appEnvFile = path.join(repoRoot, appPath, '.env.kitchntabs.tunnel');
+  const appEnvFile = path.join(repoRoot, appPath, '.env.dash.tunnel');
   if (!fs.existsSync(appEnvFile)) {
     console.error(`Tunnel env file not found: ${appEnvFile}`);
     process.exit(1);

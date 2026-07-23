@@ -1,6 +1,6 @@
 const path = require('path');
 const fs = require('fs');
-const dashPackage = require('./apps/kitchntabs-app/package.json');
+const dashPackage = require('./apps/dash-app/package.json');
 
 const platform = process.platform;
 
@@ -35,8 +35,8 @@ const ARCH_MAP = {
  */
 module.exports = {
   appId: 'com.kitchntab.app',
-  productName: 'kitchntabs',
-  executableName: 'kitchntabs',  // This sets the binary name on Linux
+  productName: 'dash',
+  executableName: 'dash',  // This sets the binary name on Linux
   asar: false,
   npmRebuild: false, // Disable native dependency rebuild - not needed for this app
   nodeGypRebuild: false, // Disable node-gyp rebuild
@@ -44,7 +44,7 @@ module.exports = {
   detectUpdateChannel: false,
   publish: {
     provider: 's3',
-    bucket: 'kitchntabs-releases',
+    bucket: 'dash-releases',
     region: 'us-east-2',
     path: 'releases/',
     acl: 'private',
@@ -69,7 +69,7 @@ module.exports = {
     const minimalPackage = {
       name: dashPackage.name,
       version: dashPackage.version,
-      main: 'apps/kitchntabs-app/dist-electron/main/index.js',
+      main: 'apps/dash-app/dist-electron/main/index.js',
       dependencies: {}  // Empty - all bundled by Vite
     };
     
@@ -157,9 +157,9 @@ module.exports = {
   files: [
   "electron-config.yaml",
   "resources/sounds/**/*",
-  "apps/kitchntabs-app/dist/**",
-  "apps/kitchntabs-app/dist-electron/**",
-  "apps/kitchntabs-app/electron-config.prod.yaml",
+  "apps/dash-app/dist/**",
+  "apps/dash-app/dist-electron/**",
+  "apps/dash-app/electron-config.prod.yaml",
   // Exclude all node_modules since Vite bundles everything
   "!**/node_modules/**",
   "!**/node_modules",
@@ -244,14 +244,14 @@ module.exports = {
   linux: {
     icon: path.resolve(__dirname, 'icons/png'),
     category: 'Office',
-    executableName: 'kitchntabs',
+    executableName: 'dash',
     desktop: {
       entry: {
         Name: 'KitchenTabs',
         Comment: 'KitchenTabs POS Terminal',
         Categories: 'Office;Finance;',
         Keywords: 'pos;kitchen;restaurant;orders;',
-        StartupWMClass: 'kitchntabs',
+        StartupWMClass: 'dash',
         Terminal: 'false'
       }
     },
@@ -272,7 +272,7 @@ module.exports = {
     depends: ['libgtk-3-0', 'libnotify4', 'libnss3', 'libxss1', 'libxtst6', 'xdg-utils', 'libatspi2.0-0', 'libuuid1', 'libsecret-1-0'],
     category: 'Office',
     priority: 'optional',
-    // Create symlink so 'kitchntabs' command works from terminal
+    // Create symlink so 'dash' command works from terminal
     afterInstall: 'scripts/after-install.sh',
     afterRemove: 'scripts/after-remove.sh'
   },
@@ -303,9 +303,9 @@ module.exports = {
     ]),
     // YAML configuration file - single config.yaml for all platforms
     // The correct config is prepared by build-python-service.js based on CUSTOM_MODE
-    // Source config (e.g., config.kitchntabs.ngrok.yaml) is copied to apps/kitchntabs-app/config.yaml
+    // Source config (e.g., config.dash.ngrok.yaml) is copied to apps/dash-app/config.yaml
     {
-      from: path.resolve(__dirname, 'apps/kitchntabs-app/config.yaml'),
+      from: path.resolve(__dirname, 'apps/dash-app/config.yaml'),
       to: 'config.yaml'
     },
     // Icons for runtime use
@@ -315,7 +315,7 @@ module.exports = {
     },
     // Sound files for notifications and welcome messages
     {
-      from: path.resolve(__dirname, 'apps/kitchntabs-app/electron/assets'),
+      from: path.resolve(__dirname, 'apps/dash-app/electron/assets'),
       to: 'sounds',
       filter: ['*.mp3', '*.wav', '*.ogg']
     },

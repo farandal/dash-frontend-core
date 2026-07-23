@@ -62,7 +62,7 @@ import { ACTION_UPDATE_AUTH, ACTION_UPDATE_AUTH_AUTH } from 'dash-admin-state/sr
 import useAxios from '../../hooks/axios';
 import { getEnv } from 'dash-constants/src/DASHAdminSystemConstants';
 
-import { useDashThemeContext } from '../../../src/default-theme/DashThemeContext';
+import { useDashThemeContext } from '../../default-theme/DashThemeContext';
 import AppLayoutSettings from '../../theme/AppLayoutSetting';
 import DASHAuthenticationService from './DASHAuthenticationService';
 

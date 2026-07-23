@@ -1,18 +1,18 @@
 #!/bin/bash
-# Post-removal script for kitchntabs
+# Post-removal script for dash
 
 # Remove symlink
-rm -f /usr/bin/kitchntabs
+rm -f /usr/bin/dash
 
 # Remove desktop file
-rm -f /usr/share/applications/kitchntabs.desktop
+rm -f /usr/share/applications/dash.desktop
 
 # Remove icon
-rm -f /usr/share/icons/hicolor/256x256/apps/kitchntabs.png
+rm -f /usr/share/icons/hicolor/256x256/apps/dash.png
 
 # Remove desktop shortcuts
 for USER_HOME in /home/*; do
-    rm -f "$USER_HOME/Desktop/kitchntabs.desktop" 2>/dev/null || true
+    rm -f "$USER_HOME/Desktop/dash.desktop" 2>/dev/null || true
 done
 
 # Update desktop database

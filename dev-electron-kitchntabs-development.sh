@@ -22,4 +22,4 @@ if [ -n "$PORT" ]; then
 fi
 
 # Run the original command
-pnpm config:electron:kitchntabs:development && vite build -c electron.vite.config.mts && cross-env NODE_ENV=development BUILD_ENV=dev CUSTOM_MODE=kitchntabs.development concurrently "pnpm dev" "wait-on http://127.0.0.1:3006 && electron ."
+pnpm config:electron:dash:development && vite build -c electron.vite.config.mts && cross-env NODE_ENV=development BUILD_ENV=dev CUSTOM_MODE=dash.development concurrently "pnpm dev" "wait-on http://127.0.0.1:3006 && electron ."

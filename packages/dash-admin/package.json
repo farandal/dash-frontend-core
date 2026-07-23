@@ -1,18 +1,16 @@
 {
 	"name": "dash-admin",
-	"version": "1.0.0",
-	"private": true,
-	"main": "src/index.tsx",
+	"version": "1.0.2",
+	"main": "dist/index.js",
 	"type": "module",
 	"scripts": {
 		"lint": "eslint --ext .ts,.tsx .",
 		"format": "pnpm prettier --write . && pnpm format-check && pnpm lint",
 		"lint:check": "pnpm prettier --check .",
 		"lint:fix": "pnpm prettier --write .",
-		
-
 		"check-updates": "pnpm npm-check-updates",
-		"updates-packages": "pnpm npm-check-updates -u"
+		"updates-packages": "pnpm npm-check-updates -u",
+		"build": "tsup"
 	},
 	"browserslist": {
 		"production": [
@@ -80,7 +78,6 @@
 		"babel-loader": "latest",
 		"dash-eslint": "workspace:*",
 		"dash-tsconfig": "workspace:*",
-        
 		"eslint": "latest",
 		"eslint-config-airbnb": "latest",
 		"eslint-config-airbnb-typescript": "latest",
@@ -94,8 +91,6 @@
 		"eslint-plugin-prettier": "latest",
 		"eslint-plugin-react": "latest",
 		"eslint-plugin-react-hooks": "latest",
-		
-		
 		"dash-prettier": "workspace:*",
 		"query-string": "latest",
 		"react-dom": "latest",
@@ -116,7 +111,44 @@
 	"eslintConfig": {
 		"extends": "react-app"
 	},
-    "todo_storybook": {
-        "eslint-plugin-storybook": "latest"
-    }
+	"todo_storybook": {
+		"eslint-plugin-storybook": "latest"
+	},
+	"module": "dist/index.js",
+	"types": "./src/index.tsx",
+	"exports": {
+		".": "./dist/index.js",
+		"./components/navigation": "./dist/components/navigation/index.js",
+		"./src/components/navigation": "./dist/components/navigation/index.js",
+		"./components/subscription": "./dist/components/subscription/index.js",
+		"./src/components/subscription": "./dist/components/subscription/index.js",
+		"./contexts/auth": "./dist/contexts/auth/index.js",
+		"./src/contexts/auth": "./dist/contexts/auth/index.js",
+		"./default-theme": "./dist/default-theme/index.js",
+		"./src/default-theme": "./dist/default-theme/index.js",
+		"./utils": "./dist/utils/index.js",
+		"./src/utils": "./dist/utils/index.js",
+		"./*": "./dist/*.js",
+		"./src/*": "./dist/*.js"
+	},
+	"publishConfig": {
+		"access": "public",
+		"registry": "http://localhost:4873"
+	},
+	"files": [
+		"dist",
+		"src"
+	],
+	"typesVersions": {
+		"*": {
+			"src/*": [
+				"src/*",
+				"src/*/index"
+			],
+			"*": [
+				"src/*",
+				"src/*/index"
+			]
+		}
+	}
 }

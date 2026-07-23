@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace "com.kitchntabs.app"
+    namespace "com.dash.app"
     compileSdk rootProject.ext.compileSdkVersion
 
 /*
@@ -23,7 +23,7 @@ android {
 */
 
     defaultConfig {
-        applicationId "com.kitchntabs.app"
+        applicationId "com.dash.app"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 24
@@ -98,7 +98,7 @@ try {
 tasks.whenTaskAdded { task ->
     if (task.name == 'bundleRelease') {
         task.doLast {
-            def appName = "KitchnTabs"
+            def appName = "DashAdmin"
             def versionName = android.defaultConfig.versionName
             def date = new Date().format('yyyy-MM-dd_HH-mm')
             def originalFile = file("${buildDir}/outputs/bundle/release/app-release.aab")

@@ -1,29 +1,43 @@
 {
-  "name": "dash-styles",
-  "version": "0.0.0",
-  "private": true,
-  "main": "src/index.tsx",
-  "exports": {
-    ".": {
-      "import": "./src/index.tsx",
-      "require": "./src/index.tsx"
-    },
-    "./dash.less": {
-      "import": "./src/dash.less",
-      "require": "./src/dash.less"
-    },
-    "./styles/*": {
-      "import": "./src/styles/*",
-      "require": "./src/styles/*"
-    }
-  },
-  "license": "MIT",
-  "devDependencies": {},
-  "dependencies": {
-    "@mui/utils": "^7.3.10",
-    "react-admin": "5.14.6"
-  },
-  "peerDependencies": {
-    "antd": ">=5.0.0"
-  }
+	"name": "dash-styles",
+	"version": "0.0.9",
+	"main": "dist/index.cjs",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"import": "./dist/index.js",
+			"require": "./dist/index.cjs"
+		},
+		"./dash.less": {
+			"import": "./src/dash.less",
+			"require": "./src/dash.less"
+		},
+		"./styles/*": {
+			"import": "./src/styles/*",
+			"require": "./src/styles/*"
+		}
+	},
+	"license": "MIT",
+	"devDependencies": {},
+	"dependencies": {
+		"@mui/utils": "^7.3.10",
+		"react-admin": "5.14.6"
+	},
+	"peerDependencies": {
+		"antd": ">=5.0.0"
+	},
+	"module": "dist/index.js",
+	"types": "dist/index.d.ts",
+	"publishConfig": {
+		"access": "public",
+		"registry": "http://localhost:4873"
+	},
+	"scripts": {
+		"build": "tsup"
+	},
+	"files": [
+		"dist",
+		"src"
+	],
+	"type": "module"
 }

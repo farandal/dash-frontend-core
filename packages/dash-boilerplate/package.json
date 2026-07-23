@@ -1,40 +1,56 @@
 {
-    "name": "dash-boilerplate",
-    "version": "1.0.0",
-    "private": true,
-    "main": "src/index.ts",
-    "type": "module",
-    "scripts": {
-        "lint": "eslint --ext .ts,.tsx .",
-        "format": "pnpm prettier --write .",
-        "typecheck": "tsc --noEmit"
-    },
-    "dependencies": {
-        "@emotion/react": "latest",
-        "@emotion/styled": "latest",
-        "@mui/material": "^7.3.10",
-        "dash-admin": "workspace:*",
-        "dash-admin-state": "workspace:*",
-        "dash-auth": "workspace:*",
-        "dash-auto-admin": "workspace:*",
-        "dash-axios-hook": "workspace:*",
-        "dash-constants": "workspace:*",
-        "dash-utils": "workspace:*",
-        "numeral": "^2.0.6",
-        "react": "latest",
-        "react-admin": "5.14.6",
-        "react-dom": "latest",
-        "react-error-boundary": "^4.0.0",
-        "react-redux": "latest"
-    },
-    "devDependencies": {
-        "@types/node": "latest",
-        "@types/numeral": "^2.0.5",
-        "@types/react": "latest",
-        "@types/react-dom": "latest",
-        "dash-eslint": "workspace:*",
-        "dash-prettier": "workspace:*",
-        "dash-tsconfig": "workspace:*",
-        "typescript": "latest"
-    }
+	"name": "dash-boilerplate",
+	"version": "1.0.2",
+	"main": "dist/index.cjs",
+	"type": "module",
+	"scripts": {
+		"lint": "eslint --ext .ts,.tsx .",
+		"format": "pnpm prettier --write .",
+		"typecheck": "tsc --noEmit",
+		"build": "tsup"
+	},
+	"dependencies": {
+		"@emotion/react": "latest",
+		"@emotion/styled": "latest",
+		"@mui/material": "^7.3.10",
+		"dash-admin": "workspace:*",
+		"dash-admin-state": "workspace:*",
+		"dash-auth": "workspace:*",
+		"dash-auto-admin": "workspace:*",
+		"dash-axios-hook": "workspace:*",
+		"dash-constants": "workspace:*",
+		"dash-utils": "workspace:*",
+		"numeral": "^2.0.6",
+		"react": "latest",
+		"react-admin": "5.14.6",
+		"react-dom": "latest",
+		"react-error-boundary": "^4.0.0",
+		"react-redux": "latest"
+	},
+	"devDependencies": {
+		"@types/node": "latest",
+		"@types/numeral": "^2.0.5",
+		"@types/react": "latest",
+		"@types/react-dom": "latest",
+		"dash-eslint": "workspace:*",
+		"dash-prettier": "workspace:*",
+		"dash-tsconfig": "workspace:*",
+		"typescript": "latest"
+	},
+	"module": "dist/index.js",
+	"types": "dist/index.d.ts",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"import": "./dist/index.js",
+			"require": "./dist/index.cjs"
+		}
+	},
+	"publishConfig": {
+		"access": "public",
+		"registry": "http://localhost:4873"
+	},
+	"files": [
+		"dist"
+	]
 }

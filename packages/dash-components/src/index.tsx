@@ -73,5 +73,5 @@ export type {
     UseNotificationsReturn
 } from './hooks/useNotifications';
 
-export { useQuickSearch } from './hooks/useQuickSearch';
-export type { UseQuickSearchReturn } from './hooks/useQuickSearch';
+export { useQuickSearch } from 'dash-utils';
+export type { UseQuickSearchReturn } from 'dash-utils';

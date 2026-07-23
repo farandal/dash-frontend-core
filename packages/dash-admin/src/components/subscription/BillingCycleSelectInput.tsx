@@ -1,7 +1,7 @@
 import React from 'react';
 import { SelectInput } from 'react-admin';
 import { Box, CircularProgress, Alert } from '@mui/material';
-import { usePaymentGatewayCapabilities } from 'kitchntabs-web/src/hooks/usePaymentGatewayCapabilities';
+import { usePaymentGatewayCapabilities } from 'dash-web/src/hooks/usePaymentGatewayCapabilities';
 
 /**
  * Billing Cycle Select Input

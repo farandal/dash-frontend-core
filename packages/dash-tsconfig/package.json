@@ -1,11 +1,14 @@
 {
-	"name": "dash-tsconfig",
-	"version": "0.0.0",
-	"private": true,
-	"license": "MIT",
-	"files": [
-		"base.json",
-		"node20.json",
-		"react-library.json"
-	]
+  "name": "dash-tsconfig",
+  "version": "0.0.0",
+  "license": "MIT",
+  "files": [
+    "base.json",
+    "node20.json",
+    "react-library.json"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "registry": "http://localhost:4873"
+  }
 }

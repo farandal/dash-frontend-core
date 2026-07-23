@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { Layout } from 'react-admin';
 import { useNotify, useRedirect } from 'react-admin';
 import useAxios from '../hooks/axios';
-import { FullLayoutMarkup } from '../../src/default-theme';
+import { FullLayoutMarkup } from '../default-theme';
 import getType from '../utils/getType';
 import MUISimpleJsonTable from '../components/misc/MuiSimpleJsonTable';
 import HomeIcon from '@mui/icons-material/Home';

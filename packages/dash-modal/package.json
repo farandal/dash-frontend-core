@@ -1,13 +1,13 @@
 {
 	"name": "dash-modal",
-	"version": "1.0.0",
-	"private": true,
-	"main": "src/index.tsx",
+	"version": "1.0.2",
+	"main": "dist/index.cjs",
 	"type": "module",
 	"exports": {
 		".": {
-			"import": "./src/index.tsx",
-			"require": "./src/index.tsx"
+			"types": "./dist/index.d.ts",
+			"import": "./dist/index.js",
+			"require": "./dist/index.cjs"
 		},
 		"./index.less": {
 			"import": "./src/styles/index.less",
@@ -31,9 +31,9 @@
 		"format": "pnpm prettier --write . && pnpm format-check && pnpm lint",
 		"lint:check": "pnpm prettier --check .",
 		"lint:fix": "pnpm prettier --write .",
-		
 		"check-updates": "pnpm npm-check-updates",
-		"updates-packages": "pnpm npm-check-updates -u"
+		"updates-packages": "pnpm npm-check-updates -u",
+		"build": "tsup"
 	},
 	"browserslist": {
 		"production": [
@@ -49,7 +49,6 @@
 	},
 	"dependencies": {
 		"dash-styles": "workspace:*",
-		
 		"@emotion/react": "latest",
 		"@emotion/styled": "latest",
 		"@mui/material": "^7.3.10",
@@ -99,8 +98,6 @@
 		"eslint-plugin-prettier": "latest",
 		"eslint-plugin-react": "latest",
 		"eslint-plugin-react-hooks": "latest",
-	
-		
 		"dash-prettier": "workspace:*",
 		"query-string": "latest",
 		"react-dom": "latest",
@@ -120,14 +117,22 @@
 	},
 	"peerDependencies": {
 		"react": "latest",
-		"react-beautiful-dnd": "latest",
-		"react-custom-scrollbars-2": "latest",
+		"react-custom-scrollbars-2": "^4.5.0",
 		"react-dom": "latest"
 	},
 	"eslintConfig": {
 		"extends": "react-app"
 	},
-    "todo_storybook": {
-        "eslint-plugin-storybook": "latest"
-    }
+	"todo_storybook": {
+		"eslint-plugin-storybook": "latest"
+	},
+	"module": "dist/index.js",
+	"types": "dist/index.d.ts",
+	"publishConfig": {
+		"access": "public",
+		"registry": "http://localhost:4873"
+	},
+	"files": [
+		"dist"
+	]
 }

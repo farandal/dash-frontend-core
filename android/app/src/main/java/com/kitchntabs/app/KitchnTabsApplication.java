@@ -1,4 +1,4 @@
-package com.kitchntabs.app;
+package com.dash.app;
 
 import android.app.Application;
 import android.content.Context;
@@ -6,7 +6,7 @@ import android.util.Log;
 import com.google.firebase.crashlytics.FirebaseCrashlytics;
 
 /**
- * Custom Application class for KitchnTabs.
+ * Custom Application class for DashAdmin.
  * Handles global initialization and provides defensive programming
  * for device-specific issues (particularly Xiaomi devices with MIUI).
  */

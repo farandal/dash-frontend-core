@@ -1,4 +1,4 @@
-package com.kitchntabs.app;
+package com.dash.app;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -138,7 +138,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             if (powerManager != null) {
                 wakeLock = powerManager.newWakeLock(
                     PowerManager.PARTIAL_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP,
-                    "kitchntabs:fcm_wakelock"
+                    "dash:fcm_wakelock"
                 );
                 wakeLock.acquire(60 * 1000L); // 60 seconds max
                 Log.i(TAG, "🔓 Wake lock acquired");

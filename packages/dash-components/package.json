@@ -1,17 +1,16 @@
 {
 	"name": "dash-components",
-	"version": "1.0.0",
-	"private": true,
-	"main": "src/index.tsx",
+	"version": "1.0.2",
+	"main": "dist/index.js",
 	"type": "module",
 	"scripts": {
 		"lint": "eslint --ext .ts,.tsx .",
 		"format": "pnpm prettier --write . && pnpm format-check && pnpm lint",
 		"lint:check": "pnpm prettier --check .",
 		"lint:fix": "pnpm prettier --write .",
-		
 		"check-updates": "pnpm npm-check-updates",
-		"updates-packages": "pnpm npm-check-updates -u"
+		"updates-packages": "pnpm npm-check-updates -u",
+		"build": "tsup"
 	},
 	"browserslist": {
 		"production": [
@@ -90,7 +89,6 @@
 		"eslint-plugin-react": "latest",
 		"eslint-plugin-react-hooks": "latest",
 		"eslint-plugin-storybook": "latest",
-	
 		"dash-prettier": "workspace:*",
 		"query-string": "latest",
 		"react-dom": "latest",
@@ -109,12 +107,43 @@
 	},
 	"peerDependencies": {
 		"react": "latest",
-		"react-beautiful-dnd": "latest",
-		"react-custom-scrollbars-2": "latest",
+		"react-custom-scrollbars-2": "^4.5.0",
 		"react-dom": "latest"
 	},
 	"eslintConfig": {
 		"extends": "react-app"
+	},
+	"module": "dist/index.js",
+	"types": "./src/index.tsx",
+	"exports": {
+		".": "./dist/index.js",
+		"./components/AuditLog": "./dist/components/AuditLog/index.js",
+		"./src/components/AuditLog": "./dist/components/AuditLog/index.js",
+		"./components/NotificationPreferences": "./dist/components/NotificationPreferences/index.js",
+		"./src/components/NotificationPreferences": "./dist/components/NotificationPreferences/index.js",
+		"./components/notifications": "./dist/components/notifications/index.js",
+		"./src/components/notifications": "./dist/components/notifications/index.js",
+		"./*": "./dist/*.js",
+		"./src/*": "./dist/*.js"
+	},
+	"publishConfig": {
+		"access": "public",
+		"registry": "http://localhost:4873"
+	},
+	"files": [
+		"dist",
+		"src"
+	],
+	"typesVersions": {
+		"*": {
+			"src/*": [
+				"src/*",
+				"src/*/index"
+			],
+			"*": [
+				"src/*",
+				"src/*/index"
+			]
+		}
 	}
 }
-	

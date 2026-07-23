@@ -1,22 +1,18 @@
 {
 	"extends": "../../packages/dash-tsconfig/base.json",
 	"compilerOptions": {
-		//"types": ["@types/jest", "@types/node"],
 		"jsx": "preserve",
-		"incremental": true
+		"paths": {
+			"@##": [
+				"./src##"
+			]
+		}
 	},
 	"include": [
 		"src/**/*.ts",
-		"src/**/*.tsx",
-		"src/**/*.ts",
-		"src/**/*.tsx",
-		"src/**/*.css",
-		"src/**/*.ttf",
-		"src/**/*.otf",
-		"src/**/*.less"
+		"src/**/*.tsx"
 	],
-	"paths": {
-		"@/*": ["./src/*"]
-	},
-	"exclude": ["node_modules"]
+	"exclude": [
+		"node_modules"
+	]
 }

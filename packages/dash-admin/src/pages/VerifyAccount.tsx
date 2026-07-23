@@ -6,7 +6,7 @@ import { Box, Typography, CircularProgress } from '@mui/material';
 import { getEnv } from 'dash-constants/src/DASHAdminSystemConstants';
 
 
-import { FullLayoutMarkup } from '../../src/default-theme';
+import { FullLayoutMarkup } from '../default-theme';
 
 interface VerifyAccountProps {
 	

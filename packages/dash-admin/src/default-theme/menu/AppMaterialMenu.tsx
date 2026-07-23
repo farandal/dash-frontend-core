@@ -390,6 +390,7 @@ const AppMaterialMenu: React.FC<IAppMenuExtended> = props => {
     const isHorizontal = sidebarPosition === "top" || sidebarPosition === "bottom";
 
     return <>
+
         <Box className='sidebar-header'
 
             sx={{

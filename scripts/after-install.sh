@@ -1,34 +1,34 @@
 #!/bin/bash
-# Post-installation script for kitchntabs
+# Post-installation script for dash
 
 set -e
 
 # Create symlink for command-line access
-ln -sf /opt/kitchntabs/kitchntabs /usr/bin/kitchntabs
+ln -sf /opt/dash/dash /usr/bin/dash
 
 # Ensure the desktop file is properly installed
-DESKTOP_FILE="/usr/share/applications/kitchntabs.desktop"
+DESKTOP_FILE="/usr/share/applications/dash.desktop"
 if [ ! -f "$DESKTOP_FILE" ]; then
     cat > "$DESKTOP_FILE" << 'EOF'
 [Desktop Entry]
 Name=KitchenTabs
 Comment=KitchenTabs POS Terminal
-Exec=/opt/kitchntabs/kitchntabs --no-sandbox %U
-Icon=kitchntabs
+Exec=/opt/dash/dash --no-sandbox %U
+Icon=dash
 Type=Application
 Categories=Office;Finance;
 Keywords=pos;kitchen;restaurant;orders;
-StartupWMClass=kitchntabs
+StartupWMClass=dash
 Terminal=false
-MimeType=x-scheme-handler/kitchntabs;
+MimeType=x-scheme-handler/dash;
 EOF
 fi
 
 # Copy icon if needed
 ICON_DIR="/usr/share/icons/hicolor/256x256/apps"
 mkdir -p "$ICON_DIR"
-if [ -f "/opt/kitchntabs/resources/icons/png/256x256.png" ]; then
-    cp "/opt/kitchntabs/resources/icons/png/256x256.png" "$ICON_DIR/kitchntabs.png"
+if [ -f "/opt/dash/resources/icons/png/256x256.png" ]; then
+    cp "/opt/dash/resources/icons/png/256x256.png" "$ICON_DIR/dash.png"
 fi
 
 # Create desktop shortcut for all users
@@ -38,7 +38,7 @@ mkdir -p "$DESKTOP_DIR"
 # Create desktop shortcut in common location for LXDE/Raspberry Pi OS
 for USER_HOME in /home/*; do
     if [ -d "$USER_HOME/Desktop" ]; then
-        DESKTOP_SHORTCUT="$USER_HOME/Desktop/kitchntabs.desktop"
+        DESKTOP_SHORTCUT="$USER_HOME/Desktop/dash.desktop"
         cp "$DESKTOP_FILE" "$DESKTOP_SHORTCUT"
         chmod +x "$DESKTOP_SHORTCUT"
         # Set ownership to the user
@@ -58,9 +58,9 @@ if command -v gtk-update-icon-cache &> /dev/null; then
 fi
 
 # Set correct permissions for the application
-chmod +x /opt/kitchntabs/kitchntabs
-chmod -R 755 /opt/kitchntabs/resources/python-service/ 2>/dev/null || true
+chmod +x /opt/dash/dash
+chmod -R 755 /opt/dash/resources/python-service/ 2>/dev/null || true
 
 echo "KitchenTabs installed successfully!"
-echo "Run 'kitchntabs' or find it in your applications menu."
+echo "Run 'dash' or find it in your applications menu."
 echo "A desktop shortcut has been created."

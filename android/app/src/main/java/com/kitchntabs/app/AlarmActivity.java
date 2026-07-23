@@ -1,4 +1,4 @@
-package com.kitchntabs.app;
+package com.dash.app;
 
 import android.app.KeyguardManager;
 import android.content.Context;
@@ -101,7 +101,7 @@ public class AlarmActivity extends AppCompatActivity {
                     PowerManager.PARTIAL_WAKE_LOCK | 
                     PowerManager.ACQUIRE_CAUSES_WAKEUP | 
                     PowerManager.ON_AFTER_RELEASE,
-                    "kitchntabs:alarm_wakelock"
+                    "dash:alarm_wakelock"
                 );
                 wakeLock.acquire(AUTO_STOP_DELAY + 5000); // Slightly longer than auto-stop
                 Log.i(TAG, "🔓 Wake lock acquired for alarm");

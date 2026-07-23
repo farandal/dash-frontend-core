@@ -1,7 +1,10 @@
 {
-	"name": "dash-prettier",
-	"version": "0.0.0",
-	"private": true,
-	"main": "index.js",
-	"license": "MIT"
+  "name": "dash-prettier",
+  "version": "0.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public",
+    "registry": "http://localhost:4873"
+  }
 }
