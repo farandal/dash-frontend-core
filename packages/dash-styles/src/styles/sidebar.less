@@ -227,13 +227,75 @@
     }
 }
 
+  // ==========================================================================
+  // DESIGN DECISION (2026-07-21): the sidebar/menu system always renders in
+  // DARK mode colors, regardless of the app-wide light/dark toggle. This
+  // mixin redefines the mode-agnostic base custom properties the sidebar
+  // consumes, pinning each to its "--dark" suffixed value (which is always
+  // statically defined by the transformer/app overrides — see
+  // N4-Build-Toolchain design-system docs — so this does NOT depend on
+  // updateDomCssVariables() having run, and is unaffected by the current
+  // light/dark toggle state).
+  //
+  // TO MAKE THE SIDEBAR THEME-AWARE AGAIN IN THE FUTURE: delete the two
+  // ".sidebar-force-dark-vars();" calls below (one in .sidebar-drawer, one in
+  // .sidebar-collapsed-menu — the flyout portal renders outside .sidebar-drawer
+  // in the DOM, so it needs its own copy). Or change every "--dark" here to
+  // "--light", or replace the hardcoded suffix with a LESS variable if
+  // per-tenant/per-app switching is needed later.
+  // ==========================================================================
+  .sidebar-force-dark-vars() {
+      --primary-color: var(--primary-color--dark);
+      --primary-contrast: var(--primary-contrast--dark);
+      --highlight-color: var(--highlight-color--dark);
+      --highlight-color-contrast: var(--highlight-color-contrast--dark);
+      --btn-bg: var(--btn-bg--dark);
+      --btn-color: var(--btn-color--dark);
+      --sidebar-primary: var(--sidebar-primary--dark);
+      --sidebar-bg-primary: var(--sidebar-bg-primary--dark);
+      --sidebar-handle-primary: var(--sidebar-handle-primary--dark);
+      --sidebar-handle-contrast: var(--sidebar-handle-contrast--dark);
+      --sidebar_submenu-color-primary: var(--sidebar_submenu-color-primary--dark);
+      --sidebar_submenu-color-contrast: var(--sidebar_submenu-color-contrast--dark);
+  }
+
+  // Truncate any overflowing item label with an ellipsis instead of letting it
+  // clip abruptly or push the layout wider. Requires min-width: 0 on the flex
+  // item (MuiListItemText) — flex children default to min-width: auto (their
+  // own content size), which blocks shrinking/ellipsis entirely otherwise.
+  .dash-sidebar-text-ellipsis() {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      min-width: 0;
+  }
+
   .sidebar-drawer {
+      .sidebar-force-dark-vars();
       z-index: 2000;
 
+      .MuiListItemButton-root {
+          min-width: 0;
+      }
+      .MuiListItemText-root {
+          .dash-sidebar-text-ellipsis();
+          .MuiTypography-root {
+              .dash-sidebar-text-ellipsis();
+          }
+      }
+
       > .MuiPaper-root.MuiDrawer-paper{
-          //background: linear-gradient(140deg, var(--primary-color) 60%, var(--primary-contrast) 100%);
-          background: linear-gradient(140deg, var(--primary-color) 60%, var(--primary-contrast) 100%);
-         
+          // Solid base layer: guarantees the sidebar is always primary-color even in
+          // the rare case the gradient below fails to resolve (e.g. a var is unset).
+          background-color: var(--primary-color);
+          // Brand gradient (always primary-color -> primary-contrast, both modes) with
+          // a subtle top-left sheen layered on top for depth. The sheen is a pure
+          // white-alpha overlay — it never introduces a third brand color.
+          background-image:
+              radial-gradient(130% 110% at 0% 0%, rgba(255, 255, 255, 0.16) 0%, rgba(255, 255, 255, 0) 55%),
+              linear-gradient(160deg, var(--primary-color) 0%, var(--primary-color) 45%, var(--primary-contrast) 100%);
+          background-repeat: no-repeat;
+
           flex-shrink: 0;
           white-space: nowrap;
           box-sizing: border-box;
@@ -286,30 +348,77 @@
               min-height: auto;
               padding: 9px 17px 9px 8px;
 
-              &:hover{
-                  background-color: var(--sidebar-bg-hover);
-                  color: var(--sidebar-contrast);
-              }
+              // No row-level background on hover/active — the highlight design lives
+              // on the icon tile only (see .MuiListItemIcon-root hover/selected below).
 
+              // Main button icons sit on a solid rounded tile (design-system default 8px)
               .MuiListItemIcon-root{
-                  width: 18px;
-                  height: 18px;
-                  margin: 0 10px 0 12px;
+                  width: 32px;
+                  height: 32px;
+                  margin: 0 10px 0 8px;
                   min-width: auto;
+                  border-radius: 8px;
+                  background-color: var(--primary-contrast);
+                  color: var(--sidebar-primary);
+                  display: grid;
+                  place-items: center;
+                  flex-shrink: 0;
 
                   svg{
-                      width: 100%;
-                      height: 100%;
+                      width: 18px;
+                      height: 18px;
                       object-fit: contain;
-                      /*color: currentColor;
-                      path{
-                          fill: currentColor;
-                      }*/
+                      // Force icons to inherit the tile's text color instead of
+                      // whatever fill is hardcoded in the icon's own SVG source —
+                      // this is what actually makes icons white in dark mode
+                      // (--sidebar-primary is white by design-system default).
+                      fill: currentColor !important;
+                      color: currentColor;
+                      path, circle, rect, polygon {
+                          fill: currentColor !important;
+                      }
                   }
               }
 
+              // Hover/active design lives entirely on the icon tile, no row background.
+              // Hover: highlight color. Current/selected page: the primary-button color,
+              // so "you are here" reads distinctly from a passive mouse hover.
+              &:hover .MuiListItemIcon-root {
+                  background-color: var(--highlight-color);
+                  color: var(--highlight-color-contrast);
+              }
               &.Mui-selected .MuiListItemIcon-root {
-                  color: var(--highlight-color);
+                  background-color: var(--btn-bg);
+                  color: var(--btn-color);
+              }
+
+              // Group expand/collapse arrow: small circle in the primary-button color
+              .expand-icon-wrapper {
+                  width: 16px;
+                  height: 16px;
+                  border-radius: 50%;
+                  // Same color pair the primary button uses.
+                  background-color: var(--btn-bg);
+                  color: var(--btn-color);
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  flex-shrink: 0;
+                  cursor: pointer;
+                  transition: background-color 0.15s ease, transform 0.15s ease;
+
+                  &:hover {
+                      transform: scale(1.08);
+                  }
+
+                  .expand-icon {
+                      width: 11px;
+                      height: 11px;
+                      fill: currentColor !important;
+                      path {
+                          fill: currentColor !important;
+                      }
+                  }
               }
 
               .MuiListItemText-root{
@@ -324,10 +433,83 @@
               }
           }
 
+          // Inline (expanded-sidebar) nested submenu: solid card-like panel on the
+          // brand contrast color, styled after the design-system reference menu —
+          // opaque surface, hairline border, soft shadow, inner padding. Text is
+          // white by default in both modes (primary-contrast is dark by contract);
+          // override via --submenu-color if a domain ships a light contrast.
+          .MuiCollapse-root {
+              margin: 0 8px 6px;
+          }
           .MuiCollapse-wrapper{
-              background-color: var(--sidebar_submenu-bg-primary);
+              background-color: var(--primary-contrast);
+              border: 1px solid rgba(255, 255, 255, 0.08);
+              border-radius: 12px;
+              box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+              overflow: hidden;
+              padding: 6px;
 
               .MuiButtonBase-root.MuiListItemButton-root{
+                  border-radius: 8px;
+                  margin-bottom: 2px;
+                  color: var(--submenu-color, #ffffff);
+
+                  &:last-child {
+                      margin-bottom: 0;
+                  }
+
+                  // Nested items use plain small icons (no tile), like the reference
+                  .MuiListItemIcon-root {
+                      width: 18px;
+                      height: 18px;
+                      background-color: transparent;
+                      border-radius: 0;
+                      margin: 0 10px 0 12px;
+
+                      svg {
+                          fill: currentColor !important;
+                          path, circle, rect, polygon {
+                              fill: currentColor !important;
+                          }
+                      }
+                  }
+
+                  .MuiListItemIcon-root,
+                  .MuiListItemText-root .MuiTypography-root {
+                      color: var(--submenu-color, #ffffff);
+                  }
+
+                  // Nested items have no icon tile (unlike top-level buttons) — the row
+                  // itself carries the color. Hover uses the highlight color; the
+                  // current/selected page uses the primary-button color instead, so
+                  // "you are here" reads distinctly from a passive mouse hover.
+                  // The explicit "background-color: transparent" on .MuiListItemIcon-root
+                  // in both states is required: without it, the broader top-level
+                  // ".MuiButtonBase-root:hover .MuiListItemIcon-root" tile rule (higher
+                  // specificity via the extra .sidebar-drawer/:hover ancestor) leaks in
+                  // here and paints an unwanted tile background — nested items never
+                  // have a tile.
+                  &:hover {
+                      background-color: var(--highlight-color);
+                      .MuiListItemIcon-root,
+                      .MuiListItemText-root .MuiTypography-root {
+                          color: var(--highlight-color-contrast);
+                      }
+                      .MuiListItemIcon-root {
+                          background-color: transparent;
+                      }
+                  }
+                  &.Mui-selected {
+                      background-color: var(--btn-bg);
+                      .MuiListItemIcon-root,
+                      .MuiListItemText-root .MuiTypography-root {
+                          color: var(--btn-color);
+                      }
+                      .MuiListItemIcon-root {
+                          background-color: transparent;
+                      }
+                  }
+
                   span.RaMenuItemLink-icon {
                       border-radius: 5px;
                       padding: 3px;
@@ -342,7 +524,8 @@
                       height: 12px;
                   }
                   a.RaMenuItemLink-active{
-                      background-color: var(--sidebar_submenu-bg-contrast);
+                      background-color: var(--highlight-color);
+                      color: var(--highlight-color-contrast);
                   }
               }
           }
@@ -377,7 +560,12 @@
 
           .sidebar-list{
               .MuiButtonBase-root.MuiListItemButton-root{
-                  padding: 9px 13px 9px 15px;
+                  // Symmetric, tighter padding + centered content so the icon tile
+                  // lines up on the same horizontal axis as the circular buttons
+                  // above it (Avatar/bell/globe/theme toggle), which are simple
+                  // centered flex items with no manual offset.
+                  padding: 8px;
+                  justify-content: center;
                   position: relative;
                   &::before{
                       content: "";
@@ -386,19 +574,23 @@
                       width: 32px;
                       height: 0px;
                       bottom: 0;
-                      left: 15px;
+                      left: 50%;
+                      transform: translateX(-50%);
                       border-bottom: 0.5px solid rgba(255, 255, 255, 0.2);
                       pointer-events: none;
                   }
               }
               .MuiListItemIcon-root{
-                  margin-right: auto;
+                  // No auto-margin here — centering comes from the row's own
+                  // justify-content: center (above) plus a symmetric tile margin.
+                  margin: 0 !important;
               }
 
-              .Mui-selected {
-                  background: var(--highlight-color);
-                  color: var(--primary-color);
-              }
+              // No row-level background here — hover/selected styling for main sidebar
+              // rows lives entirely on the icon tile (see the icon-tile hover/selected
+              // rules earlier in this file). This legacy rule duplicated/conflicted
+              // with that by painting a highlight-color row background specifically
+              // in collapsed mode.
           }
       }
   }
@@ -410,6 +602,18 @@
   }
 
   .sidebar-collapsed-menu {
+      // Renders in a portal outside .sidebar-drawer, so it needs its own copy
+      // of the ellipsis treatment (can't inherit a rule scoped to .sidebar-drawer).
+      .MuiListItemButton-root {
+          min-width: 0;
+      }
+      .MuiListItemText-root {
+          .dash-sidebar-text-ellipsis();
+          .MuiTypography-root {
+              .dash-sidebar-text-ellipsis();
+          }
+      }
+
       .menu-items {
           position: relative;
           font-size: 14px;
@@ -453,18 +657,86 @@
       }
 
       .dropdown {
-          position: fixed;
-          //left: 50px;
-          box-shadow: 0 10px 15px -3px rgba(46, 41, 51, 0.08),
-              0 4px 6px -2px rgba(71, 63, 79, 0.16);
+          // NOT position:fixed — the SubmenuPortal WRAPPER (inline style, dash-admin)
+          // is the one that's position:fixed with calculated top/left. If this <ul>
+          // is ALSO fixed (with no top/left of its own), it's pulled out of the
+          // wrapper's flow independently and renders at its default position —
+          // the wrapper then collapses to an empty box since its only child no
+          // longer participates in flow. This was the "wrapper not showing" bug.
+          position: static;
+          width: 100%;
+          box-sizing: border-box;
+          // Panel visuals (surface, border, shadow, radius, padding) are owned by
+          // the SubmenuPortal wrapper (inline style in dash-admin) — this list must
+          // stay transparent, or the two stacked borders/backgrounds render as a
+          // seam line along the top edge of the flyout.
           font-size: 0.875rem;
           z-index: 9999;
-          min-width: 10rem;
-          padding: 0.5rem 0;
+          min-width: 12rem;
           list-style: none;
-          background-color: var(--sidebar_submenu-bg-primary);
-          border-radius: 0.5rem;
+          background: transparent;
           display: none;
+
+          // Flyout lives in a portal on <body> (outside .sidebar-drawer), so item
+          // styling must be self-contained here. The panel surface is the brand
+          // primary-contrast (dark by design-system contract), so text/icons are
+          // white by default in BOTH modes — override via --submenu-color if a
+          // domain ever ships a light primary-contrast.
+          .MuiButtonBase-root.MuiListItemButton-root {
+              border-radius: 8px;
+              margin-bottom: 2px;
+              padding: 8px 14px 8px 8px;
+              transition: background-color 0.15s ease, color 0.15s ease;
+              color: var(--submenu-color, #ffffff);
+
+              &:last-child {
+                  margin-bottom: 0;
+              }
+
+              // Portal renders outside .sidebar-drawer, so icon sizing must be
+              // repeated here (the drawer-scoped rules never reach this subtree).
+              .MuiListItemIcon-root {
+                  min-width: auto;
+                  width: 18px;
+                  height: 18px;
+                  margin-right: 10px;
+
+                  svg {
+                      width: 100%;
+                      height: 100%;
+                      object-fit: contain;
+                      fill: currentColor !important;
+                      path, circle, rect, polygon {
+                          fill: currentColor !important;
+                      }
+                  }
+              }
+
+              .MuiListItemIcon-root,
+              .MuiListItemText-root .MuiTypography-root {
+                  color: var(--submenu-color, #ffffff);
+              }
+
+              // Hover uses the highlight color; the current/selected page uses the
+              // primary-button color instead, so "you are here" reads distinctly
+              // from a passive mouse hover.
+              &:hover {
+                  background-color: var(--highlight-color);
+                  color: var(--highlight-color-contrast);
+                  .MuiListItemIcon-root,
+                  .MuiListItemText-root .MuiTypography-root {
+                      color: var(--highlight-color-contrast);
+                  }
+              }
+              &.Mui-selected {
+                  background-color: var(--btn-bg);
+                  color: var(--btn-color);
+                  .MuiListItemIcon-root,
+                  .MuiListItemText-root .MuiTypography-root {
+                      color: var(--btn-color);
+                  }
+              }
+          }
       }
 
       .dropdown.show {
@@ -480,31 +752,64 @@
 
   .sidebar-list, .dropdown {
       > .MuiButtonBase-root {
+          border-radius: 0.5rem;
+          transition: background-color 0.15s ease, color 0.15s ease;
+          margin-bottom: 2px;
+
+          &:last-child {
+              margin-bottom: 0;
+          }
+
           > .MuiListItemIcon-root,
           > .MuiListItemText-root .MuiTypography-root {
               color: var(--sidebar-primary);
-          }
-          > &:hover {
-              color: var(--secondary-color);
-              .MuiListItemIcon-root,
-              .MuiListItemText-root .MuiTypography-root {
-                  color: var(--secondary-color);
-              }
+              transition: color 0.15s ease;
           }
       }
-      &-sub {
-          .MuiButtonBase-root {
+  }
+
+  // Flyout rows only: full-row highlight on hover/active. Main sidebar (.sidebar-list)
+  // rows deliberately have NO row-level highlight — that design lives on the icon
+  // tile instead (see .MuiListItemIcon-root hover/selected above). Flyout items have
+  // no icon tile, so the row itself carries the highlight, matching the reference.
+  .dropdown > .MuiButtonBase-root {
+      // Hover uses the highlight color; the current/selected page uses the
+      // primary-button color instead, so "you are here" reads distinctly
+      // from a passive mouse hover.
+      &:hover {
+          background-color: var(--highlight-color);
+          color: var(--highlight-color-contrast);
+          .MuiListItemIcon-root,
+          .MuiListItemText-root .MuiTypography-root {
+              color: var(--highlight-color-contrast);
+          }
+      }
+      &.Mui-selected {
+          background-color: var(--btn-bg);
+          color: var(--btn-color);
+          .MuiListItemIcon-root,
+          .MuiListItemText-root .MuiTypography-root {
+              color: var(--btn-color);
+          }
+      }
+  }
+
+  // Restored as an explicit sibling selector (was previously "&-sub" nested inside
+  // ".sidebar-list, .dropdown" — splitting that block apart for the icon-tile-hover
+  // change above meant "&-sub" would have compiled to the wrong, broken selector
+  // ".dropdown > .MuiButtonBase-root-sub" instead of ".sidebar-list-sub, .dropdown-sub".
+  .sidebar-list-sub, .dropdown-sub {
+      .MuiButtonBase-root {
+          .MuiListItemIcon-root {
+              color: var(--sidebar_submenu-color-primary);
+          }
+          .MuiListItemText-root .MuiTypography-root {
+              color: var(--sidebar_submenu-color-primary);
+          }
+          &:hover {
+              .MuiListItemText-root .MuiTypography-root,
               .MuiListItemIcon-root {
-                  color: var(--sidebar_submenu-color-primary);
-              }
-              .MuiListItemText-root .MuiTypography-root {
-                  color: var(--sidebar_submenu-color-primary);
-              }
-              &:hover {
-                  .MuiListItemText-root .MuiTypography-root,
-                  .MuiListItemIcon-root {
-                      color: var(--sidebar_submenu-color-contrast);
-                  }
+                  color: var(--sidebar_submenu-color-contrast);
               }
           }
       }

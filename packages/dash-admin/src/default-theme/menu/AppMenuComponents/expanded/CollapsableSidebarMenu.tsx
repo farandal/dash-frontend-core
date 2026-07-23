@@ -227,7 +227,11 @@ const CollapsableSidebarMenu = ({
             />
           )}
           {navExpanded && (
-            <div onClick={handleExpandClick}>
+            // "expand-icon" is ALSO on the wrapper (not just the inner svg): the row's
+            // onClick above does closest('.expand-icon') to tell "clicked the arrow"
+            // from "clicked the row" — if only the svg had it, clicking the circle's
+            // padding (outside the svg's own box) would miss the check and navigate.
+            <div className="expand-icon expand-icon-wrapper" onClick={handleExpandClick}>
               {/* For bottom position, invert icons since submenu opens upward */}
               {sidebarPosition === "bottom" ? (
                 localOpen ? 

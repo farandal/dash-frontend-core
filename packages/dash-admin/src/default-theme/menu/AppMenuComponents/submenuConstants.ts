@@ -20,9 +20,14 @@ export const getSubmenuBaseStyle = (
     overflowY: 'auto',
     width: sidebarPosition === "top" || sidebarPosition === "bottom" ? 'auto' : '260px',
     minWidth: '200px',
-    background: 'var(--module-bg, #252526)',
-    boxShadow: '0 4px 12px rgba(0,0,0,0.25)',
-    borderRadius: 8,
+    // The wrapper is the SINGLE owner of the panel visuals (surface, border,
+    // shadow, radius, padding). The inner ul.dropdown must stay transparent —
+    // if both layers draw a border/background, their edges show as a seam line.
+    background: 'var(--primary-contrast, #252526)',
+    border: '1px solid rgba(255,255,255,0.08)',
+    boxShadow: '0 10px 15px -3px rgba(0,0,0,0.25), 0 4px 6px -4px rgba(0,0,0,0.4)',
+    borderRadius: 12,
+    padding: 6,
 });
 
 /**
