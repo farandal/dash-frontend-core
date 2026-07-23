@@ -70,6 +70,11 @@ const ecommerceTenantResource: IDashAutoAdminResourceConfig =
     saveButtonAlwaysEnabled: true,
     processErrors: false,
     listProps: {storeKey: false}, // deshabilita persistencia deel estado, cache de los valores seleccionados sort, page, etc.
+    // React-admin can seed the Edit view's getOne cache from a getList row with
+    // the same id, but the tenant list response deliberately omits the ~300-key
+    // settings.colors blob for performance. Force a real getOne fetch on every
+    // visit instead of trusting that narrower cached row.
+    editProps: { queryOptions: { staleTime: 0, refetchOnMount: true } },
     resetSelectedIdsOnLoad: true,
     redirectAfterUpdate: false,
 }

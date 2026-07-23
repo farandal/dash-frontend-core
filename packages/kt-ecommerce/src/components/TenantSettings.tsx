@@ -162,8 +162,12 @@ const TenantSettingsView: React.FC<ITenantSettings> = ({ method, attribute, tena
 
 }
 
-const TenantSettings = ({ method, attribute, resourceConfig }: IDashAutoAdminCustomFieldComponent) => {
-  const tenant: Tenant = useRecordContext();
+const TenantSettings = ({ method, attribute, resourceConfig, record }: IDashAutoAdminCustomFieldComponent) => {
+  // See the identical comment in TenantTheme.tsx: UserAction (dash-auto-admin)
+  // passes the record as an explicit PROP, not via context — prefer it, and
+  // only fall back to useRecordContext() if the caller didn't supply one.
+  const recordFromContext = useRecordContext();
+  const tenant: Tenant = (record as Tenant) ?? recordFromContext;
   switch (method) {
     case "edit":
       return <TenantSettingsEdit attribute={attribute} method={method} tenant={tenant} resourceConfig={resourceConfig} />

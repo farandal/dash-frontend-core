@@ -230,7 +230,7 @@ const tenantTenantSchema:IDashAutoAdminAttribute[] = [
     },
 
     {
-      tab: 'Theme', // Match naming convention if needed, or use 'Imágenes'/'Paleta de colores' as user had commented out
+      tab: 'COLORS', // Match naming convention if needed, or use 'Imágenes'/'Paleta de colores' as user had commented out
       label: 'Paleta de colores',
       attribute: 'settings', 
       type: String,
