@@ -17,6 +17,8 @@ import {
     Pagination,
     Card,
     Link,
+    ToggleButton,
+    ToggleButtonGroup,
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
@@ -31,6 +33,14 @@ import { ColorMapping, KeyValuePair } from './interfaces/interfaces';
 import { extractAvailableModes, getContrastColor, getModeIcon, parseColorKey } from './helpers/functions';
 import ImageColorExtractor from './components/ImageColorExtractor';
 import ColorEditDialog from './components/ColorEditDialog';
+import BasicColorSelector from './components/BasicColorSelector';
+import {
+    BasicPalette,
+    ThemeMode,
+    basesFromImagePalette,
+    deriveBrandPairs,
+    extractBases,
+} from './helpers/paletteDerivation';
 import { updateDomCssVariables } from 'dash-utils';
 import { AuthPersistenceService } from 'dash-auth';
 
@@ -38,6 +48,10 @@ import { AuthPersistenceService } from 'dash-auth';
 // Feature flags for pagination behavior
 const JSON_COLOR_SELECTOR_PAGINATION_ENABLED: boolean = false;
 const JSON_COLOR_SELECTOR_PAGINATION_SHOW_ALL: boolean = false;
+
+// AI theme generation (OpenAI via backend theme-generator endpoint) is opt-in.
+// Enable per-field via the setting format's componentProps: { aiThemeEnabled: true }.
+const JSON_COLOR_SELECTOR_AI_ENABLED_DEFAULT: boolean = false;
 
 // Default color mappings (can be modified later)
 const DEFAULT_COLOR_MAPPINGS: ColorMapping = {
@@ -167,6 +181,12 @@ const LocalColorPaletteItem: React.FC<{
 export const JsonEdit: React.FC<IDashAutoAdminCustomFieldComponent> = (props) => {
     const { method, attribute, resourceConfig } = props;
 
+    // AI theme generation is opt-in: settable per-field via componentProps.aiThemeEnabled
+    const aiThemeEnabled: boolean =
+        (props as any).aiThemeEnabled ??
+        (attribute as any)?.componentProps?.aiThemeEnabled ??
+        JSON_COLOR_SELECTOR_AI_ENABLED_DEFAULT;
+
     const record = useRecordContext();
     const { setValue, getValues } = useFormContext();
 
@@ -174,6 +194,7 @@ export const JsonEdit: React.FC<IDashAutoAdminCustomFieldComponent> = (props) =>
     const isNestedSetting = attributePath.startsWith('settings.');
     const settingsPath = isNestedSetting ? attributePath.split('.').slice(1).join('.') : attributePath;
 
+    const [viewMode, setViewMode] = useState<'basic' | 'advanced'>('basic');
     const [pairs, setPairs] = useState<KeyValuePair[]>([]);
     const [searchTerm, setSearchTerm] = useState<string>('');
     const [selectedMode, setSelectedMode] = useState<string>('');
@@ -552,6 +573,47 @@ export const JsonEdit: React.FC<IDashAutoAdminCustomFieldComponent> = (props) =>
         updateFormValue(newPairs);
     };
 
+    // ------------------------------------------------------------------
+    // Basic mode: 5 base colors per mode, full brand palette derived locally
+    // ------------------------------------------------------------------
+
+    const colorsRecord = useMemo(() => {
+        return pairs.reduce((acc, pair) => {
+            if (pair.key.trim()) acc[pair.key] = pair.value;
+            return acc;
+        }, {} as Record<string, string>);
+    }, [pairs]);
+
+    const lightBases = useMemo(() => extractBases(colorsRecord, 'light'), [colorsRecord]);
+    const darkBases = useMemo(() => extractBases(colorsRecord, 'dark'), [colorsRecord]);
+
+    // Derive the brand palette from the given bases and merge it over current pairs.
+    // Neutral greyscale and semantic alert keys are untouched by design.
+    const applyBases = useCallback((light: BasicPalette, dark: BasicPalette) => {
+        const derived = deriveBrandPairs(light, dark);
+        const derivedPairs: KeyValuePair[] = Object.entries(derived).map(([key, value]) => ({
+            key,
+            value,
+            id: generateId(),
+        }));
+        const merged = mergePairs(pairs, derivedPairs);
+        setPairs(merged);
+        updateFormValue(merged);
+    }, [pairs]);
+
+    const handleBaseChange = useCallback((mode: ThemeMode, key: keyof BasicPalette, color: string) => {
+        const nextLight = mode === 'light' ? { ...lightBases, [key]: color } : lightBases;
+        const nextDark = mode === 'dark' ? { ...darkBases, [key]: color } : darkBases;
+        applyBases(nextLight, nextDark);
+    }, [lightBases, darkBases, applyBases]);
+
+    // Local (no-AI) image palette → base colors prefill
+    const handleApplyLocalPalette = useCallback((palette: number[][]) => {
+        if (!palette || palette.length === 0) return;
+        const { light, dark } = basesFromImagePalette(palette);
+        applyBases(light, dark);
+    }, [applyBases]);
+
     // Update only a single DOM color property
     const updateSingleDomColor = useCallback((key: string, color: string) => {
         if (!key.trim()) return;
@@ -680,10 +742,21 @@ export const JsonEdit: React.FC<IDashAutoAdminCustomFieldComponent> = (props) =>
 
         return (
             <Box sx={{ mt: 1, mb: 2 }}>
-               
-                <Typography variant="subtitle1" gutterBottom>
-                    {attribute.label || 'Color Palette'}
-                </Typography>
+
+                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2, flexWrap: 'wrap', gap: 1 }}>
+                    <Typography variant="subtitle1">
+                        {attribute.label || 'Color Palette'}
+                    </Typography>
+                    <ToggleButtonGroup
+                        value={viewMode}
+                        exclusive
+                        size="small"
+                        onChange={(_, value) => value && setViewMode(value)}
+                    >
+                        <ToggleButton value="basic">Basic</ToggleButton>
+                        <ToggleButton value="advanced">Advanced</ToggleButton>
+                    </ToggleButtonGroup>
+                </Box>
 
                 {/* Hidden file input for CSS import */}
                 <input
@@ -694,13 +767,43 @@ export const JsonEdit: React.FC<IDashAutoAdminCustomFieldComponent> = (props) =>
                     onChange={handleFileSelect}
                 />
 
-                {/* Image Color Extractor - Updated */}
+                {/* Image Color Extractor — always sits above the preview cards, so the
+                    workflow reads top-to-bottom: source image first, derived theme below. */}
                 <ImageColorExtractor
                     onColorsExtracted={handleColorsExtracted}
                     onColorsUpdate={handleColorsUpdate}
                     existingPairs={pairs}
+                    aiEnabled={aiThemeEnabled}
+                    onApplyLocal={handleApplyLocalPalette}
                 />
 
+                {/* Basic mode: 5 base colors per mode, brand palette derived locally */}
+                {viewMode === 'basic' && (
+                    <>
+                        <BasicColorSelector
+                            lightBases={lightBases}
+                            darkBases={darkBases}
+                            onBaseChange={handleBaseChange}
+                        />
+                        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mt: 2, flexWrap: 'wrap', gap: 1 }}>
+                            <Typography variant="caption" sx={{ color: 'text.secondary', maxWidth: 480 }}>
+                                Changing a base color regenerates the derived brand palette (sidebar, buttons, links, tables).
+                                Neutral backgrounds and alert colors are preserved — fine-tune any specific value in Advanced mode.
+                            </Typography>
+                            <Button
+                                startIcon={<PreviewIcon />}
+                                variant="contained"
+                                size="small"
+                                color="primary"
+                                onClick={() => handlePreview(document.documentElement.getAttribute('data-theme'))}
+                            >
+                                Preview Colors
+                            </Button>
+                        </Box>
+                    </>
+                )}
+
+                {viewMode === 'advanced' && (<>
                 {/* Search and Filter Controls */}
                 <Box sx={{ mb: 3, display: 'flex', gap: 2, alignItems: 'flex-end' }}>
                     {/* Search Field */}
@@ -964,6 +1067,7 @@ export const JsonEdit: React.FC<IDashAutoAdminCustomFieldComponent> = (props) =>
                         </Button>
                     </Box>
                 )}
+                </>)}
 
                 {/* Edit Dialog - Updated with extracted colors */}
                 <ColorEditDialog

@@ -27,7 +27,11 @@ const ImageColorExtractor = memo<{
     onColorsExtracted: (colors: number[][]) => void;
     onColorsUpdate?: (newPairs: KeyValuePair[]) => void;
     existingPairs?: KeyValuePair[];
-}>(({ onColorsExtracted, onColorsUpdate, existingPairs = [] }) => {
+    /** When false, the OpenAI theme generation UI is hidden — only local extraction applies. */
+    aiEnabled?: boolean;
+    /** Local (no-AI) apply: receives the extracted RGB palette so the caller can map it to base colors. */
+    onApplyLocal?: (palette: number[][]) => void;
+}>(({ onColorsExtracted, onColorsUpdate, existingPairs = [], aiEnabled = true, onApplyLocal }) => {
     const [imageUrl, setImageUrl] = useState<string | null>(null);
     const [uploadedFile, setUploadedFile] = useState<File | null>(null);
     const [themePrompt, setThemePrompt] = useState<string>('');
@@ -151,7 +155,7 @@ const ImageColorExtractor = memo<{
         <Box sx={{ mt: 3, p: 3, borderRadius: 2 }}>
             <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                 <PaletteIcon />
-                AI Theme Generator
+                {aiEnabled ? 'AI Theme Generator' : 'Theme from Image'}
             </Typography>
 
             <Divider sx={{ mb: 3 }} />
@@ -292,32 +296,51 @@ const ImageColorExtractor = memo<{
 
                     {/* Theme Generation Controls */}
                     <Box sx={{ mb: 3 }}>
-                        <TextField
-                            fullWidth
-                            multiline
-                            rows={2}
-                            placeholder="Optional: Describe the theme style you want (e.g., 'modern and minimalist', 'warm and cozy', 'professional corporate')"
-                            value={themePrompt}
-                            onChange={(e) => setThemePrompt(e.target.value)}
-                            sx={{ mb: 2 }}
-                            label="Theme Description (Optional)"
-                        />
-                        
+                        {aiEnabled && (
+                            <TextField
+                                fullWidth
+                                multiline
+                                rows={2}
+                                placeholder="Optional: Describe the theme style you want (e.g., 'modern and minimalist', 'warm and cozy', 'professional corporate')"
+                                value={themePrompt}
+                                onChange={(e) => setThemePrompt(e.target.value)}
+                                sx={{ mb: 2 }}
+                                label="Theme Description (Optional)"
+                            />
+                        )}
+
                         <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
-                            <Button
-                                variant="contained"
-                                startIcon={isGeneratingTheme ? <CircularProgress size={16} /> : <AutoFixHighIcon />}
-                                onClick={handleGenerateTheme}
-                                disabled={isGeneratingTheme}
-                                color="primary"
-                            >
-                                {isGeneratingTheme ? 'Generating...' : 'Generate AI Theme'}
-                            </Button>
+                            {onApplyLocal && (
+                                <Button
+                                    variant={aiEnabled ? 'outlined' : 'contained'}
+                                    startIcon={<UpdateIcon />}
+                                    onClick={() => onApplyLocal(extractedPalette)}
+                                    color="primary"
+                                >
+                                    Apply Colors
+                                </Button>
+                            )}
+                            {aiEnabled && (
+                                <Button
+                                    variant="contained"
+                                    startIcon={isGeneratingTheme ? <CircularProgress size={16} /> : <AutoFixHighIcon />}
+                                    onClick={handleGenerateTheme}
+                                    disabled={isGeneratingTheme}
+                                    color="primary"
+                                >
+                                    {isGeneratingTheme ? 'Generating...' : 'Generate AI Theme'}
+                                </Button>
+                            )}
                         </Box>
                     </Box>
 
                     <Typography variant="body2" color="textSecondary" sx={{ fontStyle: 'italic' }}>
-                        • <strong>Generate AI Theme:</strong> Uses AI to create a complete color scheme based on extracted colors and your description
+                        {onApplyLocal && (
+                            <>• <strong>Apply Colors:</strong> Maps the extracted palette to your base theme colors locally — no AI involved<br /></>
+                        )}
+                        {aiEnabled && (
+                            <>• <strong>Generate AI Theme:</strong> Uses AI to create a complete color scheme based on extracted colors and your description</>
+                        )}
                     </Typography>
                 </Box>
             )}
