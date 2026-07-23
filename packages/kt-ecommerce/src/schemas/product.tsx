@@ -52,8 +52,8 @@ const productSchema: IDashAutoAdminAttribute[] = [
     type: Number
   },*/
  {
-    tab: "Producto",
-    label: 'Imágen',
+    tab: "resource.ecommerce.products.tabs.product",
+    label: 'resource.ecommerce.products.fields.image',
     attribute: 'gallery',
     type: "custom",
     component: ProductImage,
@@ -65,8 +65,8 @@ const productSchema: IDashAutoAdminAttribute[] = [
     inList: true
   },
   {
-    tab: "Producto",
-    label: 'Nombre',
+    tab: "resource.ecommerce.products.tabs.product",
+    label: 'resource.ecommerce.products.fields.name',
     attribute: 'name',
     type: String,
     sortable: true,
@@ -74,8 +74,8 @@ const productSchema: IDashAutoAdminAttribute[] = [
   },
   
   {
-    tab: "Producto",
-    label: 'Descripción',
+    tab: "resource.ecommerce.products.tabs.product",
+    label: 'resource.ecommerce.products.fields.description',
     attribute: 'description',
     type: String,
     //custom: true,
@@ -92,32 +92,32 @@ const productSchema: IDashAutoAdminAttribute[] = [
   },
 
    {
-    tab: "Producto",
-    label: "Disponible",
+    tab: "resource.ecommerce.products.tabs.product",
+    label: "resource.ecommerce.products.fields.is_enabled",
     attribute: 'is_enabled',
      type: "custom",
     component: ListActive
   },
 
      {
-        tab: "Producto",
-        label: 'Destacado',
+        tab: "resource.ecommerce.products.tabs.product",
+        label: 'resource.ecommerce.products.fields.featured',
         attribute: 'featured',
         type: "custom",
         component: ListActive
     },
 
      {
-        tab: "Producto",
-        label: 'Listado en Mall',
+        tab: "resource.ecommerce.products.tabs.product",
+        label: 'resource.ecommerce.products.fields.mall_listed',
         attribute: 'mall_listed',
          type: "custom",
         component: ListActive
     },
 
     {
-    tab: "Producto",
-    label: 'Palabras clave',
+    tab: "resource.ecommerce.products.tabs.product",
+    label: 'resource.ecommerce.products.fields.keywords',
     attribute: 'keywords',
     type: String,
     //custom: true,
@@ -134,7 +134,7 @@ const productSchema: IDashAutoAdminAttribute[] = [
   },
 /*
     {
-    tab: "Producto",
+    tab: "resource.ecommerce.products.tabs.product",
     label: 'Mapeo de voz',
     attribute: 'metavoice',
     type: String,
@@ -152,16 +152,16 @@ const productSchema: IDashAutoAdminAttribute[] = [
   },
 */
   {
-    tab: "Producto",
-    label: 'SKU',
+    tab: "resource.ecommerce.products.tabs.product",
+    label: 'resource.ecommerce.products.fields.sku',
     attribute: 'sku',
     type: String,
     sortable: true,
 
   },
   {
-    tab: "Producto",
-    label: 'Orden',
+    tab: "resource.ecommerce.products.tabs.product",
+    label: 'resource.ecommerce.products.fields.display_order',
     attribute: 'display_order',
     type: Number,
     sortable: true,
@@ -171,12 +171,12 @@ const productSchema: IDashAutoAdminAttribute[] = [
     inCreate: true,
     fieldProps: {
       min: 0,
-      helperText: 'Orden de visualización (1 = primero, 0 = último)',
+      helperText: 'resource.ecommerce.products.fields.display_order_helper',
     },
   },
   {
-  tab: "Categoría/Modificadores",
-  label: 'Categorías',
+  tab: "resource.ecommerce.products.tabs.category_modifiers",
+  label: 'resource.ecommerce.products.fields.categories',
   attribute: 'category_ids',
   listAttribute: 'categories',
   type: 'ecommerce/category.breadcrumbed_name',
@@ -209,8 +209,8 @@ const productSchema: IDashAutoAdminAttribute[] = [
 },
 
   {
-    tab: "Categoría/Modificadores",
-    label: "Grupos de Modificadores",
+    tab: "resource.ecommerce.products.tabs.category_modifiers",
+    label: "resource.ecommerce.products.fields.modifier_groups",
     attribute: 'modifier_groups_ids',
     listAttribute: 'modifier_groups',
     type: "ecommerce/modifier.name",
@@ -242,8 +242,8 @@ const productSchema: IDashAutoAdminAttribute[] = [
     inShow: false
   },
   {
-    tab: "Precios",
-    label: "Precios",
+    tab: "resource.ecommerce.products.tabs.prices",
+    label: "resource.ecommerce.products.fields.prices",
     attribute: 'prices', // para un custom component, atributo no es necesario, pero es requerido por la interfaz
     type: String,
     custom: true,
@@ -252,8 +252,8 @@ const productSchema: IDashAutoAdminAttribute[] = [
   },
 
   {
-    tab: "Stocks",
-    label: "Stocks",
+    tab: "resource.ecommerce.products.tabs.stocks",
+    label: "resource.ecommerce.products.fields.stocks",
     attribute: 'stocks', // para un custom component, atributo no es necesario, pero es requerido por la interfaz
     type: String,
     custom: true,
@@ -262,8 +262,8 @@ const productSchema: IDashAutoAdminAttribute[] = [
   },
 
   {
-    tab: "Stocks",
-    label: "Stock permanente",
+    tab: "resource.ecommerce.products.tabs.stocks",
+    label: "resource.ecommerce.products.fields.infinite_stock",
     attribute: 'infinite_stock',
     type: Boolean,
     inList: false
@@ -274,8 +274,8 @@ const productSchema: IDashAutoAdminAttribute[] = [
 
   {
 
-    label: 'Marca',
-    tab: "Marca",
+    label: 'resource.ecommerce.products.fields.brand',
+    tab: "resource.ecommerce.products.tabs.brand",
     attribute: 'brand_id',
     type: 'ecommerce/brand.name',
     pagination: false,
@@ -293,8 +293,8 @@ const productSchema: IDashAutoAdminAttribute[] = [
   /* TODO: METADATA */
   
   {
-    tab: "Metadata",
-    label: "Metadata",
+    tab: "resource.ecommerce.products.tabs.metadata",
+    label: "resource.ecommerce.products.fields.metadata",
     attribute: 'metadata',
     type: String,
     custom: true,
@@ -318,8 +318,8 @@ const productSchema: IDashAutoAdminAttribute[] = [
   },
   */
   {
-    tab: "Galería",
-    label: 'Galería',
+    tab: "resource.ecommerce.products.tabs.gallery",
+    label: 'resource.ecommerce.products.fields.gallery',
     attribute: 'gallery_id',
     type: 'ecommerce/gallery.title',
     pagination: false,
@@ -366,8 +366,8 @@ const productSchema: IDashAutoAdminAttribute[] = [
 */
 
   {
-    tab: "Historial",
-    label: "Historial",
+    tab: "resource.ecommerce.products.tabs.history",
+    label: "resource.ecommerce.products.fields.history",
     attribute: 'product.id', // para un custom component, atributo no es necesario, pero es requerido por la interfaz
     type: String,
     custom: true,
@@ -380,9 +380,9 @@ const productSchema: IDashAutoAdminAttribute[] = [
   },
 
     {   // TODO: if is_internal, do not allow this input
-        tab: "Tenants",
+        tab: "resource.ecommerce.products.tabs.tenants",
           attribute: 'tenant_ids',
-          label: 'Tenants',
+          label: 'resource.ecommerce.products.fields.tenants',
           type: Array,
           inList: false,
           custom: true,

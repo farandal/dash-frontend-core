@@ -22,7 +22,8 @@ import {
   IconButton,
   Badge,
   LinearProgress,
-  Skeleton
+  Skeleton,
+  useTheme
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import EditIcon from '@mui/icons-material/Edit';
@@ -33,7 +34,7 @@ import LocalOfferIcon from '@mui/icons-material/LocalOffer';
 import CategoryIcon from '@mui/icons-material/Category';
 import PhotoLibraryIcon from '@mui/icons-material/PhotoLibrary';
 
-import { useRecordContext } from 'react-admin';
+import { useRecordContext, useTranslate } from 'react-admin';
 import { useNavigate } from 'react-router';
 import numeral from 'numeral';
 import MarketplaceTags from '../Misc/MarketplaceTags';
@@ -45,6 +46,13 @@ import { IGalleryImage } from '../../interfaces';
 import MUISimpleJsonTable from '../MuiSimpleJsonTable';
 
 const ProductView: React.FC<any> = ({ currency }) => {
+  const theme = useTheme();
+  const translate = useTranslate();
+  // Shorthand for this component's own namespace. The ecommerce block is nested
+  // under the top-level `resource` key (see i18n/es.tsx: resource.ecommerce.products),
+  // matching how productResource.tsx references "resource.ecommerce.products.label" —
+  // the `resource.` prefix is REQUIRED or every lookup misses and the raw key shows.
+  const t = (key: string, options?: any) => translate(`resource.ecommerce.products.view.${key}`, options);
   const product = useRecordContext();
   const [metadata, setMetadata] = useState([])
   const [isLoading, setIsLoading] = useState(true);
@@ -88,17 +96,17 @@ const ProductView: React.FC<any> = ({ currency }) => {
 
   const getStockStatus = () => {
     if (product?.infinite_stock) {
-      return { status: 'infinite', color: 'success', text: 'Stock Infinito' };
+      return { status: 'infinite', color: 'success', text: t('stock_infinite') };
     }
-    
+
     const totalStock = product?.stocks?.reduce((sum: number, stock: any) => sum + (stock.stock || 0), 0) || 0;
-    
+
     if (totalStock === 0) {
-      return { status: 'out', color: 'error', text: 'Sin Stock' };
+      return { status: 'out', color: 'error', text: t('stock_out') };
     } else if (totalStock < 10) {
-      return { status: 'low', color: 'warning', text: 'Stock Bajo' };
+      return { status: 'low', color: 'warning', text: t('stock_low') };
     } else {
-      return { status: 'good', color: 'success', text: 'En Stock' };
+      return { status: 'good', color: 'success', text: t('stock_good') };
     }
   };
 
@@ -128,50 +136,50 @@ const ProductView: React.FC<any> = ({ currency }) => {
   }
 
   return product ? (
-    <Box sx={{ p: 3, maxWidth: '1400px', mx: 'auto' }}>
+    <Box sx={{ p: 3, maxWidth: '1400px', mx: 'auto', containerType: 'inline-size' }}>
       {/* Header Section */}
       <Card elevation={2} sx={{ mb: 3 }}>
         <CardContent>
-          <Stack direction="row" justifyContent="space-between" alignItems="flex-start" spacing={2}>
+          <Stack direction="row" justifyContent="space-between" alignItems="center" spacing={2}>
             <Box flex={1}>
               <Stack direction="row" alignItems="center" spacing={2} sx={{ mb: 2 }}>
                 <Typography variant="h4" component="h1">
                   {product?.name}
                 </Typography>
-                <Chip 
+                <Chip
                   icon={product?.is_enabled ? <VisibilityIcon /> : <VisibilityOffIcon />}
-                  label={product?.is_enabled ? 'Activo' : 'Inactivo'}
+                  label={product?.is_enabled ? t('active') : t('inactive')}
                   color={product?.is_enabled ? 'success' : 'error'}
                   variant="filled"
                 />
                 {product?.is_pack && (
-                  <Chip 
+                  <Chip
                     icon={<InventoryIcon />}
-                    label="Pack"
+                    label={t('pack')}
                     color="info"
                     variant="filled"
                   />
                 )}
               </Stack>
-              
+
               <Stack direction="row" spacing={3} sx={{ mb: 2 }}>
                 <Box>
-                  <Typography variant="body2" color="text.secondary">SKU</Typography>
+                  <Typography variant="body2" color="text.secondary">{t('sku')}</Typography>
                   <Typography variant="h6" fontFamily="monospace">{product?.sku}</Typography>
                 </Box>
-                
+
                 {primaryPrice && (
                   <Box>
-                    <Typography variant="body2" color="text.secondary">Precio Principal</Typography>
+                    <Typography variant="body2" color="text.secondary">{t('primary_price')}</Typography>
                     <Typography variant="h5" color="primary.main" fontWeight="bold">
                       {primaryPrice.symbol}{numeral(primaryPrice.price).format(primaryPrice.format)}
                     </Typography>
                   </Box>
                 )}
-                
+
                 <Box>
-                  <Typography variant="body2" color="text.secondary">Estado de Stock</Typography>
-                  <Chip 
+                  <Typography variant="body2" color="text.secondary">{t('stock_status')}</Typography>
+                  <Chip
                     label={stockStatus.text}
                     color={stockStatus.color as any}
                     size="small"
@@ -181,9 +189,9 @@ const ProductView: React.FC<any> = ({ currency }) => {
 
               {/* Categories Display */}
               {product?.categories && product.categories.length > 0 && (
-                <Box sx={{ mb: 2 }}>
+                <Box>
                   <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                    Categorías ({product.categories.length})
+                    {t('categories_count', { count: product.categories.length })}
                   </Typography>
                   <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
                     {product.categories.map((category: any, index: number) => (
@@ -213,25 +221,42 @@ const ProductView: React.FC<any> = ({ currency }) => {
                 startIcon={<EditIcon />}
                 onClick={() => navigate(`/ecommerce/product/${product?.id}`)}
               >
-                Editar
+                {t('edit')}
               </Button>
-              <Button 
-                variant="outlined" 
+              <Button
+                variant="outlined"
                 color={product?.is_enabled ? "error" : "success"}
                 startIcon={product?.is_enabled ? <VisibilityOffIcon /> : <VisibilityIcon />}
                 onClick={toggleProductStatus}
               >
-                {product?.is_enabled ? 'Desactivar' : 'Activar'}
+                {product?.is_enabled ? t('deactivate') : t('activate')}
               </Button>
             </Stack>
           </Stack>
         </CardContent>
       </Card>
 
-      <Grid container spacing={3}>
-        {/* Left Column - Gallery and Brand */}
-        {/* @ts-ignore */}
-        <Grid item xs={12} md={5}>
+      {/* Two-column split driven by CONTAINER width, not viewport width. This view
+          can render full-page OR inside a narrow inline drawer/mobile sheet while
+          the browser viewport itself stays desktop-sized — MUI Grid's xs/md
+          breakpoints key off the viewport, so they'd wrongly keep 2 columns
+          squeezed into a narrow drawer. containerType:'inline-size' (set on the
+          outer Box above) + an `@container` query make this respond to the panel's
+          own width instead, collapsing to 1 column whenever the panel is narrow
+          regardless of viewport size. */}
+      <Box
+        sx={{
+          display: 'grid',
+          gridTemplateColumns: '1fr',
+          gap: 3,
+          alignItems: 'start',
+          '@container (min-width: 760px)': {
+            gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 2fr)',
+          },
+        }}
+      >
+        {/* Left Column - Gallery, Quick Stats and Stock */}
+        <Box sx={{ minWidth: 0 }}>
           {/* Gallery Section */}
           <Card elevation={2} sx={{ mb: 3 }}>
             <CardContent sx={{ p: 0 }}>
@@ -264,11 +289,11 @@ const ProductView: React.FC<any> = ({ currency }) => {
                                   }} 
                                   onClick={() => navigate(`/gallery/${product.gallery.id}`)}
                                 >
-                                  Editar Galería
+                                  {t('edit_gallery')}
                                 </Button>
-                                <ImageListItemBar 
-                                  title="Imagen Principal" 
-                                  sx={{ 
+                                <ImageListItemBar
+                                  title={t('primary_image')}
+                                  sx={{
                                     background: 'linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.3) 70%, rgba(0,0,0,0) 100%)'
                                   }}
                                 />
@@ -284,7 +309,7 @@ const ProductView: React.FC<any> = ({ currency }) => {
                   {product.gallery.images.length > 1 && (
                     <Box sx={{ p: 2, borderTop: 1, borderColor: 'divider' }}>
                       <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                        Imágenes ({product.gallery.images.length})
+                        {t('images_count', { count: product.gallery.images.length })}
                       </Typography>
                       <Stack direction="row" spacing={1} sx={{ overflowX: 'auto' }}>
                         {product.gallery.images.map((item: IGalleryImage, index: number) => (
@@ -312,10 +337,19 @@ const ProductView: React.FC<any> = ({ currency }) => {
                   )}
                 </>
               ) : (
-                <Box sx={{ p: 4, textAlign: 'center', color: 'text.secondary' }}>
-                  <PhotoLibraryIcon sx={{ fontSize: 48, mb: 2, opacity: 0.5 }} />
-                  <Typography variant="body1">Sin imágenes</Typography>
-                
+                <Box
+                  sx={{
+                    m: 2,
+                    p: 4,
+                    textAlign: 'center',
+                    color: 'text.secondary',
+                    border: '2px dashed',
+                    borderColor: 'divider',
+                    borderRadius: 2,
+                  }}
+                >
+                  <PhotoLibraryIcon sx={{ fontSize: 48, mb: 1, opacity: 0.5 }} />
+                  <Typography variant="body1">{t('no_images')}</Typography>
                 </Box>
               )}
             </CardContent>
@@ -324,66 +358,143 @@ const ProductView: React.FC<any> = ({ currency }) => {
           {/* Quick Stats Card */}
           <Card elevation={2}>
             <CardContent>
-              <Typography variant="h6" sx={{ mb: 2 }}>Resumen Rápido</Typography>
+              <Typography variant="h6" sx={{ mb: 2 }}>{t('quick_summary')}</Typography>
               <Grid container spacing={2}>
-                 {/* @ts-ignore */}
-                <Grid item xs={6}>
+                <Grid size={6}>
                   <Box textAlign="center">
                     <Typography variant="h4" color="primary">
                       {product?.prices?.length || 0}
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
-                      Listas de Precios
+                      {t('pricelists_stat')}
                     </Typography>
                   </Box>
                 </Grid>
-                 {/* @ts-ignore */}
-                <Grid item xs={6}>
+                <Grid size={6}>
                   <Box textAlign="center">
                     <Typography variant="h4" color="secondary">
                       {product?.stocks?.length || 0}
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
-                      Tipos de Stock
+                      {t('stock_types_stat')}
                     </Typography>
                   </Box>
                 </Grid>
-                 {/* @ts-ignore */}
-                <Grid item xs={6}>
+                <Grid size={6}>
                   <Box textAlign="center">
                     <Typography variant="h4" color="info.main">
                       {product?.campaignMarketplaces?.length || 0}
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
-                      Plataformas
+                      {t('platforms_stat')}
                     </Typography>
                   </Box>
                 </Grid>
-                 {/* @ts-ignore */}
-                <Grid item xs={6}>
+                <Grid size={6}>
                   <Box textAlign="center">
                     <Typography variant="h4" color="success.main">
                       {product?.categories?.length || 0}
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
-                      Categorías
+                      {t('categories_stat')}
                     </Typography>
                   </Box>
                 </Grid>
               </Grid>
             </CardContent>
           </Card>
-        </Grid>
+
+          {/* Stock Summary Card — kept in the left column (rather than a right-side
+              accordion) so the two columns stay balanced in height and match the
+              intended design instead of leaving dead space below the gallery. */}
+          <Card elevation={2} sx={{ mt: 3 }}>
+            <CardContent>
+              <Stack direction="row" alignItems="center" spacing={1.5} sx={{ mb: 2 }}>
+                <Icon.Package size={20} color={theme.palette.primary.main} />
+                <Typography variant="h6" sx={{ flex: 1 }}>{t('stock')}</Typography>
+                <Chip
+                  label={stockStatus.text}
+                  color={stockStatus.color as any}
+                  size="small"
+                />
+              </Stack>
+
+              {product?.infinite_stock && (
+                <Alert severity="info" sx={{ mb: product?.stocks?.length ? 2 : 0 }}>
+                  {t('infinite_stock_enabled')}
+                </Alert>
+              )}
+
+              {product?.stocks && product.stocks.length > 0 ? (
+                <Stack spacing={1.5}>
+                  {product.stocks
+                    .sort((a: any, b: any) => {
+                      if (a.stockType?.is_primary && !b.stockType?.is_primary) return -1;
+                      if (!a.stockType?.is_primary && b.stockType?.is_primary) return 1;
+                      return 0;
+                    })
+                    .map((item: any, key: number) => {
+                      const stockLevel = item.stock || 0;
+                      const maxStock = 100;
+                      const stockPercentage = Math.min((stockLevel / maxStock) * 100, 100);
+
+                      return (
+                        <Paper
+                          key={key}
+                          variant="outlined"
+                          sx={{
+                            p: 2,
+                            border: item.stockType?.is_primary ? 2 : 1,
+                            borderColor: item.stockType?.is_primary ? 'primary.main' : 'divider',
+                          }}
+                        >
+                          <Stack direction="row" alignItems="center" spacing={2} sx={{ mb: !product?.infinite_stock ? 1.5 : 0 }}>
+                            {item.stockType?.is_primary ?
+                              <Icon.Package size={22} color={theme.palette.warning.main} /> :
+                              <Icon.Archive size={22} color={theme.palette.warning.main} />
+                            }
+                            <Box flex={1} minWidth={0}>
+                              <Typography variant="h5" fontWeight="bold" lineHeight={1.1}>
+                                {stockLevel}
+                              </Typography>
+                              <Typography variant="body2" color="text.secondary" noWrap>
+                                {item.stockType?.name}
+                              </Typography>
+                            </Box>
+                            {item.stockType?.is_primary && (
+                              <Chip label={t('primary')} size="small" color="primary" />
+                            )}
+                          </Stack>
+
+                          {!product?.infinite_stock && (
+                            <Box>
+                              <LinearProgress
+                                variant="determinate"
+                                value={stockPercentage}
+                                color={stockLevel > 20 ? "success" : stockLevel > 5 ? "warning" : "error"}
+                                sx={{ height: 8, borderRadius: 4 }}
+                              />
+                              <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5, display: 'block' }}>
+                                {t('stock_level', { percentage: stockPercentage.toFixed(0) })}
+                              </Typography>
+                            </Box>
+                          )}
+                        </Paper>
+                      );
+                    })}
+                </Stack>
+              ) : !product?.infinite_stock ? (
+                <Alert severity="warning">
+                  {t('no_stock_types')}
+                </Alert>
+              ) : null}
+            </CardContent>
+          </Card>
+        </Box>
 
         {/* Right Column - Details */}
-         {/* @ts-ignore */}
-        <Grid item xs={12} md={7}>
+        <Box sx={{ minWidth: 0 }}>
           <Stack spacing={2}>
-            {/* Basic Information */}
-
-
-
-
 
             {/* Basic Information */}
             <Accordion 
@@ -393,25 +504,26 @@ const ProductView: React.FC<any> = ({ currency }) => {
             >
               <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                 <Stack direction="row" alignItems="center" spacing={2}>
-                  <Icon.Info size={20} />
-                  <Typography variant="h6">Información Básica</Typography>
+                  <Icon.Info size={20} color={theme.palette.primary.main} />
+                  <Typography variant="h6">{t('basic_info')}</Typography>
                 </Stack>
               </AccordionSummary>
               <AccordionDetails>
                 <Stack spacing={3}>
                   <Box>
                     <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 1 }}>
-                      SKU
+                      {t('sku')}
                     </Typography>
-                    <Typography 
-                      variant="body1" 
-                      fontFamily="monospace" 
-                      sx={{ 
-                        p: 1, 
-                    
+                    <Typography
+                      variant="body1"
+                      fontFamily="monospace"
+                      sx={{
+                        p: 1,
+                        display: 'inline-block',
                         borderRadius: 1,
                         border: 1,
-                       
+                        borderColor: 'divider',
+                        bgcolor: 'action.hover',
                       }}
                     >
                       {product?.sku}
@@ -421,7 +533,7 @@ const ProductView: React.FC<any> = ({ currency }) => {
                   {product?.description && (
                     <Box>
                       <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 1 }}>
-                        Descripción
+                        {t('description')}
                       </Typography>
                       <Typography variant="body1" sx={{ lineHeight: 1.6 }}>
                         {product.description}
@@ -432,7 +544,7 @@ const ProductView: React.FC<any> = ({ currency }) => {
                   {product?.keywords && (
                     <Box>
                       <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 1 }}>
-                        Palabras Clave
+                        {t('keywords')}
                       </Typography>
                       <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
                         {product.keywords.split(',').map((keyword: string, index: number) => (
@@ -452,7 +564,7 @@ const ProductView: React.FC<any> = ({ currency }) => {
                   {product?.brand && (
                     <Box>
                       <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 1 }}>
-                        Marca
+                        {t('brand')}
                       </Typography>
                       <Paper elevation={1} sx={{ p: 2, display: 'flex', alignItems: 'center', gap: 2 }}>
                         {product.brand.image_url && (
@@ -472,7 +584,7 @@ const ProductView: React.FC<any> = ({ currency }) => {
                   {/* Categories with enhanced display */}
                   <Box>
                     <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 1 }}>
-                      Categorías ({product?.categories?.length || 0})
+                      {t('categories_count', { count: product?.categories?.length || 0 })}
                     </Typography>
                     {product?.categories && product.categories.length > 0 ? (
                       <Stack spacing={1}>
@@ -508,16 +620,16 @@ const ProductView: React.FC<any> = ({ currency }) => {
                                 </Typography>
                                 <Stack direction="row" spacing={1} sx={{ mt: 0.5 }}>
                                   {category.is_primary && (
-                                    <Chip 
-                                      label="Principal" 
-                                      size="small" 
-                                      color="primary" 
+                                    <Chip
+                                      label={t('primary')}
+                                      size="small"
+                                      color="primary"
                                       variant="filled"
                                     />
                                   )}
-                                  <Chip 
-                                    label={`Orden: ${category.display_order || 0}`} 
-                                    size="small" 
+                                  <Chip
+                                    label={t('category_order', { order: category.display_order || 0 })}
+                                    size="small"
                                     variant="outlined"
                                   />
                                 </Stack>
@@ -527,7 +639,7 @@ const ProductView: React.FC<any> = ({ currency }) => {
                       </Stack>
                     ) : (
                       <Alert severity="warning">
-                        Este producto no tiene categorías asignadas
+                        {t('no_categories')}
                       </Alert>
                     )}
                   </Box>
@@ -543,8 +655,8 @@ const ProductView: React.FC<any> = ({ currency }) => {
             >
               <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                 <Stack direction="row" alignItems="center" spacing={2}>
-                  <Icon.DollarSign size={20} />
-                  <Typography variant="h6">Precios</Typography>
+                  <Icon.DollarSign size={20} color={theme.palette.primary.main} />
+                  <Typography variant="h6">{t('prices')}</Typography>
                   <Badge badgeContent={product?.prices?.length || 0} color="primary">
                     <Box />
                   </Badge>
@@ -563,8 +675,7 @@ const ProductView: React.FC<any> = ({ currency }) => {
                       .map((item: any, key: number) => {
                         const currencyFormat = currency.find((currency: any) => currency.id == item.pricelist?.currency_id);
                         return (
-                             /* @ts-ignore */
-                          <Grid item xs={12} sm={6} md={4} key={key}>
+                          <Grid size={{ xs: 12, sm: 6, md: 4 }} key={key}>
                             <Paper 
                               elevation={item.pricelist?.is_primary ? 3 : 1} 
                               sx={{ 
@@ -577,9 +688,9 @@ const ProductView: React.FC<any> = ({ currency }) => {
                                 position: 'relative'
                               }}
                             >
-                              {item.pricelist?.is_primary ? 
-                                <Icon.Star size={24} color="#C51162" fill="#C51162" /> : 
-                                <Icon.DollarSign size={24} color="#2196F3" />
+                              {item.pricelist?.is_primary ?
+                                <Icon.Star size={24} color={theme.palette.primary.main} fill={theme.palette.primary.main} /> :
+                                <Icon.DollarSign size={24} color={theme.palette.info.main} />
                               }
                               <Box flex={1}>
                                 <Typography variant="h6" fontWeight="bold">
@@ -593,10 +704,10 @@ const ProductView: React.FC<any> = ({ currency }) => {
                                 </Typography>
                               </Box>
                               {item.pricelist?.is_primary && (
-                                <Chip 
-                                  label="Principal" 
-                                  size="small" 
-                                  color="primary" 
+                                <Chip
+                                  label={t('primary')}
+                                  size="small"
+                                  color="primary"
                                   sx={{ position: 'absolute', top: 8, right: 8 }}
                                 />
                               )}
@@ -607,106 +718,7 @@ const ProductView: React.FC<any> = ({ currency }) => {
                   </Grid>
                 ) : (
                   <Alert severity="warning">
-                    Este producto no tiene precios configurados
-                  </Alert>
-                )}
-              </AccordionDetails>
-            </Accordion>
-
-            {/* Stock */}
-            <Accordion 
-              expanded={expandedAccordions.includes('stock')}
-              onChange={handleAccordionChange('stock')}
-              elevation={2}
-            >
-              <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                <Stack direction="row" alignItems="center" spacing={2}>
-                  <Icon.Package size={20} />
-                  <Typography variant="h6">Stock</Typography>
-                  <Chip 
-                    label={stockStatus.text}
-                    color={stockStatus.color as any}
-                    size="small"
-                  />
-                </Stack>
-              </AccordionSummary>
-              <AccordionDetails>
-                {product?.infinite_stock ? (
-                  <Alert severity="info" sx={{ mb: 2 }}>
-                    <Typography variant="body1">
-                      Este producto tiene <strong>stock infinito</strong> habilitado
-                    </Typography>
-                  </Alert>
-                ) : null}
-                
-                {product?.stocks && product.stocks.length > 0 ? (
-                  <Grid container spacing={2}>
-                    {product.stocks
-                      .sort((a: any, b: any) => {
-                        // Sort by primary first
-                        if (a.stockType?.is_primary && !b.stockType?.is_primary) return -1;
-                        if (!a.stockType?.is_primary && b.stockType?.is_primary) return 1;
-                        return 0;
-                      })
-                      .map((item: any, key: number) => {
-                        const stockLevel = item.stock || 0;
-                        const maxStock = 100; // You might want to make this configurable
-                        const stockPercentage = Math.min((stockLevel / maxStock) * 100, 100);
-                        
-                        return (
-                              /* @ts-ignore */
-                          <Grid item xs={12} sm={6} key={key}>
-                            <Paper 
-                              elevation={item.stockType?.is_primary ? 3 : 1}
-                              sx={{ 
-                                p: 2,
-                                border: item.stockType?.is_primary ? 2 : 0,
-                                borderColor: 'secondary.main'
-                              }}
-                            >
-                              <Stack direction="row" alignItems="center" spacing={2} sx={{ mb: 2 }}>
-                                {item.stockType?.is_primary ? 
-                                  <Icon.Package size={24} color="#FF9800" /> : 
-                                  <Icon.Archive size={24} color="#FF9800" />
-                                }
-                                <Box flex={1}>
-                                  <Typography variant="h5" fontWeight="bold">
-                                    {stockLevel}
-                                  </Typography>
-                                  <Typography variant="body2" color="text.secondary">
-                                    {item.stockType?.name}
-                                  </Typography>
-                                </Box>
-                                {item.stockType?.is_primary && (
-                                  <Chip 
-                                    label="Principal" 
-                                    size="small" 
-                                    color="secondary"
-                                  />
-                                )}
-                              </Stack>
-                              
-                              {!product?.infinite_stock && (
-                                <Box>
-                                  <LinearProgress 
-                                    variant="determinate" 
-                                    value={stockPercentage}
-                                    color={stockLevel > 20 ? "success" : stockLevel > 5 ? "warning" : "error"}
-                                    sx={{ height: 8, borderRadius: 4 }}
-                                  />
-                                  <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
-                                    Nivel de stock: {stockPercentage.toFixed(0)}%
-                                  </Typography>
-                                </Box>
-                              )}
-                            </Paper>
-                          </Grid>
-                        )
-                      })}
-                  </Grid>
-                ) : (
-                  <Alert severity="warning">
-                    Este producto no tiene tipos de stock configurados
+                    {t('no_prices')}
                   </Alert>
                 )}
               </AccordionDetails>
@@ -720,8 +732,8 @@ const ProductView: React.FC<any> = ({ currency }) => {
             >
               <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                 <Stack direction="row" alignItems="center" spacing={2}>
-                  <Icon.Globe size={20} />
-                  <Typography variant="h6">Plataformas Activas</Typography>
+                  <Icon.Globe size={20} color={theme.palette.primary.main} />
+                  <Typography variant="h6">{t('active_platforms')}</Typography>
                   <Badge badgeContent={product?.campaignMarketplaces?.length || 0} color="primary">
                     <Box />
                   </Badge>
@@ -733,7 +745,7 @@ const ProductView: React.FC<any> = ({ currency }) => {
                 ) : (
                   <Alert severity="info">
                     <Typography variant="body1">
-                      Este producto no está activo en ninguna plataforma
+                      {t('no_platforms')}
                     </Typography>
                   </Alert>
                 )}
@@ -749,8 +761,8 @@ const ProductView: React.FC<any> = ({ currency }) => {
               >
                 <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                   <Stack direction="row" alignItems="center" spacing={2}>
-                    <Icon.Settings size={20} />
-                    <Typography variant="h6">Grupos de Modificadores</Typography>
+                    <Icon.Settings size={20} color={theme.palette.primary.main} />
+                    <Typography variant="h6">{t('modifier_groups')}</Typography>
                     <Badge badgeContent={product.modifier_groups.length} color="primary">
                       <Box />
                     </Badge>
@@ -769,43 +781,42 @@ const ProductView: React.FC<any> = ({ currency }) => {
                           </Typography>
                         )}
                         <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
-                          <Chip 
-                            label={`Tipo: ${group.type}`} 
-                            size="small" 
+                          <Chip
+                            label={t('modifier_type', { type: group.type })}
+                            size="small"
                             variant="outlined"
                           />
-                          <Chip 
-                            label={group.is_required ? "Requerido" : "Opcional"} 
-                            size="small" 
+                          <Chip
+                            label={group.is_required ? t('required') : t('optional')}
+                            size="small"
                             color={group.is_required ? "error" : "default"}
                             variant="outlined"
                           />
                           {group.min_selections > 0 && (
-                            <Chip 
-                              label={`Min: ${group.min_selections}`} 
-                              size="small" 
+                            <Chip
+                              label={t('min_label', { min: group.min_selections })}
+                              size="small"
                               variant="outlined"
                             />
                           )}
                           {group.max_selections > 0 && (
-                            <Chip 
-                              label={`Max: ${group.max_selections}`} 
-                              size="small" 
+                            <Chip
+                              label={t('max_label', { max: group.max_selections })}
+                              size="small"
                               variant="outlined"
                             />
                           )}
                         </Stack>
-                        
+
                         {/* Modifier Options */}
                         {group.modifier_options && group.modifier_options.length > 0 && (
                           <Box sx={{ mt: 2 }}>
                             <Typography variant="subtitle2" sx={{ mb: 1 }}>
-                              Opciones ({group.modifier_options.length})
+                              {t('options_count', { count: group.modifier_options.length })}
                             </Typography>
                             <Grid container spacing={1}>
                               {group.modifier_options.map((option: any) => (
-                                  /* @ts-ignore */
-                                <Grid item xs={12} sm={6} key={option.id}>
+                                <Grid size={{ xs: 12, sm: 6 }} key={option.id}>
                                   <Paper 
                                     variant="outlined" 
                                     sx={{ 
@@ -835,8 +846,8 @@ const ProductView: React.FC<any> = ({ currency }) => {
                                         />
                                       )}
                                       {option.is_default && (
-                                        <Chip 
-                                          label="Por defecto"
+                                        <Chip
+                                          label={t('default_option')}
                                           size="small"
                                           color="primary"
                                           variant="filled"
@@ -865,8 +876,8 @@ const ProductView: React.FC<any> = ({ currency }) => {
               >
                 <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                   <Stack direction="row" alignItems="center" spacing={2}>
-                    <Icon.List size={20} />
-                    <Typography variant="h6">Características del Producto</Typography>
+                    <Icon.List size={20} color={theme.palette.primary.main} />
+                    <Typography variant="h6">{t('characteristics')}</Typography>
                     <Badge badgeContent={metadata.length} color="primary">
                       <Box />
                     </Badge>
@@ -880,7 +891,7 @@ const ProductView: React.FC<any> = ({ currency }) => {
                           <>
                             <Typography variant="h6" sx={{ mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
                               <Icon.Tag size={18} />
-                              {group[0]?.metadataFormat?.group || "Metadata"}
+                              {group[0]?.metadataFormat?.group || t('metadata_fallback')}
                             </Typography>
                             <MUISimpleJsonTable
                               tableData={group}
@@ -905,8 +916,8 @@ const ProductView: React.FC<any> = ({ currency }) => {
               >
                 <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                   <Stack direction="row" alignItems="center" spacing={2}>
-                    <Icon.Package size={20} />
-                    <Typography variant="h6">Contenido del Pack</Typography>
+                    <Icon.Package size={20} color={theme.palette.primary.main} />
+                    <Typography variant="h6">{t('pack_contents')}</Typography>
                     <Badge badgeContent={product.products.length} color="primary">
                       <Box />
                     </Badge>
@@ -940,7 +951,7 @@ const ProductView: React.FC<any> = ({ currency }) => {
                             {packProduct.name}
                           </Typography>
                           <Typography variant="body2" color="text.secondary">
-                            SKU: {packProduct.sku}
+                            {t('pack_sku', { sku: packProduct.sku })}
                           </Typography>
                         </Box>
                         <Box textAlign="right">
@@ -948,7 +959,7 @@ const ProductView: React.FC<any> = ({ currency }) => {
                             {packProduct.quantity || 1}x
                           </Typography>
                           <Typography variant="caption" color="text.secondary">
-                            Cantidad
+                            {t('quantity')}
                           </Typography>
                         </Box>
                         <IconButton size="small">
@@ -970,8 +981,8 @@ const ProductView: React.FC<any> = ({ currency }) => {
               >
                 <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                   <Stack direction="row" alignItems="center" spacing={2}>
-                    <Icon.Link size={20} />
-                    <Typography variant="h6">URLs del Producto</Typography>
+                    <Icon.Link size={20} color={theme.palette.primary.main} />
+                    <Typography variant="h6">{t('product_urls')}</Typography>
                     <Badge badgeContent={product.urls.length} color="primary">
                       <Box />
                     </Badge>
@@ -990,10 +1001,10 @@ const ProductView: React.FC<any> = ({ currency }) => {
                           gap: 2 
                         }}
                       >
-                        <Icon.ExternalLink size={20} color="#2196F3" />
+                        <Icon.ExternalLink size={20} color={theme.palette.info.main} />
                         <Box flex={1}>
                           <Typography variant="body2" color="text.secondary">
-                            {url.platform || 'URL'}
+                            {url.platform || t('url_fallback')}
                           </Typography>
                           <Typography 
                             variant="body1" 
@@ -1023,8 +1034,8 @@ const ProductView: React.FC<any> = ({ currency }) => {
               </Accordion>
             )}
           </Stack>
-        </Grid>
-      </Grid>
+        </Box>
+      </Box>
 
       {/* Floating Action Button for Quick Edit */}
       <Box
@@ -1051,7 +1062,7 @@ const ProductView: React.FC<any> = ({ currency }) => {
             }
           }}
         >
-          Editar Producto
+          {t('edit_product')}
         </Button>
       </Box>
     </Box>
