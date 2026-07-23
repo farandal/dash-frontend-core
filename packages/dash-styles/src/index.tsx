@@ -42,16 +42,17 @@ export const defaultOptions = (options) => {
     const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
     const cssVars = getAllCssVariablesFromStyleSheets(":root");
 
+    // Mirrors getAntTheme()'s resolve(): a tenant's saved `colors` object can be
+    // PARTIAL (only the base swatches, not every derived key this palette needs).
+    // Previously, a truthy `colors` object short-circuited straight to `{}` for any
+    // key it didn't contain, skipping the compiled-CSS fallback entirely — so once
+    // the tenant's real (partial) colors started flowing through here, every
+    // missing key silently fell back to MUI's own stock palette (blue/magenta)
+    // instead of the compiled LESS defaults. Chain through both sources instead.
     const _color = (key, colorKey, mode = null) => {
-        if (colors) {
-            const colorValue = colors[`${colorKey}--${mode || currentTheme}`];
-            return colorValue ? { [key]: colorValue } : {};
-        } else if (cssVars[`--${colorKey}--${mode || currentTheme}`]) {
-            const cssVarValue = cssVars[`--${colorKey}--${mode || currentTheme}`];
-            return cssVarValue ? { [key]: cssVarValue } : {};
-        } else {
-            return {};
-        }
+        const suffix = `${colorKey}--${mode || currentTheme}`;
+        const colorValue = colors?.[suffix] || cssVars[`--${suffix}`];
+        return colorValue ? { [key]: colorValue } : {};
     };
 
     const createPalette = (mode = 'light') => {

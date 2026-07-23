@@ -111,20 +111,23 @@ export const updateDomCssVariables = (
         styleString += `--${key}: ${value}; `;
     });
 
-    // When no colors provided, read from static stylesheets (excluding our dynamic style)
-    // to get compiled LESS defaults instead of reading back our own previous values.
-    const staticVars = colors ? undefined : getStaticCssVariables();
+    // Always read the compiled static defaults (excluding our dynamic style) as a
+    // per-key fallback — even when `colors` is provided. A tenant's saved `colors`
+    // object can be PARTIAL (e.g. only --light keys saved, no --dark counterparts).
+    // Without this fallback, any key missing from `colors` for the active theme
+    // would never be set at all, leaving base vars like --primary-color undefined
+    // and breaking anything (e.g. the sidebar gradient) that depends on them.
+    const staticVars = getStaticCssVariables();
 
-    // Collect all keys to set (from colors or fallback to static stylesheets)
+    // Collect all keys to set: union of the tenant's saved colors AND the static
+    // compiled defaults, so nothing is ever silently left unset.
     const allKeys = new Set<string>();
     if (colors) {
         Object.keys(colors).forEach(k => allKeys.add(k));
-    } else {
-        // Use static CSS variables (from compiled LESS, NOT our dynamic style)
-        Object.keys(staticVars!).forEach(name => {
-            allKeys.add(name.slice(2)); // remove leading '--'
-        });
     }
+    Object.keys(staticVars).forEach(name => {
+        allKeys.add(name.slice(2)); // remove leading '--'
+    });
     logKeys.forEach(k => allKeys.add(k));
 
     allKeys.forEach(key => {
@@ -136,17 +139,21 @@ export const updateDomCssVariables = (
         if (!value) value = getCssVarFromDom(key);
 
         if (value) {
-            // Only add the variable if it doesn't end with a theme suffix OR matches the current theme
-            // This prevents variables for other themes from being included
-            const isThemeVariable = key.includes('--');
-            const isCurrentTheme = key.endsWith(themeSuffix);
-            
-            // Add all non-theme variables and only the ones for current theme
-            if (!isThemeVariable || isCurrentTheme) {
-                styleString += `--${key}: ${value}; `;
-                if (logKeys.includes(key)) {
-                    debug && console.log(`%c ⬤ --${key}: ${value}; `, `color: ${value};`);
-                }
+            // Write EVERY key we have a value for — including BOTH the --light AND
+            // --dark suffixed variants, regardless of the active theme.
+            //
+            // Previously this only wrote the ACTIVE theme's suffixed keys, which left
+            // the OTHER theme's suffixed vars stuck at their static compiled defaults
+            // (e.g. while in light mode, --primary-color--dark stayed the app's
+            // build-time default instead of the tenant's value). Any code that
+            // references a specific theme's variable directly — notably the
+            // always-dark sidebar, which reads var(--primary-color--dark) in both
+            // modes — needs BOTH variants populated with the tenant values no matter
+            // which mode is active. Only the BASE (unsuffixed) key below stays
+            // theme-dependent and follows the active mode.
+            styleString += `--${key}: ${value}; `;
+            if (logKeys.includes(key)) {
+                debug && console.log(`%c ⬤ --${key}: ${value}; `, `color: ${value};`);
             }
         }
         
