@@ -3,6 +3,7 @@ import react from "@vitejs/plugin-react";
 import path from "path";
 import fs from "fs";
 import svgr from "vite-plugin-svgr";
+import { getDashCoreSrcAliases } from "../../vite-plugins/dashCoreSrcAliases.mts";
 
 
 import packageJson from "../../package.json" assert { type: "json" };
@@ -303,6 +304,8 @@ export default ({ mode }) => {
 
   const currentPath = path.resolve(__dirname);
 
+  const dashCoreSrc = getDashCoreSrcAliases(currentPath, isDevelopment);
+
   const commonExternals = [
     path.resolve(__dirname, "../../electron/preload/index.ts"),
     path.resolve(__dirname, "../../electron/preload/index.js"),
@@ -522,6 +525,10 @@ export default ({ mode }) => {
 
     resolve: {
       alias: [
+        // Opt-in (LINK_DASH_CORE=true): alias dash-* to sibling dash-frontend-core source.
+        // Must be FIRST — Vite matches aliases in order, and these need to beat the
+        // static entries below (notably @dash-styles-src → node_modules).
+        ...dashCoreSrc.aliases,
         { find: "@app", replacement: path.resolve(currentPath, "./src") },
         { find: "@dash-styles-src", replacement: path.resolve(currentPath, "../../node_modules/dash-styles/src") },
         // react-beautiful-dnd is unmaintained on React 18/19; map to the @hello-pangea/dnd drop-in.
@@ -751,6 +758,8 @@ export default ({ mode }) => {
         "colorthief",
         "@nosferatu500/react-sortable-tree",
         "@syncfusion/ej2-react-treegrid",
+        // Opt-in (LINK_DASH_CORE=true): rest of the dash-* packages aliased to source
+        ...dashCoreSrc.exclude,
 
         // Exclude Capacitor modules for desktop builds only
         //...(isDesktop ? [

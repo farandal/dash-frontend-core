@@ -3,6 +3,7 @@ import react from "@vitejs/plugin-react";
 import path from "path";
 import fs from "fs";
 import svgr from "vite-plugin-svgr";
+import { getDashCoreSrcAliases } from "../../vite-plugins/dashCoreSrcAliases.mts";
 
 
 import packageJson from "../../package.json" assert { type: "json" };
@@ -303,6 +304,8 @@ export default ({ mode }) => {
 
   const currentPath = path.resolve(__dirname);
 
+  const dashCoreSrc = getDashCoreSrcAliases(currentPath, isDevelopment);
+
   const commonExternals = [
     path.resolve(__dirname, "../../electron/preload/index.ts"),
     path.resolve(__dirname, "../../electron/preload/index.js"),
@@ -524,6 +527,10 @@ export default ({ mode }) => {
 
     resolve: {
       alias: [
+        // Opt-in (LINK_DASH_CORE=true): alias dash-* to sibling dash-frontend-core source.
+        // Must be FIRST — Vite matches aliases in order, and these need to beat the
+        // static entries below (notably @dash-styles-src → node_modules).
+        ...dashCoreSrc.aliases,
         // CRITICAL: Force a SINGLE copy of TanStack Query across the whole bundle.
         // The monorepo had ~25 nested copies of @tanstack/react-query (versions drifted
         // because several package.json used "latest"/loose ranges: root 5.101.0 vs 5.101.2
@@ -784,6 +791,8 @@ export default ({ mode }) => {
         "colorthief",
         "@nosferatu500/react-sortable-tree",
         "@syncfusion/ej2-react-treegrid",
+        // Opt-in (LINK_DASH_CORE=true): rest of the dash-* packages aliased to source
+        ...dashCoreSrc.exclude,
 
         // Exclude Capacitor modules for desktop builds only
         //...(isDesktop ? [
