@@ -68,7 +68,7 @@
 		"typescript": "latest"
 	},
 	"peerDependencies": {
-		"react": "latest"
+		"react": ">=18.0.0"
 	},
 	"eslintConfig": {
 		"extends": "react-app"

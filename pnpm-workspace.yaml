@@ -1,3 +1,60 @@
 packages:
   - 'apps/*'
   - 'packages/*'
+
+allowBuilds:
+  '@scarf/scarf': true
+  core-js: true
+  electron: true
+  electron-winstaller: true
+  esbuild: true
+  fsevents: true
+  nx: true
+  phantomjs-prebuilt: false
+  sharp: true
+  unrs-resolver: true
+
+overrides:
+  eslint: ^9.39.1
+  '@types/react': ^19.2.7
+  typescript: ^5.9.3
+  rollup: ^4.53.3
+  vite: ^7.2.4
+  immer: ^11.0.0
+  react-router: 7.17.0
+  react-router-dom: 7.17.0
+  react-hook-form: 7.78.0
+  '@mui/material': ^7.3.10
+  '@mui/system': ^7.3.10
+  '@mui/utils': ^7.3.10
+  '@mui/icons-material': ^7.3.10
+  '@mui/x-date-pickers': ^7.29.4
+  '@mui/x-data-grid': ^7.29.13
+  '@mui/lab': ^7.0.1-beta.24
+  ra-input-rich-text: 5.14.7
+
+peerDependencyRules:
+  allowedVersions:
+    eslint: '>=8.0.0'
+    '@mui/x-date-pickers': '>=6.0.0'
+    '@mui/x-data-grid': '>=6.0.0'
+    typescript: '>=4.0.0'
+    '@types/react': '>=16.0.0'
+    rollup: '>=2.0.0'
+    vite: '>=4.0.0'
+    '@mui/material': '>=5.0.0'
+    react-router-dom: '>=6.0.0'
+    eslint-plugin-react-hooks: '>=4.0.0'
+    '@typescript-eslint/eslint-plugin': '>=7.0.0'
+    '@typescript-eslint/parser': '>=7.0.0'
+  allowAny:
+    - eslint
+    - eslint-plugin-react-hooks
+    - '@typescript-eslint/eslint-plugin'
+    - '@typescript-eslint/parser'
+    - '@mui/material'
+    - react-router-dom
+    - react-scripts
+    - history
+    - react-redux
+    - redux

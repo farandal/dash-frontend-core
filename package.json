@@ -144,7 +144,7 @@
     "publish:npm": "node scripts/publish-npm.mjs",
     "publish:npm:dry-run": "node scripts/publish-npm.mjs --dry-run"
   },
-  "packageManager": "pnpm@9.15.0",
+  "packageManager": "pnpm@11.17.0",
   "dependencies": {
     "@capacitor/app": "^7.0.2",
     "@capacitor/camera": "^7.0.2",

@@ -106,9 +106,10 @@
 		"typescript": "latest"
 	},
 	"peerDependencies": {
-		"react": "latest",
-		"react-custom-scrollbars-2": "^4.5.0",
-		"react-dom": "latest"
+		"react": ">=18.0.0",
+		"react-beautiful-dnd": ">=13.0.0",
+		"react-custom-scrollbars-2": ">=4.0.0",
+		"react-dom": ">=18.0.0"
 	},
 	"eslintConfig": {
 		"extends": "react-app"
