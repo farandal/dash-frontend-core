@@ -6,7 +6,7 @@ import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import CheckIcon from "@mui/icons-material/Check";
-import { useTranslate } from "react-admin";
+import { useI18nBridge } from "../../contexts/I18nBridgeContext";
 
 export interface IApiKeyRevealContentProps {
     /** The plaintext token, shown exactly once. */
@@ -31,8 +31,28 @@ export interface IApiKeyRevealContentProps {
  *       : null,
  */
 export const ApiKeyRevealContent: React.FC<IApiKeyRevealContentProps> = ({ token, name }) => {
-    const translate = useTranslate();
+    // DialogServiceProvider is mounted ABOVE <Admin> in DASHAppProviders, so
+    // dialog content renders outside React Admin's i18n context and
+    // useTranslate() would silently fall through to the English defaults.
+    // The bridge is the supported way to translate from out there - same
+    // pattern as AppMaterialMenu.
+    const { i18nProvider, locale } = useI18nBridge();
     const [copied, setCopied] = useState(false);
+
+    const translate = React.useCallback(
+        (key: string, options?: any) => {
+            if (i18nProvider?.translate) {
+                try {
+                    return i18nProvider.translate(key, options);
+                } catch {
+                    return options?._ ?? key;
+                }
+            }
+            return options?._ ?? key;
+        },
+        // locale is a dependency so the text re-renders on a language switch.
+        [i18nProvider, locale]
+    );
 
     const handleCopy = async () => {
         try {
