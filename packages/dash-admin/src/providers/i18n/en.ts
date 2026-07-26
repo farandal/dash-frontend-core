@@ -311,8 +311,52 @@ const dashEnglish = {
 		auto_reset_notice: 'This screen will automatically reset in 30 seconds',
 		loading: 'Loading...',
 	},
+	// Service account API keys
+	serviceAccount: {
+		reveal: {
+			title: 'Copy your API key now',
+			warning:
+				'This is the only time this key will be shown. It cannot be recovered later — if you lose it, you will have to issue a new one.',
+			forKey: 'Key',
+			copy: 'Copy',
+			copied: 'Copied',
+			dismiss: 'I have saved it',
+		},
+		status: {
+			active: 'Active',
+			disabled: 'Disabled',
+		},
+		expiration: {
+			'1': '1 day',
+			'7': '7 days',
+			'30': '30 days',
+			never: 'Never',
+		},
+		action: {
+			enable: 'Enable',
+			disable: 'Disable',
+		},
+		// Shown when a tenancy-level role is selected: such a key reaches every
+		// tenant in the account, so the tenant field stops being a boundary.
+		tenancy_role_warning:
+			'This role grants access to every tenant in the account. The selected tenant is informational, not a security boundary.',
+	},
 	// Resource labels for admin panel
 	resource: {
+		tenancy: {
+			serviceAccounts: {
+				label: 'Service Accounts',
+				name: 'Name',
+				tenant: 'Tenant',
+				roles: 'Roles',
+				expiration: 'Expiration',
+				status: 'Status',
+				token: 'Key',
+				expires_at: 'Expires',
+				last_used_at: 'Last used',
+				created_at: 'Created',
+			},
+		},
 		// Groups
 		groups: {
 			system_resources: 'System Resources',

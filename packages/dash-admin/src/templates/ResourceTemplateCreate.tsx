@@ -50,9 +50,17 @@ export const ResourceTemplateCreate: FC<IResourceTemplate> = (props) => {
 			// recoverable afterwards).
 			const successOverride = resourceConfig?.createSuccessDialog?.(data);
 
+			// A string title is treated as a translation key (with itself as
+			// fallback), matching how labels and menu titles behave elsewhere.
+			// JSX titles are rendered as-is.
+			const overrideTitle =
+				typeof successOverride?.title === 'string'
+					? translate(successOverride.title, { _: successOverride.title })
+					: successOverride?.title;
+
 			dialog({
 				variant: 'info',
-				title: successOverride?.title ?? translate('dash.resource.created'),
+				title: overrideTitle ?? translate('dash.resource.created'),
 				content:
 					successOverride?.content ??
 					translate('dash.resource.created_message', { label: translatedLabel }),

@@ -318,8 +318,52 @@ const dashSpanish = {
 		auto_reset_notice: 'Esta pantalla se reiniciará automáticamente en 30 segundos',
 		loading: 'Cargando...',
 	},
+	// Service account API keys
+	serviceAccount: {
+		reveal: {
+			title: 'Copia tu API Key ahora',
+			warning:
+				'Esta es la única vez que se mostrará esta clave. No se puede recuperar más adelante — si la pierdes, tendrás que emitir una nueva.',
+			forKey: 'Clave',
+			copy: 'Copiar',
+			copied: 'Copiado',
+			dismiss: 'La he guardado',
+		},
+		status: {
+			active: 'Activa',
+			disabled: 'Deshabilitada',
+		},
+		expiration: {
+			'1': '1 día',
+			'7': '7 días',
+			'30': '30 días',
+			never: 'Nunca',
+		},
+		action: {
+			enable: 'Habilitar',
+			disable: 'Deshabilitar',
+		},
+		// Shown when a tenancy-level role is selected: such a key reaches every
+		// tenant in the account, so the tenant field stops being a boundary.
+		tenancy_role_warning:
+			'Este rol otorga acceso a todos los locales de la cuenta. El local seleccionado es informativo, no un límite de seguridad.',
+	},
 	// Resource labels for admin panel
 	resource: {
+		tenancy: {
+			serviceAccounts: {
+				label: 'Cuentas de Servicio',
+				name: 'Nombre',
+				tenant: 'Local',
+				roles: 'Roles',
+				expiration: 'Expiración',
+				status: 'Estado',
+				token: 'Clave',
+				expires_at: 'Expira',
+				last_used_at: 'Último uso',
+				created_at: 'Creado',
+			},
+		},
 		// Groups
 		groups: {
 			system_resources: 'Recursos de Sistema',
