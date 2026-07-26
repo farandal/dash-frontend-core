@@ -332,6 +332,11 @@ const dashEnglish = {
 			'30': '30 days',
 			never: 'Never',
 		},
+		notify: {
+			enabled: 'API key enabled',
+			disabled: 'API key disabled',
+			toggle_error: 'Could not change the key status',
+		},
 		action: {
 			enable: 'Enable',
 			disable: 'Disable',

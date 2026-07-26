@@ -339,6 +339,11 @@ const dashSpanish = {
 			'30': '30 días',
 			never: 'Nunca',
 		},
+		notify: {
+			enabled: 'API Key habilitada',
+			disabled: 'API Key deshabilitada',
+			toggle_error: 'No se pudo cambiar el estado de la API Key',
+		},
 		action: {
 			enable: 'Habilitar',
 			disable: 'Deshabilitar',
