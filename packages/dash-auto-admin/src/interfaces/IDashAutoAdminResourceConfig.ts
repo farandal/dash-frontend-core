@@ -230,6 +230,21 @@ export default interface IDashAutoAdminResourceConfig {
 
 	/** */
 	showDialogAfterSubmit?: boolean;
+	/**
+	 * Override the dialog shown after a successful create.
+	 *
+	 * Receives the created record, so the dialog can surface values the API
+	 * returns exactly once and never again - a generated secret, for example.
+	 * Return null/undefined to fall back to the default "created" dialog.
+	 *
+	 * Requires showDialogAfterSubmit to not be false.
+	 */
+	createSuccessDialog?: (data: any) => {
+		/** */
+		title?: string | JSX.Element;
+		/** */
+		content?: string | JSX.Element;
+	} | null;
 	/** */
 	showNotifyAfterSubmit?: boolean;
 

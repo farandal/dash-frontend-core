@@ -45,10 +45,17 @@ export const ResourceTemplateCreate: FC<IResourceTemplate> = (props) => {
 			notify('dash.resource.created', { type: 'success' });
 		}
 		if (_showDialogAfterSubmit) {
+			// A resource may override the success dialog to surface values the
+			// API returns exactly once (e.g. a generated secret that is never
+			// recoverable afterwards).
+			const successOverride = resourceConfig?.createSuccessDialog?.(data);
+
 			dialog({
 				variant: 'info',
-				title: translate('dash.resource.created'),
-				content: translate('dash.resource.created_message', { label: translatedLabel }),
+				title: successOverride?.title ?? translate('dash.resource.created'),
+				content:
+					successOverride?.content ??
+					translate('dash.resource.created_message', { label: translatedLabel }),
 				onConfirm: () => {
 					switch (resourceConfig?.redirectAfterCreate) {
 						case false:
