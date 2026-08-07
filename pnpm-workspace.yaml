@@ -14,8 +14,20 @@ allowBuilds:
   sharp: true
   unrs-resolver: true
 
+minimumReleaseAgeExclude:
+  - '@mui/core-downloads-tracker@9.3.0'
+  - '@mui/icons-material@9.3.0'
+  - '@mui/material@9.3.0'
+  - '@mui/private-theming@9.3.0'
+  - '@mui/styled-engine@9.3.0'
+  - '@mui/system@9.3.0'
+  - '@mui/types@9.3.0'
+  - '@mui/utils@9.3.0'
+
 overrides:
   eslint: ^9.39.1
+  react: 19.2.8
+  react-dom: 19.2.8
   '@types/react': ^19.2.7
   typescript: ^5.9.3
   rollup: ^4.53.3
@@ -24,14 +36,14 @@ overrides:
   react-router: 7.17.0
   react-router-dom: 7.17.0
   react-hook-form: 7.78.0
-  '@mui/material': ^7.3.10
-  '@mui/system': ^7.3.10
-  '@mui/utils': ^7.3.10
-  '@mui/icons-material': ^7.3.10
+  '@mui/material': ^9.3.0
+  '@mui/system': ^9.3.0
+  '@mui/utils': ^9.3.0
+  '@mui/icons-material': ^9.3.0
   '@mui/x-date-pickers': ^7.29.4
   '@mui/x-data-grid': ^7.29.13
   '@mui/lab': ^7.0.1-beta.24
-  ra-input-rich-text: 5.14.7
+  ra-input-rich-text: 5.15.1
 
 peerDependencyRules:
   allowedVersions:

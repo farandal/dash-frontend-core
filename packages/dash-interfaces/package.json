@@ -52,7 +52,7 @@
 		"eslint-plugin-react-hooks": "latest",
 		"dash-prettier": "workspace:*",
 		"query-string": "latest",
-		"react-dom": "latest",
+		"react-dom": "19.2.8",
 		"rollup": "latest",
 		"rollup-plugin-copy-assets": "latest",
 		"rollup-plugin-external-globals": "latest",

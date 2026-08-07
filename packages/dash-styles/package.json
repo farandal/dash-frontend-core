@@ -20,8 +20,8 @@
 	"license": "MIT",
 	"devDependencies": {},
 	"dependencies": {
-		"@mui/utils": "^7.3.10",
-		"react-admin": "5.14.6"
+		"@mui/utils": "^9.3.0",
+		"react-admin": "5.15.1"
 	},
 	"peerDependencies": {
 		"antd": ">=5.0.0"

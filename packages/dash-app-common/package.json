@@ -26,8 +26,8 @@
 		]
 	},
 	"dependencies": {
-		"react": "latest",
-		"react-dom": "latest",
+		"react": "19.2.8",
+		"react-dom": "19.2.8",
 		"react-redux": "latest",
 		"react-router-dom": "^7.9.6",
 		"dash-utils": "workspace:*",

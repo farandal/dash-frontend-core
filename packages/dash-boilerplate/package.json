@@ -12,7 +12,8 @@
 	"dependencies": {
 		"@emotion/react": "latest",
 		"@emotion/styled": "latest",
-		"@mui/material": "^7.3.10",
+		"@mui/icons-material": "^9.3.0",
+		"@mui/material": "^9.3.0",
 		"dash-admin": "workspace:*",
 		"dash-admin-state": "workspace:*",
 		"dash-auth": "workspace:*",
@@ -21,9 +22,9 @@
 		"dash-constants": "workspace:*",
 		"dash-utils": "workspace:*",
 		"numeral": "^2.0.6",
-		"react": "latest",
-		"react-admin": "5.14.6",
-		"react-dom": "latest",
+		"react": "19.2.8",
+		"react-admin": "5.15.1",
+		"react-dom": "19.2.8",
 		"react-error-boundary": "^4.0.0",
 		"react-redux": "latest"
 	},
