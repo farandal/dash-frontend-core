@@ -94,7 +94,9 @@ const PermissionsSelectorView: React.FC<IDashAutoAdminCustomFieldComponent> = ({
     if (!record?.permissions || record.permissions.length === 0) {
         return (
             <Box sx={{ p: 2, textAlign: 'center' }}>
-                <Typography variant="body2" color="text.secondary">
+                <Typography variant="body2" sx={{
+                    color: "text.secondary"
+                }}>
                     No permissions assigned
                 </Typography>
             </Box>
@@ -109,7 +111,7 @@ const PermissionsSelectorView: React.FC<IDashAutoAdminCustomFieldComponent> = ({
             <Grid container spacing={3}>
                 {permissions?.map((tab, index) => (
                     /* @ts-ignore */
-                    <Grid item xs={12} sm={6} md={4} lg={3} key={index}>
+                    (<Grid item xs={12} sm={6} md={4} lg={3} key={index}>
                         <Card 
                             variant="outlined" 
                             sx={{ 
@@ -138,7 +140,7 @@ const PermissionsSelectorView: React.FC<IDashAutoAdminCustomFieldComponent> = ({
                                 </Stack>
                             </CardContent>
                         </Card>
-                    </Grid>
+                    </Grid>)
                 ))}
             </Grid>
         </Box>
@@ -533,19 +535,21 @@ const PermissionsSelectorBase: React.FC<IDashAutoAdminCustomFieldComponent & { r
                             placeholder="e.g., user, admin, system..."
                             value={groupSearchTerm}
                             onChange={e => setGroupSearchTerm(e.target.value)}
-                            InputProps={{
-                                startAdornment: (
-                                    <InputAdornment position="start">
-                                        <SearchIcon color="action" />
-                                    </InputAdornment>
-                                ),
-                                endAdornment: groupSearchTerm && (
-                                    <InputAdornment position="end">
-                                        <IconButton size="small" onClick={handleClearGroupSearch}>
-                                            <ClearIcon fontSize="small" />
-                                        </IconButton>
-                                    </InputAdornment>
-                                )
+                            slotProps={{
+                                input: {
+                                    startAdornment: (
+                                        <InputAdornment position="start">
+                                            <SearchIcon color="action" />
+                                        </InputAdornment>
+                                    ),
+                                    endAdornment: groupSearchTerm && (
+                                        <InputAdornment position="end">
+                                            <IconButton size="small" onClick={handleClearGroupSearch}>
+                                                <ClearIcon fontSize="small" />
+                                            </IconButton>
+                                        </InputAdornment>
+                                    )
+                                }
                             }}
                         />
                     </Grid>
@@ -558,26 +562,30 @@ const PermissionsSelectorBase: React.FC<IDashAutoAdminCustomFieldComponent & { r
                             placeholder="e.g., create, edit, delete, view..."
                             value={itemSearchTerm}
                             onChange={e => setItemSearchTerm(e.target.value)}
-                            InputProps={{
-                                startAdornment: (
-                                    <InputAdornment position="start">
-                                        <SearchIcon color="action" />
-                                    </InputAdornment>
-                                ),
-                                endAdornment: itemSearchTerm && (
-                                    <InputAdornment position="end">
-                                        <IconButton size="small" onClick={handleClearItemSearch}>
-                                            <ClearIcon fontSize="small" />
-                                        </IconButton>
-                                    </InputAdornment>
-                                )
+                            slotProps={{
+                                input: {
+                                    startAdornment: (
+                                        <InputAdornment position="start">
+                                            <SearchIcon color="action" />
+                                        </InputAdornment>
+                                    ),
+                                    endAdornment: itemSearchTerm && (
+                                        <InputAdornment position="end">
+                                            <IconButton size="small" onClick={handleClearItemSearch}>
+                                                <ClearIcon fontSize="small" />
+                                            </IconButton>
+                                        </InputAdornment>
+                                    )
+                                }
                             }}
                         />
                     </Grid>
                 </Grid>
                 {hasActiveSearch && (
                     <Box sx={{ mt: 2, p: 2, bgcolor: 'action.hover', borderRadius: 1 }}>
-                        <Typography variant="body2" color="text.secondary">
+                        <Typography variant="body2" sx={{
+                            color: "text.secondary"
+                        }}>
                             <strong>Search Results:</strong> {filteredGroupsCount} group{filteredGroupsCount !== 1 ? 's' : ''} 
                             {' '}({totalFilteredItems} permission{totalFilteredItems !== 1 ? 's' : ''}) 
                             {' '}of {permissionsData.length} total groups ({totalPermissions} total permissions)
@@ -606,10 +614,17 @@ const PermissionsSelectorBase: React.FC<IDashAutoAdminCustomFieldComponent & { r
                     borderColor: 'divider'
                 }}>
                     <SearchIcon sx={{ fontSize: 48, color: 'text.disabled', mb: 2 }} />
-                    <Typography variant="h6" color="text.secondary" gutterBottom>
+                    <Typography variant="h6" gutterBottom sx={{
+                        color: "text.secondary"
+                    }}>
                         No permissions found
                     </Typography>
-                    <Typography variant="body2" color="text.disabled" sx={{ mb: 2 }}>
+                    <Typography
+                        variant="body2"
+                        sx={{
+                            color: "text.disabled",
+                            mb: 2
+                        }}>
                         No permissions match your search criteria
                         {debouncedGroupSearch && ` for group "${debouncedGroupSearch}"`}
                         {debouncedItemSearch && ` for permission "${debouncedItemSearch}"`}
@@ -638,7 +653,7 @@ const PermissionsSelectorBase: React.FC<IDashAutoAdminCustomFieldComponent & { r
                         const visibleItems = isExpanded ? group : group.slice(0, INITIAL_ITEMS_COUNT);
                         const remainingCount = group.length - INITIAL_ITEMS_COUNT;
                         return (
-                            /* @ts-ignore */ 
+                            /* @ts-ignore */
                             <Grid item xs={12} md={4} key={groupIndex}>
                                 <Card variant="outlined" sx={{
                                     height: '100%',

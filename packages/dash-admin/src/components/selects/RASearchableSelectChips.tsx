@@ -195,8 +195,8 @@ export const SearchableSelectChipsControl: React.FC<
       }, [parsedOptions])*/
 
 	return (
-		<>
-			{parsedOptions ? (
+        <>
+            {parsedOptions ? (
 				<Autocomplete
 					key={'autocomplete-' + attribute.attribute}
 					multiple={isMultiple}
@@ -232,7 +232,7 @@ export const SearchableSelectChipsControl: React.FC<
 					}}
 					renderInput={(params) => {
 						return (
-							<TextField
+                            <TextField
 								key={params.id}
 								{...params}
 								label={selectLabel}
@@ -246,35 +246,39 @@ export const SearchableSelectChipsControl: React.FC<
 									)
 										debounce(() => setQ(searchValue), timerSearch);
 								}}
-								InputProps={{
-									...params.InputProps,
-									autoComplete: 'new-password',
-									endAdornment: (
-										<>
-											{isResourceSearchLoading ? (
-												<CircularProgress color='inherit' size={20} />
-											) : null}
-											{params.InputProps.endAdornment}
-										</>
-									),
-								}}
+								slotProps={{
+                                    ...params.slotProps,
+
+                                    input: {
+                                        ...params.slotProps.input,
+                                        autoComplete: 'new-password',
+                                        endAdornment: (
+                                            <>
+                                                {isResourceSearchLoading ? (
+                                                    <CircularProgress color='inherit' size={20} />
+                                                ) : null}
+                                                {params.slotProps.input.endAdornment}
+                                            </>
+                                        ),
+                                    }
+                                }}
 							/>
-						);
+                        );
 					}}
 				/>
 			) : (
 				<LoadingIndicator />
 			)}
 
-			{!isMultiple && parsedOptions && _defaultValues && (
+            {!isMultiple && parsedOptions && _defaultValues && (
 				<>
 					<Chip
 						label={renderText(_transformOption(_defaultValues, 'chip'), 'chip')}
 					/>
 				</>
 			)}
-		</>
-	);
+        </>
+    );
 };
 
 const RASearchableSelectChips: React.FC<

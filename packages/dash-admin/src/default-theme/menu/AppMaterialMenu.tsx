@@ -82,7 +82,7 @@ const GenerateItems: React.FC<{ items: IMenuItem[]; navExpanded: boolean, navSiz
                             />
                         ) : (
 
-                            <SidebarItem level={level} navExpanded={navExpanded} navSize={navSize} item={item} key={index} />
+                            <SidebarItem  level={level} navExpanded={navExpanded} navSize={navSize} item={item} key={index} />
                         );
                     })}
                 </List>

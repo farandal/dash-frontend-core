@@ -1,13 +1,14 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import { 
-    Button, 
-    Badge, 
-    Menu, 
-    MenuItem, 
-    Typography, 
-    Divider, 
-    Box, 
+import {
+    Button,
+    Badge,
+    Menu,
+    MenuItem,
+    Typography,
+    Divider,
+    Box,
     IconButton,
+    Avatar,
     Chip,
     Snackbar,
     Alert,
@@ -15,42 +16,35 @@ import {
     Paper,
     Portal
 } from '@mui/material';
-import { 
-    NotificationsNone, 
-    NotificationsActive, 
+import {
+    NotificationsNone,
+    NotificationsActive,
     Close as CloseIcon,
     Clear as ClearIcon,
     Person as PersonIcon,
     Store as StoreIcon,
     DragIndicator as DragIcon
 } from '@mui/icons-material';
+import {
+    useNotifications as useNotificationsState,
+    type ProcessedNotification,
+    type ToastNotification as DashUtilsToastNotification,
+    type DialogNotification as DashUtilsDialogNotification,
+} from 'dash-utils';
 
 // ============================================================================
 // TYPES & INTERFACES
+//
+// The notification/toast/dialog shapes themselves live in dash-utils'
+// useNotifications hook (the state management is delegated there below —
+// see "HOOKS"). Re-exported here under this module's established names so
+// existing imports of NotificationData/ToastNotification/DialogNotification
+// from dash-components keep working unchanged.
 // ============================================================================
 
-export interface NotificationData {
-    id: string;
-    title: string;
-    message: string;
-    customer?: string;
-    store?: string;
-    timestamp: string;
-    isRead: boolean;
-    data?: any;
-}
-
-export interface ToastNotification {
-    id: string;
-    title: string;
-    message: string;
-    severity: 'info' | 'warning' | 'error' | 'success';
-}
-
-export interface DialogNotification extends NotificationData {
-    position: { x: number; y: number };
-    zIndex: number;
-}
+export type NotificationData = ProcessedNotification;
+export type ToastNotification = DashUtilsToastNotification;
+export type DialogNotification = DashUtilsDialogNotification;
 
 export interface NotificationsCenterConfig {
     /** Maximum number of notifications to keep */
@@ -164,132 +158,62 @@ export interface UseNotificationsCenterReturn {
 }
 
 /**
- * Hook for managing notifications state
+ * Hook for managing notifications state.
+ *
+ * State itself is delegated to dash-utils' useNotifications (the canonical
+ * implementation — this used to duplicate that logic locally). This hook is
+ * kept as a thin wrapper because its addNotification(notification, options)
+ * call — one call that optionally fans out to the base list, a dialog, and a
+ * toast — is more ergonomic for consumers than the three separate calls
+ * (addNotification/addDialogNotification/addToast) dash-utils exposes.
  */
 export const useNotificationsCenter = (
     config: NotificationsCenterConfig = {}
 ): UseNotificationsCenterReturn => {
     const mergedConfig = { ...defaultConfig, ...config };
-    
-    const [notifications, setNotifications] = useState<NotificationData[]>([]);
-    const [toastNotifications, setToastNotifications] = useState<ToastNotification[]>([]);
-    const [dialogNotifications, setDialogNotifications] = useState<DialogNotification[]>([]);
 
-    const unreadCount = notifications.filter(n => !n.isRead).length;
+    const base = useNotificationsState({
+        maxNotifications: mergedConfig.maxNotifications,
+        initialZIndex: mergedConfig.baseZIndex,
+    });
 
     const addNotification = useCallback((
         notification: Omit<NotificationData, 'id' | 'timestamp' | 'isRead'>,
         options: { showDialog?: boolean; showToast?: boolean; toastSeverity?: ToastNotification['severity'] } = {}
     ) => {
         const { showDialog = true, showToast = true, toastSeverity = 'warning' } = options;
-        
-        const processedNotification: NotificationData = {
-            ...notification,
-            id: generateNotificationId(),
-            timestamp: new Date().toISOString(),
-            isRead: false,
-        };
 
-        // Add to main notifications list
-        setNotifications(prev => [processedNotification, ...prev.slice(0, mergedConfig.maxNotifications - 1)]);
+        const processedNotification = showDialog
+            ? base.addDialogNotification(notification)
+            : base.addNotification(notification);
 
-        // Add dialog notification
-        if (showDialog) {
-            setDialogNotifications(prev => {
-                const dialogCount = prev.length;
-                const baseX = 20;
-                const baseY = typeof window !== 'undefined' ? window.innerHeight - 250 : 600;
-                const offsetY = dialogCount * -220;
-                
-                const dialogNotification: DialogNotification = {
-                    ...processedNotification,
-                    position: { x: baseX, y: baseY + offsetY },
-                    zIndex: mergedConfig.baseZIndex + dialogCount + 1,
-                };
-                return [...prev, dialogNotification];
+        if (showToast) {
+            base.addToast({
+                title: processedNotification.title,
+                message: `${notification.customer || ''} ${notification.store ? `- ${notification.store}` : ''}`.trim(),
+                severity: toastSeverity,
             });
         }
-
-        // Add toast notification
-        if (showToast) {
-            const toastId = `toast-${processedNotification.id}`;
-            setToastNotifications(prev => [...prev, {
-                id: toastId,
-                title: processedNotification.title,
-                message: `${processedNotification.customer || ''} ${processedNotification.store ? `- ${processedNotification.store}` : ''}`.trim(),
-                severity: toastSeverity,
-            }]);
-        }
-    }, [mergedConfig.maxNotifications, mergedConfig.baseZIndex]);
-
-    const markAsRead = useCallback((notificationId: string) => {
-        setNotifications(prev => 
-            prev.map(n => n.id === notificationId ? { ...n, isRead: true } : n)
-        );
-    }, []);
-
-    const markAllAsRead = useCallback(() => {
-        setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
-    }, []);
-
-    const removeNotification = useCallback((notificationId: string) => {
-        setNotifications(prev => prev.filter(n => n.id !== notificationId));
-    }, []);
-
-    const clearAllNotifications = useCallback(() => {
-        setNotifications([]);
-    }, []);
-
-    const closeToast = useCallback((toastId: string) => {
-        setToastNotifications(prev => prev.filter(t => t.id !== toastId));
-    }, []);
-
-    const closeDialog = useCallback((notificationId: string) => {
-        setDialogNotifications(prev => prev.filter(d => d.id !== notificationId));
-        markAsRead(notificationId);
-    }, [markAsRead]);
-
-    const acknowledgeDialog = useCallback((notificationId: string) => {
-        markAsRead(notificationId);
-        setDialogNotifications(prev => prev.filter(d => d.id !== notificationId));
-    }, [markAsRead]);
-
-    const bringDialogToFront = useCallback((notificationId: string) => {
-        setDialogNotifications(prev => {
-            const maxZ = Math.max(...prev.map(p => p.zIndex), mergedConfig.baseZIndex);
-            return prev.map(d => 
-                d.id === notificationId 
-                    ? { ...d, zIndex: maxZ + 1 }
-                    : d
-            );
-        });
-    }, [mergedConfig.baseZIndex]);
-
-    const updateDialogPosition = useCallback((notificationId: string, newPosition: { x: number; y: number }) => {
-        setDialogNotifications(prev =>
-            prev.map(d =>
-                d.id === notificationId
-                    ? { ...d, position: newPosition }
-                    : d
-            )
-        );
-    }, []);
+    }, [base]);
 
     return {
-        notifications,
-        toastNotifications,
-        dialogNotifications,
-        unreadCount,
+        notifications: base.notifications,
+        toastNotifications: base.toastNotifications,
+        dialogNotifications: base.dialogNotifications,
+        unreadCount: base.unreadCount,
         addNotification,
-        markAsRead,
-        markAllAsRead,
-        removeNotification,
-        clearAllNotifications,
-        closeToast,
-        closeDialog,
-        acknowledgeDialog,
-        bringDialogToFront,
-        updateDialogPosition,
+        markAsRead: base.markAsRead,
+        markAllAsRead: base.markAllAsRead,
+        removeNotification: base.removeNotification,
+        clearAllNotifications: base.clearAllNotifications,
+        closeToast: base.removeToast,
+        // closeDialog/acknowledgeDialog were already functionally identical
+        // (both marked read + removed the dialog) — dash-utils'
+        // removeDialogNotification does the same in one call.
+        closeDialog: base.removeDialogNotification,
+        acknowledgeDialog: base.removeDialogNotification,
+        bringDialogToFront: base.bringDialogToFront,
+        updateDialogPosition: base.updateDialogPosition,
     };
 };
 
@@ -313,13 +237,27 @@ export const NotificationButton: React.FC<NotificationButtonProps> = ({
         <IconButton
             onClick={onClick}
             aria-label="notifications"
-            color="inherit"
+            sx={{ padding: 0 }}
         >
+            {/* Icon lives directly on the classed Avatar (not the IconButton/Badge) so it
+                picks up the design system's icon-tile colors (var(--text-color) on
+                var(--secondary-color), via the dash-icon-button-* classes) the same way
+                every other sidebar action icon does (avatar, locale switcher, dark mode
+                toggle). Classes/color on the IconButton itself (or color="inherit", the
+                original state here) don't reliably reach the icon through the extra
+                Badge wrapper layer, and left it uncolored/invisible in dark mode across
+                every app that had copy-pasted this component (fixed 2026-08-03). */}
             <Badge badgeContent={unreadCount} color="error" max={99}>
-                {unreadCount > 0 
-                    ? (icons?.active || <NotificationsActive />) 
-                    : (icons?.empty || <NotificationsNone />)
-                }
+                <Avatar
+                    sx={{ fontSize: '1rem' }}
+                    style={{ width: '30px', height: '30px', minHeight: '30px' }}
+                    className="dash-icon-button-color dash-icon-button-bg"
+                >
+                    {unreadCount > 0
+                        ? (icons?.active || <NotificationsActive />)
+                        : (icons?.empty || <NotificationsNone />)
+                    }
+                </Avatar>
             </Badge>
         </IconButton>
     );
@@ -356,7 +294,9 @@ export const NotificationMenuItem: React.FC<NotificationMenuItemProps> = ({
                         {notification.title}
                     </Typography>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                        <Typography variant="caption" color="text.secondary">
+                        <Typography variant="caption" sx={{
+                            color: "text.secondary"
+                        }}>
                             {formatTimeAgo(notification.timestamp)}
                         </Typography>
                         <IconButton 
@@ -370,7 +310,12 @@ export const NotificationMenuItem: React.FC<NotificationMenuItemProps> = ({
                         </IconButton>
                     </Box>
                 </Box>
-                <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                <Typography
+                    variant="body2"
+                    sx={{
+                        color: "text.secondary",
+                        mb: 1
+                    }}>
                     {notification.message}
                 </Typography>
                 <Box sx={{ display: 'flex', gap: 0.5, flexWrap: 'wrap' }}>
@@ -455,7 +400,9 @@ export const NotificationsMenu: React.FC<NotificationsMenuProps> = ({
             <Divider />
             {notifications.length === 0 ? (
                 <MenuItem disabled>
-                    <Typography color="text.secondary">{labels.noNotifications}</Typography>
+                    <Typography sx={{
+                        color: "text.secondary"
+                    }}>{labels.noNotifications}</Typography>
                 </MenuItem>
             ) : (
                 notifications.map((notification) => (
@@ -650,7 +597,9 @@ export const DraggableNotificationDialog: React.FC<DraggableNotificationDialogPr
                             {notification.customer && (
                                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                                     {icons.customer || <PersonIcon color="primary" />}
-                                    <Typography variant="body2" color="text.secondary">
+                                    <Typography variant="body2" sx={{
+                                        color: "text.secondary"
+                                    }}>
                                         {labels.customer}
                                     </Typography>
                                     <Chip
@@ -664,7 +613,9 @@ export const DraggableNotificationDialog: React.FC<DraggableNotificationDialogPr
                             {notification.store && (
                                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                                     {icons.store || <StoreIcon color="secondary" />}
-                                    <Typography variant="body2" color="text.secondary">
+                                    <Typography variant="body2" sx={{
+                                        color: "text.secondary"
+                                    }}>
                                         {labels.store}
                                     </Typography>
                                     <Chip
@@ -676,7 +627,9 @@ export const DraggableNotificationDialog: React.FC<DraggableNotificationDialogPr
                                 </Box>
                             )}
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 1 }}>
-                                <Typography variant="caption" color="text.secondary">
+                                <Typography variant="caption" sx={{
+                                    color: "text.secondary"
+                                }}>
                                     {labels.received} {formatTimeAgo(notification.timestamp, labels)}
                                 </Typography>
                             </Box>
@@ -720,8 +673,6 @@ export interface NotificationsCenterProps {
     config?: NotificationsCenterConfig;
     /** External notifications hook (if managed externally) */
     notificationsHook?: UseNotificationsCenterReturn;
-    /** Called when a notification is added (for external integration) */
-    onNotificationReceived?: (notification: NotificationData) => void;
 }
 
 export const NotificationsCenter: React.FC<NotificationsCenterProps> = ({

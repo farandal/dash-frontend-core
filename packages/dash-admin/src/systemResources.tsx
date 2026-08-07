@@ -11,6 +11,8 @@ import Avatar from './components/avatar/Avatar';
 import SystemUpdateAlt from '@mui/icons-material/SystemUpdateAlt';
 import Person from '@mui/icons-material/Person';
 import CardMembershipIcon from '@mui/icons-material/CardMembership';
+import PaidIcon from '@mui/icons-material/Paid';
+import TranslateIcon from '@mui/icons-material/Translate';
 import { lazy } from 'react';
 import BusinessIcon from "@mui/icons-material/Business";
 import Chip from "@mui/material/Chip";
@@ -969,12 +971,19 @@ const systemResources: IAppResourceConfig[] = [
     },
 
 
+    // ============ Currency Management (core shared master data) ============
+    // Backed by dash-backend core's system/currency route (App\Http\Controllers\
+    // API\System\CurrencyController). Previously pointed at the domain's
+    // ecommerce/currency route — currencies moved to core as "shared master
+    // data" (see CLAUDE.md's core/domain split), so every app using this
+    // shared systemResources manifest (kitchntabs-*, vanexa-*) now gets a
+    // working Currencies page with no domain layer required.
     {
         roles: [DASHAppConstants.system.SYSTEM_ROLE],
         component: ResourceTemplate,
         trash: true,
-        model: "ecommerce/currency",
-        label: "resource.ecommerce.currencies.label",
+        model: "system/currency",
+        label: "resource.system.currencies.label",
         schema: [
             {
                 label: 'Código',
@@ -983,7 +992,6 @@ const systemResources: IAppResourceConfig[] = [
                 fieldOptions: {
                     helperText: 'E.g: CLP | USD ...'
                 }
-
             },
             {
                 label: 'Formato',
@@ -1012,24 +1020,21 @@ const systemResources: IAppResourceConfig[] = [
                 component: FormatCurrency
             },
         ],
-        //references: [{ reference: 'roles', target: 'role', schema: rolesSchema }]
-        //references: [{ reference: 'roles', target: 'id', schema: roleSchema }],
-        icon: <Person />,
-        // group: "resource.groups.system_resources",
+        icon: <PaidIcon />,
         group: "System",
         menu: [
             {
-                title: "resource.ecommerce.currencies.menu_list",
-                redirect: "/ecommerce/currency",
+                title: "resource.system.currencies.menu_list",
+                redirect: "/system/currency",
             },
             {
                 title: "🗑",
-                redirect: "/ecommerce/currency/trash",
+                redirect: "/system/currency/trash",
             },
         ],
 
         mainAction: {
-            title: "resource.ecommerce.currencies.main_action",
+            title: "resource.system.currencies.main_action",
             mode: "create",
             fn: "virtualhash",
             redirect: "inline/create",
@@ -1043,17 +1048,23 @@ const systemResources: IAppResourceConfig[] = [
 
         mutationMode: "pessimistic",
         saveButtonAlwaysEnabled: true,
-        listProps: { storeKey: false, filterDefaultValues: { show_disabled: true } }, // deshabilita persistencia deel estado, cache de los valores seleccionados sort, page, etc.
+        listProps: { storeKey: false, filterDefaultValues: { show_disabled: true } },
         resetSelectedIdsOnLoad: true,
     },
 
-    // ============ Language Management ============
+    // ============ Language Management (core shared master data) ============
+    // Backed by dash-backend core's system/language route (App\Http\Controllers\
+    // API\System\LanguageController). Previously pointed at the domain's
+    // common/language route — languages moved to core as "shared master data"
+    // (see CLAUDE.md's core/domain split), so every app using this shared
+    // systemResources manifest (kitchntabs-*, vanexa-*) now gets a working
+    // Languages page with no domain layer required.
     {
         roles: [DASHAppConstants.system.SYSTEM_ROLE],
         component: ResourceTemplate,
         trash: true,
-        model: "common/language",
-        label: "resource.common.languages.label",
+        model: "system/language",
+        label: "resource.system.languages.label",
         schema: [
             {
                 label: 'Code',
@@ -1097,21 +1108,21 @@ const systemResources: IAppResourceConfig[] = [
                 }
             },
         ],
-        icon: <Person />,
+        icon: <TranslateIcon />,
         group: "System",
         menu: [
             {
-                title: "resource.common.languages.menu_list",
-                redirect: "/common/language",
+                title: "resource.system.languages.menu_list",
+                redirect: "/system/language",
             },
             {
                 title: "🗑",
-                redirect: "/common/language/trash",
+                redirect: "/system/language/trash",
             },
         ],
 
         mainAction: {
-            title: "resource.common.languages.main_action",
+            title: "resource.system.languages.main_action",
             mode: "create",
             fn: "virtualhash",
             redirect: "inline/create",

@@ -53,7 +53,12 @@ const PaymentHistoryView: React.FC<IDashAutoAdminCustomFieldComponent> = () => {
 
     if (loading) {
         return (
-            <Box display="flex" justifyContent="center" p={2}>
+            <Box
+                sx={{
+                    display: "flex",
+                    justifyContent: "center",
+                    p: 2
+                }}>
                 <CircularProgress />
             </Box>
         );
@@ -96,7 +101,9 @@ const PaymentHistoryView: React.FC<IDashAutoAdminCustomFieldComponent> = () => {
                                 </Typography>
                             </TableCell>
                             <TableCell>
-                                <Typography variant="body2" fontFamily="monospace">
+                                <Typography variant="body2" sx={{
+                                    fontFamily: "monospace"
+                                }}>
                                     {payment.transaction_id}
                                 </Typography>
                             </TableCell>

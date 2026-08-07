@@ -45,19 +45,21 @@ const ComponentEdit: React.FC<IDashAutoAdminCustomFieldComponent> = ({
 	}, [format, symbol]);
 
 	return (
-		<>
-			<TextField
+        <>
+            <TextField
 				label='Probar formateo'
 				value={rawText}
 				onChange={({ target: { value } }) => formatNumber(value)}
 			/>
-			<TextField
+            <TextField
 				label='Valor formateado'
 				value={formattedNumber}
-				inputProps={{ readOnly: true }}
+				slotProps={{
+                    htmlInput: { readOnly: true }
+                }}
 			/>
-		</>
-	);
+        </>
+    );
 };
 
 const FormatCurrency = ({

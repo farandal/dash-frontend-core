@@ -59,10 +59,10 @@ const SearchableSelect: React.FC<any> = ({
 	// console.log(field.field.value);
 
 	return (
-		<>
-			<InputLabel>{title}</InputLabel>
-			{/*<SearchBar />*/}
-			{TrendingUpRounded && (
+        <>
+            <InputLabel>{title}</InputLabel>
+            {/*<SearchBar />*/}
+            {TrendingUpRounded && (
 				<Autocomplete
 					multiple={isMultiple}
 					loading={isLoading && open}
@@ -112,24 +112,28 @@ const SearchableSelect: React.FC<any> = ({
 								}
 							}}
 							onBlur={() => setQ('')}
-							InputProps={{
-								...params.InputProps,
-								autoComplete: 'new-password',
-								endAdornment: (
-									<>
-										{isLoading ? (
-											<CircularProgress color='inherit' size={20} />
-										) : null}
-										{params.InputProps.endAdornment}
-									</>
-								),
-							}}
+							slotProps={{
+                                ...params.slotProps,
+
+                                input: {
+                                    ...params.slotProps.input,
+                                    autoComplete: 'new-password',
+                                    endAdornment: (
+                                        <>
+                                            {isLoading ? (
+                                                <CircularProgress color='inherit' size={20} />
+                                            ) : null}
+                                            {params.slotProps.input.endAdornment}
+                                        </>
+                                    ),
+                                }
+                            }}
 						/>
 					)}
 				/>
 			)}
-		</>
-	);
+        </>
+    );
 };
 
 export default SearchableSelect;

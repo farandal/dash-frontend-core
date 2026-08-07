@@ -179,13 +179,13 @@ const SearchableSelect = function WrappedAutoComplete<
 	const defaultValue = calculateDefaultValue();
 
 	return (
-		<>
-			{isLoading && !parsedOptions ? (
+        <>
+            {isLoading && !parsedOptions ? (
 				<CircularProgress color='inherit' size={20} />
 			) : (
 				<></>
 			)}
-			{parsedOptions && (
+            {parsedOptions && (
 				<Autocomplete
 					key={'autocomplete-' + name}
 					multiple={isMultiple}
@@ -274,12 +274,12 @@ const SearchableSelect = function WrappedAutoComplete<
 					renderInput={(params) => {
 						//console.log("renderInput", params.id);
 						return (
-							<TextField
-								key={params.id}
-								{...params}
-								label={selectLabel}
-								variant='outlined'
-								onChange={(ev) => {
+                            <TextField
+                                key={params.id}
+                                {...params}
+                                label={selectLabel}
+                                variant='outlined'
+                                onChange={(ev) => {
 									// dont fire API if the user delete or not entered anything
 									const searchValue = ev.target.value;
 									//onSearch={(searchValue) => {}
@@ -295,27 +295,29 @@ const SearchableSelect = function WrappedAutoComplete<
                                 setQ(ev.target.value);
                             }*/
 								}}
-								//onBlur={() => setQ('')}
-								InputProps={{
-									...params.InputProps,
-									autoComplete: 'new-password',
-									endAdornment: (
-										<>
-											{isLoading ? (
-												<CircularProgress color='inherit' size={20} />
-											) : null}
-											{params.InputProps.endAdornment}
-										</>
-									),
-								}}
-								{...renderInputTextFieldProps}
-							/>
-						);
+                                {...renderInputTextFieldProps}
+                                slotProps={{
+                                    ...params.slotProps,
+
+                                    input: {
+                                        ...params.slotProps.input,
+                                        autoComplete: 'new-password',
+                                        endAdornment: (
+                                            <>
+                                                {isLoading ? (
+                                                    <CircularProgress color='inherit' size={20} />
+                                                ) : null}
+                                                {params.slotProps.input.endAdornment}
+                                            </>
+                                        ),
+                                    }
+                                }} />
+                        );
 					}}
 				/>
 			)}
-		</>
-	);
+        </>
+    );
 };
 
 export default SearchableSelect;

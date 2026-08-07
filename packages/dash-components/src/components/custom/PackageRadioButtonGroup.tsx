@@ -17,31 +17,33 @@ const PackagesRadioButtonsGroup: FC<IPackagesRadioButtonsGroup> = (props) => {
 	};
 
 	return (
-		<RadioGroup
+        <RadioGroup
 			aria-labelledby='package-selection-label'
 			name='package-selection'
 		>
-			<List>
+            <List>
 				{packages.map((p, index) => {
 					return (
-						<ListItem key={index}>
-							<Radio
+                        <ListItem key={index}>
+                            <Radio
 								checked={value === p.id.toString()}
 								onChange={handleChange}
 								value={p.id}
 								name='package-selection'
-								inputProps={{ 'aria-label': p.id.toString() }}
+								slotProps={{
+                                    input: { 'aria-label': p.id.toString() }
+                                }}
 							/>
-							<ListItemText
+                            <ListItemText
 								primary={p.id}
 								secondary={`Internal Id: ${p.internal_id}, Dirección: ${p.delivery_address}`}
 							/>
-						</ListItem>
-					);
+                        </ListItem>
+                    );
 				})}
 			</List>
-		</RadioGroup>
-	);
+        </RadioGroup>
+    );
 };
 
 export default PackagesRadioButtonsGroup;

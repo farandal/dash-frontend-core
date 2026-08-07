@@ -715,7 +715,7 @@ const AttributeToInput = (
         label: input.label,
         source: input.listAttribute || input.attribute,
         ...input.fieldProps,
-        ...input.slotProps ? { slotProps: input.slotProps } : {},
+        ...(input.slotProps ? { slotProps: input.slotProps } : {}),
         onChange: (e) => {
             if (options?.handleChange) {
                 options.handleChange(e);

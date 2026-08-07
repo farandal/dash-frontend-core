@@ -301,7 +301,12 @@ const DefaultSignUpPage: React.FC<DefaultSignUpPageProps> = (props) => {
                         </FormLabel>
                         
                         {plansLoading ? (
-                            <Box display="flex" justifyContent="center" p={2}>
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    justifyContent: "center",
+                                    p: 2
+                                }}>
                                 <Typography>Loading plans...</Typography>
                             </Box>
                         ) : (
@@ -320,7 +325,12 @@ const DefaultSignUpPage: React.FC<DefaultSignUpPageProps> = (props) => {
                                             onClick={() => handlePlanSelection(plan.id)}
                                         >
                                             <CardContent>
-                                                <Box display="flex" alignItems="center" mb={2}>
+                                                <Box
+                                                    sx={{
+                                                        display: "flex",
+                                                        alignItems: "center",
+                                                        mb: 2
+                                                    }}>
                                                     <Typography variant="h6">{plan.name}</Typography>
                                                     {selectedPlan === plan.id && (
                                                         <CheckCircleIcon color="primary" sx={{ ml: 'auto' }} />
@@ -359,9 +369,11 @@ const DefaultSignUpPage: React.FC<DefaultSignUpPageProps> = (props) => {
                         required
                         fullWidth
                         {...register('email', { required: 'Email is required' })}
-                        inputProps={{ type: 'email' }}
                         error={!!errors.email}
                         helperText={errors.email?.message}
+                        slotProps={{
+                            htmlInput: { type: 'email' }
+                        }}
                     />
                 </div>
 

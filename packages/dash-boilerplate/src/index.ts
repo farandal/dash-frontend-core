@@ -31,8 +31,10 @@ export {
     GlobalSmallLoader,
     GlobalLoaderHtmlMarkup,
     injectCriticalStyles,
+    setGlobalLoaderIcon,
     CustomErrorBoundary,
     AppWrapperLight,
+    DarkToggleModeLight,
     // Default fallback components
     DefaultInitializationErrorFallback,
     DefaultAppLoadErrorFallback,

@@ -32,6 +32,7 @@ export { default as CacheInvalidatorListenerComponent } from './utils/cache/Cach
 export { AuthContext } from './contexts/auth';
 export { NotificationComponent } from './contexts/com/components/NotificationRenderer'
 export { NotificationWrapper } from './contexts/com/components/NotificationsWidget'
+export { default as EchoNotificationsCenter } from './contexts/com/components/EchoNotificationsCenter'
 
 export { default as useLaravelEcho } from './contexts/com/useLaravelEcho';
 export { default as WSMessagesManager } from './hooks/notifications/WSMessagesManager';
@@ -84,7 +85,21 @@ export { default as useFormPersistence } from "./hooks/useFormPersistance";
 export { default as AvatarComponent } from './components/user/AvatarComponent';
 export { default as TenantAvatarComponent } from './components/user/TenantAvatarComponent';
 export { default as UserPreferences } from './components/user/UserPreferences';
+export { default as Profile } from './pages/Profile';
 export { default as LanguageSwitcher } from './components/misc/LanguageSwitcher';
+export { default as LangSwitcher } from './components/i18n/LangSwitcher';
+export {
+    default as TenantSwitcher,
+    dispatchTenantSwitchEvent,
+    getActiveTenantId,
+    isTenantImpersonationEnabled,
+    type TenantSwitcherProps,
+    type TenantSwitchEventDetail,
+} from './components/tenancy/TenantSwitcher';
+export {
+    default as GlobalTenantWrapper,
+    type IGlobalTenantWrapper,
+} from './components/tenancy/GlobalTenantWrapper';
 export { default as DarkModeSwitcher } from './components/misc/DarkModeSwitcher';
 
 // Navigation Components

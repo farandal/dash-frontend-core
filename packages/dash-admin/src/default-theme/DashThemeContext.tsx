@@ -51,9 +51,9 @@ interface DashThemeProviderProps {
 
 export const DashThemeProvider: React.FC<DashThemeProviderProps> = ({ extendedOptions, children }) => {
     // Track current theme mode from data-theme attribute
-    const [currentMode, setCurrentMode] = useState<string>(() =>
-        document.documentElement.getAttribute('data-theme') || 'dark'
-    );
+    const [currentMode, setCurrentMode] = useState<string>(() => {
+        return document.documentElement.getAttribute('data-theme') || 'dark';
+    });
 
     const [themeOptions, setThemeOptions] = useState<ReturnType<typeof appTheme>>(() => {
         // Read persisted tenant settings on initialization to include tenant colors
@@ -97,8 +97,6 @@ export const DashThemeProvider: React.FC<DashThemeProviderProps> = ({ extendedOp
         //const themeMode = mode || currentMode;
         const themeMode = mode || document.documentElement.getAttribute('data-theme') || 'dark';
 
-        console.log('Recreating MUI theme with tenant settings:', settings, 'mode:', themeMode);
-
         const newThemeOptions = appTheme(
             extendedOptions,
             {
@@ -112,14 +110,14 @@ export const DashThemeProvider: React.FC<DashThemeProviderProps> = ({ extendedOp
 
         setThemeOptions(newThemeOptions);
         setTheme(newTheme);
-        
+
 
         setAntTheme(getAntTheme({
                 tenantSettings: settings,
                 colors: settings?.colors,
                 currentMode: themeMode,
             }));
-        
+
             updateDomCssVariables(themeMode, settings?.colors, settings?.values);
         /*if (settings?.colors || settings?.values) {
             updateDomCssVariables(themeMode, settings?.colors, settings?.values);
@@ -133,12 +131,8 @@ export const DashThemeProvider: React.FC<DashThemeProviderProps> = ({ extendedOp
                 if (mutation.type === 'attributes' && mutation.attributeName === 'data-theme') {
                     const newMode = document.documentElement.getAttribute('data-theme') || 'dark';
                     if (newMode !== currentMode) {
-                        console.log('Theme mode changed from', currentMode, 'to', newMode);
                         setCurrentMode(newMode);
                         const settings = getTenantSettings();
-
-                        console.log('Updating theme with new mode:', newMode, 'and settings:', settings);
-
                         updateDomCssVariables(newMode, settings?.colors, settings?.values);
                     }
                 }
@@ -157,7 +151,6 @@ export const DashThemeProvider: React.FC<DashThemeProviderProps> = ({ extendedOp
 
     // React to mode changes
     useEffect(() => {
-        console.log('Current mode updated to:', currentMode);
         const tenantSettings = getTenantSettings();
         recreateTheme(tenantSettings, currentMode);
     }, [currentMode]);
@@ -165,9 +158,7 @@ export const DashThemeProvider: React.FC<DashThemeProviderProps> = ({ extendedOp
     // Initial setup
     useEffect(() => {
         const tenantSettings = getTenantSettings();
-
         if (tenantSettings) {
-            console.log("Recreating MUI theme on mount");
             recreateTheme(tenantSettings, currentMode);
         }
     }, []);

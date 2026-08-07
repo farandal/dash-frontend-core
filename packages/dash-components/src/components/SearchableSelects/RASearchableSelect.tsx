@@ -246,21 +246,24 @@ const SearchableSelect: React.FC<ISearchableSelect> = ({
               setQ(ev.target.value);
           }*/
                 }}
-                //onBlur={() => setQ('')}
-                InputProps={{
-                  ...params.InputProps,
-                  autoComplete: "new-password",
-                  endAdornment: (
-                    <>
-                      {isLoading ? (
-                        <CircularProgress
-                          color="inherit"
-                          size={20}
-                        />
-                      ) : null}
-                      {params.InputProps.endAdornment}
-                    </>
-                  ),
+                slotProps={{
+                  ...params.slotProps,
+
+                  input: {
+                    ...params.slotProps.input,
+                    autoComplete: "new-password",
+                    endAdornment: (
+                      <>
+                        {isLoading ? (
+                          <CircularProgress
+                            color="inherit"
+                            size={20}
+                          />
+                        ) : null}
+                        {params.slotProps.input.endAdornment}
+                      </>
+                    ),
+                  }
                 }}
               />
             );

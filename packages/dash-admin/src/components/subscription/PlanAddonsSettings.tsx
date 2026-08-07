@@ -128,7 +128,9 @@ const AddonRow: React.FC<AddonRowProps> = ({ addonId, entry, plan, mode }) => {
                 transition: 'border-color 0.3s'
             }}
         >
-            <Grid container spacing={2} alignItems="flex-start">
+            <Grid container spacing={2} sx={{
+                alignItems: "flex-start"
+            }}>
                 {/* Toggle and Label */}
                 <Grid item xs={12} md={4}>
                     <Controller
@@ -150,12 +152,16 @@ const AddonRow: React.FC<AddonRowProps> = ({ addonId, entry, plan, mode }) => {
                                 }
                                 label={
                                     <Box>
-                                        <Typography variant="subtitle1" fontWeight="medium">
+                                        <Typography variant="subtitle1" sx={{
+                                            fontWeight: "medium"
+                                        }}>
                                             {entry.icon && <span style={{ marginRight: 8 }}>{entry.icon}</span>}
                                             {entry.label}
                                         </Typography>
                                         {entry.description && (
-                                            <Typography variant="caption" color="text.secondary">
+                                            <Typography variant="caption" sx={{
+                                                color: "text.secondary"
+                                            }}>
                                                 {entry.description}
                                             </Typography>
                                         )}
@@ -195,17 +201,19 @@ const AddonRow: React.FC<AddonRowProps> = ({ addonId, entry, plan, mode }) => {
                                                 type="text"
                                                 size="small"
                                                 disabled={isReadOnly}
-                                                InputProps={{
-                                                    startAdornment: (
-                                                        <InputAdornment position="start">
-                                                            {config.symbol}
-                                                        </InputAdornment>
-                                                    ),
-                                                }}
                                                 sx={{ width: 150 }}
                                                 value={formatPrice(field.value ?? 0, currency)}
                                                 onChange={(e) => handlePriceChange(currency, e.target.value)}
                                                 helperText={config.name}
+                                                slotProps={{
+                                                    input: {
+                                                        startAdornment: (
+                                                            <InputAdornment position="start">
+                                                                {config.symbol}
+                                                            </InputAdornment>
+                                                        ),
+                                                    }
+                                                }}
                                             />
                                         )}
                                     />
@@ -213,7 +221,13 @@ const AddonRow: React.FC<AddonRowProps> = ({ addonId, entry, plan, mode }) => {
                             })}
                         </Box>
                         {plan?.flow_addon_items?.[addonId] && (
-                            <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
+                            <Typography
+                                variant="caption"
+                                sx={{
+                                    color: "text.secondary",
+                                    mt: 1,
+                                    display: 'block'
+                                }}>
                                 Flow Item ID: {plan.flow_addon_items[addonId]}
                             </Typography>
                         )}
@@ -279,13 +293,23 @@ const PlanAddonsSettingsEdit: React.FC<IDashAutoAdminCustomFieldComponent> = ({ 
             <Typography variant="h6" gutterBottom>
                 Plan Add-ons Configuration
             </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+            <Typography
+                variant="body2"
+                sx={{
+                    color: "text.secondary",
+                    mb: 3
+                }}>
                 Enable add-ons and set prices per currency. Prices are in the smallest currency unit (e.g., cents for USD, pesos for CLP).
             </Typography>
-            
+
             {Object.entries(groupedByTab).map(([tabName, entries]) => (
                 <Box key={tabName} sx={{ mb: 4 }}>
-                    <Typography variant="subtitle1" fontWeight="bold" sx={{ mb: 2 }}>
+                    <Typography
+                        variant="subtitle1"
+                        sx={{
+                            fontWeight: "bold",
+                            mb: 2
+                        }}>
                         {tabName}
                     </Typography>
                     <Divider sx={{ mb: 2 }} />
@@ -360,13 +384,23 @@ const PlanAddonsSettingsCreate: React.FC<IDashAutoAdminCustomFieldComponent> = (
             <Typography variant="h6" gutterBottom>
                 Plan Add-ons Configuration
             </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+            <Typography
+                variant="body2"
+                sx={{
+                    color: "text.secondary",
+                    mb: 3
+                }}>
                 Enable add-ons and set prices per currency. Prices are in the smallest currency unit.
             </Typography>
-            
+
             {Object.entries(groupedByTab).map(([tabName, entries]) => (
                 <Box key={tabName} sx={{ mb: 4 }}>
-                    <Typography variant="subtitle1" fontWeight="bold" sx={{ mb: 2 }}>
+                    <Typography
+                        variant="subtitle1"
+                        sx={{
+                            fontWeight: "bold",
+                            mb: 2
+                        }}>
                         {tabName}
                     </Typography>
                     <Divider sx={{ mb: 2 }} />
@@ -416,10 +450,15 @@ const PlanAddonsSettingsView: React.FC<IDashAutoAdminCustomFieldComponent> = ({ 
             <Typography variant="h6" gutterBottom>
                 Plan Add-ons
             </Typography>
-            
+
             {Object.entries(groupedByTab).map(([tabName, entries]) => (
                 <Box key={tabName} sx={{ mb: 3 }}>
-                    <Typography variant="subtitle1" fontWeight="bold" sx={{ mb: 2 }}>
+                    <Typography
+                        variant="subtitle1"
+                        sx={{
+                            fontWeight: "bold",
+                            mb: 2
+                        }}>
                         {tabName}
                     </Typography>
                     <Divider sx={{ mb: 2 }} />
@@ -468,7 +507,9 @@ const PlanAddonsSettingsView: React.FC<IDashAutoAdminCustomFieldComponent> = ({ 
                                                 );
                                             })}
                                             {flowItemId && (
-                                                <Typography variant="caption" color="text.secondary">
+                                                <Typography variant="caption" sx={{
+                                                    color: "text.secondary"
+                                                }}>
                                                     Flow ID: {flowItemId}
                                                 </Typography>
                                             )}

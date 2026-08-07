@@ -332,7 +332,9 @@ const UserPreferences: React.FC = () => {
                             <Box>
                                 <Typography variant="subtitle1">{format.label}</Typography>
                                 {format.description && (
-                                    <Typography variant="caption" color="text.secondary">
+                                    <Typography variant="caption" sx={{
+                                        color: "text.secondary"
+                                    }}>
                                         {format.description}
                                     </Typography>
                                 )}
@@ -352,7 +354,13 @@ const UserPreferences: React.FC = () => {
                         <CardContent>
                             <Typography variant="subtitle1" gutterBottom>{format.label}</Typography>
                             {format.description && (
-                                <Typography variant="caption" color="text.secondary" display="block" mb={2}>
+                                <Typography
+                                    variant="caption"
+                                    sx={{
+                                        color: "text.secondary",
+                                        display: "block",
+                                        mb: 2
+                                    }}>
                                     {format.description}
                                 </Typography>
                             )}
@@ -371,12 +379,14 @@ const UserPreferences: React.FC = () => {
                                     value={value ?? format.default_value ?? 0}
                                     onChange={(e) => handleGenericPreferenceChange(format.id, parseInt(e.target.value, 10))}
                                     disabled={saving || !format.editable}
-                                    inputProps={{
-                                        min: format.min ?? 0,
-                                        max: format.max ?? 100,
-                                    }}
                                     sx={{ width: 80 }}
                                     size="small"
+                                    slotProps={{
+                                        htmlInput: {
+                                            min: format.min ?? 0,
+                                            max: format.max ?? 100,
+                                        }
+                                    }}
                                 />
                             </Box>
                         </CardContent>
@@ -389,7 +399,13 @@ const UserPreferences: React.FC = () => {
                         <CardContent>
                             <Typography variant="subtitle1" gutterBottom>{format.label}</Typography>
                             {format.description && (
-                                <Typography variant="caption" color="text.secondary" display="block" mb={2}>
+                                <Typography
+                                    variant="caption"
+                                    sx={{
+                                        color: "text.secondary",
+                                        display: "block",
+                                        mb: 2
+                                    }}>
                                     {format.description}
                                 </Typography>
                             )}
@@ -398,15 +414,17 @@ const UserPreferences: React.FC = () => {
                                 value={value ?? ''}
                                 onChange={(e) => handleGenericPreferenceChange(format.id, e.target.value)}
                                 disabled={saving || !format.editable}
-                                inputProps={{ maxLength: format.maxLength }}
-                                InputProps={format.maxLength ? {
-                                    endAdornment: (
-                                        <InputAdornment position="end">
-                                            {(value?.length || 0)}/{format.maxLength}
-                                        </InputAdornment>
-                                    ),
-                                } : undefined}
-                            />
+                                slotProps={{
+                                    input: format.maxLength ? {
+                                        endAdornment: (
+                                            <InputAdornment position="end">
+                                                {(value?.length || 0)}/{format.maxLength}
+                                            </InputAdornment>
+                                        ),
+                                    } : undefined,
+
+                                    htmlInput: { maxLength: format.maxLength }
+                                }} />
                         </CardContent>
                     </Card>
                 );
@@ -417,7 +435,13 @@ const UserPreferences: React.FC = () => {
                         <CardContent>
                             <Typography variant="subtitle1" gutterBottom>{format.label}</Typography>
                             {format.description && (
-                                <Typography variant="caption" color="text.secondary" display="block" mb={2}>
+                                <Typography
+                                    variant="caption"
+                                    sx={{
+                                        color: "text.secondary",
+                                        display: "block",
+                                        mb: 2
+                                    }}>
                                     {format.description}
                                 </Typography>
                             )}
@@ -428,8 +452,10 @@ const UserPreferences: React.FC = () => {
                                 value={value ?? ''}
                                 onChange={(e) => handleGenericPreferenceChange(format.id, e.target.value)}
                                 disabled={saving || !format.editable}
-                                inputProps={{ maxLength: format.maxLength }}
                                 helperText={format.maxLength ? `${(value?.length || 0)}/${format.maxLength} characters` : undefined}
+                                slotProps={{
+                                    htmlInput: { maxLength: format.maxLength }
+                                }}
                             />
                         </CardContent>
                     </Card>
@@ -462,7 +488,9 @@ const UserPreferences: React.FC = () => {
                                     <Typography variant="subtitle1">
                                         {formatNotificationName(pref.name)}
                                     </Typography>
-                                    <Typography variant="caption" color="text.secondary">
+                                    <Typography variant="caption" sx={{
+                                        color: "text.secondary"
+                                    }}>
                                         {pref.name}
                                     </Typography>
                                 </Box>
@@ -497,7 +525,9 @@ const UserPreferences: React.FC = () => {
                                     )}
 
                                     {!config?.hasEmail && !config?.hasPush && (
-                                        <Typography variant="caption" color="text.secondary">
+                                        <Typography variant="caption" sx={{
+                                            color: "text.secondary"
+                                        }}>
                                             (No configurable channels)
                                         </Typography>
                                     )}
@@ -518,7 +548,12 @@ const UserPreferences: React.FC = () => {
         return (
             <Box sx={{ pt: 2 }}>
                 {groupConfig?.description && (
-                    <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+                    <Typography
+                        variant="body2"
+                        sx={{
+                            color: "text.secondary",
+                            mb: 3
+                        }}>
                         {groupConfig.description}
                     </Typography>
                 )}

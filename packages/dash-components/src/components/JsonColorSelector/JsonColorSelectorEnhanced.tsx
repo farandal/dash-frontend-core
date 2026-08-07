@@ -813,23 +813,25 @@ export const JsonEdit: React.FC<IDashAutoAdminCustomFieldComponent> = (props) =>
                         placeholder="Search colors by name..."
                         value={searchTerm}
                         onChange={handleSearchChange}
-                        InputProps={{
-                            startAdornment: (
-                                <InputAdornment position="start">
-                                    <SearchIcon />
-                                </InputAdornment>
-                            ),
-                            endAdornment: searchTerm && (
-                                <InputAdornment position="end">
-                                    <IconButton
-                                        size="small"
-                                        onClick={handleClearSearch}
-                                        edge="end"
-                                    >
-                                        <ClearIcon />
-                                    </IconButton>
-                                </InputAdornment>
-                            ),
+                        slotProps={{
+                            input: {
+                                startAdornment: (
+                                    <InputAdornment position="start">
+                                        <SearchIcon />
+                                    </InputAdornment>
+                                ),
+                                endAdornment: searchTerm && (
+                                    <InputAdornment position="end">
+                                        <IconButton
+                                            size="small"
+                                            onClick={handleClearSearch}
+                                            edge="end"
+                                        >
+                                            <ClearIcon />
+                                        </IconButton>
+                                    </InputAdornment>
+                                ),
+                            }
                         }}
                     />
 

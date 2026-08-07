@@ -45,7 +45,7 @@ export const ListViewButton:FC<IToolbarButton> = (props) => {
     const btnProps = { 
         mode: 'show',
         resourceConfig: resourceConfig,
-		...resourceConfig.listViewButton?.props || {},
+		...(resourceConfig.listViewButton?.props || {}),
        
     }
 

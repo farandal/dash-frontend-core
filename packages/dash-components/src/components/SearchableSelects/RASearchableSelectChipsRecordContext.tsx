@@ -265,12 +265,12 @@ export const SearchableSelectChipsControlRecordContextEdit: React.FC<
             </Box>
           );
         }}
-        renderTags={(tagValue, getTagProps) => {
+        renderValue={(tagValue, getItemProps) => {
           return tagValue.map((option, index) => (
             <Chip
               key={`chip-${option[valueKeyId] || index}`}
               label={renderText(_transformOption(option, "chip"), "chip")}
-              {...getTagProps({ index })}
+              {...getItemProps({ index })}
             />
           ));
         }}
@@ -293,17 +293,21 @@ export const SearchableSelectChipsControlRecordContextEdit: React.FC<
                 debounce(() => setQ(searchValue), timerSearch);
               }
             }}
-            InputProps={{
-              ...params.InputProps,
-              autoComplete: "new-password",
-              endAdornment: (
-                <>
-                  {isResourceSearchLoading && (
-                    <CircularProgress color="inherit" size={20} />
-                  )}
-                  {params.InputProps.endAdornment}
-                </>
-              ),
+            slotProps={{
+              ...params.slotProps,
+
+              input: {
+                ...params.slotProps.input,
+                autoComplete: "new-password",
+                endAdornment: (
+                  <>
+                    {isResourceSearchLoading && (
+                      <CircularProgress color="inherit" size={20} />
+                    )}
+                    {params.slotProps.input.endAdornment}
+                  </>
+                ),
+              }
             }}
           />
         )}

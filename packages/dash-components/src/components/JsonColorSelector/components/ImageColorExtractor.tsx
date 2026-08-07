@@ -18,10 +18,13 @@ import PaletteIcon from '@mui/icons-material/Palette';
 import AutoFixHighIcon from '@mui/icons-material/AutoFixHigh';
 import UpdateIcon from '@mui/icons-material/Update';
 import { useState, useEffect, memo, useCallback } from 'react';
+import { useTranslate } from 'react-admin';
 import { useAsyncColorThief } from '../useAsyncColorThief';
 import { getContrastColor, rgbArrayToHex } from '../helpers/functions';
 import { KeyValuePair } from '../interfaces/interfaces';
 import { useAxios } from 'dash-axios-hook';
+
+const MAX_IMAGE_MB = 5;
 
 const ImageColorExtractor = memo<{
     onColorsExtracted: (colors: number[][]) => void;
@@ -32,15 +35,17 @@ const ImageColorExtractor = memo<{
     /** Local (no-AI) apply: receives the extracted RGB palette so the caller can map it to base colors. */
     onApplyLocal?: (palette: number[][]) => void;
 }>(({ onColorsExtracted, onColorsUpdate, existingPairs = [], aiEnabled = true, onApplyLocal }) => {
+    const translate = useTranslate();
     const [imageUrl, setImageUrl] = useState<string | null>(null);
     const [uploadedFile, setUploadedFile] = useState<File | null>(null);
     const [themePrompt, setThemePrompt] = useState<string>('');
     const [isGeneratingTheme, setIsGeneratingTheme] = useState<boolean>(false);
     const [themeError, setThemeError] = useState<string | null>(null);
-    
+    const [isDragOver, setIsDragOver] = useState<boolean>(false);
+
     // Add state to preserve extracted colors independently
     const [extractedPalette, setExtractedPalette] = useState<number[][]>([]);
-    
+
     const axios = useAxios();
     const { dominantColor, palette, loading, error } = useAsyncColorThief(imageUrl, {
         colorCount: 8,
@@ -55,29 +60,59 @@ const ImageColorExtractor = memo<{
         }
     }, [palette, onColorsExtracted]);
 
+    // Shared validation + preview setup for a file coming from either the file
+    // input or a drag-and-drop, so the two paths can never drift apart.
+    const processFile = useCallback((file: File) => {
+        // Validate file type
+        if (!file.type.startsWith('image/')) {
+            alert(translate('colorSelector.imageExtractor.invalid_file_type'));
+            return;
+        }
+
+        // Validate file size
+        if (file.size > MAX_IMAGE_MB * 1024 * 1024) {
+            alert(translate('colorSelector.imageExtractor.file_too_large', { limit: MAX_IMAGE_MB }));
+            return;
+        }
+
+        setUploadedFile(file);
+
+        // Create preview URL
+        const previewUrl = URL.createObjectURL(file);
+        setImageUrl(previewUrl);
+    }, [translate]);
+
     // Handle file selection for upload
     const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
         if (file) {
-            // Validate file type
-            if (!file.type.startsWith('image/')) {
-                alert('Please select a valid image file');
-                return;
-            }
-
-            // Validate file size (e.g., max 5MB)
-            if (file.size > 5 * 1024 * 1024) {
-                alert('File size must be less than 5MB');
-                return;
-            }
-
-            setUploadedFile(file);
-
-            // Create preview URL
-            const previewUrl = URL.createObjectURL(file);
-            setImageUrl(previewUrl);
+            processFile(file);
         }
     };
+
+    // Drag-and-drop onto the upload dropzone
+    const handleDragOver = useCallback((event: React.DragEvent<HTMLDivElement>) => {
+        event.preventDefault();
+        event.stopPropagation();
+        setIsDragOver(true);
+    }, []);
+
+    const handleDragLeave = useCallback((event: React.DragEvent<HTMLDivElement>) => {
+        event.preventDefault();
+        event.stopPropagation();
+        setIsDragOver(false);
+    }, []);
+
+    const handleDrop = useCallback((event: React.DragEvent<HTMLDivElement>) => {
+        event.preventDefault();
+        event.stopPropagation();
+        setIsDragOver(false);
+
+        const file = event.dataTransfer.files?.[0];
+        if (file) {
+            processFile(file);
+        }
+    }, [processFile]);
 
     // Handle image removal
     const handleImageRemove = () => {
@@ -94,7 +129,7 @@ const ImageColorExtractor = memo<{
     // Generate theme using AI - Modified to merge with existing colors
     const handleGenerateTheme = useCallback(async () => {
         if (!extractedPalette || extractedPalette.length === 0) {
-            setThemeError('Please extract colors from an image first');
+            setThemeError(translate('colorSelector.imageExtractor.no_palette_error'));
             return;
         }
 
@@ -141,21 +176,27 @@ const ImageColorExtractor = memo<{
                     onColorsUpdate(mergedPairs);
                 }
             } else {
-                throw new Error(result.message || 'Failed to generate theme');
+                throw new Error(result.message || translate('colorSelector.imageExtractor.theme_generation_failed'));
             }
         } catch (error) {
             console.error('Theme generation error:', error);
-            setThemeError(error instanceof Error ? error.message : 'Failed to generate theme');
+            setThemeError(
+                error instanceof Error
+                    ? error.message
+                    : translate('colorSelector.imageExtractor.theme_generation_failed')
+            );
         } finally {
             setIsGeneratingTheme(false);
         }
-    }, [extractedPalette, themePrompt, existingPairs, onColorsUpdate, axios]);
+    }, [extractedPalette, themePrompt, existingPairs, onColorsUpdate, axios, translate]);
 
     return (
         <Box sx={{ mt: 3, p: 3, borderRadius: 2 }}>
             <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                 <PaletteIcon />
-                {aiEnabled ? 'AI Theme Generator' : 'Theme from Image'}
+                {aiEnabled
+                    ? translate('colorSelector.imageExtractor.title_ai')
+                    : translate('colorSelector.imageExtractor.title_local')}
             </Typography>
 
             <Divider sx={{ mb: 3 }} />
@@ -163,13 +204,20 @@ const ImageColorExtractor = memo<{
             {/* Image Upload Section */}
             <Box sx={{ mb: 3 }}>
                 {!imageUrl ? (
-                    <Box sx={{
-                        textAlign: 'center',
-                        py: 4,
-                        backgroundColor: 'rgba(0,0,0,0.02)',
-                        borderRadius: 1,
-                        border: '2px dashed #e0e0e0'
-                    }}>
+                    <Box
+                        onDragEnter={handleDragOver}
+                        onDragOver={handleDragOver}
+                        onDragLeave={handleDragLeave}
+                        onDrop={handleDrop}
+                        sx={{
+                            textAlign: 'center',
+                            py: 4,
+                            backgroundColor: isDragOver ? 'rgba(25, 118, 210, 0.08)' : 'rgba(0,0,0,0.02)',
+                            borderRadius: 1,
+                            border: isDragOver ? '2px dashed #1976d2' : '2px dashed #e0e0e0',
+                            transition: 'background-color 0.2s ease, border-color 0.2s ease',
+                        }}
+                    >
                         <Input
                             type="file"
                             inputProps={{ accept: 'image/*' }}
@@ -178,10 +226,10 @@ const ImageColorExtractor = memo<{
                             id="color-extractor-upload"
                         />
                         <Typography variant="body1" color="textSecondary" gutterBottom>
-                            Upload an Image to Extract Colors
+                            {translate('colorSelector.imageExtractor.upload_prompt')}
                         </Typography>
                         <Typography variant="body2" color="textSecondary" sx={{ mb: 2 }}>
-                            Select an image file and we'll automatically extract a color palette
+                            {translate('colorSelector.imageExtractor.upload_hint')}
                         </Typography>
                         <label htmlFor="color-extractor-upload">
                             <Button
@@ -190,9 +238,12 @@ const ImageColorExtractor = memo<{
                                 startIcon={<CloudUploadIcon />}
                                 size="large"
                             >
-                                Choose Image
+                                {translate('colorSelector.imageExtractor.upload_button')}
                             </Button>
                         </label>
+                        <Typography variant="caption" color="textSecondary" sx={{ display: 'block', mt: 1.5 }}>
+                            {translate('colorSelector.imageExtractor.drop_hint')}
+                        </Typography>
                     </Box>
                 ) : (
                     <Card sx={{ maxWidth: 400, mb: 3 }}>
@@ -201,7 +252,7 @@ const ImageColorExtractor = memo<{
                                 component="img"
                                 height="200"
                                 image={imageUrl}
-                                alt="Uploaded image"
+                                alt={translate('colorSelector.imageExtractor.uploaded_image_alt')}
                                 sx={{ objectFit: 'contain' }}
                             />
                             <IconButton
@@ -226,9 +277,18 @@ const ImageColorExtractor = memo<{
 
             {/* Color Extraction Status */}
             {loading && (
-                <Box display="flex" alignItems="center" gap={2} sx={{ mb: 3, p: 2, backgroundColor: 'rgba(25, 118, 210, 0.04)', borderRadius: 1 }}>
+                <Box
+                    sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 2,
+                        mb: 3,
+                        p: 2,
+                        backgroundColor: 'rgba(25, 118, 210, 0.04)',
+                        borderRadius: 1
+                    }}>
                     <CircularProgress size={20} />
-                    <Typography>Extracting colors from image...</Typography>
+                    <Typography>{translate('colorSelector.imageExtractor.extracting')}</Typography>
                 </Box>
             )}
 
@@ -248,7 +308,7 @@ const ImageColorExtractor = memo<{
             {extractedPalette && extractedPalette.length > 0 && !loading && (
                 <Box sx={{ mb: 3 }}>
                     <Typography variant="subtitle1" gutterBottom>
-                        Extracted Colors ({extractedPalette.length} colors found)
+                        {translate('colorSelector.imageExtractor.extracted_colors', { count: extractedPalette.length })}
                     </Typography>
 
                     <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mt: 2, mb: 3 }}>
@@ -277,7 +337,7 @@ const ImageColorExtractor = memo<{
                                             transform: 'scale(1.1)',
                                         },
                                     }}
-                                    title={`${hexColor} ${isDominant ? '(Dominant)' : ''}`}
+                                    title={`${hexColor} ${isDominant ? `(${translate('colorSelector.imageExtractor.dominant_label')})` : ''}`}
                                 >
                                     <Typography
                                         variant="caption"
@@ -301,11 +361,11 @@ const ImageColorExtractor = memo<{
                                 fullWidth
                                 multiline
                                 rows={2}
-                                placeholder="Optional: Describe the theme style you want (e.g., 'modern and minimalist', 'warm and cozy', 'professional corporate')"
+                                placeholder={translate('colorSelector.imageExtractor.theme_description_placeholder')}
                                 value={themePrompt}
                                 onChange={(e) => setThemePrompt(e.target.value)}
                                 sx={{ mb: 2 }}
-                                label="Theme Description (Optional)"
+                                label={translate('colorSelector.imageExtractor.theme_description_label')}
                             />
                         )}
 
@@ -317,7 +377,7 @@ const ImageColorExtractor = memo<{
                                     onClick={() => onApplyLocal(extractedPalette)}
                                     color="primary"
                                 >
-                                    Apply Colors
+                                    {translate('colorSelector.imageExtractor.apply_colors_button')}
                                 </Button>
                             )}
                             {aiEnabled && (
@@ -328,7 +388,9 @@ const ImageColorExtractor = memo<{
                                     disabled={isGeneratingTheme}
                                     color="primary"
                                 >
-                                    {isGeneratingTheme ? 'Generating...' : 'Generate AI Theme'}
+                                    {isGeneratingTheme
+                                        ? translate('colorSelector.imageExtractor.generating_button')
+                                        : translate('colorSelector.imageExtractor.generate_button')}
                                 </Button>
                             )}
                         </Box>
@@ -336,10 +398,17 @@ const ImageColorExtractor = memo<{
 
                     <Typography variant="body2" color="textSecondary" sx={{ fontStyle: 'italic' }}>
                         {onApplyLocal && (
-                            <>• <strong>Apply Colors:</strong> Maps the extracted palette to your base theme colors locally — no AI involved<br /></>
+                            <>
+                                • <strong>{translate('colorSelector.imageExtractor.apply_colors_help_label')}</strong>{' '}
+                                {translate('colorSelector.imageExtractor.apply_colors_help_desc')}
+                                <br />
+                            </>
                         )}
                         {aiEnabled && (
-                            <>• <strong>Generate AI Theme:</strong> Uses AI to create a complete color scheme based on extracted colors and your description</>
+                            <>
+                                • <strong>{translate('colorSelector.imageExtractor.generate_help_label')}</strong>{' '}
+                                {translate('colorSelector.imageExtractor.generate_help_desc')}
+                            </>
                         )}
                     </Typography>
                 </Box>

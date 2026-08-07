@@ -39,7 +39,9 @@ const NoResults: React.FC<INoResults> = React.memo((props) => {
                     {title && <Typography variant="h5">{title}</Typography>}
                 </div>
                 {description && (
-                    <Typography variant="body1" color="text.secondary">
+                    <Typography variant="body1" sx={{
+                        color: "text.secondary"
+                    }}>
                         {description}
                     </Typography>
                 )}

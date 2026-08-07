@@ -265,13 +265,13 @@ const SearchableSelectCheckboxes = function WrappedAutoComplete<
 		}
 	}, [controlledValue]);
 	return (
-		<>
-			{isLoading && !parsedOptions ? (
+        <>
+            {isLoading && !parsedOptions ? (
 				<CircularProgress color='inherit' size={20} />
 			) : (
 				<></>
 			)}
-			{parsedOptions && (
+            {parsedOptions && (
 				<Autocomplete
 					key={'autocomplete-' + name}
 					multiple={multiple}
@@ -301,12 +301,12 @@ const SearchableSelectCheckboxes = function WrappedAutoComplete<
 					}}
 					renderInput={(params) => {
 						return (
-							<TextField
-								key={params.id}
-								{...params}
-								label={selectLabel}
-								variant='outlined'
-								onChange={(ev) => {
+                            <TextField
+                                key={params.id}
+                                {...params}
+                                label={selectLabel}
+                                variant='outlined'
+                                onChange={(ev) => {
 
 									if(useDefaultSearch !== true) {
 									const searchValue = ev.target.value;
@@ -322,27 +322,30 @@ const SearchableSelectCheckboxes = function WrappedAutoComplete<
 								
 									}
 								}}
-								InputProps={{
-									...params.InputProps,
-									autoComplete: 'new-password',
-									endAdornment: (
-										<>
-											{isLoading ? (
-												<CircularProgress color='inherit' size={20} />
-											) : null}
-											{params.InputProps.endAdornment}
-										</>
-									),
-								}}
-								{...renderInputTextFieldProps}
-							/>
-						);
+                                {...renderInputTextFieldProps}
+                                slotProps={{
+                                    ...params.slotProps,
+
+                                    input: {
+                                        ...params.slotProps.input,
+                                        autoComplete: 'new-password',
+                                        endAdornment: (
+                                            <>
+                                                {isLoading ? (
+                                                    <CircularProgress color='inherit' size={20} />
+                                                ) : null}
+                                                {params.slotProps.input.endAdornment}
+                                            </>
+                                        ),
+                                    }
+                                }} />
+                        );
 					}}
 					{...rest}
 				/>
 			)}
-		</>
-	);
+        </>
+    );
 };
 export const MemoizedSearchableSelectCheckboxes = React.memo(
 	SearchableSelectCheckboxes,

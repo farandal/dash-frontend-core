@@ -151,7 +151,12 @@ const AuditJsonDialog: React.FC<JsonDialogProps> = ({ open, log, onClose }) => {
             aria-labelledby="audit-log-dialog-title"
         >
             <DialogTitle id="audit-log-dialog-title">
-                <Box display="flex" justifyContent="space-between" alignItems="center">
+                <Box
+                    sx={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center"
+                    }}>
                     <Typography variant="h6">
                         Audit Log Details - {log.event || log.description}
                     </Typography>
@@ -166,7 +171,9 @@ const AuditJsonDialog: React.FC<JsonDialogProps> = ({ open, log, onClose }) => {
                 </Box>
             </DialogTitle>
             <DialogContent dividers>
-                <Box mb={2}>
+                <Box sx={{
+                    mb: 2
+                }}>
                     <Typography variant="subtitle2" color="textSecondary">
                         Event Information
                     </Typography>
@@ -355,7 +362,9 @@ const AuditLogView: React.FC<AuditLogProps> = ({ resourceConfig, resource: resou
         return (
             <Paper variant="outlined" sx={{ p: 3, textAlign: 'center' }}>
                 <HistoryIcon sx={{ fontSize: 48, color: 'text.secondary', mb: 1 }} />
-                <Typography variant="body1" color="text.secondary">
+                <Typography variant="body1" sx={{
+                    color: "text.secondary"
+                }}>
                     Save the record first to view audit logs
                 </Typography>
             </Paper>
@@ -380,7 +389,9 @@ const AuditLogView: React.FC<AuditLogProps> = ({ resourceConfig, resource: resou
         return (
             <Paper variant="outlined" sx={{ p: 3, textAlign: 'center' }}>
                 <HistoryIcon sx={{ fontSize: 48, color: 'text.secondary', mb: 1 }} />
-                <Typography variant="body1" color="text.secondary">
+                <Typography variant="body1" sx={{
+                    color: "text.secondary"
+                }}>
                     No audit logs available for this record
                 </Typography>
             </Paper>
@@ -435,9 +446,10 @@ const AuditLogEdit: React.FC<AuditLogProps> = (props) => {
  */
 const AuditLogList: React.FC<AuditLogProps> = () => {
     return (
-        <Typography variant="body2" color="text.secondary">
-            —
-        </Typography>
+        <Typography variant="body2" sx={{
+            color: "text.secondary"
+        }}>—
+                    </Typography>
     );
 };
 
@@ -463,7 +475,9 @@ const AuditLog: React.FC<AuditLogProps> = (props) => {
             return (
                 <Paper variant="outlined" sx={{ p: 3, textAlign: 'center' }}>
                     <HistoryIcon sx={{ fontSize: 48, color: 'text.secondary', mb: 1 }} />
-                    <Typography variant="body1" color="text.secondary">
+                    <Typography variant="body1" sx={{
+                        color: "text.secondary"
+                    }}>
                         Audit logs will be available after the record is created
                     </Typography>
                 </Paper>

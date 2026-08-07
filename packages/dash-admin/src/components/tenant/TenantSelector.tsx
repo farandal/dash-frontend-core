@@ -77,9 +77,8 @@ const TenantSelector = React.forwardRef<
 	}
 
 	return (
-		<>
-			Cliente impersonado: {selectedTenantInput}
-			<Autocomplete
+        <>Cliente impersonado: {selectedTenantInput}
+            <Autocomplete
 				fullWidth
 				loading={isLoading && open}
 				sx={{ width: 300 }}
@@ -117,23 +116,27 @@ const TenantSelector = React.forwardRef<
 								handleSearch(ev.target.value);
 							}
 						}}
-						InputProps={{
-							...params.InputProps,
-							autoComplete: 'new-password',
-							endAdornment: (
-								<>
-									{isLoading ? (
-										<CircularProgress color='inherit' size={20} />
-									) : null}
-									{params.InputProps.endAdornment}
-								</>
-							),
-						}}
+						slotProps={{
+                            ...params.slotProps,
+
+                            input: {
+                                ...params.slotProps.input,
+                                autoComplete: 'new-password',
+                                endAdornment: (
+                                    <>
+                                        {isLoading ? (
+                                            <CircularProgress color='inherit' size={20} />
+                                        ) : null}
+                                        {params.slotProps.input.endAdornment}
+                                    </>
+                                ),
+                            }
+                        }}
 					/>
 				)}
 			/>
-		</>
-	);
+        </>
+    );
 });
 
 export default TenantSelector;

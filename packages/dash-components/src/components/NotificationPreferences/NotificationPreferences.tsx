@@ -169,9 +169,13 @@ export const NotificationPreferencesEdit: React.FC<IDashAutoAdminCustomFieldComp
     // Early return if no notifications
     if (availableNotifications.length === 0) {
         return (
-            <Alert severity="info">
-                No notifications available to configure.
-                <Typography variant="caption" display="block" sx={{ mt: 1 }}>
+            <Alert severity="info">No notifications available to configure.
+                                <Typography
+                    variant="caption"
+                    sx={{
+                        display: "block",
+                        mt: 1
+                    }}>
                     Debug: No user_notifications found in systemValues.
                     Try logging out and logging back in to refresh auth data.
                 </Typography>
@@ -184,7 +188,12 @@ export const NotificationPreferencesEdit: React.FC<IDashAutoAdminCustomFieldComp
             <Typography variant="h6" gutterBottom>
                 Notification Preferences
             </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+            <Typography
+                variant="body2"
+                sx={{
+                    color: "text.secondary",
+                    mb: 2
+                }}>
                 Configure which notifications you want to receive via email and push notifications
             </Typography>
 
@@ -197,19 +206,21 @@ export const NotificationPreferencesEdit: React.FC<IDashAutoAdminCustomFieldComp
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     sx={{ mb: 2 }}
-                    InputProps={{
-                        startAdornment: (
-                            <InputAdornment position="start">
-                                <SearchIcon />
-                            </InputAdornment>
-                        ),
-                        endAdornment: searchTerm && (
-                            <InputAdornment position="end">
-                                <IconButton onClick={() => setSearchTerm('')} edge="end" size="small">
-                                    <ClearIcon />
-                                </IconButton>
-                            </InputAdornment>
-                        ),
+                    slotProps={{
+                        input: {
+                            startAdornment: (
+                                <InputAdornment position="start">
+                                    <SearchIcon />
+                                </InputAdornment>
+                            ),
+                            endAdornment: searchTerm && (
+                                <InputAdornment position="end">
+                                    <IconButton onClick={() => setSearchTerm('')} edge="end" size="small">
+                                        <ClearIcon />
+                                    </IconButton>
+                                </InputAdornment>
+                            ),
+                        }
                     }}
                 />
             )}
@@ -240,7 +251,9 @@ export const NotificationPreferencesEdit: React.FC<IDashAutoAdminCustomFieldComp
                         <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
                             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                 <Box sx={{ flex: 1 }}>
-                                    <Typography variant="subtitle1" fontWeight="bold">
+                                    <Typography variant="subtitle1" sx={{
+                                        fontWeight: "bold"
+                                    }}>
                                         {preference.name}
                                     </Typography>
                                     <Box sx={{ display: 'flex', gap: 1, mt: 0.5 }}>
@@ -360,19 +373,21 @@ export const NotificationPreferencesView: React.FC<IDashAutoAdminCustomFieldComp
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     sx={{ mb: 2 }}
-                    InputProps={{
-                        startAdornment: (
-                            <InputAdornment position="start">
-                                <SearchIcon />
-                            </InputAdornment>
-                        ),
-                        endAdornment: searchTerm && (
-                            <InputAdornment position="end">
-                                <IconButton onClick={() => setSearchTerm('')} edge="end" size="small">
-                                    <ClearIcon />
-                                </IconButton>
-                            </InputAdornment>
-                        ),
+                    slotProps={{
+                        input: {
+                            startAdornment: (
+                                <InputAdornment position="start">
+                                    <SearchIcon />
+                                </InputAdornment>
+                            ),
+                            endAdornment: searchTerm && (
+                                <InputAdornment position="end">
+                                    <IconButton onClick={() => setSearchTerm('')} edge="end" size="small">
+                                        <ClearIcon />
+                                    </IconButton>
+                                </InputAdornment>
+                            ),
+                        }
                     }}
                 />
             )}
@@ -387,7 +402,9 @@ export const NotificationPreferencesView: React.FC<IDashAutoAdminCustomFieldComp
                         <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
                             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                 <Box sx={{ flex: 1 }}>
-                                    <Typography variant="subtitle1" fontWeight="bold">
+                                    <Typography variant="subtitle1" sx={{
+                                        fontWeight: "bold"
+                                    }}>
                                         {preference.name}
                                     </Typography>
                                     <Box sx={{ display: 'flex', gap: 1, mt: 0.5 }}>

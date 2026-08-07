@@ -16,7 +16,7 @@ SupportCreate
 >) => {
 	return (
         /* @ts-ignore Expected */
-		<AutocompleteCheckBoxInput<
+        <AutocompleteCheckBoxInput<
 		OptionType,
 		true,
 		DisableClearable,
@@ -26,7 +26,7 @@ SupportCreate
 			multiple
 			defaultValue={defaultValue ?? []}
 		/>
-	);
+    );
 };
 
 export type AutocompleteArrayInputProps<

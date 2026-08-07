@@ -55,8 +55,8 @@ const RecoverPassword = ({  }: {  }) => {
     }, [])
 
 	return (
-		<FullLayoutMarkup>
-			<Box
+        <FullLayoutMarkup>
+            <Box
 				sx={{
 					//height: '100vh',
 					display: 'flex',
@@ -104,7 +104,14 @@ const RecoverPassword = ({  }: {  }) => {
 						</Box>
 					) : (
 						<form onSubmit={handleSubmit} className='dash-app-login-form'>
-							<Grid container sx={{ mb:4, mt:2 }} spacing={2} alignItems="center">
+							<Grid
+                                container
+                                spacing={2}
+                                sx={{
+                                    alignItems: "center",
+                                    mb:4,
+                                    mt:2
+                                }}>
                                 {/* @ts-ignore */}
 								<Grid item xs={2}>
 									<IconButton
@@ -135,13 +142,15 @@ const RecoverPassword = ({  }: {  }) => {
 									placeholder='Email'
 									required
 									value={email}
-									inputProps={{type:'email'}}
 									onChange={(e) => setEmail(e.target.value)}
 									className='dash-app-form-item-input'
 									autoComplete="username"
 									name="email"
 									type="email"
 									id="email"
+									slotProps={{
+                                        htmlInput: {type:'email'}
+                                    }}
 								/>
 							</div>
 
@@ -159,8 +168,8 @@ const RecoverPassword = ({  }: {  }) => {
 					)}
 				</Box>
 			</Box>
-		</FullLayoutMarkup>
-	);
+        </FullLayoutMarkup>
+    );
 };
 
 export default RecoverPassword;

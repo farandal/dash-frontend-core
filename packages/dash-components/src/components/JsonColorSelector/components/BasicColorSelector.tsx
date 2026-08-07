@@ -262,8 +262,10 @@ const BaseSwatch: React.FC<{
                 size="small"
                 disabled={readOnly}
                 onChange={e => onChange(e.target.value)}
-                inputProps={{ style: { fontFamily: 'monospace', fontSize: 11, padding: '4px 8px', width: 84 } }}
                 sx={{ '& .MuiInputBase-root': { backgroundColor: 'rgba(255,255,255,0.85)' } }}
+                slotProps={{
+                    htmlInput: { style: { fontFamily: 'monospace', fontSize: 11, padding: '4px 8px', width: 84 } }
+                }}
             />
         </Box>
     );

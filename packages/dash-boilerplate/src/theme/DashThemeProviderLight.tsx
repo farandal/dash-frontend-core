@@ -93,26 +93,24 @@ const getThemeColors = (mode: 'light' | 'dark') => {
  * Create theme from CSS variables
  */
 const createMinimalTheme = (mode: 'light' | 'dark', extendedOptions?: any): Theme => {
+    
     const colors = getThemeColors(mode);
-
+    
     // Get font sizes from CSS variables
     const fontSizeBase = getCssVariableNumber('--font-size-base', 14);
     const borderRadiusBase = getCssVariableNumber('--border-radius-base', 6);
+    
+    // Use btn-bg for palette.primary.main to match dash-styles/index.tsx behavior.
+    // This ensures MUI buttons (color="primary") use the button color, not the brand primary color.
+    // Fallback chain: btn-bg → primaryColor → MUI default
+    const primaryMain = colors.btnBg || colors.primaryColor;
+    const primaryContrastText = colors.btnColor || colors.primaryContrast;
 
-    // Strip palette/colorSchemes from extendedOptions to prevent stale values
-    // from overwriting the fresh palette we build below from CSS variables
-    const { palette: _p, colorSchemes: _cs, defaultColorScheme: _dcs, ...safeExtendedOptions } = extendedOptions || {};
-
-    return createTheme({
-         breakpoints: {
-            keys: ['xs', 'sm', 'md', 'lg', 'xl'],
-            values: { xs: 0, sm: 600, md: 900, lg: 1200, xl: 1536 },
-        },
-        palette: {
+    const custom = { palette: {
             mode,
             primary: {
-                main: colors.primaryColor,
-                contrastText: colors.primaryContrast,
+                main: primaryMain,
+                contrastText: primaryContrastText,
             },
             secondary: {
                 main: colors.secondaryColor,
@@ -140,27 +138,78 @@ const createMinimalTheme = (mode: 'light' | 'dark', extendedOptions?: any): Them
                     root: {
                         transition: 'all 0.2s ease-in-out',
                         textTransform: 'none',
-                    },
-                },
+                    }
+                }
             },
             MuiCssBaseline: {
                 styleOverrides: {
                     body: {
                         backgroundColor: colors.bodyBgPrimary,
                         color: colors.textColor,
-                    },
-                },
+                    }
+                }
             },
             MuiPaper: {
+             
                 styleOverrides: {
                     root: {
-                        backgroundImage: 'none',
+                        color: 'var(--text-color)',
+                        backgroundColor: 'var(--component-bg)',
+                        '&.Mui-focused': {
+                            color: 'var(--primary-color)',
+                            backgroundColor: 'var(--component-bg)',
+                        },
                     },
                 },
             },
-        },
-        ...safeExtendedOptions,
+            MuiOutlinedInput: {
+                styleOverrides: {
+                    root: {
+                        color: 'var(--text-color)',
+                        '& .MuiOutlinedInput-notchedOutline': {
+                            borderColor: 'var(--border-color)',
+                        },
+                        '&:hover .MuiOutlinedInput-notchedOutline': {
+                            borderColor: 'var(--primary-color)',
+                        },
+                        '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                            borderColor: 'var(--primary-color)',
+                        },
+                    },
+                },
+            },
+            MuiInputLabel: {
+                styleOverrides: {
+                    root: {
+                        color: 'var(--text-color)',
+                        '&.Mui-focused': {
+                            color: 'var(--primary-color)',
+                        },
+                    },
+                },
+            },
+            MuiSelect: {
+                styleOverrides: {
+                    select: {
+                        color: 'var(--text-color)',
+                    },
+                    icon: {
+                        color: 'var(--text-color)',
+                    },
+                },
+            },
+            ...(extendedOptions?.components || {}),
+        }
+    };
+
+    console.log('custom theme options:', custom);
+
+    const createdTheme = createTheme({
+        ...custom,
+        ...(extendedOptions ? (({ components, ...rest }) => rest)(extendedOptions) : {}),
     });
+  
+    return createdTheme;
 };
 
 export interface DashThemeContextType {
@@ -257,7 +306,7 @@ export const DashThemeProviderLight: React.FC<DashThemeProviderLightProps> = ({
 
     // Remap base CSS variables whenever currentMode changes (including external mutations)
     useEffect(() => {
-       
+
         if (typeof document === 'undefined') return;
         updateDomCssVariables(currentMode);
     }, [currentMode]);

@@ -335,3 +335,27 @@
     }
 }
 }
+
+/**
+ * Drag & drop feedback for SingleImageUploader (dash-admin).
+ *
+ * Top-level on purpose: `.single-image-uploader` is on every instance whatever
+ * its classNamePrefix ('dash-profile', 'default', ...), so this one rule covers
+ * the profile avatar, tenant images and any future uploader. The prefix classes
+ * own size/shape; this only adds the drop affordance.
+ */
+.single-image-uploader {
+    position: relative;
+    transition: box-shadow 0.15s ease-in-out, opacity 0.15s ease-in-out;
+
+    &.is-dragging {
+        /* An outline rather than a border: a border would change the box size
+           and visibly nudge the circular avatar while dragging over it. */
+        outline: 2px dashed var(--primary-contrast, #4caf50);
+        outline-offset: 3px;
+
+        img {
+            opacity: 0.55;
+        }
+    }
+}

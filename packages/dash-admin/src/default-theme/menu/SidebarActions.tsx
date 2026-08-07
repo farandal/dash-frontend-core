@@ -62,20 +62,20 @@ const SidebarActions: React.FC<SidebarActionsProps> = ({
                 ),
             }}
         >
-              {authContext?.authenticated && authContext.user?.id !== 'guest' && (
-                        <AvatarComponent sidebarPosition={sidebarPosition} />
-                    )}    
+            {authContext?.authenticated && authContext.user?.id !== 'guest' && (
+                      <AvatarComponent sidebarPosition={sidebarPosition} />
+                  )}
 
             {HeaderToolBar && headerToolBarReplace ? (
                 // Replace mode: Only render the custom HeaderToolBar
-                <HeaderToolBar />
+                (<HeaderToolBar />)
             ) : (
                 // Default mode: Render all actions
-                <>            
+                (<>
                     {HeaderToolBar && <HeaderToolBar />}
                     {authContext?.authenticated ? <BridgedLocalesMenuButton /> :  <LangSwitcher />}
                     <DarkToggleMode />
-                </>
+                </>)
             )}
         </Box>
     );

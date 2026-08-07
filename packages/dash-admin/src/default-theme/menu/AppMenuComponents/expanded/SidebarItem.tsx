@@ -63,6 +63,7 @@ const SidebarItem = ({
 
   return (
     <ListItemButton
+      className={className}
       selected={isCurrent}
       onClick={(e) => {
       

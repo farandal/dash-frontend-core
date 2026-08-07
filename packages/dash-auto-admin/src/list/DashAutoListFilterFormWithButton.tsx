@@ -71,8 +71,10 @@ const DashAutoListFilterFormWithButton = React.forwardRef<IToolbarFiltersHandler
 
 	
 	return (
-		<FormProvider {...form}>
-			<Box mb={1}>
+        <FormProvider {...form}>
+            <Box sx={{
+                mb: 1
+            }}>
 				<FilterFormBase
 					onSubmit={onSubmit}
 					filters={filters}
@@ -83,9 +85,9 @@ const DashAutoListFilterFormWithButton = React.forwardRef<IToolbarFiltersHandler
                 Filtrar
 				</Button>}
 			</Box>
-		
-		</FormProvider>
-	);
+
+        </FormProvider>
+    );
   
 });
 

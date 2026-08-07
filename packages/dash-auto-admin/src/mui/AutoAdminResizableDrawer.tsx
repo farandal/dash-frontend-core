@@ -53,17 +53,17 @@ export const AutoAdminResizableDrawer: React.FC<IResizableDrawer> = ({
 	};
 
 	return (
-		<Drawer
-			/*className={classes.drawer}*/
-			PaperProps={{ style: { width: drawerWidth } }}
-			//sx={{ zIndex: 100, width: drawerWidth }}
-			{...props}
-		>
-			<AutoAdminResizableDrawerContext.Provider value={drawerWidth}>
+        <Drawer
+            //sx={{ zIndex: 100, width: drawerWidth }}
+            {...props}
+            slotProps={{
+                paper: { style: { width: drawerWidth } }
+            }}>
+            <AutoAdminResizableDrawerContext.Provider value={drawerWidth}>
 				<Dragger />
 
 				{children}
 			</AutoAdminResizableDrawerContext.Provider>
-		</Drawer>
-	);
+        </Drawer>
+    );
 };

@@ -397,6 +397,7 @@ const DASHAdminApp: React.FC<IDASHAdmin<unknown, unknown, unknown, unknown>> = R
     // are present it triggers createThemeWithVars which can produce a theme with undefined
     // breakpoints.internal_mediaKeys, crashing MUI v9's responsive sx prop handling.
     const { colorSchemes: _cs, cssVariables: _cv, defaultColorScheme: _dcs, ...safeAdminThemeOptions } = themeOptions as any;
+
     // Memoize AdminContext props
     const adminContextProps = {
         dataProvider: customDataProvider || dataProvider,

@@ -342,8 +342,10 @@ const ColorEditDialog: React.FC<{
             onClose={onClose} 
             maxWidth="sm" 
             fullWidth
-            PaperProps={{
-                sx: { minHeight: 600 }
+            slotProps={{
+                paper: {
+                    sx: { minHeight: 600 }
+                }
             }}
         >
             <DialogTitle>
@@ -409,20 +411,22 @@ const ColorEditDialog: React.FC<{
                                         colorFormat === 'hsl' ? 'hsl(0, 100%, 50%)' :
                                         'hsla(0, 100%, 50%, 1)'
                                     }
-                                    InputProps={{
-                                        startAdornment: (
-                                            <InputAdornment position="start">
-                                                <Box
-                                                    sx={{
-                                                        width: 20,
-                                                        height: 20,
-                                                        backgroundColor: editedPair.value,
-                                                        border: '1px solid #ccc',
-                                                        borderRadius: 1,
-                                                    }}
-                                                />
-                                            </InputAdornment>
-                                        ),
+                                    slotProps={{
+                                        input: {
+                                            startAdornment: (
+                                                <InputAdornment position="start">
+                                                    <Box
+                                                        sx={{
+                                                            width: 20,
+                                                            height: 20,
+                                                            backgroundColor: editedPair.value,
+                                                            border: '1px solid #ccc',
+                                                            borderRadius: 1,
+                                                        }}
+                                                    />
+                                                </InputAdornment>
+                                            ),
+                                        }
                                     }}
                                 />
                             </Box>
@@ -780,7 +784,7 @@ const getTenantSettingsValues = () => {
             <Typography variant="subtitle1" gutterBottom>
                 {attribute.label || 'Color Palette'}
             </Typography>
-            
+
             {/* Header Actions */}
             <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 3 }}>
                 <Button 
@@ -811,23 +815,25 @@ const getTenantSettingsValues = () => {
                     placeholder="Search colors by name..."
                     value={searchTerm}
                     onChange={handleSearchChange}
-                    InputProps={{
-                        startAdornment: (
-                            <InputAdornment position="start">
-                                <SearchIcon />
-                            </InputAdornment>
-                        ),
-                        endAdornment: searchTerm && (
-                            <InputAdornment position="end">
-                                <IconButton
-                                    size="small"
-                                    onClick={handleClearSearch}
-                                    edge="end"
-                                >
-                                    <ClearIcon />
-                                </IconButton>
-                            </InputAdornment>
-                        ),
+                    slotProps={{
+                        input: {
+                            startAdornment: (
+                                <InputAdornment position="start">
+                                    <SearchIcon />
+                                </InputAdornment>
+                            ),
+                            endAdornment: searchTerm && (
+                                <InputAdornment position="end">
+                                    <IconButton
+                                        size="small"
+                                        onClick={handleClearSearch}
+                                        edge="end"
+                                    >
+                                        <ClearIcon />
+                                    </IconButton>
+                                </InputAdornment>
+                            ),
+                        }
                     }}
                 />
 
@@ -988,7 +994,7 @@ const getTenantSettingsValues = () => {
                     </Button>
                 </Box>
             )}
-            
+
             {/* Edit Dialog */}
             <ColorEditDialog
                 open={editDialogOpen}
@@ -1164,7 +1170,7 @@ export const JsonView: React.FC<IDashAutoAdminCustomFieldComponent> = (props) =>
             <Typography variant="subtitle1" gutterBottom>
                 {attribute.label || 'Color Palette'}
             </Typography>
-            
+
             {Object.keys(displayValue).length > 0 && (
                 <>
                     {/* Search and Filter Controls for View Mode */}
@@ -1176,23 +1182,25 @@ export const JsonView: React.FC<IDashAutoAdminCustomFieldComponent> = (props) =>
                             placeholder="Search colors by name..."
                             value={searchTerm}
                             onChange={handleSearchChange}
-                            InputProps={{
-                                startAdornment: (
-                                    <InputAdornment position="start">
-                                        <SearchIcon />
-                                    </InputAdornment>
-                                ),
-                                endAdornment: searchTerm && (
-                                    <InputAdornment position="end">
-                                        <IconButton
-                                            size="small"
-                                            onClick={handleClearSearch}
-                                            edge="end"
-                                        >
-                                            <ClearIcon />
-                                        </IconButton>
-                                    </InputAdornment>
-                                ),
+                            slotProps={{
+                                input: {
+                                    startAdornment: (
+                                        <InputAdornment position="start">
+                                            <SearchIcon />
+                                        </InputAdornment>
+                                    ),
+                                    endAdornment: searchTerm && (
+                                        <InputAdornment position="end">
+                                            <IconButton
+                                                size="small"
+                                                onClick={handleClearSearch}
+                                                edge="end"
+                                            >
+                                                <ClearIcon />
+                                            </IconButton>
+                                        </InputAdornment>
+                                    ),
+                                }
                             }}
                         />
 
@@ -1377,7 +1385,7 @@ export const JsonView: React.FC<IDashAutoAdminCustomFieldComponent> = (props) =>
                     )}
                 </>
             )}
-            
+
             {Object.keys(displayValue).length === 0 && (
                 <Box sx={{ textAlign: 'center', py: 4 }}>
                     <Typography variant="body2" color="textSecondary">

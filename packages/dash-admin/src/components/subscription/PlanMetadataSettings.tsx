@@ -48,9 +48,13 @@ const PlanMetadataView: React.FC<IDashAutoAdminCustomFieldComponent> = () => {
 
     if (!entries.length) {
         return (
-            <Typography variant="body2" color="text.secondary" sx={{ py: 2 }}>
-                No metadata configured
-            </Typography>
+            <Typography
+                variant="body2"
+                sx={{
+                    color: "text.secondary",
+                    py: 2
+                }}>No metadata configured
+                            </Typography>
         );
     }
 
@@ -87,7 +91,11 @@ const PlanMetadataList: React.FC<IDashAutoAdminCustomFieldComponent> = () => {
     const count = Object.keys(metadata).length;
 
     if (!count) {
-        return <Typography variant="body2" color="text.secondary">—</Typography>;
+        return (
+            <Typography variant="body2" sx={{
+                color: "text.secondary"
+            }}>—</Typography>
+        );
     }
 
     return (
@@ -177,12 +185,24 @@ const PlanMetadataEdit: React.FC<IDashAutoAdminCustomFieldComponent> = () => {
             <Typography variant="subtitle2" gutterBottom>
                 Plan Metadata
             </Typography>
-            <Typography variant="caption" color="text.secondary" display="block" sx={{ mb: 2 }}>
+            <Typography
+                variant="caption"
+                sx={{
+                    color: "text.secondary",
+                    display: "block",
+                    mb: 2
+                }}>
                 Add key-value pairs for additional plan configuration
             </Typography>
 
             {/* Add new pair input */}
-            <Stack direction="row" spacing={1} sx={{ mb: 2 }} alignItems="flex-start">
+            <Stack
+                direction="row"
+                spacing={1}
+                sx={{
+                    alignItems: "flex-start",
+                    mb: 2
+                }}>
                 <TextField
                     value={newKey}
                     onChange={(e) => {
@@ -252,7 +272,9 @@ const PlanMetadataEdit: React.FC<IDashAutoAdminCustomFieldComponent> = () => {
                     </Table>
                 </TableContainer>
             ) : (
-                <Typography variant="body2" color="text.secondary">
+                <Typography variant="body2" sx={{
+                    color: "text.secondary"
+                }}>
                     No metadata added yet
                 </Typography>
             )}

@@ -42,9 +42,13 @@ const PlanFeaturesView: React.FC<IDashAutoAdminCustomFieldComponent> = () => {
 
     if (!features.length) {
         return (
-            <Typography variant="body2" color="text.secondary" sx={{ py: 2 }}>
-                No features configured
-            </Typography>
+            <Typography
+                variant="body2"
+                sx={{
+                    color: "text.secondary",
+                    py: 2
+                }}>No features configured
+                            </Typography>
         );
     }
 
@@ -78,11 +82,17 @@ const PlanFeaturesList: React.FC<IDashAutoAdminCustomFieldComponent> = () => {
     const features = record?.features || [];
 
     if (!features.length) {
-        return <Typography variant="body2" color="text.secondary">—</Typography>;
+        return (
+            <Typography variant="body2" sx={{
+                color: "text.secondary"
+            }}>—</Typography>
+        );
     }
 
     return (
-        <Stack direction="row" spacing={0.5} flexWrap="wrap" useFlexGap>
+        <Stack direction="row" spacing={0.5} useFlexGap sx={{
+            flexWrap: "wrap"
+        }}>
             {features.slice(0, 3).map((feature, index) => (
                 <Chip 
                     key={index} 
@@ -151,7 +161,13 @@ const PlanFeaturesEdit: React.FC<IDashAutoAdminCustomFieldComponent> = () => {
             <Typography variant="subtitle2" gutterBottom>
                 Plan Features
             </Typography>
-            <Typography variant="caption" color="text.secondary" display="block" sx={{ mb: 2 }}>
+            <Typography
+                variant="caption"
+                sx={{
+                    color: "text.secondary",
+                    display: "block",
+                    mb: 2
+                }}>
                 Add feature keys that are enabled for this plan (e.g., "api_access", "custom_branding")
             </Typography>
 
@@ -177,7 +193,9 @@ const PlanFeaturesEdit: React.FC<IDashAutoAdminCustomFieldComponent> = () => {
             {/* Display current features */}
             {features.length > 0 ? (
                 <Paper variant="outlined" sx={{ p: 1 }}>
-                    <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
+                    <Stack direction="row" spacing={1} useFlexGap sx={{
+                        flexWrap: "wrap"
+                    }}>
                         {features.map((feature, index) => (
                             <Chip
                                 key={index}
@@ -191,7 +209,9 @@ const PlanFeaturesEdit: React.FC<IDashAutoAdminCustomFieldComponent> = () => {
                     </Stack>
                 </Paper>
             ) : (
-                <Typography variant="body2" color="text.secondary">
+                <Typography variant="body2" sx={{
+                    color: "text.secondary"
+                }}>
                     No features added yet
                 </Typography>
             )}

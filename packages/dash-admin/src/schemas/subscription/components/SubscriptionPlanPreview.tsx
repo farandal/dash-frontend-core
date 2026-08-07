@@ -31,11 +31,17 @@ const SubscriptionPlanPreview: React.FC<IDashAutoAdminCustomFieldComponent> = ({
     };
 
     return (
-        <Box maxWidth={400}>
+        <Box sx={{
+            maxWidth: 400
+        }}>
             <Card elevation={3}>
                 <CardContent>
                     {/* Header */}
-                    <Box textAlign="center" mb={2}>
+                    <Box
+                        sx={{
+                            textAlign: "center",
+                            mb: 2
+                        }}>
                         <Typography variant="h5" component="h2" gutterBottom>
                             {record.name}
                         </Typography>
@@ -59,7 +65,9 @@ const SubscriptionPlanPreview: React.FC<IDashAutoAdminCustomFieldComponent> = ({
                         </Typography>
 
                         {record.billing_cycle === 'yearly' && (
-                            <Typography variant="body2" color="success.main">
+                            <Typography variant="body2" sx={{
+                                color: "success.main"
+                            }}>
                                 {formatPrice(record.price_per_month)} por mes
                             </Typography>
                         )}
@@ -69,7 +77,9 @@ const SubscriptionPlanPreview: React.FC<IDashAutoAdminCustomFieldComponent> = ({
 
                     {/* Description */}
                     {record.description && (
-                        <Typography variant="body2" color="textSecondary" paragraph>
+                        <Typography variant="body2" color="textSecondary" sx={{
+                            marginBottom: "16px"
+                        }}>
                             {record.description}
                         </Typography>
                     )}
@@ -88,7 +98,9 @@ const SubscriptionPlanPreview: React.FC<IDashAutoAdminCustomFieldComponent> = ({
                                         </ListItemIcon>
                                         <ListItemText 
                                             primary={feature}
-                                            primaryTypographyProps={{ variant: 'body2' }}
+                                            slotProps={{
+                                                primary: { variant: 'body2' }
+                                            }}
                                         />
                                     </ListItem>
                                 ))}
@@ -109,13 +121,14 @@ const SubscriptionPlanPreview: React.FC<IDashAutoAdminCustomFieldComponent> = ({
                     </Button>
 
                     {!record.is_active && (
-                        <Typography 
-                            variant="caption" 
-                            color="error" 
-                            display="block" 
-                            textAlign="center" 
-                            mt={1}
-                        >
+                        <Typography
+                            variant="caption"
+                            color="error"
+                            sx={{
+                                display: "block",
+                                textAlign: "center",
+                                mt: 1
+                            }}>
                             Plan no disponible
                         </Typography>
                     )}

@@ -25,24 +25,24 @@ const AppSidebarLogo: React.FC<IAppSidebarLogo> = ({
   }*/
 
 	return (
-		<div className='dash-layout-sider-header'>
-			{!sidebarExpanded ? (
+        <div className='dash-layout-sider-header'>
+            {!sidebarExpanded ? (
 				// @ts-ignore - AppLogo props compatibility issue
-				<AppLogo type='logo' logoBig={logo} squaredLogo={squaredLogo} />
+				(<AppLogo type='logo' logoBig={logo} squaredLogo={squaredLogo} />)
 			) : (
 				// @ts-ignore - AppLogo props compatibility issue
-				<AppLogo type='iso' logoBig={logo} squaredLogo={squaredLogo} />
+				(<AppLogo type='iso' logoBig={logo} squaredLogo={squaredLogo} />)
 			)}
 
-			{/*<Link to="/" className="dash-site-logo">
+            {/*<Link to="/" className="dash-site-logo">
         {navStyle === NAV_STYLE_NO_HEADER_MINI_SIDEBAR && width >= TAB_SIZE ?
           <img alt="lo" src={("/assets/images/w-logo.png")}/> :
           themeType === THEME_TYPE_LIGHT ?
             <img alt="logo1" src={("/assets/images/logo-white.png")}/> :
             <img alt="logo2" src={("/assets/images/logo.png")}/>}
       </Link>*/}
-		</div>
-	);
+        </div>
+    );
 };
 
 export default AppSidebarLogo;

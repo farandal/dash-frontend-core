@@ -51,8 +51,8 @@ const SettingsTooltip: FC<ISettings> = ({
 	};
 
 	return (
-		<div {...(className && { className })}>
-			<div className='settings-widget-actions'>
+        <div {...(className && { className })}>
+            <div className='settings-widget-actions'>
 				{error.active && (
 					<div className='settings-widget-action'>
 						<ErrorBadge onClick={() => {}}>
@@ -76,7 +76,7 @@ const SettingsTooltip: FC<ISettings> = ({
 				</div>
 			</div>
 
-			<Popover
+            <Popover
 				anchorOrigin={{
 					vertical: 'bottom',
 					horizontal: 'right',
@@ -89,12 +89,14 @@ const SettingsTooltip: FC<ISettings> = ({
 				anchorEl={anchorEl}
 				open={open}
 				onClose={closeSettings}
-				TransitionComponent={Fade}
+				slots={{
+                    transition: Fade
+                }}
 			>
 				<div style={{ padding: 8 }}>{children}</div>
 			</Popover>
-		</div>
-	);
+        </div>
+    );
 };
 
 const SettingsDialog: FC<ISettings> = ({
@@ -174,8 +176,8 @@ const SettingsDrawer: FC<ISettings> = ({
 	};
 
 	return (
-		<div>
-			<div className='settings-widget-actions'>
+        <div>
+            <div className='settings-widget-actions'>
 				{error.active && (
 					<div className='settings-widget-action'>
 						<ErrorBadge onClick={() => {}}>
@@ -199,19 +201,21 @@ const SettingsDrawer: FC<ISettings> = ({
 				</div>
 			</div>
 
-			<Drawer
+            <Drawer
 				open={open}
 				onClose={closeSettings}
 				anchor={'right'}
-				PaperProps={{
-					sx: { width: '20%' },
-				}}
+				slotProps={{
+                    paper: {
+                        sx: { width: '20%' },
+                    }
+                }}
 			>
 				{/* @ts-ignore Expected mismatch ReactNode. */}
 				{children}
-			</Drawer>	
-		</div>
-	);
+			</Drawer>
+        </div>
+    );
 };
 
 const propsAreEqual = (oldProps, newProps) => {

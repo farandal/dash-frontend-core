@@ -12,7 +12,7 @@ import {
     Container,
     Paper
 } from '@mui/material';
-import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutlined';
 import HomeIcon from '@mui/icons-material/Home';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
@@ -62,7 +62,9 @@ const DefaultNotFound: React.FC<DefaultNotFoundProps> = ({
                     {title}
                 </Typography>
                 
-                <Typography variant="body1" color="textSecondary" paragraph>
+                <Typography variant="body1" color="textSecondary" sx={{
+                    marginBottom: "16px"
+                }}>
                     {message}
                 </Typography>
 

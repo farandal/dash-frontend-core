@@ -12,7 +12,7 @@ import {
     Paper, 
     Container 
 } from '@mui/material';
-import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
+import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutlined';
 import EmailIcon from '@mui/icons-material/Email';
 
 import FullLayoutMarkup from 'dash-admin/src/default-theme/FullLayoutMarkup';
@@ -59,7 +59,9 @@ const DefaultSignUpSuccessPage: React.FC<DefaultSignUpSuccessPageProps> = (props
                         Account Created Successfully!
                     </Typography>
                     
-                    <Typography variant="body1" color="textSecondary" paragraph>
+                    <Typography variant="body1" color="textSecondary" sx={{
+                        marginBottom: "16px"
+                    }}>
                         Thank you for signing up{state?.planName ? ` for the ${state.planName} plan` : ''}.
                     </Typography>
 
@@ -75,13 +77,17 @@ const DefaultSignUpSuccessPage: React.FC<DefaultSignUpSuccessPageProps> = (props
                         }}
                     >
                         <EmailIcon sx={{ mr: 1, color: 'info.dark' }} />
-                        <Typography variant="body2" color="info.dark">
+                        <Typography variant="body2" sx={{
+                            color: "info.dark"
+                        }}>
                             We've sent a verification email to <strong>{state?.email || 'your email address'}</strong>.
                             Please check your inbox and verify your email to complete the registration.
                         </Typography>
                     </Box>
 
-                    <Typography variant="body2" color="textSecondary" paragraph>
+                    <Typography variant="body2" color="textSecondary" sx={{
+                        marginBottom: "16px"
+                    }}>
                         If you don't see the email, please check your spam folder or request a new verification email.
                     </Typography>
 

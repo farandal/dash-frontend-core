@@ -11,12 +11,13 @@ import { Box } from '@mui/material';
 // Loading fallback component
 const DashDefaultRouteLoader = () => (
     <Box
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        minHeight="200px"
-        sx={{ color: 'var(--text-color, inherit)' }}
-    >
+        sx={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            minHeight: "200px",
+            color: 'var(--text-color, inherit)'
+        }}>
         Loading...
     </Box>
 );

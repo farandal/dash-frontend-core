@@ -128,8 +128,8 @@ const SearchableSelect: React.FC<ISearchableSelect> = ({
 	};
 
 	return (
-		<>
-			{parsedOptions && (
+        <>
+            {parsedOptions && (
 				<Autocomplete
 					key={'autocomplete-' + attribute.attribute}
 					multiple={isMultiple}
@@ -215,7 +215,7 @@ const SearchableSelect: React.FC<ISearchableSelect> = ({
 					renderInput={(params) => {
 						console.log('renderInput', params.id);
 						return (
-							<TextField
+                            <TextField
 								key={params.id}
 								{...params}
 								label={selectLabel}
@@ -236,26 +236,29 @@ const SearchableSelect: React.FC<ISearchableSelect> = ({
                                 setQ(ev.target.value);
                             }*/
 								}}
-								//onBlur={() => setQ('')}
-								InputProps={{
-									...params.InputProps,
-									autoComplete: 'new-password',
-									endAdornment: (
-										<>
-											{isLoading ? (
-												<CircularProgress color='inherit' size={20} />
-											) : null}
-											{params.InputProps.endAdornment}
-										</>
-									),
-								}}
+								slotProps={{
+                                    ...params.slotProps,
+
+                                    input: {
+                                        ...params.slotProps.input,
+                                        autoComplete: 'new-password',
+                                        endAdornment: (
+                                            <>
+                                                {isLoading ? (
+                                                    <CircularProgress color='inherit' size={20} />
+                                                ) : null}
+                                                {params.slotProps.input.endAdornment}
+                                            </>
+                                        ),
+                                    }
+                                }}
 							/>
-						);
+                        );
 					}}
 				/>
 			)}
-		</>
-	);
+        </>
+    );
 };
 
 const RASearchableSelect = ({

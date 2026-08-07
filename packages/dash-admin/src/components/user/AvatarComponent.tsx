@@ -1,4 +1,4 @@
-import { Avatar, CircularProgress, Menu, useMediaQuery, useTheme } from '@mui/material';
+import { Avatar, CircularProgress, Menu, MenuList, useMediaQuery, useTheme } from '@mui/material';
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { IconMenuItem } from 'mui-nested-menu';
 import ReactDOM from 'react-dom';
@@ -261,33 +261,35 @@ useEffect(() => {
                         <span className='dash-user-name' style={{ padding: '8px 16px', display: 'block' }}>
                             {getUserDisplayName()}
                         </span>
-                        <IconMenuItem
-                            onClick={(e) => {
-                                e.preventDefault();
-                                setOpen(false);
-                                handleProfileRedirect();
-                            }}
-                            leftIcon={
-                                <span className='dash-user-icon'>
-                                    <AccountCircleIcon />
-                                </span>
-                            }
-                            label={translate('ra.auth.user_menu', { _: 'Perfil' })}
-                            className='dash-icon-button-color dash-icon-button-bg'
-                        />
-                        <IconMenuItem
-                            onClick={(e) => {
-                                setOpen(false);
-                                handleLogout(e);
-                            }}
-                            leftIcon={
-                                <span className='dash-user-icon'>
-                                    <LogoutIcon />
-                                </span>
-                            }
-                            label={translate('ra.auth.logout', { _: 'Cerrar sesión' })}
-                            className='dash-icon-button-color dash-icon-button-bg'
-                        />
+                        <MenuList>
+                            <IconMenuItem
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    setOpen(false);
+                                    handleProfileRedirect();
+                                }}
+                                leftIcon={
+                                    <span className='dash-user-icon'>
+                                        <AccountCircleIcon />
+                                    </span>
+                                }
+                                label={translate('ra.auth.user_menu', { _: 'Perfil' })}
+                                className='dash-icon-button-color dash-icon-button-bg'
+                            />
+                            <IconMenuItem
+                                onClick={(e) => {
+                                    setOpen(false);
+                                    handleLogout(e);
+                                }}
+                                leftIcon={
+                                    <span className='dash-user-icon'>
+                                        <LogoutIcon />
+                                    </span>
+                                }
+                                label={translate('ra.auth.logout', { _: 'Cerrar sesión' })}
+                                className='dash-icon-button-color dash-icon-button-bg'
+                            />
+                        </MenuList>
                     </div>
                 </div>,
                 document.body

@@ -71,7 +71,7 @@ export const AvailablePermissionsContext: React.FC<{children: React.ReactNode}> 
     if (!LAST_FETCH_TIME) {
       try {
         // Try to get last fetch time from IndexedDB
-        LAST_FETCH_TIME = await idbGet("system_available_permissions_cache") || 0;
+        LAST_FETCH_TIME = (await idbGet("system_available_permissions_cache")) || 0;
       } catch (error) {
         console.error("Error reading from IndexedDB:", error);
       }

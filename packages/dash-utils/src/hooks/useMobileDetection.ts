@@ -40,11 +40,8 @@ export const checkMobileDevice = (mobileBreakpoint: number = 700): boolean => {
  */
 export const isWebView = (): boolean => {
     const userAgent = navigator.userAgent.toLowerCase();
-    return (
-        /(webview|wv)/.test(userAgent) ||
-        /android.*(wv|.net)/.test(userAgent) ||
-        /iphone|ipod|ipad.*applewebkit(?!.*safari)/i.test(userAgent)
-    );
+    return (/(webview|wv)/.test(userAgent) ||
+    /android.*(wv|.net)/.test(userAgent) || /iphone|ipod|ipad.*applewebkit(?!.*safari)/i.test(userAgent));
 };
 
 /**

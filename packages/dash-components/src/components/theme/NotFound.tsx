@@ -4,7 +4,7 @@ import {
 } from 'react-admin';
 
 import { Button } from '@mui/material';
-import  ErrorOutline  from '@mui/icons-material/ErrorOutline'
+import  ErrorOutline  from '@mui/icons-material/ErrorOutlined'
 import { useNavigate } from 'react-router';
 
 

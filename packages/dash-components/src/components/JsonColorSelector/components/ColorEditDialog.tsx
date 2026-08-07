@@ -202,16 +202,18 @@ const ColorEditDialog: React.FC<{
             anchor="right"
             open={open}
             onClose={onClose}
-            BackdropProps={{ invisible: true }}
-            PaperProps={{
-                sx: {
-                    width: { xs: '100%', sm: 460 },
-                    maxWidth: '100vw',
-                    display: 'flex',
-                    flexDirection: 'column',
+            slotProps={{
+                backdrop: { invisible: true },
+
+                paper: {
+                    sx: {
+                        width: { xs: '100%', sm: 460 },
+                        maxWidth: '100vw',
+                        display: 'flex',
+                        flexDirection: 'column',
+                    }
                 }
-            }}
-        >
+            }}>
             {/* Drawer Header */}
             <Box sx={{
                 display: 'flex',
@@ -318,26 +320,28 @@ const ColorEditDialog: React.FC<{
                                             colorFormat === 'hsla' ? 'Alpha value should be between 0 and 1 (e.g., 0.1, 0.5, 1)' :
                                                 undefined
                                     }
-                                    InputProps={{
-                                        startAdornment: (
-                                            <InputAdornment position="start">
-                                                <Box
-                                                    sx={{
-                                                        width: 20,
-                                                        height: 20,
-                                                        backgroundColor: editedPair.value,
-                                                        border: '1px solid #ccc',
-                                                        borderRadius: 1,
-                                                        // Add a checkerboard pattern background for transparency preview
-                                                        backgroundImage: colorFormat === 'rgba' || colorFormat === 'hsla' ?
-                                                            'linear-gradient(45deg, #ccc 25%, transparent 25%), linear-gradient(-45deg, #ccc 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #ccc 75%), linear-gradient(-45deg, transparent 75%, #ccc 75%)' :
-                                                            'none',
-                                                        backgroundSize: '4px 4px',
-                                                        backgroundPosition: '0 0, 0 2px, 2px -2px, -2px 0px',
-                                                    }}
-                                                />
-                                            </InputAdornment>
-                                        ),
+                                    slotProps={{
+                                        input: {
+                                            startAdornment: (
+                                                <InputAdornment position="start">
+                                                    <Box
+                                                        sx={{
+                                                            width: 20,
+                                                            height: 20,
+                                                            backgroundColor: editedPair.value,
+                                                            border: '1px solid #ccc',
+                                                            borderRadius: 1,
+                                                            // Add a checkerboard pattern background for transparency preview
+                                                            backgroundImage: colorFormat === 'rgba' || colorFormat === 'hsla' ?
+                                                                'linear-gradient(45deg, #ccc 25%, transparent 25%), linear-gradient(-45deg, #ccc 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #ccc 75%), linear-gradient(-45deg, transparent 75%, #ccc 75%)' :
+                                                                'none',
+                                                            backgroundSize: '4px 4px',
+                                                            backgroundPosition: '0 0, 0 2px, 2px -2px, -2px 0px',
+                                                        }}
+                                                    />
+                                                </InputAdornment>
+                                            ),
+                                        }
                                     }}
                                 />
                             </Box>

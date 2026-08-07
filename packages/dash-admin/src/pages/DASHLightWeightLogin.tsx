@@ -403,13 +403,14 @@ const DASHLightWeightLogin: React.FC<DASHLightWeightLoginProps> = (props) => {
                
             >
                 <Container maxWidth="sm" sx={{ p: 1 }}>
-                    <Box 
-                        display="flex" 
-                        justifyContent="center" 
-                        alignItems="center" 
-                        minHeight="50vh"
-                        textAlign="center"
-                    >
+                    <Box
+                        sx={{
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
+                            minHeight: "50vh",
+                            textAlign: "center"
+                        }}>
                         <div>Cargando...</div>
                     </Box>
                 </Container>

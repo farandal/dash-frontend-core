@@ -101,7 +101,7 @@ export const SystemRequestsCacheProvider: React.FC<SystemRequestsCacheProviderPr
     const now = Date.now();
     if (!GLOBALS.current.lastFetchTime) {
       try {
-        GLOBALS.current.lastFetchTime = await idbGet(cacheKey) || 0;
+        GLOBALS.current.lastFetchTime = (await idbGet(cacheKey)) || 0;
         if (DEBUG_SYSTEM_REQUESTS_CACHE) {
           console.log(`[SystemRequestsCache] Loaded lastFetchTime from IndexedDB: ${GLOBALS.current.lastFetchTime}`);
         }

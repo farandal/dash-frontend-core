@@ -376,7 +376,9 @@ export const AttributeToField = (
 			>
 				<ReferenceField
 					{...componentProps}
-				/>
+				>
+					<ChipField source={sourceName} />
+				</ReferenceField>
 			</ComponentWrapper>
 		}
 

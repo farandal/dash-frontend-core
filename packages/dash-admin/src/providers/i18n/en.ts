@@ -574,6 +574,70 @@ const dashEnglish = {
 		has_modifiers: 'Customizable',
 		no_more_products: 'No more products',
 	},
+	// JSON Color Selector - image-based theme extraction
+	colorSelector: {
+		imageExtractor: {
+			title_ai: 'AI Theme Generator',
+			title_local: 'Theme from Image',
+			upload_prompt: 'Upload an Image to Extract Colors',
+			upload_hint: "Select an image file and we'll automatically extract a color palette",
+			upload_button: 'Choose Image',
+			drop_hint: 'or drag and drop it here',
+			invalid_file_type: 'Please select a valid image file',
+			file_too_large: 'File size must be less than %{limit}MB',
+			extracting: 'Extracting colors from image...',
+			extracted_colors: 'Extracted Colors (%{count} colors found)',
+			dominant_label: 'Dominant',
+			uploaded_image_alt: 'Uploaded image',
+			no_palette_error: 'Please extract colors from an image first',
+			theme_generation_failed: 'Failed to generate theme',
+			theme_description_label: 'Theme Description (Optional)',
+			theme_description_placeholder:
+				"Optional: Describe the theme style you want (e.g., 'modern and minimalist', 'warm and cozy', 'professional corporate')",
+			apply_colors_button: 'Apply Colors',
+			generate_button: 'Generate AI Theme',
+			generating_button: 'Generating...',
+			apply_colors_help_label: 'Apply Colors:',
+			apply_colors_help_desc:
+				'Maps the extracted palette to your base theme colors locally — no AI involved',
+			generate_help_label: 'Generate AI Theme:',
+			generate_help_desc:
+				'Uses AI to create a complete color scheme based on extracted colors and your description',
+		},
+	},
+	// Profile page
+	profile: {
+		title: 'Profile',
+		subtitle: 'Profile settings',
+		info: {
+			title: 'Info',
+			name: 'Name',
+			lastname: 'Last name',
+			email: 'Email',
+			save: 'Save',
+			saving: 'Saving...',
+		},
+		password: {
+			title: 'Passwords',
+			current: 'Current password',
+			new: 'New password',
+			confirm: 'Confirm new password',
+			save: 'Save Passwords',
+			saving: 'Saving Passwords...',
+		},
+		preferences: {
+			title: 'Preferences',
+		},
+		validation: {
+			required: 'This field is required',
+			password_mismatch: 'Passwords do not match',
+		},
+		notify: {
+			success: 'User updated successfully',
+			error: 'Error updating user',
+			error_with_message: 'Error updating user, %{message}',
+		},
+	},
 };
 
 export default {

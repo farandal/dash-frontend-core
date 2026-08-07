@@ -47,10 +47,14 @@ export const AvatarDisplay: React.FC<AvatarComponent> = (props) => {
 	const imageUrl = record?.[_attributeName];
    
 	return (
-		<Box display="flex" alignItems="center">
-			<AvatarMui src={imageUrl} alt="avatar" />
-		</Box>
-	);
+        <Box
+            sx={{
+                display: "flex",
+                alignItems: "center"
+            }}>
+            <AvatarMui src={imageUrl} alt="avatar" />
+        </Box>
+    );
 };
 
 const Avatar = ({ method, attribute,resourceConfig }: IDashAutoAdminCustomFieldComponent) => {

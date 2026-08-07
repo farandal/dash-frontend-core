@@ -53,7 +53,7 @@ const PlanPricesView: React.FC<IDashAutoAdminCustomFieldComponent> = () => {
     const prices = plan?.prices;
 
     const { data: currencies, isLoading } = useGetList<Currency>(
-        'ecommerce/currency',
+        'system/currency', // core "shared master data" — works for every domain, unlike ecommerce/currency (kitchntabs-backend-domain only)
         { 
             pagination: { page: 1, perPage: 100 },
             sort: { field: 'code', order: 'ASC' },
@@ -69,9 +69,10 @@ const PlanPricesView: React.FC<IDashAutoAdminCustomFieldComponent> = () => {
 
     if (!prices || Object.keys(prices).length === 0) {
         return (
-            <Typography variant="body2" color="text.secondary">
-                No prices configured
-            </Typography>
+            <Typography variant="body2" sx={{
+                color: "text.secondary"
+            }}>No prices configured
+                            </Typography>
         );
     }
 
@@ -101,7 +102,9 @@ const PlanPricesView: React.FC<IDashAutoAdminCustomFieldComponent> = () => {
                                             color={currency?.is_default ? 'primary' : 'default'}
                                         />
                                         {currency?.is_default && (
-                                            <Typography variant="caption" color="text.secondary">
+                                            <Typography variant="caption" sx={{
+                                                color: "text.secondary"
+                                            }}>
                                                 (Default)
                                             </Typography>
                                         )}
@@ -127,7 +130,11 @@ const PlanPricesList: React.FC<IDashAutoAdminCustomFieldComponent> = () => {
     const prices = plan?.prices;
 
     if (!prices || Object.keys(prices).length === 0) {
-        return <Typography variant="body2" color="text.secondary">—</Typography>;
+        return (
+            <Typography variant="body2" sx={{
+                color: "text.secondary"
+            }}>—</Typography>
+        );
     }
 
     return (
@@ -161,7 +168,7 @@ const PlanPricesEdit: React.FC<IDashAutoAdminCustomFieldComponent> = ({ method }
 
     // Fetch available currencies
     const { data: currencies, isLoading, error } = useGetList<Currency>(
-        'ecommerce/currency',
+        'system/currency', // core "shared master data" — works for every domain, unlike ecommerce/currency (kitchntabs-backend-domain only)
         { 
             pagination: { page: 1, perPage: 100 },
             sort: { field: 'code', order: 'ASC' },
@@ -215,18 +222,21 @@ const PlanPricesEdit: React.FC<IDashAutoAdminCustomFieldComponent> = ({ method }
 
     if (!currencies || currencies.length === 0) {
         return (
-            <Typography variant="body2" color="text.secondary">
-                No currencies available. Please configure currencies first.
-            </Typography>
+            <Typography variant="body2" sx={{
+                color: "text.secondary"
+            }}>No currencies available. Please configure currencies first.
+                            </Typography>
         );
     }
 
     return (
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-            <Typography variant="subtitle2" color="text.secondary">
+            <Typography variant="subtitle2" sx={{
+                color: "text.secondary"
+            }}>
                 Set the price for each available currency (in cents/smallest unit)
             </Typography>
-            
+
             {currencies.map((currency) => {
                 const currentValue = currentPrices[currency.code] ?? '';
                 
@@ -237,13 +247,6 @@ const PlanPricesEdit: React.FC<IDashAutoAdminCustomFieldComponent> = ({ method }
                         type="number"
                         value={currentValue}
                         onChange={(e) => handlePriceChange(currency.code, e.target.value)}
-                        InputProps={{
-                            startAdornment: (
-                                <InputAdornment position="start">
-                                    {currency.symbol}
-                                </InputAdornment>
-                            ),
-                        }}
                         helperText={
                             currency.format 
                                 ? `Format: ${currency.format} • Example: ${currency.symbol}${numeral(29900).format(currency.format)}`
@@ -259,10 +262,19 @@ const PlanPricesEdit: React.FC<IDashAutoAdminCustomFieldComponent> = ({ method }
                                 }
                             } : {}
                         }}
+                        slotProps={{
+                            input: {
+                                startAdornment: (
+                                    <InputAdornment position="start">
+                                        {currency.symbol}
+                                    </InputAdornment>
+                                ),
+                            }
+                        }}
                     />
                 );
             })}
-            
+
             {/* Hidden input to ensure prices gets submitted */}
             <input 
                 type="hidden" 

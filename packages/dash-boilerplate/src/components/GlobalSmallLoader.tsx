@@ -1,6 +1,6 @@
 /**
  * GlobalSmallLoader
- * 
+ *
  * A minimal loading component that doesn't depend on heavy UI libraries.
  * Used during initial app load before heavier dependencies are available.
  */
@@ -11,41 +11,68 @@ export interface GlobalSmallLoaderProps {
     showMessage?: boolean;
 }
 
-const loaderSvgMarkup = `<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="32px" height="32px" style="shape-rendering:geometricPrecision; text-rendering:geometricPrecision; image-rendering:optimizeQuality; fill-rule:evenodd; clip-rule:evenodd" viewBox="0 0 16 16"><g><path style="opacity:1" fill="#FFFFFF" d="M11.506 12.388q0.306 0.011 0.617 0.008v1.281h-0.89a2 2 0 0 1 -0.898 -0.215 1.24 1.24 0 0 1 -0.629 -0.761 2.5 2.5 0 0 1 -0.094 -0.554q-0.006 -1.082 -0.004 -2.163h-0.609q0.002 -0.398 -0.004 -0.796a616 616 0 0 0 -1.676 2.023 657 657 0 0 0 2.069 2.46q-0.935 0.012 -1.874 0.008L6.003 11.61q-0.006 1.035 -0.004 2.069H4.485q0.004 -2.983 -0.008 -5.966 -0.661 -0.21 -0.863 -0.875a2 2 0 0 1 -0.039 -0.258q-0.008 -2.108 0 -4.217 0.12 -0.356 0.48 -0.246 0.153 0.079 0.191 0.246l0.008 3.272q0.05 0.116 0.168 0.066 0.035 -0.027 0.051 -0.066l0.008 -3.264q0.095 -0.329 0.433 -0.269 0.191 0.059 0.238 0.254l0.008 3.272q0.065 0.14 0.195 0.055l0.023 -0.039 0.008 -3.264q0.086 -0.321 0.418 -0.285 0.197 0.057 0.254 0.254a352 352 0 0 1 0.016 3.295q0.062 0.109 0.176 0.051 0.029 -0.028 0.043 -0.066l0.008 -3.28q0.045 -0.17 0.207 -0.238 0.25 -0.074 0.41 0.129a0.5 0.5 0 0 1 0.047 0.109q0.014 1.063 0.012 2.128 0.002 1.088 -0.012 2.175 -0.137 0.844 -0.96 1.078a301 301 0 0 0 0 3.006q0.753 -1.005 1.503 -2.011 1.05 -0.006 2.101 -0.004 0.002 -0.519 -0.004 -1.039a1.82 1.82 0 0 1 -1.281 -1.101q-0.197 -0.504 -0.211 -1.046a4.7 4.7 0 0 1 0.383 -2.03q0.242 -0.547 0.668 -0.964 0.395 -0.364 0.929 -0.445 0.695 -0.056 1.218 0.398 0.476 0.438 0.73 1.035 0.513 1.212 0.32 2.514a2.26 2.26 0 0 1 -0.484 1.07 1.75 1.75 0 0 1 -0.754 0.5v1.109h0.992v1.265h-0.992q-0.002 1.042 0.004 2.085 0.05 0.323 0.379 0.32"/></g></svg>`;
+/**
+ * Brand-neutral default icon — a plain square using `currentColor` so it
+ * inherits `.initial-loader`'s themed text color out of the box. This core
+ * package intentionally ships no brand marks (core owns the platform, not
+ * the business) — every domain app is expected to call `setGlobalLoaderIcon()`
+ * once at boot with its own mark. Until an app does, this square renders.
+ */
+const DEFAULT_LOADER_ICON_MARKUP = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"><rect x="1" y="1" width="14" height="14" rx="2" fill="currentColor"/></svg>`;
 
-const KTIcon: React.FC = () => (
-    <span dangerouslySetInnerHTML={{ __html: loaderSvgMarkup }} />
+let loaderIconMarkup: string = DEFAULT_LOADER_ICON_MARKUP;
+
+/**
+ * Configure the icon rendered inside the spinner ring for both
+ * `GlobalSmallLoader` (React) and `GlobalLoaderHtmlMarkup` (raw HTML string).
+ *
+ * Call this once, as early as possible in an app's boot sequence — right
+ * alongside `initializeThemeEarly()` in `main.tsx`, before the first render —
+ * so the configured icon is in place before `GlobalSmallLoader` ever mounts
+ * (e.g. as a `React.Suspense` fallback).
+ *
+ * @param svgMarkup Raw SVG (or other inline HTML) markup string.
+ */
+export const setGlobalLoaderIcon = (svgMarkup: string): void => {
+    loaderIconMarkup = svgMarkup;
+};
+
+const LoaderIcon: React.FC = () => (
+    <span dangerouslySetInnerHTML={{ __html: loaderIconMarkup }} />
 );
 
 /**
  * Global small loader component
  */
-export const GlobalSmallLoader: React.FC<GlobalSmallLoaderProps> = ({ 
+export const GlobalSmallLoader: React.FC<GlobalSmallLoaderProps> = ({
     message,
     showMessage = false,
-}) => (
-    <div>
+}) => {
+    // Idempotent — safe to call on every render; only injects once.
+    injectCriticalStyles();
+
+    return (
         <div className="initial-loader">
             <div className="initial-loader-spinner">
+                <span className="initial-loader-icon">
+                    <LoaderIcon />
+                </span>
             </div>
-            <span className="initial-loader-icon">
-                <KTIcon />
-            </span>
+            {showMessage && message && <div className="initial-loader-text">{message}</div>}
         </div>
-        {showMessage && message && <div className="initial-loader-text">{message}</div>}
-    </div>
-);
+    );
+};
 
 /**
- * HTML markup for the loader (for use in index.html)
+ * HTML markup for the loader (for use in index.html, before React/JS boots).
+ * A function (not a static string) so it always reflects the icon most
+ * recently set via `setGlobalLoaderIcon()`.
  */
-export const GlobalLoaderHtmlMarkup = `<div class="initial-loader">
+export const GlobalLoaderHtmlMarkup = (message: string = ''): string => `<div class="initial-loader">
     <div class="initial-loader-spinner">
-        <span class="initial-loader-icon">
-        ${loaderSvgMarkup}
-        </span>
+        <span class="initial-loader-icon">${loaderIconMarkup}</span>
     </div>
-    <div class="initial-loader-text"></div>
+    ${message ? `<div class="initial-loader-text">${message}</div>` : ''}
 </div>`;
 
 /**
@@ -55,7 +82,7 @@ export const GlobalLoaderHtmlMarkup = `<div class="initial-loader">
 export const injectCriticalStyles = (): void => {
     if (typeof document === 'undefined') return;
     if (document.getElementById('critical-loading-styles')) return;
-    
+
     const style = document.createElement('style');
     style.id = 'critical-loading-styles';
     style.textContent = `
@@ -76,14 +103,22 @@ export const injectCriticalStyles = (): void => {
         .initial-loader-spinner {
             width: 40px;
             height: 40px;
-            border: 3px solid rgba(255,255,255,0.1);
-            border-top-color: var(--primary-color, #3f51b5);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
             position: relative;
             display: flex;
             justify-content: center;
             align-items: center;
+        }
+        /* The ring lives on a pseudo-element (not the container itself) so its
+           rotation never touches .initial-loader-icon — a real DOM child would
+           inherit a parent's animated transform and spin along with the ring. */
+        .initial-loader-spinner::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border: 3px solid var(--border-color, rgba(128,128,128,0.25));
+            border-top-color: var(--highlight-color, #49a000);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
         }
         .initial-loader-icon {
             position: absolute;

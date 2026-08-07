@@ -119,11 +119,11 @@ const LoginPage: React.FC = () => {
 	const banner = AuthPersistenceService.getTenantImages()?.banner?.original;
 
 	return (
-		<FullLayoutMarkup 
+        <FullLayoutMarkup 
 			logo={horizontal_logo} 
 			loginBackground={banner}
 		>
-			<>
+            <>
 				{!loggedIn ? (
 					<form
 						onSubmit={handleSubmit(onSubmit)}
@@ -154,22 +154,24 @@ const LoginPage: React.FC = () => {
 								placeholder='Contraseña'
 								{...register('password')}
 								className='dash-app-form-item-input'
-								InputProps={{
-									autoComplete: 'password',
-									type: showPassword ? 'text' : 'password',
-									endAdornment: (
-										<InputAdornment position='end'>
-											<IconButton
-												aria-label='toggle password visibility'
-												onClick={handleClickShowPassword}
-												onMouseDown={handleMouseDownPassword}
-												edge='end'
-											>
-												{showPassword ? <VisibilityOff /> : <Visibility />}
-											</IconButton>
-										</InputAdornment>
-									),
-								}}
+								slotProps={{
+                                    input: {
+                                        autoComplete: 'password',
+                                        type: showPassword ? 'text' : 'password',
+                                        endAdornment: (
+                                            <InputAdornment position='end'>
+                                                <IconButton
+                                                    aria-label='toggle password visibility'
+                                                    onClick={handleClickShowPassword}
+                                                    onMouseDown={handleMouseDownPassword}
+                                                    edge='end'
+                                                >
+                                                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                                                </IconButton>
+                                            </InputAdornment>
+                                        ),
+                                    }
+                                }}
 							/>
 							{errors.password && (
 								<span style={{ color: 'red' }}>
@@ -217,8 +219,8 @@ const LoginPage: React.FC = () => {
 					</>
 				)}
 			</>
-		</FullLayoutMarkup>
-	);
+        </FullLayoutMarkup>
+    );
 };
 
 export default LoginPage;

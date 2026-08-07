@@ -451,7 +451,7 @@ export const JsonEdit: React.FC<IDashAutoAdminCustomFieldComponent> = (props) =>
             <Typography variant="subtitle1" gutterBottom>
                 {attribute.label || 'Key-Value Pairs'}
             </Typography>
-            
+
             {/* Header Actions */}
             <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 3 }}>
                 <Button 
@@ -473,23 +473,25 @@ export const JsonEdit: React.FC<IDashAutoAdminCustomFieldComponent> = (props) =>
                         placeholder="Search by key or value..."
                         value={searchTerm}
                         onChange={handleSearchChange}
-                        InputProps={{
-                            startAdornment: (
-                                <InputAdornment position="start">
-                                    <SearchIcon />
-                                </InputAdornment>
-                            ),
-                            endAdornment: searchTerm && (
-                                <InputAdornment position="end">
-                                    <IconButton
-                                        size="small"
-                                        onClick={handleClearSearch}
-                                        edge="end"
-                                    >
-                                        <ClearIcon />
-                                    </IconButton>
-                                </InputAdornment>
-                            ),
+                        slotProps={{
+                            input: {
+                                startAdornment: (
+                                    <InputAdornment position="start">
+                                        <SearchIcon />
+                                    </InputAdornment>
+                                ),
+                                endAdornment: searchTerm && (
+                                    <InputAdornment position="end">
+                                        <IconButton
+                                            size="small"
+                                            onClick={handleClearSearch}
+                                            edge="end"
+                                        >
+                                            <ClearIcon />
+                                        </IconButton>
+                                    </InputAdornment>
+                                ),
+                            }
                         }}
                     />
                 </Box>
@@ -506,7 +508,7 @@ export const JsonEdit: React.FC<IDashAutoAdminCustomFieldComponent> = (props) =>
                     />
                 </Box>
             )}
-            
+
             {/* Values List */}
             <Box sx={{ mb: 2 }}>
                 {filteredPairs.map((pair) => (
@@ -519,7 +521,7 @@ export const JsonEdit: React.FC<IDashAutoAdminCustomFieldComponent> = (props) =>
                     />
                 ))}
             </Box>
-            
+
             {/* Show message when no results found */}
             {searchTerm && filteredPairs.length === 0 && (
                 <Box sx={{ textAlign: 'center', py: 4 }}>
@@ -652,7 +654,7 @@ export const JsonView: React.FC<IDashAutoAdminCustomFieldComponent> = (props) =>
             <Typography variant="subtitle1" gutterBottom>
                 {attribute.label || 'Key-Value Pairs'}
             </Typography>
-            
+
             {Object.keys(displayValue).length > 0 && (
                 <>
                     {/* Search Control for View Mode */}
@@ -663,23 +665,25 @@ export const JsonView: React.FC<IDashAutoAdminCustomFieldComponent> = (props) =>
                             placeholder="Search by key or value..."
                             value={searchTerm}
                             onChange={handleSearchChange}
-                            InputProps={{
-                                startAdornment: (
-                                    <InputAdornment position="start">
-                                        <SearchIcon />
-                                    </InputAdornment>
-                                ),
-                                endAdornment: searchTerm && (
-                                    <InputAdornment position="end">
-                                        <IconButton
-                                            size="small"
-                                            onClick={handleClearSearch}
-                                            edge="end"
-                                        >
-                                            <ClearIcon />
-                                        </IconButton>
-                                    </InputAdornment>
-                                ),
+                            slotProps={{
+                                input: {
+                                    startAdornment: (
+                                        <InputAdornment position="start">
+                                            <SearchIcon />
+                                        </InputAdornment>
+                                    ),
+                                    endAdornment: searchTerm && (
+                                        <InputAdornment position="end">
+                                            <IconButton
+                                                size="small"
+                                                onClick={handleClearSearch}
+                                                edge="end"
+                                            >
+                                                <ClearIcon />
+                                            </IconButton>
+                                        </InputAdornment>
+                                    ),
+                                }
                             }}
                         />
                     </Box>
@@ -810,7 +814,7 @@ export const JsonView: React.FC<IDashAutoAdminCustomFieldComponent> = (props) =>
                     )}
                 </>
             )}
-            
+
             {Object.keys(displayValue).length === 0 && (
                 <Box sx={{ textAlign: 'center', py: 4 }}>
                     <Typography variant="body2" color="textSecondary">

@@ -362,27 +362,29 @@ export const SearchableSelectCheckboxes: React.FC<ISearchableSelectCheckboxes> =
         onClick={() => setOpen(!open)}
         disabled={disabled}
         variant="outlined"
-        InputProps={{
-          readOnly: true,
-          endAdornment: (
-            <InputAdornment position="end">
-              <IconButton
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setOpen(!open);
-                }}
-                edge="end"
-                size="small"
-              >
-                {open ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-              </IconButton>
-            </InputAdornment>
-          ),
-        }}
         sx={{
           cursor: 'pointer',
           '& .MuiInputBase-input': {
             cursor: 'pointer',
+          }
+        }}
+        slotProps={{
+          input: {
+            readOnly: true,
+            endAdornment: (
+              <InputAdornment position="end">
+                <IconButton
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setOpen(!open);
+                  }}
+                  edge="end"
+                  size="small"
+                >
+                  {open ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                </IconButton>
+              </InputAdornment>
+            ),
           }
         }}
       />
@@ -435,23 +437,25 @@ export const SearchableSelectCheckboxes: React.FC<ISearchableSelectCheckboxes> =
                 placeholder="Buscar..."
                 value={searchInputValue}
                 onChange={handleSearchChange}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <SearchIcon fontSize="small" />
-                    </InputAdornment>
-                  ),
-                  endAdornment: searchInputValue && (
-                    <InputAdornment position="end">
-                      <IconButton
-                        size="small"
-                        onClick={handleClearSearch}
-                      >
-                        <ClearIcon fontSize="small" />
-                      </IconButton>
-                    </InputAdornment>
-                  ),
-        }}
+                slotProps={{
+                  input: {
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <SearchIcon fontSize="small" />
+                      </InputAdornment>
+                    ),
+                    endAdornment: searchInputValue && (
+                      <InputAdornment position="end">
+                        <IconButton
+                          size="small"
+                          onClick={handleClearSearch}
+                        >
+                          <ClearIcon fontSize="small" />
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+          }
+                }}
               />
             </Box>
 
@@ -469,7 +473,9 @@ export const SearchableSelectCheckboxes: React.FC<ISearchableSelectCheckboxes> =
                     </ListItemIcon>
                     <ListItemText 
                       primary={
-                        <Typography variant="body2" fontWeight="bold">
+                        <Typography variant="body2" sx={{
+                          fontWeight: "bold"
+                        }}>
                           {allVisibleSelected ? "Deseleccionar todo" : "Seleccionar todo"}
                           {q && ` (${parsedOptions.length} resultados)`}
                         </Typography>
@@ -503,7 +509,12 @@ export const SearchableSelectCheckboxes: React.FC<ISearchableSelectCheckboxes> =
                   <ListItem>
                     <ListItemText 
                       primary={
-                        <Typography variant="body2" color="text.secondary" textAlign="center">
+                        <Typography
+                          variant="body2"
+                          sx={{
+                            color: "text.secondary",
+                            textAlign: "center"
+                          }}>
                           {q ? "No se encontraron resultados" : "No hay opciones disponibles"}
                         </Typography>
                       }
@@ -589,7 +600,9 @@ export const SearchableSelectCheckboxes: React.FC<ISearchableSelectCheckboxes> =
                   backgroundColor: '#f5f5f5' 
                 }}
               >
-                <Typography variant="caption" color="text.secondary">
+                <Typography variant="caption" sx={{
+                  color: "text.secondary"
+                }}>
                   {selectedOptions.length} elemento{selectedOptions.length !== 1 ? 's' : ''} seleccionado{selectedOptions.length !== 1 ? 's' : ''}
                 </Typography>
               </Box>

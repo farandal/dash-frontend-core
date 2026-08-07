@@ -80,7 +80,7 @@ const _checkError = (errorData: any): IDashGlobalError => {
     }
     
     // Handle legacy error format
-    let e: IDashGlobalError = { ...errorData?.error ? errorData.error : {} };
+    let e: IDashGlobalError = { ...(errorData?.error ? errorData.error : {}) };
     
     let _extra = "";
     if (e.status >= 400 && e.status < 499) {

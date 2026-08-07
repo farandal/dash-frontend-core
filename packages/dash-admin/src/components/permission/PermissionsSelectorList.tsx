@@ -305,7 +305,7 @@ const PermissionsSelectorListBase: React.FC<IDashAutoAdminCustomFieldComponent &
 
     return (
         <Box sx={{ p: 2 }}>
-         
+
             {/* Global Toolbar */}
             <Paper elevation={1} sx={{ mb: 3, p: 2 }}>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
@@ -418,7 +418,12 @@ const PermissionsSelectorListBase: React.FC<IDashAutoAdminCustomFieldComponent &
                         ) : (
                             <TableRow>
                                 <TableCell colSpan={4} align="center">
-                                    <Typography variant="body2" color="text.secondary" sx={{ py: 3 }}>
+                                    <Typography
+                                        variant="body2"
+                                        sx={{
+                                            color: "text.secondary",
+                                            py: 3
+                                        }}>
                                         No permissions found
                                     </Typography>
                                 </TableCell>

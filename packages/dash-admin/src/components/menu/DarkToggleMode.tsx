@@ -38,7 +38,7 @@ const DarkToggleMode = () => {
   
   return (
     <>
-     <div  onClick={onClick}>
+     <div className='dash-theme-mode-switcher' onClick={onClick}>
    
      <DashThemeHelperProvider>
       <Avatar 

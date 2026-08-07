@@ -580,6 +580,70 @@ const dashSpanish = {
 		has_modifiers: 'Personalizable',
 		no_more_products: 'No hay más productos',
 	},
+	// JSON Color Selector - extracción de tema desde imagen
+	colorSelector: {
+		imageExtractor: {
+			title_ai: 'Generador de Tema con IA',
+			title_local: 'Tema desde Imagen',
+			upload_prompt: 'Sube una Imagen para Extraer Colores',
+			upload_hint: 'Selecciona un archivo de imagen y extraeremos automáticamente una paleta de colores',
+			upload_button: 'Elegir Imagen',
+			drop_hint: 'o arrástrala aquí',
+			invalid_file_type: 'Por favor selecciona un archivo de imagen válido',
+			file_too_large: 'El archivo debe pesar menos de %{limit}MB',
+			extracting: 'Extrayendo colores de la imagen...',
+			extracted_colors: 'Colores Extraídos (%{count} colores encontrados)',
+			dominant_label: 'Dominante',
+			uploaded_image_alt: 'Imagen subida',
+			no_palette_error: 'Primero extrae los colores de una imagen',
+			theme_generation_failed: 'No se pudo generar el tema',
+			theme_description_label: 'Descripción del Tema (Opcional)',
+			theme_description_placeholder:
+				"Opcional: Describe el estilo de tema que deseas (ej: 'moderno y minimalista', 'cálido y acogedor', 'corporativo profesional')",
+			apply_colors_button: 'Aplicar Colores',
+			generate_button: 'Generar Tema con IA',
+			generating_button: 'Generando...',
+			apply_colors_help_label: 'Aplicar Colores:',
+			apply_colors_help_desc:
+				'Aplica la paleta extraída a los colores base de tu tema localmente — sin usar IA',
+			generate_help_label: 'Generar Tema con IA:',
+			generate_help_desc:
+				'Usa IA para crear un esquema de color completo basado en los colores extraídos y tu descripción',
+		},
+	},
+	// Profile page
+	profile: {
+		title: 'Perfil',
+		subtitle: 'Configuración de perfil',
+		info: {
+			title: 'Info',
+			name: 'Nombre',
+			lastname: 'Apellido',
+			email: 'Email',
+			save: 'Guardar',
+			saving: 'Guardando...',
+		},
+		password: {
+			title: 'Contraseñas',
+			current: 'Contraseña actual',
+			new: 'Nueva contraseña',
+			confirm: 'Repita nueva contraseña',
+			save: 'Guardar Contraseñas',
+			saving: 'Guardando Contraseñas...',
+		},
+		preferences: {
+			title: 'Preferencias',
+		},
+		validation: {
+			required: 'El campo es requerido',
+			password_mismatch: 'Las contraseñas no coinciden',
+		},
+		notify: {
+			success: 'Usuario actualizado correctamente',
+			error: 'Error al actualizar el usuario',
+			error_with_message: 'Error al actualizar el usuario, %{message}',
+		},
+	},
 };
 
 export default {

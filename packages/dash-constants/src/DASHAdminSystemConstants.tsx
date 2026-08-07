@@ -182,4 +182,5 @@ export interface IDASHAdminSystemConstants {
   replacements: typeof replacements;
 }
 
+console.log('DASHAdminSystemConstants', DASHAdminSystemConstants);
 export default DASHAdminSystemConstants;

@@ -68,7 +68,9 @@ const DefaultServerError: React.FC<DefaultServerErrorProps> = ({
                     {title}
                 </Typography>
                 
-                <Typography variant="body1" color="textSecondary" paragraph>
+                <Typography variant="body1" color="textSecondary" sx={{
+                    marginBottom: "16px"
+                }}>
                     {message}
                 </Typography>
 

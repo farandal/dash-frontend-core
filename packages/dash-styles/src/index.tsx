@@ -67,7 +67,12 @@ export const defaultOptions = (options) => {
                 //..._color('main', 'primary-color', mode),
                 //..._color('main', 'highlight-color', mode),
                 ..._color('main', 'btn-bg', mode),
-                ..._color('contrastText', 'primary-contrast', mode)
+                // No explicit contrastText: MUI's palette augmentation derives it via
+                // getContrastText(main) when omitted, guaranteeing legible button text
+                // regardless of what --primary-contrast happens to be set to (it's also
+                // used standalone as a gradient stop elsewhere, so was never guaranteed
+                // to be a valid contrast color — see vanexa-system, 2026-08-03).
+                //..._color('contrastText', 'primary-contrast', mode)
             },
             secondary: {
                 ..._color('main', 'secondary-color', mode)
@@ -112,7 +117,7 @@ export const defaultOptions = (options) => {
         };
 
         // Filter out empty objects and undefined values
-        return Object.fromEntries(
+        const filtered = Object.fromEntries(
             Object.entries(palette).filter(([_, value]) => {
                 if (typeof value === 'object' && value !== null) {
                     return Object.keys(value).length > 0;
@@ -120,6 +125,8 @@ export const defaultOptions = (options) => {
                 return value !== undefined;
             })
         );
+
+        return filtered;
     };
 
     return {
@@ -280,21 +287,21 @@ export const defaultOptions = (options) => {
                         backgroundColor: 'var(--btn-bg)',
                         color: 'var(--btn-color)',
 
-                        '&.MuiButton-containedPrimary': {
+                        "&.MuiButton-contained.MuiButton-colorPrimary": {
                             backgroundColor: 'var(--btn-primary-bg)',
                             color: 'var(--btn-primary-color)',
                             '&:hover': {
                                 backgroundColor: 'var(--highlight-color)',
                             },
                         },
-                        '&.MuiButton-containedSecondary': {
+                        "&.MuiButton-contained.MuiButton-colorSecondary": {
                             backgroundColor: 'var(--btn-secondary-bg)',
                             color: 'var(--btn-secondary-color)',
                             '&:hover': {
                                 backgroundColor: 'var(--btn-secondary-color)',
                             },
                         },
-                        '&.MuiButton-outlinedPrimary': {
+                        "&.MuiButton-outlined.MuiButton-colorPrimary": {
                             backgroundColor: 'inherit',
                             borderColor: 'var(--btn-primary-bg)',
                             color: 'var(--text-color)',
@@ -303,7 +310,7 @@ export const defaultOptions = (options) => {
                                 color: 'var(--highlight-color-contrast)',
                             },
                         },
-                        '&.MuiButton-outlinedSecondary': {
+                        "&.MuiButton-outlined.MuiButton-colorSecondary": {
                             backgroundColor: 'inherit',
                             borderColor: 'var(--btn-primary-bg)',
                             color: 'var(--text-color)',
@@ -312,7 +319,7 @@ export const defaultOptions = (options) => {
                                 color: 'var(--highlight-color-contrast)',
                             },
                         },
-                        '&.MuiButton-textPrimary': {
+                        "&.MuiButton-text.MuiButton-colorPrimary": {
                             color: 'var(--link-color)',
                             background: 'none',
                             '&:hover': {
@@ -321,7 +328,7 @@ export const defaultOptions = (options) => {
                                 background: 'none',
                             },
                         },
-                        '&.MuiButton-textSecondary': {
+                        "&.MuiButton-text.MuiButton-colorSecondary": {
                             color: 'var(--text-light)',
                             background: 'none',
                             '&:hover': {
@@ -446,7 +453,7 @@ export const defaultOptions = (options) => {
             MuiAlert: {
                 styleOverrides: {
                     root: {
-                        '&.MuiAlert-standardInfo': {
+                        "&.MuiAlert-standard.MuiAlert-colorInfo": {
                             backgroundColor: 'var(--module-bg)',
                             color: 'var(--text-color)',
                             '& .MuiAlert-icon': {
@@ -456,15 +463,15 @@ export const defaultOptions = (options) => {
                                 color: 'var(--text-color)',
                             },
                         },
-                        '&.MuiAlert-standardError': {
+                        "&.MuiAlert-standard.MuiAlert-colorError": {
                             backgroundColor: 'var(--dash-alert-error-bg)',
                             color: 'var(--dash-alert-error-title)',
                         },
-                        '&.MuiAlert-standardWarning': {
+                        "&.MuiAlert-standard.MuiAlert-colorWarning": {
                             backgroundColor: 'var(--dash-alert-warning-bg)',
                             color: 'var(--dash-alert-warning-title)',
                         },
-                        '&.MuiAlert-standardSuccess': {
+                        "&.MuiAlert-standard.MuiAlert-colorSuccess": {
                             backgroundColor: 'var(--dash-alert-success-bg)',
                             color: 'var(--dash-alert-success-title)',
                         },
@@ -517,6 +524,16 @@ export const defaultOptions = (options) => {
                },
              },
              */
+
+             MuiPaper: {
+               styleOverrides: {
+                 root: {   
+                   backgroundColor: 'var(--module-bg)', // Use the correct variable name
+                   color: 'var(--text-color)',
+                 },
+               },
+             },
+
             MuiAppBar: {
                 styleOverrides: {
                     root: {
@@ -891,9 +908,28 @@ export const appTheme = (muiThemeOptions?: any, options?: {
 }) => {
     const { tenantSettings, colors, ...otherOptions } = options || {};
 
+    // cssVariables/colorSchemes/defaultColorScheme are deliberately dropped here.
+    // MUI's CSS-vars mode resolves colors via CSS custom properties scoped by
+    // `colorSchemeSelector` (`data-theme` here), which emits a `:root` rule
+    // (default scheme) alongside a `[data-theme="dark"]` rule — both at equal
+    // (0,1,0) specificity. When the `:root` rule lands later in the generated
+    // stylesheet it wins the tie even with data-theme="dark" set on <html>,
+    // silently falling back to MUI's own default (near-white) palette instead
+    // of ours — this was the root cause of the production-only white
+    // MuiPaper/"Panel de Control" card bug (confirmed via DevTools: the
+    // correct `var(--dash-palette-background-paper)` declaration was present
+    // but struck through/overridden). We already rebuild the whole theme via
+    // appTheme() on every mode/tenant-color change (see
+    // DashThemeContext.recreateTheme's MutationObserver on data-theme), so
+    // CSS-vars-driven runtime switching buys nothing and only adds this
+    // failure mode. DASHAdmin.tsx already strips these same 3 keys before
+    // handing the theme to react-admin (for a related v9 createThemeWithVars
+    // bug) — this makes the outer DashThemeProvider's own theme consistent
+    // with that, instead of only the inner (react-admin) one.
+    const { colorSchemes: _colorSchemes, defaultColorScheme: _defaultColorScheme, cssVariables: _cssVariables, ...restDefaultOptions } = defaultOptions(options);
+
     const baseTheme = {
-        cssVariables: true,
-        ...defaultOptions(options),
+        ...restDefaultOptions,
     };
 
     const theme = muiThemeOptions
@@ -907,7 +943,7 @@ export const getAntTheme = (options?: {
   tenantSettings?: any;
   colors?: any;
   [key: string]: any;
-}) => {
+}): Record<string, any> => {
   const { colors } = options || {};
   const currentTheme =
     document.documentElement.getAttribute('data-theme') || 'dark';

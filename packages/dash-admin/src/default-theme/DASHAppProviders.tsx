@@ -74,7 +74,7 @@ const DomainAppProviders = <U, A, R>({
     queryPersister,
     CustomEchoProvider
 }: IDomainAppProviders<U, A, R>): React.JSX.Element => {
-   
+
     const content = (
        <I18nBridgeProvider>
        <DashThemeProvider extendedOptions={extendedThemeOptions}>

@@ -527,27 +527,30 @@ export const SearchableSelectChips: React.FC<ISearchableSelectChips> = ({
           }}
           // FIXED: Use modern slotProps instead of deprecated InputProps
           slotProps={{
+            ...params.slotProps,
+
             input: {
-              ...params.InputProps,
+              ...params.slotProps.input,
               autoComplete: "new-password",
               endAdornment: (
                 <>
                   {isResourceSearchLoading && (
                     <CircularProgress color="inherit" size={20} />
                   )}
-                  {params.InputProps.endAdornment}
+                  {params.slotProps.input.endAdornment}
                 </>
               ),
-            },
+            }
           }}
         />
       )}
-      // 🔥 NEW: Add custom props for better mixed results UX
-      ListboxProps={{
-        sx: {
-          maxHeight: 400,
-          '& .MuiAutocomplete-option': {
-            position: 'relative',
+      slotProps={{
+        listbox: {
+          sx: {
+            maxHeight: 400,
+            '& .MuiAutocomplete-option': {
+              position: 'relative',
+            }
           }
         }
       }}

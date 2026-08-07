@@ -13,11 +13,8 @@ export const isWebView = (): boolean => {
 
     const userAgent = navigator.userAgent.toLowerCase();
     console.log('userAgent', userAgent);
-    return (
-        /(webview|wv)/.test(userAgent) ||
-        /android.*(wv|.net)/.test(userAgent) ||
-        /iphone|ipod|ipad.*applewebkit(?!.*safari)/i.test(userAgent)
-    );
+    return (/(webview|wv)/.test(userAgent) ||
+    /android.*(wv|.net)/.test(userAgent) || /iphone|ipod|ipad.*applewebkit(?!.*safari)/i.test(userAgent));
 };
 
 /**

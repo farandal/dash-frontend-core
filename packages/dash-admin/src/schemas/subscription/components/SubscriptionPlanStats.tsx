@@ -67,7 +67,12 @@ const StatsView: React.FC<IDashAutoAdminCustomFieldComponent> = ({ method, attri
 
     if (loading) {
         return (
-            <Box display="flex" justifyContent="center" p={4}>
+            <Box
+                sx={{
+                    display: "flex",
+                    justifyContent: "center",
+                    p: 4
+                }}>
                 <CircularProgress />
             </Box>
         );
@@ -86,13 +91,18 @@ const StatsView: React.FC<IDashAutoAdminCustomFieldComponent> = ({ method, attri
             <Typography variant="h6" gutterBottom>
                 Estadísticas del Plan
             </Typography>
-            
+
             <Grid container spacing={2}>
                 {/* @ts-ignore - Grid API compatibility issue */}
                 <Grid component="div" item size={{ xs: 12, sm: 6, md: 3 }}>
                     <Card>
                         <CardContent>
-                            <Box display="flex" alignItems="center" mb={1}>
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    mb: 1
+                                }}>
                                 <PeopleIcon color="primary" sx={{ mr: 1 }} />
                                 <Typography variant="h6" color="primary">
                                     {stats.total_subscriptions}
@@ -109,9 +119,16 @@ const StatsView: React.FC<IDashAutoAdminCustomFieldComponent> = ({ method, attri
                 <Grid component="div" item size={{ xs: 12, sm: 6, md: 3 }}>
                     <Card>
                         <CardContent>
-                            <Box display="flex" alignItems="center" mb={1}>
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    mb: 1
+                                }}>
                                 <TrendingUpIcon color="success" sx={{ mr: 1 }} />
-                                <Typography variant="h6" color="success.main">
+                                <Typography variant="h6" sx={{
+                                    color: "success.main"
+                                }}>
                                     {stats.active_subscriptions}
                                 </Typography>
                             </Box>
@@ -126,9 +143,16 @@ const StatsView: React.FC<IDashAutoAdminCustomFieldComponent> = ({ method, attri
                 <Grid component="div" item size={{ xs: 12, sm: 6, md: 3 }}>
                     <Card>
                         <CardContent>
-                            <Box display="flex" alignItems="center" mb={1}>
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    mb: 1
+                                }}>
                                 <TimelineIcon color="info" sx={{ mr: 1 }} />
-                                <Typography variant="h6" color="info.main">
+                                <Typography variant="h6" sx={{
+                                    color: "info.main"
+                                }}>
                                     {stats.trial_subscriptions}
                                 </Typography>
                             </Box>
@@ -143,8 +167,15 @@ const StatsView: React.FC<IDashAutoAdminCustomFieldComponent> = ({ method, attri
                 <Grid component="div" item size={{ xs: 12, sm: 6, md: 3 }}>
                     <Card>
                         <CardContent>
-                            <Box display="flex" alignItems="center" mb={1}>
-                                <Typography variant="h6" color="error.main">
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    mb: 1
+                                }}>
+                                <Typography variant="h6" sx={{
+                                    color: "error.main"
+                                }}>
                                     {stats.cancelled_subscriptions}
                                 </Typography>
                             </Box>
@@ -159,9 +190,16 @@ const StatsView: React.FC<IDashAutoAdminCustomFieldComponent> = ({ method, attri
                 <Grid component="div" item size={{ xs: 12, sm: 6 }}>
                     <Card>
                         <CardContent>
-                            <Box display="flex" alignItems="center" mb={1}>
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    mb: 1
+                                }}>
                                 <MoneyIcon color="success" sx={{ mr: 1 }} />
-                                <Typography variant="h6" color="success.main">
+                                <Typography variant="h6" sx={{
+                                    color: "success.main"
+                                }}>
                                     {formatCurrency(stats.total_revenue)}
                                 </Typography>
                             </Box>
@@ -176,7 +214,12 @@ const StatsView: React.FC<IDashAutoAdminCustomFieldComponent> = ({ method, attri
                 <Grid component="div" item size={{ xs: 12, sm: 6 }}>
                     <Card>
                         <CardContent>
-                            <Box display="flex" alignItems="center" mb={1}>
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    mb: 1
+                                }}>
                                 <MoneyIcon color="primary" sx={{ mr: 1 }} />
                                 <Typography variant="h6" color="primary">
                                     {formatCurrency(stats.monthly_revenue)}
@@ -193,7 +236,12 @@ const StatsView: React.FC<IDashAutoAdminCustomFieldComponent> = ({ method, attri
                 <Grid component="div" item size={12}>
                     <Card>
                         <CardContent>
-                            <Box display="flex" alignItems="center" justifyContent="space-between">
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "space-between"
+                                }}>
                                 <Box>
                                     <Typography variant="h6">
                                         Tasa de Conversión
@@ -213,7 +261,9 @@ const StatsView: React.FC<IDashAutoAdminCustomFieldComponent> = ({ method, attri
                 </Grid>
             </Grid>
 
-            <Box mt={3}>
+            <Box sx={{
+                mt: 3
+            }}>
                 <Typography variant="h6" gutterBottom>
                     Información Adicional
                 </Typography>

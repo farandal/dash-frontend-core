@@ -111,8 +111,7 @@ const BridgedLocalesMenuButton: React.FC<BridgedLocalesMenuButtonProps> = ({
                 <Tooltip title={`Language: ${currentLocaleName}`}>
                     <IconButton
                         onClick={handleClick}
-                        color="inherit"
-                        size="small"
+                        className="dash-icon-button-color dash-icon-button-bg"
                         aria-label="change language"
                         aria-controls={open ? 'locale-menu' : undefined}
                         aria-haspopup="true"
@@ -138,8 +137,10 @@ const BridgedLocalesMenuButton: React.FC<BridgedLocalesMenuButtonProps> = ({
                 anchorEl={anchorEl}
                 open={open}
                 onClose={handleClose}
-                MenuListProps={{
-                    'aria-labelledby': 'locale-button',
+                slotProps={{
+                    list: {
+                        'aria-labelledby': 'locale-button',
+                    }
                 }}
             >
                 {locales.map((localeOption) => (

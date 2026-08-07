@@ -48,8 +48,13 @@ const EditComponent: React.FC<IDashAutoAdminCustomFieldComponent> = ({ method, a
             <Typography variant="h6" gutterBottom>
                 Características del Plan
             </Typography>
-            
-            <Box display="flex" gap={1} mb={2}>
+
+            <Box
+                sx={{
+                    display: "flex",
+                    gap: 1,
+                    mb: 2
+                }}>
                 <TextField
                     fullWidth
                     size="small"
@@ -95,7 +100,9 @@ const EditComponent: React.FC<IDashAutoAdminCustomFieldComponent> = ({ method, a
                 </Typography>
             )}
 
-            <Box mt={2}>
+            <Box sx={{
+                mt: 2
+            }}>
                 <Typography variant="body2" color="textSecondary">
                     Las características se mostrarán a los usuarios al seleccionar este plan de suscripción.
                 </Typography>
