@@ -238,91 +238,54 @@ pnpm build:web:dash-system:production     # app build against dist  → must pas
 
 ---
 
-## 8. Publishing & re-publishing to Verdaccio (versioning)
+## 8. Publishing to npm (`@dashadmin` scope, versioning)
 
-Local HMR (Workflows A/B) **never** needs publishing. But **consumer repos** — e.g.
-`dash-frontend-refactored` — install these packages from the Verdaccio registry
-(`http://localhost:4873`). So whenever you change a package that a consumer uses, you must
-**rebuild → bump → re-publish** it.
+Local HMR (Workflows A/B) **never** needs publishing — neither does developing against a
+consumer repo like `kitchntabs-frontend`, as long as it runs with `LINK_DASH_CORE=true`
+(aliases straight to this repo's `src/`, see `DEVELOPMENT.md` §2). Publishing is only
+needed to update what a consumer's **production build** installs — that always comes from
+the real npm registry under the `@dashadmin` scope.
 
-### Why you must bump the version every time
+> A local Verdaccio registry (`localhost:4873`) previously filled this role for
+> local/QA installs. It's deprecated — removed in favor of `LINK_DASH_CORE` for local
+> dev, since that needs no publish step at all.
 
-Verdaccio (like npm) is **immutable per version**. Re-publishing the same version fails:
+### Publish everything with one command
 
-```
-npm error 409 Conflict - this package is already present
-```
-
-Earlier runs may also have left **higher "phantom" versions** in the registry, so bump
-*past the highest existing version*, not just `current + 1`:
-
-```bash
-# see what versions already exist
-curl -s http://localhost:4873/dash-utils | python3 -c "import sys,json;print(list(json.load(sys.stdin)['versions']))"
-```
-
-### Build → bump → publish
+`scripts/publish-npm.mjs` builds every package, renames each to `@dashadmin/<name>`,
+rewrites internal `dash-*` cross-deps to `@dashadmin/dash-*`, and publishes all of them
+under **one synchronized version** — no manual per-package version bumping or "highest
+existing version" bookkeeping:
 
 ```bash
-# 1) rebuild the changed package(s) — dist must be current
-pnpm turbo build --filter=dash-utils
+# auto-bumps the current patch version (see root package.json) and publishes everything
+NPM_TOKEN=*** node scripts/publish-npm.mjs
 
-# 2) bump "version" in packages/dash-utils/package.json (past the registry max)
+# or pin an explicit version
+NPM_TOKEN=*** node scripts/publish-npm.mjs --version 1.3.48
 
-# 3) publish with PNPM (not npm) to Verdaccio
-cd packages/dash-utils && pnpm publish --registry http://localhost:4873 --no-git-checks --access public
+# dry run first — prints what would publish, uploads nothing
+NPM_TOKEN=*** node scripts/publish-npm.mjs --version 1.3.48 --dry-run
 ```
 
-> Use **`pnpm publish`**, never `npm publish`. A package whose `package.json` has
-> `"dash-admin-state": "workspace:*"` would publish that literal string with `npm`
-> (broken for registry consumers). `pnpm publish` rewrites each `workspace:*` to the
-> sibling's **current** version at publish time.
+Because every package publishes together at the same version, there's no cross-package
+coherence problem to manage by hand (the old per-package Verdaccio flow needed you to
+remember to bump dependents together — this doesn't).
 
-To publish several at once (build runs first via the task graph):
-
-```bash
-pnpm build:packages
-pnpm -r --filter './packages/**' publish --registry http://localhost:4873 --no-git-checks --access public
-```
-
-### Cross-package coherence — bump dependents too
-
-Because `pnpm publish` stamps `workspace:*` deps with the sibling's *current* version, if
-you bump `dash-utils` but a dependent (`dash-admin`) still references the old one, a
-consumer can end up with **two copies** of `dash-utils` (and CJS/ESM "no known
-conditions" / "does not provide an export" errors). When in doubt, **bump and re-publish
-all changed packages together**, and pin them on the consumer side (below).
-
-### Mirror vs single packages
-
-- **Mirror** packages (`bundle:false`, dir mirrors `src/`, ESM-only, string `exports`,
-  `dts:false`) — most `dash-*`. Re-run `node scripts/mirror-packages.mjs` if you changed
-  their structure, then build + publish.
-- **Single-bundled** packages (`dash-auth`, `dash-boilerplate`, `dash-styles`,
-  `dash-modal`, `dash-icons`, `dash-info`, `dash-interfaces`) — one bundled entry,
-  `"type": "module"` so `dist/index.js` is **ESM**. If a consumer hits *"does not provide
-  an export named X"* from one of these, its registry copy is a **stale CJS build** from
-  before the ESM config — rebuild and re-publish it.
+🔒 **Token hygiene.** `NPM_TOKEN` lives only in the env var and a temp `.npmrc` deleted on
+exit — never commit it. Rotate immediately any token pasted into chat, logs, or shell
+history.
 
 ### Updating a consumer to the new version
 
-pnpm pins resolutions and **caches the registry `latest` tag**, so on the consumer side:
-
 ```bash
-# 1) point at the new version — PIN it (and/or use pnpm.overrides) in package.json:
-#      "dependencies": { "dash-utils": "0.0.3" }
-#      "pnpm": { "overrides": { "dash-utils": "0.0.3" } }   // forces ONE version tree-wide
-# 2) bust pnpm's stale metadata cache + lockfile:
-rm -rf ~/Library/Caches/pnpm/metadata
-rm -f pnpm-lock.yaml
-pnpm install
-# 3) clear Vite's optimize cache so it re-bundles the new code:
-rm -rf apps/*/node_modules/.vite
+cd ../kitchntabs-frontend
+pnpm install          # pulls the new @dashadmin/* version
 ```
 
-> **Pin exact versions**, don't rely on `"latest"` — pnpm's cached `latest` tag resolves
-> stale copies. `pnpm.overrides` in the consumer root is the single source of truth that
-> forces one coherent version of each `dash-*` package across the whole dependency tree.
+If a package's own `pnpm-workspace.yaml` supply-chain policy has a `minimumReleaseAge`
+gate, a version published seconds ago may be rejected until it "ages" — check for a
+`minimumReleaseAgeExclude` list that needs the new version added, or wait out the cutoff.
 
 ---
 
@@ -375,9 +338,9 @@ the consumer root.
 - [`scripts/mirror-packages.mjs`](../scripts/mirror-packages.mjs) — generates each
   package's `exports`, `typesVersions`, `tsup.config.ts`. Re-run after adding new
   index-bearing folders; idempotent.
-- **Publishing** (§8): `pnpm turbo build --filter=<pkg>` → bump `version` → `pnpm publish
-  --registry http://localhost:4873`. Consumers pin the new version + clear pnpm metadata
-  cache + reinstall.
+- **Publishing** (§8): `NPM_TOKEN=*** node scripts/publish-npm.mjs` builds and publishes
+  every package to npm (`@dashadmin/*`) at one synchronized version. Consumers just
+  `pnpm install`.
 - [`turbo.json`](../turbo.json) — `build` task (others depend on it).
 - [`apps/dash-system/vite.config.mts`](../apps/dash-system/vite.config.mts) — app dev
   server, aliases, optimizeDeps.

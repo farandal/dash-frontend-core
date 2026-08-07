@@ -74,13 +74,14 @@ produces `does not provide an export named X` in an ESM consumer.
 
 ---
 
-## 2. Stage 2 — publishing to the registry (Verdaccio)
+## 2. Stage 2 — publishing to the registry (npm, `@dashadmin` scope)
 
-`pnpm publish` uploads `dist/` (+ `src/` for type resolution, see §3) to Verdaccio.
-Crucially, `pnpm` rewrites `workspace:*` deps to real versions at publish time, so the
-published `package.json` is registry-installable. Versioning rules and the
-bump→build→publish loop are documented in
-[LOCAL_PACKAGE_DEVELOPMENT.md §8](./LOCAL_PACKAGE_DEVELOPMENT.md#8-publishing--re-publishing-to-verdaccio-versioning).
+`node scripts/publish-npm.mjs` builds every package, rewrites `workspace:*` deps to the
+scoped `@dashadmin/dash-*` name at the shared publish version, and uploads `dist/` (+
+`src/` for type resolution, see §3) to the real npm registry — the only publish target;
+a local Verdaccio registry filled this role previously and is now deprecated. Versioning
+rules and the publish flow are documented in
+[LOCAL_PACKAGE_DEVELOPMENT.md §8](./LOCAL_PACKAGE_DEVELOPMENT.md#8-publishing-to-npm-dashadmin-scope-versioning).
 
 ---
 

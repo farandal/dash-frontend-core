@@ -10,11 +10,19 @@ workflow:
 | Consumer | How it consumes `dash-*` | Registry |
 | --- | --- | --- |
 | **`dash-frontend-core` apps** (`apps/dash-app`, `dash-web`, `dash-system`) | Directly from **workspace source** (`src/`) — instant HMR | none (workspace) |
-| **`kitchntabs-frontend-refactored`** | From **published packages** | Verdaccio (local, unscoped `dash-*`) or npm (`@dashadmin/*`) |
+| **`kitchntabs-frontend` — local dev** | Directly from **sibling-repo source**, opt-in via `LINK_DASH_CORE=true` (see `vite-plugins/dashCoreSrcAliases.mts`) — instant HMR, no publish needed | none (source alias) |
+| **`kitchntabs-frontend` — production build** | From **published packages** | npm (`@dashadmin/*`) only |
 
-> **Golden rule:** inside this repo you edit *source*. Consumers outside this repo get
-> *published artifacts*. A source change is only visible to `kitchntabs` **after you
-> republish**.
+> **Golden rule:** inside this repo you edit *source*. `LINK_DASH_CORE=true` lets
+> `kitchntabs-frontend`'s **dev** server see that source live, same as this repo's own
+> apps. Its **production** build never aliases source — it always installs whatever was
+> last published to npm. A source change only reaches a production build **after you
+> republish and re-install**.
+>
+> Verdaccio (a local unscoped registry) was used here previously and is now
+> **deprecated** — removed in favor of `LINK_DASH_CORE` for local dev and the real npm
+> registry for everything published. If you see `localhost:4873` or `pnpm publish:local`
+> referenced anywhere, it's stale.
 
 ---
 
@@ -48,19 +56,17 @@ flowchart TB
         apps -. "workspace:* + devSrcAliases (HMR)" .-> pkgs
     end
 
-    subgraph registries["Publish targets"]
-        verd["Verdaccio<br/>localhost:4873<br/>(unscoped dash-*)"]
+    subgraph registry["Publish target"]
         npm["npm registry<br/>(@dashadmin/*)"]
     end
 
-    subgraph kt["kitchntabs-frontend-refactored"]
+    subgraph kt["kitchntabs-frontend"]
         ktapps["apps/*"]
     end
 
-    pkgs -- "pnpm publish:local" --> verd
     pkgs -- "node scripts/publish-npm.mjs" --> npm
-    verd --> ktapps
-    npm --> ktapps
+    npm -- "pnpm install<br/>(production build)" --> ktapps
+    pkgs -. "LINK_DASH_CORE=true<br/>(dev only, no publish)" .-> ktapps
 ```
 
 ### Internal dependency layers
@@ -132,7 +138,9 @@ pnpm dev:web:dash-app:development       # dash-app app
 ### When do I need to build?
 
 You only build packages when producing **published artifacts** (`dist/`) — i.e. right
-before publishing to Verdaccio or npm. Day-to-day source editing never needs it.
+before publishing to npm. Day-to-day source editing never needs it, including when
+developing against `kitchntabs-frontend` with `LINK_DASH_CORE=true` — that mode aliases
+straight to `src/`, same as this repo's own apps.
 
 ```bash
 pnpm build:packages            # build every packages/* (dist/)
@@ -153,18 +161,18 @@ pnpm --filter dash-admin run build   # build a single package
 flowchart TD
     edit["Edit packages/*/src/**"] --> q1{Consumer?}
     q1 -- "dash-frontend-core app" --> hmr["Nothing to do —<br/>HMR picks it up"]
-    q1 -- "kitchntabs-frontend-refactored" --> bump["Bump version"]
+    q1 -- "kitchntabs-frontend dev<br/>(LINK_DASH_CORE=true)" --> hmr2["Nothing to do —<br/>HMR picks it up"]
+    q1 -- "kitchntabs-frontend<br/>production build" --> bump["Bump version"]
     bump --> build["pnpm build:packages"]
-    build --> q2{Which registry?}
-    q2 -- "Local QA" --> verd["pnpm publish:local<br/>(Verdaccio, unscoped)"]
-    q2 -- "Release" --> npmpub["node scripts/publish-npm.mjs<br/>(@dashadmin/*)"]
-    verd --> ktinstall["cd kitchntabs-frontend-refactored<br/>pnpm install"]
-    npmpub --> ktinstall
-    ktinstall --> done["Consumer sees changes"]
+    build --> npmpub["node scripts/publish-npm.mjs<br/>(@dashadmin/*)"]
+    npmpub --> ktinstall["cd kitchntabs-frontend<br/>pnpm install"]
+    ktinstall --> done["Production build sees changes"]
 ```
 
-The essential rule: **a change is invisible to `kitchntabs` until you (1) bump, (2)
-build, (3) publish, and (4) re-install in the consumer.**
+The essential rule: **a change is invisible to a `kitchntabs-frontend` production build
+until you (1) bump, (2) build, (3) publish to npm, and (4) re-install in the consumer.**
+Local dev (`LINK_DASH_CORE=true`) skips all four steps — it's reading this repo's `src/`
+directly.
 
 ---
 
@@ -194,57 +202,19 @@ flowchart TD
 Set the version at publish time:
 
 ```bash
-# Verdaccio — edit each package.json version, or let publish:local use current
-# npm — pass the flat version explicitly:
 NPM_TOKEN=*** node scripts/publish-npm.mjs --version 1.3.27
+# or omit --version to auto-bump the current patch (see script header)
 ```
 
 ---
 
-## 5. Publishing to **Verdaccio** (local QA registry)
+## 5. Publishing to **npm** (`@dashadmin` scope)
 
-Verdaccio hosts **unscoped** `dash-*` packages at `http://localhost:4873`, which is what
-`kitchntabs-frontend-refactored` installs during local QA.
-
-```bash
-pnpm publish:local
-```
-
-What `scripts/publish-local.sh` does, in order:
-
-```mermaid
-flowchart TD
-    a["Start / ensure Verdaccio<br/>(localhost:4873)"] --> b["Authenticate<br/>(admin / admin123)"]
-    b --> c["pnpm turbo build --filter=./packages/*"]
-    c --> d{"build ok?"}
-    d -- no --> stop["Abort (registry untouched)"]
-    d -- yes --> e["Clear dash-* from<br/>Verdaccio storage"]
-    e --> f["pnpm -r publish --registry localhost:4873"]
-    f --> g["Done"]
-```
-
-> **Why clear storage before publishing?** Verdaccio 6 rejects re-publishing the same
-> version with `409 Conflict` and has **no `allow_republish` flag**. Deleting the
-> `dash-*` folders from storage lets the same version be re-published. The clear step
-> runs **after** a successful build so a build failure never leaves the registry empty
-> (which previously caused `ERR_PNPM_UNPUBLISHED_PKG`).
-
-Consume in the app:
-
-```bash
-cd ../kitchntabs-frontend-refactored
-pnpm install          # pulls dash-* from Verdaccio
-```
-
-Verify what's published:
-
-```bash
-curl http://localhost:4873/-/v1/search?text=dash
-```
-
----
-
-## 6. Publishing to **npm** (`@dashadmin` scope, public release)
+This is the **only** publish target — there is no local/QA registry. Every
+`kitchntabs-frontend` production build installs straight from npm, so a change isn't
+"released" until it lands here. (A local Verdaccio registry filled this role previously;
+it's deprecated — local QA now happens via `LINK_DASH_CORE=true`, §2 above, which needs
+no publish step at all.)
 
 `scripts/publish-npm.mjs` transforms each unscoped `dash-*` package into
 `@dashadmin/dash-*` on the fly, rewrites internal cross-deps to the scoped name, bumps
@@ -283,17 +253,17 @@ NPM_TOKEN=*** node scripts/publish-npm.mjs --version 1.3.27
 Consume in the app:
 
 ```bash
-cd ../kitchntabs-frontend-refactored
+cd ../kitchntabs-frontend
 pnpm install          # pulls @dashadmin/* from npm
 ```
 
 ---
 
-## 7. Worked example — the `react-beautiful-dnd` → `@hello-pangea/dnd` migration
+## 6. Worked example — the `react-beautiful-dnd` → `@hello-pangea/dnd` migration
 
 This is the exact change that motivated this guide, end to end.
 
-**Problem.** `pnpm install` in `kitchntabs-frontend-refactored` failed with
+**Problem.** `pnpm install` in `kitchntabs-frontend` failed with
 `Conflicting peer dependencies: react-beautiful-dnd`. Five published packages
 (`dash-components`, `dash-dialog`, `dash-info`, `dash-auto-admin`, `dash-modal`) declared
 a stale `"react-beautiful-dnd": "latest"` **peer dependency** — a now-deprecated library
@@ -313,34 +283,34 @@ No component code changed — `@hello-pangea/dnd` is an API-compatible drop-in.
 
 **Because this only *removes* a required peer, it is non-breaking → PATCH bump.**
 
-**Republish (do both registries):**
+**QA, then release:**
 
 ```bash
-# 1. Build + publish to Verdaccio for local QA
-pnpm publish:local
+# 1. QA against the consumer with LINK_DASH_CORE=true — no build/publish needed,
+#    Vite aliases straight to this repo's src/
+cd ../kitchntabs-frontend && LINK_DASH_CORE=true pnpm dev   # conflict gone
 
-# 2. QA the consumer
-cd ../kitchntabs-frontend-refactored && pnpm install && pnpm dev   # conflict gone
-
-# 3. Release to npm at the next patch
+# 2. Release to npm at the next patch
 cd ../dash-frontend-core
 NPM_TOKEN=*** node scripts/publish-npm.mjs --version 1.3.27
+
+# 3. Pick it up in a production build
+cd ../kitchntabs-frontend && pnpm install
 ```
 
 ---
 
-## 8. Command quick-reference
+## 7. Command quick-reference
 
 | Task | Command |
 | --- | --- |
 | Run a dev app (source HMR) | `pnpm dev:web:dash-system:development` |
 | Build all packages | `pnpm build:packages` |
 | Build one package | `pnpm --filter dash-admin run build` |
-| Publish → Verdaccio (local) | `pnpm publish:local` |
+| QA against `kitchntabs-frontend` (source alias, no publish) | `cd ../kitchntabs-frontend && LINK_DASH_CORE=true pnpm dev` |
 | Publish → npm (scoped) | `NPM_TOKEN=*** node scripts/publish-npm.mjs --version X.Y.Z` |
 | npm dry-run | `NPM_TOKEN=*** node scripts/publish-npm.mjs --version X.Y.Z --dry-run` |
-| Search Verdaccio | `curl http://localhost:4873/-/v1/search?text=dash` |
-| Re-install in consumer | `cd ../kitchntabs-frontend-refactored && pnpm install` |
+| Re-install in consumer (production build) | `cd ../kitchntabs-frontend && pnpm install` |
 
 ---
 
