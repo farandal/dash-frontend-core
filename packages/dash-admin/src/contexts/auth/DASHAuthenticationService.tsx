@@ -173,6 +173,43 @@ class DASHAuthenticationService {
         return this.sanitizeRedirectUrl(val);
     }
 
+    /**
+     * Syncs the local "which tenant is this session scoped to" storage from
+     * the backend's own resolution, on every auth response — login, token
+     * init, refresh, and the persisted-auth fallback all call this so none of
+     * them can drift out of sync with what the other three do.
+     *
+     * `auth.active_tenant_id` (see TenancyContextService on the backend) is
+     * always authoritative now: a plain tenant-scoped user gets their own
+     * tenant, a TenancyAdmin managing one tenant gets that one automatically,
+     * and a TenancyAdmin managing several gets whatever they last explicitly
+     * picked via TenantSwitcher (persisted server-side) — or null, which is a
+     * real, intentional "prefers the tenancy-wide view" state, not "unset".
+     * Trusting the backend outright (no `!dashStorage.getItem(...)` guard)
+     * is what makes a preference set on one device actually show up on
+     * another — the entire point of persisting it server-side instead of
+     * only in this browser's storage.
+     */
+    private syncActiveTenant(auth: any): void {
+        const impersonationEnabled = JSON.parse(
+            DASHAdminSystemConstants.system.ENABLE_TENANT_IMPERSONATION.toString(),
+        );
+
+        if (!impersonationEnabled || !auth?.user?.tenant_id) {
+            return;
+        }
+
+        dashStorage.setItem('tenant_id', auth.user.tenant_id);
+        dashStorage.setItem('user_id', auth.user.id);
+
+        const activeTenantId = auth.auth?.active_tenant_id;
+        if (activeTenantId) {
+            dashStorage.setItem('active_tenant_id', activeTenantId);
+        } else {
+            dashStorage.removeItem('active_tenant_id');
+        }
+    }
+
     // Update the login method to dispatch to Redux directly
     async login(credentials: DASHAuthenticationServiceLoginCredentials): Promise<DASHAuthenticationServiceAuthResponse> {
         console.log("=== DASH AUTH SERVICE LOGIN START ===");
@@ -293,20 +330,9 @@ class DASHAuthenticationService {
                             : JSON.stringify(DASHAppConstants.system.GUEST_ROLE),
                     );
 
-                    // Handle tenant impersonation if enabled
-                    if (
-                        JSON.parse(
-                            DASHAdminSystemConstants.system.ENABLE_TENANT_IMPERSONATION.toString(),
-                        ) &&
-                        auth.user?.tenant_id
-                    ) {
-                       
-                            dashStorage.setItem('tenant_id', auth.user?.tenant_id);
-                            //setCookie('tenant_id', auth.user?.tenant_id);
-                            dashStorage.setItem('user_id', auth.user?.id);
-                            //setCookie('user_id', auth.user?.id);
-                     
-                    }
+                    // Handle tenant impersonation if enabled, including which
+                    // tenant this session starts scoped to.
+                    this.syncActiveTenant(auth);
 
                     const resultObject = {
                         authenticated: true,
@@ -407,19 +433,12 @@ class DASHAuthenticationService {
                     : JSON.stringify(DASHAppConstants.system.GUEST_ROLE),
             );
 
-            // Handle tenant impersonation if enabled
-            if (
-                JSON.parse(
-                    DASHAdminSystemConstants.system.ENABLE_TENANT_IMPERSONATION.toString(),
-                ) &&
-                auth.user?.tenant_id
-            ) {
-               
-                    dashStorage.setItem('tenant_id', auth.user?.tenant_id);
-                    setCookie('tenant_id', auth.user?.tenant_id);
-                    dashStorage.setItem('user_id', auth.user?.id);
-                    setCookie('user_id', auth.user?.id);
-                
+            // Handle tenant impersonation if enabled, including which tenant
+            // this session is scoped to.
+            this.syncActiveTenant(auth);
+            if (auth.user?.tenant_id) {
+                setCookie('tenant_id', auth.user.tenant_id);
+                setCookie('user_id', auth.user.id);
             }
 
             const resultObject = {
@@ -575,20 +594,9 @@ class DASHAuthenticationService {
             dashStorage.setItem('authenticated', 'true');
             dashStorage.setItem('user', JSON.stringify(auth.user));
 
-            // Handle tenant impersonation if enabled
-            if (
-                JSON.parse(
-                    DASHAdminSystemConstants.system.ENABLE_TENANT_IMPERSONATION.toString(),
-                ) &&
-                auth.user?.tenant_id
-            ) {
-               
-                    dashStorage.setItem('tenant_id', auth.user?.tenant_id);
-                    //setCookie('tenant_id', auth.user?.tenant_id);
-                    dashStorage.setItem('user_id', auth.user?.id);
-                    //setCookie('user_id', auth.user?.id);
-               
-            }
+            // Handle tenant impersonation if enabled, including which tenant
+            // this session is scoped to.
+            this.syncActiveTenant(auth);
 
              await syncLocalStorageToDeviceStore();
 
@@ -703,19 +711,9 @@ class DASHAuthenticationService {
                                 : JSON.stringify(DASHAppConstants.system.GUEST_ROLE),
                         );
 
-                        // Handle tenant impersonation with fresh data
-                        if (
-                            JSON.parse(
-                                DASHAdminSystemConstants.system.ENABLE_TENANT_IMPERSONATION.toString(),
-                            ) &&
-                            auth.user?.tenant_id
-                        ) {
-                            // Update tenant information even if it exists (in case it changed)
-                            dashStorage.setItem('tenant_id', auth.user?.tenant_id);
-                            //setCookie('tenant_id', auth.user?.tenant_id);
-                            dashStorage.setItem('user_id', auth.user?.id);
-                            //setCookie('user_id', auth.user?.id);
-                        }
+                        // Handle tenant impersonation with fresh data, including
+                        // which tenant this session is scoped to.
+                        this.syncActiveTenant(auth);
 
                         const resultObject = {
                             authenticated: true,

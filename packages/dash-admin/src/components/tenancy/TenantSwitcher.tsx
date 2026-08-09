@@ -261,6 +261,17 @@ const TenantSwitcher: React.FC<TenantSwitcherProps> = ({
                 dashStorage.removeItem('tenant_id');
             }
 
+            // Persist the choice server-side so it survives a reload and
+            // shows up on another device — not just in this browser's
+            // storage. Best-effort: a failed write here still leaves the
+            // switch working for the rest of this session via the local
+            // storage above, it just won't be remembered next time.
+            try {
+                await axios.put('auth/active-tenant', { tenant_id: tenantId });
+            } catch (err) {
+                console.error('[TenantSwitcher] Failed to persist active tenant:', err);
+            }
+
             // Fetch new auth data from the correct endpoint
             const { data: authData } = await axios.get(authEndpoint, { headers });
 
