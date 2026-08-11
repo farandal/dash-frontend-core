@@ -20,6 +20,9 @@ export interface SubmenuPortalProps {
     childrenCount?: number;
     /** Additional CSS class */
     className?: string;
+    /** Ref to the portaled root, so callers can include it in click-outside containment checks
+     *  (the portal content is not a DOM descendant of itemRef, so itemRef alone isn't enough). */
+    contentRef?: RefObject<HTMLDivElement | null>;
 }
 
 /**
@@ -35,6 +38,7 @@ const SubmenuPortal: React.FC<SubmenuPortalProps> = ({
     onMouseLeave,
     childrenCount = 0,
     className = 'sidebar-submenu-portal',
+    contentRef,
 }) => {
     if (!open) return null;
 
@@ -42,6 +46,7 @@ const SubmenuPortal: React.FC<SubmenuPortalProps> = ({
 
     return ReactDOM.createPortal(
         <div
+            ref={contentRef}
             className={className}
             style={getSubmenuStyle(itemRef, sidebarPosition, renderAtTop)}
             onMouseEnter={onMouseEnter}

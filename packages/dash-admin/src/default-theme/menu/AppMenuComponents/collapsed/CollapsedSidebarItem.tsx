@@ -5,13 +5,13 @@ import {
     ListItemButtonProps,
     ListItemIcon,
     ListItemText,
-    Menu,
 } from '@mui/material';
 import { useLocation, useNavigate } from 'react-router';
 import { IPageState, DASH_REDUX_ACTIONS } from 'dash-admin-state';
 import { useDispatch } from 'react-redux';
 import isCurrentPath from '../../../../hooks/isCurrentPath';
 import { NavEventManager } from '../../../../utils/navEvents';
+import useClickOutside from '../../../../hooks/useClickOutside';
 import { SidebarPosition } from '../../AppSidebarMaterial';
 import { FORCE_CLICK_OPEN, SUBMENU_SCROLL_THRESHOLD } from '../submenuConstants';
 import SubmenuPortal from '../SubmenuPortal';
@@ -117,9 +117,18 @@ const CollapsedSidebarItem = ({
     const [webView, setWebView] = useState<boolean>(false);
     const [open, setOpen] = useState(false);
     const itemRef = useRef<HTMLDivElement>(null);
-    
+    const menuRef = useRef<HTMLDivElement>(null);
+
     // Unique key for this submenu to identify it in accordion behavior
     const submenuKey = `collapsed-${item.key || item.label}`;
+
+    // Close on click/tap outside the trigger AND the portal-rendered flyout
+    // (the flyout isn't a DOM descendant of itemRef since it's portaled to
+    // document.body — see SubmenuPortal). Hover mode already self-closes via
+    // onMouseLeave, but that never fires in webview/FORCE_CLICK_OPEN click
+    // mode, which previously had no way to dismiss an open flyout other than
+    // clicking the trigger again or opening a different submenu.
+    useClickOutside([itemRef, menuRef], () => setOpen(false), open);
 
     const openMenuOnHover = (event) => {
         // Notify other submenus to close (accordion behavior)
@@ -199,6 +208,7 @@ const CollapsedSidebarItem = ({
                     <SubmenuPortal
                         open={open}
                         itemRef={itemRef}
+                        contentRef={menuRef}
                         sidebarPosition={sidebarPosition}
                         childrenCount={item.children?.length || 0}
                         className="sidebar-collapsed-menu"

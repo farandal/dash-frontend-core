@@ -22,6 +22,7 @@ import {DASHAppConstants} from 'dash-constants';
 import { NavEventManager } from '../../../../utils/navEvents';
 import { FORCE_CLICK_OPEN } from '../submenuConstants';
 import SubmenuPortal from '../SubmenuPortal';
+import useClickOutside from '../../../../hooks/useClickOutside';
 
 const CollapsableSidebarMenu = ({
   item,
@@ -33,6 +34,7 @@ const CollapsableSidebarMenu = ({
   const loc = useLocation();
   const dispatch = useDispatch();
   const itemRef = useRef<HTMLDivElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
   const isHorizontal = sidebarPosition === "top" || sidebarPosition === "bottom";
   
   // Detect if running in mobile webview or android
@@ -79,6 +81,16 @@ const CollapsableSidebarMenu = ({
       unsubscribeCloseAll();
     };
   }, [submenuKey, navSize]);
+
+  // Close on click/tap outside the trigger AND the portal-rendered dropdown
+  // (only relevant to the horizontal top/bottom layout, which portals its
+  // dropdown to document.body via SubmenuPortal — see contentRef below; the
+  // dropdown is not a DOM descendant of itemRef). The vertical Collapse
+  // variant is rendered inline in the sidebar tree, so it doesn't need this.
+  // Desktop hover already self-closes via handleMouseLeave, but that's
+  // disabled in webview/FORCE_CLICK_OPEN click mode, which previously had
+  // no way to dismiss an open dropdown other than the accordion behavior.
+  useClickOutside([itemRef, menuRef], () => setLocalOpen(false), isHorizontal && localOpen);
 
   const navigate = useNavigate();
 
@@ -260,6 +272,7 @@ const CollapsableSidebarMenu = ({
         <SubmenuPortal
           open={navExpanded && localOpen}
           itemRef={itemRef}
+          contentRef={menuRef}
           sidebarPosition={sidebarPosition}
           childrenCount={item.children?.length || 0}
           className="sidebar-submenu-portal"
