@@ -33,7 +33,7 @@ import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
 import ReactDOM from 'react-dom';
 import { dashStorage } from 'dash-utils';
 import { AuthPersistenceService } from 'dash-auth';
-import { DASHAdminSystemConstants, getEnv } from 'dash-constants';
+import { DASHAdminSystemConstants } from 'dash-constants';
 import { useAxios } from 'dash-axios-hook';
 import { updateDomCssVariables } from 'dash-utils';
 import DASHLayoutSettings from '../../theme/AppLayoutSetting';
@@ -243,8 +243,17 @@ const TenantSwitcher: React.FC<TenantSwitcherProps> = ({
 
         try {
             const isTenancyLevel = tenantId === null;
-            // Always use tenancyAuth - it returns tenancy/tenants list + respects X-Tenant-Id header
-            const authEndpoint = getEnv('APP_GETAUTH_ENDPOINT') || 'auth/tenancyAuth';
+            // Always use tenancyAuth - it returns tenancy/tenants list + respects
+            // X-Tenant-Id header. Deliberately NOT reading APP_GETAUTH_ENDPOINT
+            // here (every app's env has it set to 'auth/getauth') — that
+            // endpoint ignores X-Tenant-Id entirely and always resolves off the
+            // user's raw tenant_id FK, so every switch silently kept returning
+            // the same tenant's data regardless of which one was picked. This
+            // component only ever renders once TenancyContextService has
+            // already put at least one tenant in scope (see the render guard
+            // below), so hitting the TenancyAdmin-only endpoint unconditionally
+            // is always correct here.
+            const authEndpoint = 'auth/tenancyAuth';
 
             // If switching to a specific tenant, set the header so backend knows
             const headers: Record<string, string> = {};
