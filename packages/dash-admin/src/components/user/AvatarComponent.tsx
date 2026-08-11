@@ -12,6 +12,7 @@ import { useAuthContext } from '../../contexts/auth/AuthContext';
 import { useRedirect, useTranslate } from 'react-admin';
 import { useNavigate } from 'react-router-dom';
 import { NavEventManager } from '../../utils/navEvents';
+import useClickOutside from '../../hooks/useClickOutside';
 
 interface AvatarComponentProps {
     sidebarPosition?: 'left' | 'right' | 'top' | 'bottom';
@@ -176,16 +177,23 @@ useEffect(() => {
         const unsubscribeSubmenuOpened = NavEventManager.onSubmenuOpened(() => {
             setOpen(false);
         });
-        
+
         const unsubscribeCloseAll = NavEventManager.onCloseAllSubmenus(() => {
             setOpen(false);
         });
-        
+
         return () => {
             unsubscribeSubmenuOpened();
             unsubscribeCloseAll();
         };
     }, []);
+
+    // Close on click/tap outside the avatar trigger AND the portal-rendered
+    // menu (both refs — the menu isn't a DOM descendant of the trigger since
+    // it's rendered via createPortal). Needed for the webview/click-to-open
+    // path, which had no way to dismiss the menu other than clicking the
+    // avatar again; hover mode already self-closes via handleMouseLeave.
+    useClickOutside([avatarRef, menuRef], () => setOpen(false), open);
 
     // Show loading state if not authenticated or no user data
     if (!authenticated || !currentUser) {

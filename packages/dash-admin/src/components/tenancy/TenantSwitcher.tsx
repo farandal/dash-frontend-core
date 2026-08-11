@@ -42,6 +42,7 @@ import { setPanelSettings } from 'dash-admin-state/redux/actions/Common';
 import { IDASHAppState } from 'dash-admin-state';
 import { useWindowSize } from 'dash-utils';
 import { setAuthEvent } from '../../contexts/auth';
+import useClickOutside from '../../hooks/useClickOutside';
 
 export interface TenantSwitcherProps {
     /** Fallback horizontal logo used when switching back to the tenancy level */
@@ -143,6 +144,14 @@ const TenantSwitcher: React.FC<TenantSwitcherProps> = ({
             setWebView(true);
         }
     }, []);
+
+    // Close on click/tap outside the trigger AND the portal-rendered menu
+    // (both refs — the menu isn't a DOM descendant of the trigger since it's
+    // rendered via createPortal). Declared above the early-return guard
+    // below, alongside the component's other hooks, so hook order stays
+    // stable across renders regardless of whether that guard ends up
+    // returning null.
+    useClickOutside([avatarRef, menuRef], () => setOpen(false), open);
 
     // Don't render if impersonation is disabled or no tenants available
     if (!isTenantImpersonationEnabled() || tenants.length === 0) {
