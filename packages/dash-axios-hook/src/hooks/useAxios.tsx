@@ -92,6 +92,27 @@ const handleLogout = () => {
 	}));
 };
 
+// Capacitor's CapacitorHttp plugin, when enabled (capacitor.config.ts's
+// plugins.CapacitorHttp.enabled), patches the WebView's global
+// XMLHttpRequest to route through its native HTTP bridge. That patched XHR
+// doesn't reach the OPENED state synchronously the way axios's default 'xhr'
+// adapter assumes - it calls setRequestHeader() immediately after open(),
+// which throws "Failed to execute 'setRequestHeader' on 'XMLHttpRequest':
+// The object's state must be OPENED" under the patch. Confirmed on an
+// Android build (kitchntabs-app, Capacitor 7, CapacitorHttp enabled) -
+// broke every axios call, login included, not just one endpoint.
+//
+// axios's 'fetch' adapter (1.7+) sidesteps this: Capacitor's fetch patch is
+// documented as more spec-compliant than its XHR one. Only selected when
+// actually running as a native Capacitor app - `window.Capacitor` is
+// injected into the WebView's global scope at runtime by Capacitor itself,
+// so this needs no @capacitor/core import (this package is consumed by
+// plain web apps too, which don't have that dependency at all). Web/Electron
+// builds keep axios's own default adapter selection, unaffected.
+const isCapacitorNative =
+  typeof window !== 'undefined' &&
+  !!(window as any).Capacitor?.isNativePlatform?.();
+
 export const initAxios = (
 	options: Partial<AxiosRequestConfig<any>>,
 	CSRFAuth?: boolean,
@@ -104,6 +125,7 @@ export const initAxios = (
       'Accept-Language':'es',
       Accept: 'application/json',
     },
+    ...(isCapacitorNative && { adapter: 'fetch' as const }),
     ...options,
   };
 
