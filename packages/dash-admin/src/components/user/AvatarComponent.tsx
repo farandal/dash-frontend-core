@@ -1,6 +1,5 @@
-import { Avatar, CircularProgress, Menu, MenuList, useMediaQuery, useTheme } from '@mui/material';
+import { Avatar, CircularProgress, ListItemIcon, ListItemText, Menu, MenuItem, MenuList, useMediaQuery, useTheme } from '@mui/material';
 import { useEffect, useState, useRef, useCallback } from 'react';
-import { IconMenuItem } from 'mui-nested-menu';
 import ReactDOM from 'react-dom';
 
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
@@ -262,33 +261,40 @@ useEffect(() => {
                             {getUserDisplayName()}
                         </span>
                         <MenuList>
-                            <IconMenuItem
+                            {/* Plain MUI MenuItem composition — mui-nested-menu's IconMenuItem
+                                (peer deps top out at @mui/material v7) renders a <MenuItem> that
+                                doesn't satisfy MUI v9's MenuListContext requirement and crashes
+                                with "MUI: MenuListContext is missing." A real MenuItem always
+                                stays compatible with whatever MUI version the app is on. */}
+                            <MenuItem
                                 onClick={(e) => {
                                     e.preventDefault();
                                     setOpen(false);
                                     handleProfileRedirect();
                                 }}
-                                leftIcon={
+                                className='dash-icon-button-color dash-icon-button-bg'
+                            >
+                                <ListItemIcon>
                                     <span className='dash-user-icon'>
                                         <AccountCircleIcon />
                                     </span>
-                                }
-                                label={translate('ra.auth.user_menu', { _: 'Perfil' })}
-                                className='dash-icon-button-color dash-icon-button-bg'
-                            />
-                            <IconMenuItem
+                                </ListItemIcon>
+                                <ListItemText>{translate('ra.auth.user_menu', { _: 'Perfil' })}</ListItemText>
+                            </MenuItem>
+                            <MenuItem
                                 onClick={(e) => {
                                     setOpen(false);
                                     handleLogout(e);
                                 }}
-                                leftIcon={
+                                className='dash-icon-button-color dash-icon-button-bg'
+                            >
+                                <ListItemIcon>
                                     <span className='dash-user-icon'>
                                         <LogoutIcon />
                                     </span>
-                                }
-                                label={translate('ra.auth.logout', { _: 'Cerrar sesión' })}
-                                className='dash-icon-button-color dash-icon-button-bg'
-                            />
+                                </ListItemIcon>
+                                <ListItemText>{translate('ra.auth.logout', { _: 'Cerrar sesión' })}</ListItemText>
+                            </MenuItem>
                         </MenuList>
                     </div>
                 </div>,

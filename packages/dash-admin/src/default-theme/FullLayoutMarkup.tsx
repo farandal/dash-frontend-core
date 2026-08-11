@@ -211,40 +211,21 @@ const FullLayoutMarkup = <U, A>({
     const currentSize = isXs ? 'xs' : isSm ? 'sm' : isMd ? 'md' : isLg ? 'lg' : isXl ? 'xl' : '';
     const largerToSm = currentSize === 'md' || currentSize === 'lg' || currentSize === 'xl';
 
+    // `logo`/`loginBackground` are still accepted for backwards compatibility
+    // with existing callers, but are no longer rendered as a decorative
+    // `.dash-app-login-back` side/stacked panel here — pages that want a
+    // logo/banner (e.g. DASHLightWeightLogin's "already logged in" screen)
+    // now render their own, inline with their content.
+    void largerToSm;
+    void logo;
+    void loginBackground;
 
-    return largerToSm ?
+    return (
         <div className={`dash-app-layout ${className || ''}`}>
             <div className='dash-app-login-wrapper'>
-
                 {children}
-
-                <div className='dash-app-login-back'>
-
-                    <div className='dash-app-login-img'>
-                        {typeof loginBackground === 'string' ? <img src={loginBackground} alt='' /> : loginBackground}
-                    </div>
-                    <div className='dash-app-login-logo'>
-                        {typeof logo === 'string' ? <img alt='logo' className='dash-app-login-logo' src={logo} /> : <div className='dash-app-login-logo'>{logo}</div>}
-                    </div>
-                </div>
-
-            </div>
-        </div> :
-        <div className={`dash-app-layout ${className || ''}`}>
-            <div className='dash-app-login-wrapper'>
-
-                <div className='dash-app-login-logo'>
-                    {typeof logo === 'string' ? <img alt='logo' className='dash-app-login-logo' src={logo} /> : <div className='dash-app-login-logo'>{logo}</div>}
-                </div>
-
-                {children}
-
-                <div className='dash-app-login-img'>
-                    {typeof loginBackground === 'string' ? <img src={loginBackground} alt='' /> : loginBackground}
-                </div>
             </div>
         </div>
-
-
+    );
 };
 export default FullLayoutMarkup;
