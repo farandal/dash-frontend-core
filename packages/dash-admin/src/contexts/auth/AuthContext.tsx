@@ -436,10 +436,15 @@ export const AuthContextProvider: FC<IAuthContextProvider> = (props) => {
       if (tenantImages && lastTenantImagesRef.current !== tenantImagesKey) {
         console.log('Updating panel settings with tenant images from auth context or persisted data');
         lastTenantImagesRef.current = tenantImagesKey;
+        // Optional chaining: a tenant that hasn't uploaded one of these
+        // images has that key as null/undefined, not an object — reading
+        // `.original` off it directly used to throw and abort this whole
+        // effect (including the recreateTheme call below it) before it
+        // ever ran.
         const logos = {
-            ...(tenantImages.horizontal_logo.original && { horizontalLogo: tenantImages.horizontal_logo.original }),
-            ...(tenantImages.squared_logo.original && { squaredLogo: tenantImages.squared_logo.original }),
-            ...(tenantImages.banner.original && { loginBackground: tenantImages.banner.original })
+            ...(tenantImages.horizontal_logo?.original && { horizontalLogo: tenantImages.horizontal_logo.original }),
+            ...(tenantImages.squared_logo?.original && { squaredLogo: tenantImages.squared_logo.original }),
+            ...(tenantImages.banner?.original && { loginBackground: tenantImages.banner.original })
           };
         
         dispatch(
@@ -489,7 +494,16 @@ export const AuthContextProvider: FC<IAuthContextProvider> = (props) => {
       }
     }
 
-  }, [auth.authenticated, contextValues.systemValues]);
+    // `auth.auth` (not just `auth.authenticated`) must be a dependency here —
+    // TenantSwitcher dispatches a fresh `auth.auth` (new tenantSettings/
+    // tenantImages) on every tenant switch via `setAuthEvent`/ACTION_UPDATE_AUTH,
+    // while `auth.authenticated` stays `true` throughout. Without `auth.auth`
+    // in the deps, this effect only ever ran once (on login), so
+    // `recreateTheme(tenantSettings)` — which drives every MUI-theme-based
+    // color, as opposed to the raw CSS vars TenantSwitcher sets directly —
+    // never re-ran on switch, leaving the MUI theme stuck on whichever
+    // tenant was active first.
+  }, [auth.authenticated, auth.auth, contextValues.systemValues]);
 
   // Debug effect to log context values changes
   React.useEffect(() => {
