@@ -80,6 +80,13 @@ export * from "./providers/i18n/languages"
 
 export { default as DarkToggleMode } from "./components/menu/DarkToggleMode"
 
+export { default as AppDashboardGrid } from './default-theme/menu/AppDashboardGrid';
+export type {
+    IDashboardMenuGridProps,
+    IDashboardMenuGridColumns,
+    DashboardGridCardSize,
+} from './default-theme/menu/AppDashboardGrid';
+
 export { default as useFormPersistence } from "./hooks/useFormPersistance";
 
 export { default as AvatarComponent } from './components/user/AvatarComponent';
