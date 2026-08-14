@@ -44,8 +44,29 @@ const DashAutoDrawer: React.FC<IDashAutoDrawer> = ({
 
     const DrawerComponent = type === 'swipeable' ? SwipeableDrawer : Drawer;
 
+    // Does the CURRENT url hash already address this resource's inline drawer?
+    // Deep links (a pasted/bookmarked/shared
+    // `/tab/tab#/tab/tab/inline/{id}/show`, or one opened from a notification)
+    // arrive as a cold page load: there is no `location.state.hash` (nothing
+    // navigated internally) and no `virtualhash` event will ever fire (that is
+    // only dispatched by useVirtualHash on an in-app click). The hash was still
+    // parsed correctly below into `mode`/`resource_id`, so the drawer knew what
+    // to render - it just never opened, because `open` seeded from
+    // `location.state.hash` alone. Seeding from the real url too makes the
+    // inline routes actually linkable.
+    const hashTargetsThisResource = (hash: string): boolean => {
+        const path = String(hash || '').substring(1);
+        if (!path) return false;
+        return (
+            match(`/${resourceConfig.model}/inline/create`, path).matches ||
+            match(`/${resourceConfig.model}/inline/:id/:mode`, path).matches
+        );
+    };
+
     const [open, setOpen] = useState<boolean>(
-        location.state?.hash ? true : false,
+        location.state?.hash
+            ? true
+            : hashTargetsThisResource(window.location.hash),
     );
 
     const handleCloseDrawer = () => {
