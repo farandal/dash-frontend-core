@@ -1177,9 +1177,6 @@ importers:
       react-hook-form:
         specifier: 7.78.0
         version: 7.78.0(react@19.2.8)
-      react-loading-overlay-ts:
-        specifier: latest
-        version: 2.0.2(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(supports-color@8.1.1)
       react-number-format:
         specifier: ^5.4.4
         version: 5.4.5(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
@@ -1440,9 +1437,6 @@ importers:
       react-draggable:
         specifier: latest
         version: 4.7.1(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
-      react-loading-overlay-ts:
-        specifier: latest
-        version: 2.0.2(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(supports-color@8.1.1)
       react-query:
         specifier: latest
         version: 3.39.3(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
@@ -1850,9 +1844,6 @@ importers:
       react-draggable:
         specifier: latest
         version: 4.7.1(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
-      react-loading-overlay-ts:
-        specifier: latest
-        version: 2.0.2(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(supports-color@8.1.1)
       react-query:
         specifier: latest
         version: 3.39.3(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
@@ -2179,9 +2170,6 @@ importers:
       react-custom-scrollbars-2:
         specifier: latest
         version: 4.5.0(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
-      react-loading-overlay-ts:
-        specifier: latest
-        version: 2.0.2(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(supports-color@8.1.1)
       react-query:
         specifier: latest
         version: 3.39.3(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
@@ -4060,9 +4048,6 @@ packages:
 
   '@emotion/cache@11.14.0':
     resolution: {integrity: sha512-L/B1lc/TViYk4DcpGxtAVbx0ZyiKM5ktoIyafGkH6zg/tj+mA+NE//aPYKG0k8kCHSHVJrpLpcAlOBEXQ3SavA==}
-
-  '@emotion/css@11.10.6':
-    resolution: {integrity: sha512-88Sr+3heKAKpj9PCqq5A1hAmAkoSIvwEq1O2TwDij7fUtsJpdkV4jMTISSTouFeRvsGvXIpuSuDQ4C1YdfNGXw==}
 
   '@emotion/hash@0.8.0':
     resolution: {integrity: sha512-kBJtf7PH6aWwZ6fka3zQ0p6SBYzx4fl1LoZXE2RrnYST9Xljm7WfKJrU4g/Xr3Beg72MLrp1AWNUmuYJTL7Cow==}
@@ -6698,9 +6683,6 @@ packages:
 
   '@rtsao/scc@1.1.0':
     resolution: {integrity: sha512-zt6OdqaDoOnJ1ZYsCYGt9YmWzDXl4vQdKTyJev62gFhRGKdx7mcT54V9KIjg+d2wi9EXsPvAPKe7i7WjfVWB8g==}
-
-  '@scarf/scarf@1.1.1':
-    resolution: {integrity: sha512-VGbKDbk1RFIaSmdVb0cNjjWJoRWRI/Weo23AjRCC2nryO0iAS8pzsToJfPVPtVs74WHw4L1UTADNdIYRLkirZQ==}
 
   '@sigstore/bundle@4.0.0':
     resolution: {integrity: sha512-NwCl5Y0V6Di0NexvkTqdoVfmjTaQwoLM236r89KEojGmq/jMls8S+zb7yOwAPdXvbwfKDlP+lmXgAL4vKSQT+A==}
@@ -13554,13 +13536,6 @@ packages:
   react-is@19.2.8:
     resolution: {integrity: sha512-s5un28nYxKJw5gvUHyW5PCC28CvBqLu9r3cWgzHT4Vo/5fqqkFcdRYsGcKf50WMPpjjFZS5d76fn3YCo2njKwQ==}
 
-  react-loading-overlay-ts@2.0.2:
-    resolution: {integrity: sha512-dy1GhUOz91aPmvvuT85WUFBCG7NX1ZJBKbeHgGHSC+gss6u9/6AfpFgDnXlJLxGpv+VbbeCXye8ETy+BX3SS4A==}
-    engines: {node: '>=14'}
-    deprecated: This library won't work on react v19. Please use @achmadk/react-loading-overlay instead.
-    peerDependencies:
-      react: 19.2.8
-
   react-number-format@5.4.5:
     resolution: {integrity: sha512-y8O2yHHj3w0aE9XO8d2BCcUOOdQTRSVq+WIuMlLVucAm5XNjJAy+BoOJiuQMldVYVOKTMyvVNfnbl2Oqp+YxGw==}
     peerDependencies:
@@ -18556,16 +18531,6 @@ snapshots:
       '@emotion/weak-memoize': 0.4.0
       stylis: 4.2.0
 
-  '@emotion/css@11.10.6(supports-color@8.1.1)':
-    dependencies:
-      '@emotion/babel-plugin': 11.13.5(supports-color@8.1.1)
-      '@emotion/cache': 11.14.0
-      '@emotion/serialize': 1.3.3
-      '@emotion/sheet': 1.4.0
-      '@emotion/utils': 1.4.2
-    transitivePeerDependencies:
-      - supports-color
-
   '@emotion/hash@0.8.0': {}
 
   '@emotion/hash@0.9.2': {}
@@ -21543,8 +21508,6 @@ snapshots:
   '@rooks/use-previous@4.11.2': {}
 
   '@rtsao/scc@1.1.0': {}
-
-  '@scarf/scarf@1.1.1': {}
 
   '@sigstore/bundle@4.0.0':
     dependencies:
@@ -30529,16 +30492,6 @@ snapshots:
   react-is@18.3.1: {}
 
   react-is@19.2.8: {}
-
-  react-loading-overlay-ts@2.0.2(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(supports-color@8.1.1):
-    dependencies:
-      '@emotion/css': 11.10.6(supports-color@8.1.1)
-      '@scarf/scarf': 1.1.1
-      react: 19.2.8
-      react-transition-group: 4.4.5(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
-    transitivePeerDependencies:
-      - react-dom
-      - supports-color
 
   react-number-format@5.4.5(react-dom@19.2.8(react@19.2.8))(react@19.2.8):
     dependencies:
