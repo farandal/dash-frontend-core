@@ -209,12 +209,26 @@ const bumpPatch = (version) => {
     delete modified.private;
     modified.publishConfig = { access: 'public', registry: REGISTRY };
 
-    // Rewrite internal dash-* cross-deps to @dashadmin/
+    // Rewrite internal dash-* cross-deps to @dashadmin/, and resolve any
+    // workspace: protocol specifier to a real published range — npm has no
+    // concept of the workspace: protocol, so a literal "workspace:*" left in
+    // a published package.json breaks resolution for every consumer outside
+    // this monorepo (ERR_PNPM_WORKSPACE_PKG_NOT_FOUND).
+    const resolveWorkspaceRange = (ver) => {
+      if (!ver.startsWith('workspace:')) return ver;
+      const range = ver.slice('workspace:'.length);
+      if (range === '*') return PUBLISH_VERSION;
+      if (range === '^') return `^${PUBLISH_VERSION}`;
+      if (range === '~') return `~${PUBLISH_VERSION}`;
+      return range; // e.g. "workspace:^1.2.3" -> "^1.2.3"
+    };
+
     for (const section of ['dependencies', 'devDependencies', 'peerDependencies', 'optionalDependencies']) {
       if (!modified[section]) continue;
       const rewritten = {};
       for (const [dep, ver] of Object.entries(modified[section])) {
-        rewritten[pkgNames.includes(dep) ? `${SCOPE}/${dep}` : dep] = ver;
+        const newDep = pkgNames.includes(dep) ? `${SCOPE}/${dep}` : dep;
+        rewritten[newDep] = resolveWorkspaceRange(ver);
       }
       modified[section] = rewritten;
     }
@@ -223,10 +237,14 @@ const bumpPatch = (version) => {
     fs.writeFileSync(jsonPath, JSON.stringify(modified, null, '\t') + '\n');
 
     try {
-      execSync(
-        `npm publish ${dir} --registry ${REGISTRY} --access public --no-git-checks`,
-        { env: { ...process.env, npm_config_userconfig: NPMRC_PATH }, stdio: 'inherit' }
-      );
+      if (DRY_RUN) {
+        console.log(`  [dry-run] npm publish ${dir}`);
+      } else {
+        execSync(
+          `npm publish ${dir} --registry ${REGISTRY} --access public --no-git-checks`,
+          { env: { ...process.env, npm_config_userconfig: NPMRC_PATH }, stdio: 'inherit' }
+        );
+      }
       published.push(`${scopedName}@${PUBLISH_VERSION}`);
     } catch {
       failed.push(scopedName);
