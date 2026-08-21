@@ -8,7 +8,6 @@
 import { deepmerge } from '@mui/utils';
 
 import React, { PropsWithChildren, useEffect } from 'react';
-import LoadingOverlay from 'react-loading-overlay-ts';
 import useGlobalLoaderMgr from '../../hooks/useGlobalLoaderMgr';
 
 interface IGlobalLoader extends PropsWithChildren {
@@ -18,38 +17,32 @@ interface IGlobalLoader extends PropsWithChildren {
 const GlobalLoader: React.FC<IGlobalLoader> = ({
 	styles,
     children,
-	...props
 }) => {
-	const [loading, setLoading] = useGlobalLoaderMgr();
+	const [loading] = useGlobalLoaderMgr();
 
-  
-    
-    	useEffect(() => {
-    		console.log('GlobalLoader loading state changed:', loading);
-    1	}, [loading]);
-    
+	useEffect(() => {
+		console.log('GlobalLoader loading state changed:', loading);
+	}, [loading]);
 
-    const _styles = deepmerge(
+    if (!loading) return null;
+
+    const wrapperStyle = deepmerge(
         {
-            wrapper: {
-                width: '100%',
-                height: '100%',
-                overflow: loading ? 'hidden' : 'scroll',
-            },
-            overlay: (base) => ({
-                ...base,
-            }),
+            width: '100%',
+            height: '100%',
+            overflow: 'hidden',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
         },
-        styles
+        styles?.wrapper
     );
 
-   
-    return loading ? <LoadingOverlay
-        className='loadingOverlay'
-        active={loading}
-        styles={_styles}
-        spinner={children}
-    /> : <></>
+    return (
+        <div className='loadingOverlay' style={wrapperStyle}>
+            {children}
+        </div>
+    );
 
 };
 

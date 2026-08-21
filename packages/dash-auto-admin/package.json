@@ -92,7 +92,6 @@
 		"typescript": "latest"
 	},
 	"peerDependencies": {
-		"react-beautiful-dnd": ">=13.0.0",
 		"react-custom-scrollbars-2": ">=4.0.0",
 		"react-dom": ">=18.0.0"
 	},

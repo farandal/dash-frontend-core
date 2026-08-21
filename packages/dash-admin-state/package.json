@@ -25,7 +25,6 @@
 		"typescript": "latest"
 	},
 	"dependencies": {
-		"connected-react-router": "latest",
 		"dash-auto-admin": "workspace:*",
 		"dash-constants": "workspace:*",
 		"dash-utils": "workspace:*",
