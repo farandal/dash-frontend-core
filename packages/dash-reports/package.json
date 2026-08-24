@@ -1,0 +1,49 @@
+{
+	"name": "dash-reports",
+	"version": "0.0.1",
+	"license": "MIT",
+	"main": "dist/index.js",
+	"devDependencies": {
+		"@types/node": "latest",
+		"@types/react": "latest",
+		"@types/react-dom": "latest",
+		"typescript": "latest"
+	},
+	"dependencies": {
+		"@mui/material": "^9.3.0",
+		"chart.js": "^4.5.0",
+		"dash-axios-hook": "workspace:*",
+		"react-chartjs-2": "^5.3.1"
+	},
+	"module": "dist/index.js",
+	"types": "./src/index.tsx",
+	"exports": {
+		".": "./dist/index.js",
+		"./*": "./dist/*.js",
+		"./src/*": "./dist/*.js"
+	},
+	"publishConfig": {
+		"access": "public",
+		"registry": "http://localhost:4873"
+	},
+	"scripts": {
+		"build": "tsup"
+	},
+	"type": "module",
+	"files": [
+		"dist",
+		"src"
+	],
+	"typesVersions": {
+		"*": {
+			"src/*": [
+				"src/*",
+				"src/*/index"
+			],
+			"*": [
+				"src/*",
+				"src/*/index"
+			]
+		}
+	}
+}

@@ -3,6 +3,7 @@ import * as React from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router';
 import { Box, Paper, ButtonBase, Typography, useTheme, SxProps, Theme } from '@mui/material';
+import HorizontalScroller from '../../components/misc/HorizontalScroller';
 
 import { IDashAutoAdminResourceConfig } from 'dash-auto-admin';
 import { IDASHAppState } from 'dash-admin-state';
@@ -26,6 +27,18 @@ export interface IDashboardMenuGridProps {
     columns?: number | IDashboardMenuGridColumns;
     /** Caps the visible grid to this many rows, scrolling internally beyond that. Omit to let the grid grow with its content. */
     rows?: number;
+    /**
+     * Which way the grid overflows once `rows` is set.
+     *
+     * 'vertical' (default) keeps the existing behaviour — fixed columns, scroll
+     * down. 'horizontal' lays the cards out in `rows` fixed rows flowing left to
+     * right and scrolls/swipes sideways, which suits a shortcut strip sharing a
+     * dashboard with other content: it takes a predictable amount of vertical
+     * space no matter how many resources a tenant has.
+     *
+     * Ignored without `rows` — there is nothing to overflow.
+     */
+    orientation?: 'vertical' | 'horizontal';
     /** Card/icon preset, or an explicit card size in pixels. Default: 'large'. */
     size?: DashboardGridCardSize;
     /** Gap between cards, in MUI spacing units. Default: 2. */
@@ -99,6 +112,7 @@ const AppDashboardGrid: React.FC<IDashboardMenuGridProps> = ({
     columns = { xs: 2, sm: 3, md: 4, lg: 6 },
     rows,
     size = 'large',
+    orientation = 'vertical',
     gap = 2,
     menu,
     debug,
@@ -166,30 +180,14 @@ const AppDashboardGrid: React.FC<IDashboardMenuGridProps> = ({
 
     const gapPx = theme.spacing(gap);
 
-    return (
-        <Box
-            className={className}
-            sx={{
-                display: 'grid',
-                gridTemplateColumns: columnTemplate,
-                gap,
-                ...(rows
-                    ? {
-                          gridAutoRows: cardSize,
-                          maxHeight: `calc(${rows} * ${cardSize}px + ${rows - 1} * ${gapPx})`,
-                          overflowY: 'auto',
-                          pr: 1,
-                      }
-                    : {}),
-                ...sx,
-            }}
+    // Defined once and used by both layouts — the two branches differ only in
+    // how the cards are arranged, never in what a card is.
+    const cards = items.map((item) => (
+        <ButtonBase
+            key={item.key}
+            onClick={() => navigate(item.to)}
+            sx={{ display: 'block', borderRadius: 2, textAlign: 'left' }}
         >
-            {items.map((item) => (
-                <ButtonBase
-                    key={item.key}
-                    onClick={() => navigate(item.to)}
-                    sx={{ display: 'block', borderRadius: 2, textAlign: 'left' }}
-                >
                     <Paper
                         variant="outlined"
                         sx={{
@@ -226,8 +224,54 @@ const AppDashboardGrid: React.FC<IDashboardMenuGridProps> = ({
                             {item.label}
                         </Typography>
                     </Paper>
-                </ButtonBase>
-            ))}
+        </ButtonBase>
+    ));
+
+    // The horizontal strip is wrapped in HorizontalScroller so it gets the same
+    // arrows-plus-swipe behaviour as the category carousel on the create-tab
+    // screen, rather than a second, subtly different way of scrolling.
+    if (rows && orientation === 'horizontal') {
+        return (
+            <HorizontalScroller
+                className={className}
+                ariaLabel="dashboard shortcuts"
+                step={Math.round(cardSize * 1.1) * 2}
+                trackSx={{
+                    display: 'grid',
+                    gap,
+                    gridAutoFlow: 'column',
+                    gridTemplateRows: `repeat(${rows}, ${cardSize}px)`,
+                    // A definite column width so the content can exceed the
+                    // container; `1fr` would shrink to fit and never scroll.
+                    gridAutoColumns: `${Math.round(cardSize * 1.1)}px`,
+                    pb: 1,
+                }}
+                sx={sx}
+            >
+                {cards}
+            </HorizontalScroller>
+        );
+    }
+
+    return (
+        <Box
+            className={className}
+            sx={{
+                display: 'grid',
+                gap,
+                ...(rows
+                    ? {
+                          gridAutoRows: cardSize,
+                          maxHeight: `calc(${rows} * ${cardSize}px + ${rows - 1} * ${gapPx})`,
+                          overflowY: 'auto',
+                          pr: 1,
+                      }
+                    : {}),
+                gridTemplateColumns: columnTemplate,
+                ...sx,
+            }}
+        >
+            {cards}
         </Box>
     );
 };

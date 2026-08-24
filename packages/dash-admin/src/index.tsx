@@ -81,6 +81,8 @@ export * from "./providers/i18n/languages"
 export { default as DarkToggleMode } from "./components/menu/DarkToggleMode"
 
 export { default as AppDashboardGrid } from './default-theme/menu/AppDashboardGrid';
+export { default as HorizontalScroller } from './components/misc/HorizontalScroller';
+export type { IHorizontalScrollerProps } from './components/misc/HorizontalScroller';
 export type {
     IDashboardMenuGridProps,
     IDashboardMenuGridColumns,
