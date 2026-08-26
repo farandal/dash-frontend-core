@@ -146,13 +146,14 @@ async function handleAuthFailure() {
 	dashStorage.removeItem('authenticated');
 	dashStorage.removeItem('roles');
 
-	// Dispatch logout event
+	// Dispatch logout event. useLogoutEventListener (DashBootstrapUtils) clears
+	// Redux auth state on this, which the private route guard (dashDefaultPrivateRoutes /
+	// DashDefaultPrivateApp) already reacts to with an in-app redirect to /login.
+	// Do NOT also do a hard window.location.href navigation here: the packaged
+	// Electron app is loaded from file://.../index.html, so an absolute-path
+	// navigation resolves against that origin (file:///login) instead of the
+	// SPA router, permanently breaking the app on first auth failure.
 	window.dispatchEvent(new MessageEvent('auth:logout'));
-
-	// Redirect to login if not already there
-	if (!window.location.pathname.includes('/login')) {
-		window.location.href = '/login';
-	}
 }
 
 const useAxios = () => {

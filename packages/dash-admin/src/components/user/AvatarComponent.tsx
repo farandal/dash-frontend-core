@@ -70,8 +70,10 @@ useEffect(() => {
         }*/
         localStorage.clear();
         await logout();
-        //navigate('/');
-        window.location.href = '/';
+        // In-app SPA navigation, not a hard reload: the packaged Electron app is
+        // loaded from file://.../index.html, so window.location.href resolves
+        // an absolute path against that origin (file:///) instead of the router.
+        navigate('/');
     };
 
     const handleProfileRedirect = () => {
