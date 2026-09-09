@@ -68,6 +68,16 @@ export default interface IDashAutoAdminAttribute<M = any> {
 	readOnly?: boolean;
 	/** Whether field is a password input */
 	isPassword?: boolean;
+	/**
+	 * Static choices for `type: 'select'` — read directly as `input.options`
+	 * by AttributeToInput's select case (mui/AttributeToInput.tsx), NOT nested
+	 * under fieldProps. Was missing from this interface even though the
+	 * implementation already required it: every `select` schema in the
+	 * codebase had been written with the choices under fieldProps instead,
+	 * which the select renderer never reads — it silently treats the field as
+	 * having no options and skips rendering it entirely.
+	 */
+	options?: Array<{ id: any; name: any }>;
 	/** Additional field options */
 	fieldProps?: any;
     slotProps?: any;

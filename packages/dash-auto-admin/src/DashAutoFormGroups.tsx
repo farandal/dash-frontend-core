@@ -30,7 +30,29 @@ const DashAutoFormGroups = ({
 	);
   
 	const isDrawer = options?.isDrawer === true ? true : false;
-   
+
+	/**
+	 * AttributeToInput legitimately returns null/undefined for a field it
+	 * has decided not to render — e.g. a 'select' with no `options` array logs
+	 * "Skipping render" and returns null on purpose, rather than throwing, so a
+	 * misconfigured field degrades instead of taking the API down with a bogus
+	 * request. React.cloneElement has no such tolerance: it throws immediately
+	 * on anything that is not a real element, which turned that intentional
+	 * per-field skip into a crash of the ENTIRE surrounding form. This renders
+	 * a field only when AttributeToInput actually returned one.
+	 */
+	const renderAttribute = (
+		mode: string,
+		resourceConfig: IDashAutoAdminResourceConfig,
+		attribute: IDashAutoAdminAttribute,
+		i: number,
+		options: IDashAutoAdminFormOptions,
+		key: string,
+	) => {
+		const rendered = AttributeToInput(mode as any, resourceConfig, attribute, i, options);
+		return React.isValidElement(rendered) ? React.cloneElement(rendered, { key }) : null;
+	};
+
 	switch (options?.mode) {
 		case 'create':
 			return groupByTabs(schema).map((groupOfAttributes, idx) => {
@@ -43,18 +65,8 @@ const DashAutoFormGroups = ({
 				return filteredAttributes.length ? (
 					<fieldset key={`auto-admin-fieldset-${idx}`}>
 						{filteredAttributes.length > 0 && renderLegend(attributes[0].tab || options?.label)}
-						{filteredAttributes.map(
-							(attribute, i) =>
-								React.cloneElement(
-									AttributeToInput(
-										options.mode,
-										resourceConfig,
-										attribute,
-										i,
-										options,
-									),
-									{ key: `create-${idx}-${i}` },
-								),
+						{filteredAttributes.map((attribute, i) =>
+							renderAttribute(options.mode, resourceConfig, attribute, i, options, `create-${idx}-${i}`),
 						)}
 					</fieldset>
 				) : null;
@@ -72,16 +84,7 @@ const DashAutoFormGroups = ({
 					<fieldset key={`auto-admin-fieldset-${idx}`}>
 						{filteredAttributes.length > 0 && renderLegend(attributes[0].tab || options?.label)}
 						{filteredAttributes.map((attribute, i) =>
-							React.cloneElement(
-								AttributeToInput(
-									options.mode,
-									resourceConfig,
-									attribute,
-									i,
-									options,
-								),
-								{ key: `edit-${idx}-${i}` },
-							),
+							renderAttribute(options.mode, resourceConfig, attribute, i, options, `edit-${idx}-${i}`),
 						)}
 					</fieldset>
 				) : null;
@@ -99,16 +102,7 @@ const DashAutoFormGroups = ({
 					<fieldset key={`auto-admin-fieldset-${idx}`}>
 						{filteredAttributes.length > 0 && renderLegend(attributes[0].tab || options?.label)}
 						{filteredAttributes.map((attribute, i) =>
-							React.cloneElement(
-								AttributeToInput(
-									options.mode,
-									resourceConfig,
-									attribute,
-									i,
-									options,
-								),
-								{ key: `view-${idx}-${i}` },
-							),
+							renderAttribute(options.mode, resourceConfig, attribute, i, options, `view-${idx}-${i}`),
 						)}
 					</fieldset>
 				) : null;
@@ -126,16 +120,7 @@ const DashAutoFormGroups = ({
 					<fieldset key={`auto-admin-fieldset-${idx}`}>
 						{filteredAttributes.length > 0 && renderLegend(attributes[0].tab || options?.label)}
 						{filteredAttributes.map((attribute, i) =>
-							React.cloneElement(
-								AttributeToInput(
-									options.mode,
-									resourceConfig,
-									attribute,
-									i,
-									options,
-								),
-								{ key: `list-${idx}-${i}` },
-							),
+							renderAttribute(options.mode, resourceConfig, attribute, i, options, `list-${idx}-${i}`),
 						)}
 					</fieldset>
 				) : null;
