@@ -4,6 +4,7 @@ import ResourceTemplate from './templates/ResourceTemplate';
 import IAppResourceConfig from './interfaces/IAppResourceConfig';
 import { TenantImpersonateResource } from './resources/Tenant/ImpersonateTenantResource';
 import tenantSystemAdminSchema from './schemas/tenant_superadmin';
+import TenancySettings from './components/tenant/TenancySettings';
 import subscriptionPlanSchema from './schemas/subscriptionPlan';
 import { RutValidator } from './utils/validators';
 import { DASHAppConstants } from 'dash-constants';
@@ -43,6 +44,21 @@ const systemResources: IAppResourceConfig[] = [
         roles: [DASHAppConstants.system.SYSTEM_ROLE],
         trash: true,
         component: ResourceTemplate,
+        // Same F21 dynamic-tab pattern the sibling system/tenant resource
+        // already uses below — fetches config('tenancies.setting_formats')
+        // (core + whatever domain merges onto it, e.g. the AI Providers
+        // governance tab) once per edit/view, cached client-side.
+        contextComponent: ({ resourceConfig, mode, children }) => {
+            return mode === "list" ? children : (
+                <SystemRequestsCache
+                    cacheKey="tenancy_formats_cache"
+                    apiUrl="system/tenancy/systemSettingFormats"
+                    cacheSeconds={300}
+                >
+                    {children}
+                </SystemRequestsCache>
+            )
+        },
         model: "system/tenancy",
         //group: "resource.groups.system_resources",
         group: "Accounts",
@@ -319,6 +335,17 @@ const systemResources: IAppResourceConfig[] = [
                 inShow: true,
                 inCreate: false,
             },
+            {
+                tab: 'AI Providers',
+                label: 'AI Providers',
+                attribute: 'settings', // custom component owns rendering; 'attribute' is required by the interface, not used directly
+                type: Object,
+                custom: true,
+                inList: false,
+                component: TenancySettings,
+                inCreate: false,
+                inShow: false,
+            },
         ],
         label: "Accounts",
         icon: <BusinessIcon />,
@@ -363,6 +390,27 @@ const systemResources: IAppResourceConfig[] = [
 
         mutationMode: "pessimistic",
         redirectAfterUpdate: false,
+
+        // Defensive normalization, same pattern already proven in
+        // kt-ecommerce's tenant/tenant resource's own postFormatter: if
+        // 'settings' ever ends up as a JS Array (react-hook-form keeps it
+        // array-shaped once seeded that way, even after nested dot-path
+        // fields like 'settings.bionic_mode' are set on it), JSON.stringify
+        // silently drops the non-index keys on submit — the AI Providers tab
+        // then looks saved in the UI but nothing persists. The backend now
+        // always seeds 'settings' as an object on load (SystemTenancyResource
+        // + TenancyController::_postGetOne), which should prevent this at
+        // the source, but this stays as a second line of defense — cheap,
+        // and it's exactly what already shipped for the sibling resource.
+        postFormatter: (params) => {
+            if (Array.isArray(params.settings)) {
+                params.settings = Object.fromEntries(Object.entries(params.settings));
+            }
+            if (Array.isArray(params.metadata)) {
+                params.metadata = Object.fromEntries(Object.entries(params.metadata));
+            }
+            return params;
+        },
 
         ...drawerSettings,
     },
@@ -434,6 +482,14 @@ const systemResources: IAppResourceConfig[] = [
         exporter: false,
         postFormatter: (params) => {
 
+            // Same array-vs-object defense as system/tenancy's own
+            // postFormatter above — see that one's comment for why.
+            if (Array.isArray(params.settings)) {
+                params.settings = Object.fromEntries(Object.entries(params.settings));
+            }
+            if (Array.isArray(params.attributes)) {
+                params.attributes = Object.fromEntries(Object.entries(params.attributes));
+            }
 
             if (params.systemMarketplaces) {
                 params.system_marketplace_ids = params.systemMarketplaces.map((item) => item.id);
@@ -460,6 +516,118 @@ const systemResources: IAppResourceConfig[] = [
         //listEditButton: { enabled: true, component: QuickEditButton, props: { icon: <Bolt />, label: "", resource: "tenant/inline", navigation:"virtualhash", navigate: (id) => id, size: "small", color: "secondary" }},
 
 
+    },
+
+
+    {
+        // Platform-wide AI provider credentials (bionic/ollama/deepinfra/
+        // aws_bedrock) — see backend App\AiAgentCore\Models\SystemAiProviderKey.
+        // The 4 rows are seeded by migration and never created/deleted here;
+        // an admin only ever edits an existing row's credentials/flags.
+        // Credential VALUES are never returned by the API once saved
+        // (SystemAiProviderKeyResource only exposes has_api_key/
+        // has_access_key_id/has_secret_access_key) — the fields below are
+        // write-only by design, same convention as any masked secret field.
+        roles: [DASHAppConstants.system.SYSTEM_ROLE],
+        component: ResourceTemplate,
+        model: "system/system_ai_provider_key",
+        group: "Accounts",
+        label: "AI Providers",
+        icon: <SystemUpdateAlt />,
+        create: false,
+
+        schema: [
+            {
+                tab: 'General',
+                label: 'Provider',
+                attribute: 'provider',
+                type: String,
+                inList: true,
+                inEdit: false,
+                inShow: true,
+                inCreate: false,
+            },
+            {
+                tab: 'General',
+                label: 'Active',
+                attribute: 'is_active',
+                type: Boolean,
+                inList: true,
+                inEdit: true,
+                inShow: true,
+                inCreate: false,
+            },
+            {
+                tab: 'General',
+                label: 'Platform Default Provider',
+                attribute: 'is_default',
+                type: Boolean,
+                inList: true,
+                inEdit: true,
+                inShow: true,
+                inCreate: false,
+                fieldProps: {
+                    helperText: 'The fallback provider used platform-wide, and for any Tenancy that disables a provider without setting its own default.',
+                },
+            },
+            {
+                tab: 'General',
+                label: 'API Key',
+                attribute: 'credentials.api_key',
+                type: String,
+                inList: false,
+                inEdit: true,
+                inShow: false,
+                inCreate: false,
+                fieldProps: {
+                    helperText: 'Bionic / Ollama / DeepInfra only. Write-only — leave blank to keep the current value.',
+                },
+            },
+            {
+                tab: 'General',
+                label: 'AWS Access Key ID',
+                attribute: 'credentials.access_key_id',
+                type: String,
+                inList: false,
+                inEdit: true,
+                inShow: false,
+                inCreate: false,
+                fieldProps: {
+                    helperText: 'AWS Bedrock only. Write-only — leave blank to keep the current value.',
+                },
+            },
+            {
+                tab: 'General',
+                label: 'AWS Secret Access Key',
+                attribute: 'credentials.secret_access_key',
+                type: String,
+                inList: false,
+                inEdit: true,
+                inShow: false,
+                inCreate: false,
+                fieldProps: {
+                    helperText: 'AWS Bedrock only. Write-only — leave blank to keep the current value.',
+                },
+            },
+        ],
+
+        menu: [
+            {
+                title: 'AI Providers',
+                redirect: '/system/system_ai_provider_key',
+            },
+        ],
+
+        mutationMode: "pessimistic",
+        redirectAfterUpdate: false,
+
+        drawer: true,
+        drawerOptions: {
+            view: false,
+            edit: true,
+            create: false,
+        },
+        listEditButton: { props: { buttonProps: { variant: 'text', size: 'small' }, label: '' } },
     },
 
 
