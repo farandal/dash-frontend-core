@@ -609,6 +609,61 @@ const systemResources: IAppResourceConfig[] = [
                     helperText: 'AWS Bedrock only. Write-only — leave blank to keep the current value.',
                 },
             },
+            {
+                // The platform-wide floor of SystemAiProviderKey::resolveServiceTier()'s
+                // 3-level cascade (System -> Tenancy -> Lab) — see
+                // vanexa-backend-domain/docs/CASCADING_AI_SETTINGS_KEY_PERMISSIONS.md.
+                // Reaches for the SAME static-choices 'select'/'multiselect' types the
+                // Tenancy-level "AI Providers" tab already uses (dash-auto-admin's
+                // AttributeToInput/AttributeToField) — a hand-written schema like this
+                // one is a normal consumer of those types too, not just the dynamic
+                // setting_formats pipeline.
+                tab: 'General',
+                label: 'DeepInfra Service Tier (Platform Default)',
+                attribute: 'settings.service_tier',
+                type: 'select',
+                inList: false,
+                inEdit: true,
+                inShow: true,
+                inCreate: false,
+                options: [
+                    { id: 'flex', name: 'Flex (0.8x — best-effort, may wait or be rejected)' },
+                    { id: 'standard', name: 'Standard (1.0x)' },
+                    { id: 'priority', name: 'Priority (1.5x — skips queues)' },
+                ],
+                fieldProps: {
+                    helperText: 'DeepInfra only. Used whenever a Tenancy has not set its own default.',
+                    // Matches resolveServiceTier()'s OWN eventual fallback
+                    // (SystemAiProviderKey::SERVICE_TIER_DEFAULT) — a fresh
+                    // row with no settings yet shows what would actually be
+                    // used, not a misleadingly blank field.
+                    defaultValue: 'standard',
+                },
+            },
+            {
+                tab: 'General',
+                label: 'DeepInfra Tiers Any Tenancy May Ever Use',
+                attribute: 'settings.service_tier_allowed',
+                type: 'multiselect',
+                inList: false,
+                inEdit: true,
+                inShow: true,
+                inCreate: false,
+                options: [
+                    { id: 'flex', name: 'Flex (0.8x — best-effort, may wait or be rejected)' },
+                    { id: 'standard', name: 'Standard (1.0x)' },
+                    { id: 'priority', name: 'Priority (1.5x — skips queues)' },
+                ],
+                fieldProps: {
+                    helperText: 'DeepInfra only. The HARD CEILING — a Tenancy\'s own allow-list can only narrow this, never exceed it. Leave all three selected unless a tier should be forbidden platform-wide.',
+                    // Matches resolveServiceTier()'s own default when this
+                    // key has never been saved (SystemAiProviderKey::
+                    // providerSetting()'s $default param, called with
+                    // SERVICE_TIERS) — an unrestricted ceiling, shown as such
+                    // rather than as an empty, seemingly-forbid-everything list.
+                    defaultValue: ['flex', 'standard', 'priority'],
+                },
+            },
         ],
 
         menu: [
