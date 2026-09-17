@@ -338,6 +338,46 @@ export const AttributeToField = (
 		}
 	}
 
+	// Handle 'multiselect' type with static options (no API call needed) - the
+	// read-only twin of AttributeToInput's identical fix. MUST be checked
+	// before the generic "any other string is a reference" fallback below,
+	// which is what an unrecognised type string like 'multiselect' fell
+	// into (see AttributeToInput.tsx for the confirmed live 404 this caused).
+	// A plain array of ids on the record, resolved against input.options and
+	// shown as a comma-joined list of labels rather than a reference chip
+	// list - there is no referenced resource to link to.
+	if (input.type === 'multiselect' && Array.isArray(input.options) && input.options.length > 0) {
+		const choiceLabel = (id: unknown) =>
+			(input.options as { id: unknown; name: string }[]).find((opt) => opt.id === id)?.name
+				?? String(id);
+
+		return (
+			<FunctionField
+				key={`function_field_${index}`}
+				label={input.label}
+				sortable={sortableField}
+				{...(sortableField && { sortBy: input.listAttribute || input.attribute })}
+				render={(r) => {
+					const values = (r?.[input.listAttribute || input.attribute] as unknown[]) || [];
+					return (
+						<ComponentWrapper
+							{...(r && { record: r })}
+							method={method}
+							attribute={input}
+							key={index}
+							label={input.label}
+							sortable={sortableField}
+							source={input.listAttribute ? input.listAttribute : input.attribute}
+							resourceConfig={resourceConfig}
+						>
+							<span>{values.length > 0 ? values.map(choiceLabel).join(', ') : '—'}</span>
+						</ComponentWrapper>
+					);
+				}}
+			/>
+		);
+	}
+
 	if (typeof input.type === 'string') {
 		const _params = {...params,...(location.hash.match(/\d+/g) || []).map(Number).reduce((acc, curr, index) => {
 			acc[index] = curr;

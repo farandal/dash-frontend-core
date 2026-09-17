@@ -104,8 +104,25 @@ Two behaviours worth knowing:
 | `type` | Renders |
 |---|---|
 | `String` / `Number` / `Boolean` / `Date` | The matching react-admin input |
-| `'resource/path.field'` | A reference/autocomplete input against that endpoint |
-| `'custom'` / anything unmatched | Falls through to the custom-component path (§4) |
+| `'select'` with a static `options: [{id, name}]` array | A `SelectInput` with static choices — **no backend call** |
+| `'multiselect'` with a static `options: [{id, name}]` array | A `SelectArrayInput` with static choices — **no backend call** |
+| any other string (`'resource/path.field'`, or `'select'`/`'multiselect'` with no `options`) | A reference/autocomplete input against that string as an endpoint |
+| `'custom'` / anything genuinely unmatched | Falls through to the custom-component path (§4) |
+
+**`'select'`/`'multiselect'` MUST carry `options` to take the static-choices
+path.** Omit `options` and the type string itself is read as a resource name
+and sent as `GET /api/<type>?field=id&...` — confirmed live: a
+`type: 'multiselect'` field with no `options` produced exactly that request,
+a 404, because no backend resource is ever actually named `multiselect`. Both
+`AttributeToInput.tsx` and its read-only twin `AttributeToField.tsx` check
+`options.length > 0` before taking the static path for exactly this reason —
+see either file's own comment at that check for the incident this fixed.
+
+Backend `setting_formats` schemas (§9) that need "pick one or more from a
+fixed small list, no delegated resource" — governance allow-lists, feature
+toggles — should reach for `'multiselect'` with inline `options` rather than
+inventing a `ReferenceArrayInput`-backed field for a list that isn't really a
+referenceable entity.
 
 ---
 

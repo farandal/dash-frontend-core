@@ -524,6 +524,51 @@ const AttributeToInput = (
             return null;
         }
 
+        // Handle 'multiselect' type with static options (no API call needed).
+        // The multi-value twin of 'select' just above - MUST be checked before
+        // the generic "any other string is a reference" fallback below, which
+        // is what previously caught an unrecognised type string like
+        // 'multiselect' and rendered a ReferenceArrayInput pointing at a
+        // "resource" literally named by the type itself (confirmed live: a
+        // field typed 'multiselect' fired `GET /api/multiselect?field=id...`,
+        // a 404, because there is of course no backend resource called
+        // "multiselect" - the type string was being read as one).
+        if (input.type === 'multiselect' && Array.isArray(input.options) && input.options.length > 0) {
+            const choices = input.options.map((opt: { id: any; name: any }) => ({
+                id: opt.id,
+                name: opt.name,
+            }));
+
+            return (
+                <FunctionFieldWrapper index={index} method={mode} input={input}>
+                    <SelectArrayInput
+                        key={index}
+                        fullWidth
+                        label={input.label}
+                        source={input.listAttribute || input.attribute}
+                        choices={choices}
+                        {...input.fieldProps}
+                        onChange={e => {
+                            if (options?.handleChange) {
+                                options.handleChange(e);
+                            }
+                            if (input.fieldProps?.onChange) {
+                                input.fieldProps.onChange(e);
+                            }
+                        }}
+                        {...input.componentProps}
+                    />
+                </FunctionFieldWrapper>
+            );
+        }
+
+        // Handle 'multiselect' type without options - skip rendering to avoid
+        // the same reference-fallback trap, same reasoning as 'select' above.
+        if (input.type === 'multiselect' && (!input.options || input.options.length === 0)) {
+            console.warn(`Multiselect field "${input.attribute}" has no options defined. Skipping render.`);
+            return null;
+        }
+
         const _params = {
             ...params, ...(location.pathname.match(/\d+/g) || []).map(Number).reduce((acc, curr, currentIndex) => {
                 acc[currentIndex] = curr;
