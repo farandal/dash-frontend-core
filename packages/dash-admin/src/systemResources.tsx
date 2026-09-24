@@ -580,7 +580,7 @@ const systemResources: IAppResourceConfig[] = [
                 inShow: false,
                 inCreate: false,
                 fieldProps: {
-                    helperText: 'Bionic / Ollama / DeepInfra only. Write-only — leave blank to keep the current value.',
+                    helperText: 'Bionic / Ollama / DeepInfra / ElevenLabs / Apify. Write-only — leave blank to keep the current value.',
                 },
             },
             {
