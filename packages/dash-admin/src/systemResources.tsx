@@ -521,7 +521,7 @@ const systemResources: IAppResourceConfig[] = [
 
     {
         // Platform-wide AI provider credentials (bionic/ollama/deepinfra/
-        // aws_bedrock) — see backend App\AiAgentCore\Models\SystemAiProviderKey.
+        // aws_bedrock/anthropic/elevenlabs/apify) — see backend App\AiAgentCore\Models\SystemAiProviderKey.
         // The 4 rows are seeded by migration and never created/deleted here;
         // an admin only ever edits an existing row's credentials/flags.
         // Credential VALUES are never returned by the API once saved
@@ -580,7 +580,7 @@ const systemResources: IAppResourceConfig[] = [
                 inShow: false,
                 inCreate: false,
                 fieldProps: {
-                    helperText: 'Bionic / Ollama / DeepInfra / ElevenLabs / Apify. Write-only — leave blank to keep the current value.',
+                    helperText: 'Bionic / Ollama / DeepInfra / Anthropic / ElevenLabs / Apify. Write-only — leave blank to keep the current value.',
                 },
             },
             {
