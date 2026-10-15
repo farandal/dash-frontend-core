@@ -1,5 +1,5 @@
 import { IDashAutoAdminCustomFieldComponent } from "dash-auto-admin";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Loading, useNotify, useRecordContext, useRefresh, useTranslate } from "react-admin";
 import {
     Alert,
@@ -121,7 +121,12 @@ const statusColor = (status?: string): "success" | "warning" | "error" | "info" 
     ] ?? "default";
 
 const TenancyPlanPanel: React.FC<{ tenancyId: string }> = ({ tenancyId }) => {
-    const { axios } = useAxios();
+    // useAxios() builds a new instance on every render. Depending on it re-created `load` each time,
+    // which re-ran the effect, set state, re-rendered, and looped on the plan endpoint forever.
+    // Keep the first instance for the life of the panel.
+    const { axios: freshAxios } = useAxios();
+    const axiosRef = useRef(freshAxios);
+    const axios = axiosRef.current;
     const notify = useNotify();
     const refresh = useRefresh();
     const translate = useTranslate();
@@ -142,7 +147,7 @@ const TenancyPlanPanel: React.FC<{ tenancyId: string }> = ({ tenancyId }) => {
         } catch (e: any) {
             setError(e?.response?.data?.message || "Could not load the plan");
         }
-    }, [axios, tenancyId]);
+    }, [tenancyId]);
 
     useEffect(() => {
         load();
