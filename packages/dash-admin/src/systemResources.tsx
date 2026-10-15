@@ -5,6 +5,7 @@ import IAppResourceConfig from './interfaces/IAppResourceConfig';
 import { TenantImpersonateResource } from './resources/Tenant/ImpersonateTenantResource';
 import tenantSystemAdminSchema from './schemas/tenant_superadmin';
 import TenancySettings from './components/tenant/TenancySettings';
+import TenancyPlan from './components/tenant/TenancyPlan';
 import subscriptionPlanSchema from './schemas/subscriptionPlan';
 import { RutValidator } from './utils/validators';
 import { DASHAppConstants } from 'dash-constants';
@@ -334,6 +335,21 @@ const systemResources: IAppResourceConfig[] = [
                 inEdit: false,
                 inShow: true,
                 inCreate: false,
+            },
+            {
+                // The account's plan: summary, details drawer and "change plan" for the System admin.
+                // `attribute` is required by the interface but unused: the component loads
+                // system/tenancy/{id}/plan itself.
+                tab: 'Plan',
+                label: 'Plan',
+                attribute: 'current_subscription',
+                type: Object,
+                custom: true,
+                inList: false,
+                inEdit: true,
+                inShow: true,
+                inCreate: false,
+                component: TenancyPlan,
             },
             {
                 tab: 'AI Providers',
