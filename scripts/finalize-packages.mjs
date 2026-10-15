@@ -19,7 +19,7 @@ const packagesDir = path.join(rootDir, 'packages')
 
 const CONFIG_ONLY = new Set(['dash-eslint', 'dash-prettier', 'dash-tsconfig'])
 const ROOT_ENTRY = new Set(['dash-icons'])
-const SKIP = new Set(['react-18-beautiful-dnd-grid'])
+const SKIP = new Set()
 
 function detectEntry(pkgDir, pkgName) {
   if (ROOT_ENTRY.has(pkgName)) return 'index.ts'

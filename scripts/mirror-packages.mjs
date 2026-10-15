@@ -42,7 +42,7 @@ const SINGLE = new Set([
 
 // No build — published as-is
 const CONFIG_ONLY = new Set(['dash-eslint', 'dash-prettier', 'dash-tsconfig'])
-const SKIP = new Set(['react-18-beautiful-dnd-grid'])
+const SKIP = new Set()
 
 // Has LESS files consumers import directly — ship src too
 const INCLUDE_SRC = new Set(['dash-styles'])

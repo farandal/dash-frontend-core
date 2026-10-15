@@ -25,7 +25,7 @@ const INCLUDE_SRC = new Set(['dash-styles'])
 const ROOT_ENTRY = new Set(['dash-icons'])
 
 // Already properly configured (private: false, has build)
-const SKIP = new Set(['react-18-beautiful-dnd-grid'])
+const SKIP = new Set()
 
 function detectEntry(pkgDir, pkgName) {
   if (ROOT_ENTRY.has(pkgName)) return 'index.ts'
