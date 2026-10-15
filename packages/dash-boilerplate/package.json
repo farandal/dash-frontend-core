@@ -7,7 +7,8 @@
 		"lint": "eslint --ext .ts,.tsx .",
 		"format": "pnpm prettier --write .",
 		"typecheck": "tsc --noEmit",
-		"build": "tsup"
+		"build": "tsup && pnpm run build:types",
+		"build:types": "../../node_modules/.bin/tsc -p tsconfig.json --declaration --emitDeclarationOnly --noEmit false --outDir dist --rootDir src --skipLibCheck; test -f dist/index.d.ts"
 	},
 	"dependencies": {
 		"@emotion/react": "latest",

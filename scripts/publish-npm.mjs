@@ -14,6 +14,7 @@
  * Options:
  *   --version X.Y.Z   Publish version (defaults to package.json version)
  *   --dry-run        Simulate publish without uploading
+ *   --skip a,b       Package directory names to leave out (e.g. a vendored package that still ships source)
  *   --tag NAME       npm dist-tag to publish under (default: latest). Use with a pre-release
  *                    --version (e.g. 1.3.74-srcfree.1) to publish a pilot that no `^1.3.x`
  *                    range and no `latest` install will pick up.
@@ -109,11 +110,13 @@ const bumpPatch = (version) => {
   let PUBLISH_VERSION = null;
   let DRY_RUN = false;
   let DIST_TAG = null;
+  const SKIP = new Set();
 
   for (let i = 0; i < args.length; i++) {
     if (args[i] === '--version') { PUBLISH_VERSION = args[++i]; continue; }
     if (args[i] === '--dry-run') { DRY_RUN = true; continue; }
     if (args[i] === '--tag') { DIST_TAG = args[++i]; continue; }
+    if (args[i] === '--skip') { args[++i].split(',').filter(Boolean).forEach((n) => SKIP.add(n)); continue; }
   }
 
   if (PUBLISH_VERSION) {
@@ -178,7 +181,8 @@ const bumpPatch = (version) => {
   // Collect workspace packages
   const pkgDirs = fs.readdirSync(PACKAGES_DIR)
     .map(name => ({ name, dir: path.join(PACKAGES_DIR, name), jsonPath: path.join(PACKAGES_DIR, name, 'package.json') }))
-    .filter(({ jsonPath }) => fs.existsSync(jsonPath));
+    .filter(({ jsonPath }) => fs.existsSync(jsonPath))
+    .filter(({ name }) => !SKIP.has(name));
 
   const pkgNames = pkgDirs.map(({ jsonPath }) => JSON.parse(fs.readFileSync(jsonPath, 'utf8')).name).filter(Boolean);
 
@@ -192,6 +196,31 @@ const bumpPatch = (version) => {
   } catch {
     console.error('Build failed — aborting.');
     process.exit(1);
+  }
+
+  // Step 1b: refuse to publish a package whose type entry does not exist. A declaration step
+  // that silently produced nothing (tsc not installed in the package, swallowed by `|| true`)
+  // once shipped four packages with no types at all; this is the check that would have stopped it.
+  {
+    const missing = [];
+    for (const { name, dir, jsonPath } of pkgDirs) {
+      const pkg = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
+      for (const field of ['types', 'typings']) {
+        const target = pkg[field];
+        if (typeof target === 'string' && !fs.existsSync(path.join(dir, target))) {
+          missing.push(`${name}: ${field} -> ${target}`);
+        }
+      }
+      if (Array.isArray(pkg.files) && pkg.files.includes('src') === false && pkg.main && !fs.existsSync(path.join(dir, pkg.main))) {
+        missing.push(`${name}: main -> ${pkg.main}`);
+      }
+    }
+    if (missing.length) {
+      console.error('\nAborting before publishing anything - these entry points do not exist:');
+      missing.forEach((m) => console.error('  ✗ ' + m));
+      process.exit(1);
+    }
+    console.log('  ✓ every package\'s types/main entry exists');
   }
 
   // Step 2: Transform + publish

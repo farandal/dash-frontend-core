@@ -33,7 +33,8 @@
 		"lint:fix": "pnpm prettier --write .",
 		"check-updates": "pnpm npm-check-updates",
 		"updates-packages": "pnpm npm-check-updates -u",
-		"build": "tsup"
+		"build": "tsup && pnpm run build:types",
+		"build:types": "../../node_modules/.bin/tsc -p tsconfig.json --declaration --emitDeclarationOnly --noEmit false --outDir dist --rootDir src --skipLibCheck; test -f dist/index.d.ts"
 	},
 	"browserslist": {
 		"production": [
