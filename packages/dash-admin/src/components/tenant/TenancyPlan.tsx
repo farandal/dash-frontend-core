@@ -65,6 +65,7 @@ interface PlanPayload {
         prices?: Record<string, number> | null;
         billing_cycle?: string;
         trial_days?: number;
+        subscription_plan_type?: string;
         limits?: Record<string, any> | null;
         addons?: Record<string, any> | string[] | null;
     };
@@ -90,10 +91,10 @@ const prettyKey = (key: string) =>
 const formatDate = (iso?: string | null) => (iso ? new Date(iso).toLocaleDateString() : "—");
 
 /** CLP has no minor unit; the plan form stores other currencies in cents. */
-const formatPrice = (prices?: Record<string, number> | null, fallback?: number) => {
+const formatPrice = (prices?: Record<string, number> | null, fallback?: number, freeLabel = "Free") => {
     const entries = Object.entries(prices ?? {});
     if (!entries.length) {
-        return fallback ? String(fallback) : "Free";
+        return fallback ? String(fallback) : freeLabel;
     }
     return entries
         .map(([code, value]) => {
@@ -131,6 +132,13 @@ const TenancyPlanPanel: React.FC<{ tenancyId: string }> = ({ tenancyId }) => {
     const refresh = useRefresh();
     const translate = useTranslate();
 
+    /** Value-driven labels (status, plan type, billing cycle): fall back to the raw value when a locale has no entry. */
+    const tv = (group: string, value?: string | null) =>
+        value ? translate(`tenancy.plan.${group}.${String(value).toLowerCase()}`, { _: String(value) }) : "";
+    const price = (prices?: Record<string, number> | null, fallback?: number) =>
+        formatPrice(prices, fallback, translate("tenancy.plan.free", { _: "Free" }));
+    const cycle = (c?: string | null) => tv("cycle", c ?? "monthly");
+
     const [data, setData] = useState<PlanPayload | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [drawerOpen, setDrawerOpen] = useState(false);
@@ -145,7 +153,7 @@ const TenancyPlanPanel: React.FC<{ tenancyId: string }> = ({ tenancyId }) => {
             setData(res.data?.data ?? null);
             setError(null);
         } catch (e: any) {
-            setError(e?.response?.data?.message || "Could not load the plan");
+            setError(e?.response?.data?.message || translate("tenancy.plan.load_failed", { _: "Could not load the plan" }));
         }
     }, [tenancyId]);
 
@@ -192,9 +200,19 @@ const TenancyPlanPanel: React.FC<{ tenancyId: string }> = ({ tenancyId }) => {
                             <Typography variant="overline" color="text.secondary">
                                 {translate("tenancy.plan.current", { _: "Current plan" })}
                             </Typography>
-                            {subscription && <Chip size="small" color={statusColor(subscription.status)} label={subscription.status} />}
+                            {subscription && (
+                                <Chip size="small" color={statusColor(subscription.status)} label={tv("status", subscription.status)} />
+                            )}
                             {subscription?.subscription_state && (
-                                <Chip size="small" variant="outlined" label={subscription.subscription_state} />
+                                <Chip size="small" variant="outlined" label={tv("status", subscription.subscription_state)} />
+                            )}
+                            {plan?.subscription_plan_type && (
+                                <Chip
+                                    size="small"
+                                    variant="outlined"
+                                    color={plan.subscription_plan_type === "internal" ? "secondary" : "default"}
+                                    label={tv("type", plan.subscription_plan_type)}
+                                />
                             )}
                             {subscription?.pending_plan && (
                                 <Chip
@@ -206,7 +224,7 @@ const TenancyPlanPanel: React.FC<{ tenancyId: string }> = ({ tenancyId }) => {
                         </Stack>
                         <Typography variant="h5">{plan?.name ?? translate("tenancy.plan.none", { _: "No plan" })}</Typography>
                         <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
-                            {plan ? `${formatPrice(plan.prices, plan.price)} / ${plan.billing_cycle ?? "monthly"}` : ""}
+                            {plan ? `${price(plan.prices, plan.price)} / ${cycle(plan.billing_cycle)}` : ""}
                         </Typography>
                         <Typography variant="body2" color="text.secondary" sx={{ mt: 1.5 }}>
                             {translate("tenancy.plan.renews", { _: "Current period ends" })}: {formatDate(subscription?.current_period_end)}
@@ -237,7 +255,7 @@ const TenancyPlanPanel: React.FC<{ tenancyId: string }> = ({ tenancyId }) => {
                 <Box sx={{ width: { xs: "100vw", sm: 560 }, p: 2 }}>
                     <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: 1 }}>
                         <Typography variant="h6">{plan?.name ?? "—"}</Typography>
-                        <IconButton onClick={() => setDrawerOpen(false)} size="small" aria-label="Close">
+                        <IconButton onClick={() => setDrawerOpen(false)} size="small" aria-label={translate("ra.action.close", { _: "Close" })}>
                             <CloseIcon />
                         </IconButton>
                     </Box>
@@ -249,20 +267,27 @@ const TenancyPlanPanel: React.FC<{ tenancyId: string }> = ({ tenancyId }) => {
                     <Table size="small" sx={{ mb: 3 }}>
                         <TableBody>
                             {[
-                                ["Status", subscription?.status],
-                                ["State", subscription?.subscription_state],
-                                ["Account", data.tenancy.account_status],
-                                ["Payment gateway", subscription?.payment_gateway ?? data.tenancy.gateway_type ?? "internal"],
-                                ["Period start", formatDate(subscription?.current_period_start)],
-                                ["Period end", formatDate(subscription?.current_period_end)],
-                                ["Trial ends", formatDate(subscription?.trial_ends_at)],
-                                ["Cancels at", formatDate(subscription?.cancels_at)],
-                                ["Plan tier", plan?.tier],
-                                ["Trial days (plan)", plan?.trial_days],
-                            ].map(([k, v]) => (
-                                <TableRow key={String(k)}>
-                                    <TableCell sx={{ color: "text.secondary", width: "45%" }}>{k}</TableCell>
-                                    <TableCell>{v ?? "—"}</TableCell>
+                                ["status", "Status", tv("status", subscription?.status)],
+                                ["state", "State", tv("status", subscription?.subscription_state)],
+                                ["account", "Account", tv("status", data.tenancy.account_status)],
+                                ["plan_type", "Plan type", tv("type", plan?.subscription_plan_type)],
+                                [
+                                    "gateway",
+                                    "Payment gateway",
+                                    tv("gateway", subscription?.payment_gateway ?? data.tenancy.gateway_type ?? "internal"),
+                                ],
+                                ["period_start", "Period start", formatDate(subscription?.current_period_start)],
+                                ["period_end", "Period end", formatDate(subscription?.current_period_end)],
+                                ["trial_ends", "Trial ends", formatDate(subscription?.trial_ends_at)],
+                                ["cancels_at", "Cancels at", formatDate(subscription?.cancels_at)],
+                                ["tier", "Plan tier", plan?.tier],
+                                ["trial_days", "Trial days (plan)", plan?.trial_days],
+                            ].map(([key, label, v]) => (
+                                <TableRow key={String(key)}>
+                                    <TableCell sx={{ color: "text.secondary", width: "45%" }}>
+                                        {translate(`tenancy.plan.field.${key}`, { _: String(label) })}
+                                    </TableCell>
+                                    <TableCell>{v === "" || v == null ? "—" : v}</TableCell>
                                 </TableRow>
                             ))}
                         </TableBody>
@@ -287,8 +312,10 @@ const TenancyPlanPanel: React.FC<{ tenancyId: string }> = ({ tenancyId }) => {
                             )}
                             {data.usage.map((u) => (
                                 <TableRow key={u.key}>
-                                    <TableCell>{prettyKey(u.key)}</TableCell>
-                                    <TableCell align="right">{u.unlimited ? "Unlimited" : u.limit}</TableCell>
+                                    <TableCell>{translate(`tenancy.plan.limit_name.${u.key}`, { _: prettyKey(u.key) })}</TableCell>
+                                    <TableCell align="right">
+                                        {u.unlimited ? translate("tenancy.plan.unlimited", { _: "Unlimited" }) : u.limit}
+                                    </TableCell>
                                     <TableCell align="right">{u.current ?? "—"}</TableCell>
                                 </TableRow>
                             ))}
@@ -305,7 +332,13 @@ const TenancyPlanPanel: React.FC<{ tenancyId: string }> = ({ tenancyId }) => {
                                 ? addons
                                 : Object.entries(addons ?? {}).filter(([, on]) => !!on).map(([k]) => k);
                             return enabled.length ? (
-                                enabled.map((a) => <Chip key={String(a)} size="small" label={String(a)} />)
+                                enabled.map((a) => (
+                                    <Chip
+                                        key={String(a)}
+                                        size="small"
+                                        label={translate(`tenancy.plan.addon.${String(a)}`, { _: prettyKey(String(a)) })}
+                                    />
+                                ))
                             ) : (
                                 <Typography variant="body2" color="text.secondary">
                                     —
@@ -328,7 +361,7 @@ const TenancyPlanPanel: React.FC<{ tenancyId: string }> = ({ tenancyId }) => {
                                 <TableRow key={p.id}>
                                     <TableCell>{formatDate(p.created_at)}</TableCell>
                                     <TableCell>
-                                        <Chip size="small" label={p.status} />
+                                        <Chip size="small" label={tv("status", p.status)} />
                                     </TableCell>
                                     <TableCell align="right">
                                         {p.amount != null ? `${p.currency ?? ""} ${p.amount}` : "—"}
@@ -360,11 +393,27 @@ const TenancyPlanPanel: React.FC<{ tenancyId: string }> = ({ tenancyId }) => {
                         value={targetPlan}
                         onChange={(e) => setTargetPlan(e.target.value)}
                         sx={{ mb: 2 }}
+                        // The dialog is raised above the details drawer; the menu popover has to sit above the dialog
+                        // or it opens behind it and the list looks empty.
+                        slotProps={{ select: { MenuProps: { sx: { zIndex: (theme: any) => theme.zIndex.modal + 5 } } } }}
                     >
                         {data.available_plans.map((p) => (
                             <MenuItem key={String(p.id)} value={String(p.id)} disabled={String(p.id) === String(plan?.id)}>
-                                {p.name} — {formatPrice(p.prices, p.price)} / {p.billing_cycle ?? "monthly"}
-                                {String(p.id) === String(plan?.id) ? " (current)" : ""}
+                                <Box sx={{ display: "flex", alignItems: "center", gap: 1, width: "100%" }}>
+                                    <span>
+                                        {p.name} — {price(p.prices, p.price)} / {cycle(p.billing_cycle)}
+                                        {String(p.id) === String(plan?.id)
+                                            ? ` (${translate("tenancy.plan.current_short", { _: "current" })})`
+                                            : ""}
+                                    </span>
+                                    <Chip
+                                        size="small"
+                                        variant="outlined"
+                                        color={p.subscription_plan_type === "internal" ? "secondary" : "default"}
+                                        label={tv("type", p.subscription_plan_type ?? "public")}
+                                        sx={{ ml: "auto" }}
+                                    />
+                                </Box>
                             </MenuItem>
                         ))}
                     </TextField>
