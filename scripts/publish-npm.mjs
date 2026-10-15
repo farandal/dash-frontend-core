@@ -14,6 +14,9 @@
  * Options:
  *   --version X.Y.Z   Publish version (defaults to package.json version)
  *   --dry-run        Simulate publish without uploading
+ *   --tag NAME       npm dist-tag to publish under (default: latest). Use with a pre-release
+ *                    --version (e.g. 1.3.74-srcfree.1) to publish a pilot that no `^1.3.x`
+ *                    range and no `latest` install will pick up.
  *
  * What it does:
  *   1. Unpublishes existing @dashadmin/* packages (best-effort, skips on error)
@@ -105,10 +108,12 @@ const bumpPatch = (version) => {
   const args = process.argv.slice(2);
   let PUBLISH_VERSION = null;
   let DRY_RUN = false;
+  let DIST_TAG = null;
 
   for (let i = 0; i < args.length; i++) {
     if (args[i] === '--version') { PUBLISH_VERSION = args[++i]; continue; }
     if (args[i] === '--dry-run') { DRY_RUN = true; continue; }
+    if (args[i] === '--tag') { DIST_TAG = args[++i]; continue; }
   }
 
   if (PUBLISH_VERSION) {
@@ -241,7 +246,7 @@ const bumpPatch = (version) => {
         console.log(`  [dry-run] npm publish ${dir}`);
       } else {
         execSync(
-          `npm publish ${dir} --registry ${REGISTRY} --access public --no-git-checks`,
+          `npm publish ${dir} --registry ${REGISTRY} --access public --no-git-checks${DIST_TAG ? ` --tag ${DIST_TAG}` : ''}`,
           { env: { ...process.env, npm_config_userconfig: NPMRC_PATH }, stdio: 'inherit' }
         );
       }

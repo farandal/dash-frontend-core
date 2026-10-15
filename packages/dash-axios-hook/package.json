@@ -30,7 +30,7 @@
 		"dash-utils": "workspace:*"
 	},
 	"module": "dist/index.js",
-	"types": "./src/index.tsx",
+	"types": "./dist/index.d.ts",
 	"exports": {
 		".": "./dist/index.js",
 		"./*": "./dist/*.js",
@@ -41,22 +41,25 @@
 		"registry": "http://localhost:4873"
 	},
 	"scripts": {
-		"build": "tsup"
+		"build": "tsup && pnpm run build:types",
+		"build:types": "tsc -p tsconfig.json --declaration --emitDeclarationOnly --noEmit false --outDir dist --rootDir src --skipLibCheck || true"
 	},
 	"type": "module",
 	"files": [
-		"dist",
-		"src"
+		"dist"
 	],
 	"typesVersions": {
 		"*": {
+			"dist/*": [
+				"dist/*"
+			],
 			"src/*": [
-				"src/*",
-				"src/*/index"
+				"dist/*",
+				"dist/*/index"
 			],
 			"*": [
-				"src/*",
-				"src/*/index"
+				"dist/*",
+				"dist/*/index"
 			]
 		}
 	}
