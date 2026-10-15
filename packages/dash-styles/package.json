@@ -9,12 +9,12 @@
 			"require": "./dist/index.cjs"
 		},
 		"./dash.less": {
-			"import": "./src/dash.less",
-			"require": "./src/dash.less"
+			"import": "./dist/dash.less",
+			"require": "./dist/dash.less"
 		},
 		"./styles/*": {
-			"import": "./src/styles/*",
-			"require": "./src/styles/*"
+			"import": "./dist/styles/*",
+			"require": "./dist/styles/*"
 		}
 	},
 	"license": "MIT",
@@ -33,7 +33,7 @@
 		"registry": "http://localhost:4873"
 	},
 	"scripts": {
-		"build": "tsup && pnpm run build:types",
+		"build": "tsup && pnpm run build:types && node ../../scripts/copy-assets.mjs",
 		"build:types": "../../node_modules/.bin/tsc -p tsconfig.json --declaration --emitDeclarationOnly --noEmit false --outDir dist --rootDir src --skipLibCheck; test -f dist/index.d.ts"
 	},
 	"files": [

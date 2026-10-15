@@ -10,7 +10,7 @@
 		"lint:fix": "pnpm prettier --write .",
 		"check-updates": "pnpm npm-check-updates",
 		"updates-packages": "pnpm npm-check-updates -u",
-		"build": "tsup"
+		"build": "tsup && node ../../scripts/copy-assets.mjs"
 	},
 	"browserslist": {
 		"production": [

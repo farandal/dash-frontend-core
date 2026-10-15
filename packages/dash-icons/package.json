@@ -15,7 +15,7 @@
 		"test": "jest --json",
 		"lint:check": "prettier --check .",
 		"lint:fix": "prettier --write .",
-		"build": "tsup"
+		"build": "tsup && node ../../scripts/copy-assets.mjs"
 	},
 	"dependencies": {
 		"@jest/globals": "latest",

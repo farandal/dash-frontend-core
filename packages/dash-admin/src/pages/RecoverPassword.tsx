@@ -7,7 +7,7 @@ import { FullLayoutMarkup } from '../default-theme';
 import getType from '../utils/getType';
 import MUISimpleJsonTable from '../components/misc/MuiSimpleJsonTable';
 import HomeIcon from '@mui/icons-material/Home';
-import { getCookie, removeCookie, setCookie,clearAllCookies  } from '../../src/utils/cookies';
+import { getCookie, removeCookie, setCookie,clearAllCookies  } from '../utils/cookies';
 import { dashStorage } from 'dash-utils';
 
 const RecoverPassword = ({  }: {  }) => {
