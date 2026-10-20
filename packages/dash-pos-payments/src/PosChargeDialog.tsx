@@ -19,7 +19,9 @@ export const PosChargeDialog: React.FC<{
     onClose: () => void;
     onSettled?: (transaction: PosTransaction) => void;
     pollMs?: number;
-}> = ({ transactionId, open, onClose, onSettled, pollMs = 2500 }) => {
+    /** Staff may confirm a charge the terminal asks to check; a customer screen may not. */
+    allowConfirm?: boolean;
+}> = ({ transactionId, open, onClose, onSettled, pollMs = 2500, allowConfirm = true }) => {
     const { api, translate, notify } = usePosPayments();
     const [tx, setTx] = useState<PosTransaction | null>(null);
     const [busy, setBusy] = useState(false);
@@ -110,7 +112,7 @@ export const PosChargeDialog: React.FC<{
                 {status === 'pending' && transactionId && (
                     <Button color="error" disabled={busy} onClick={() => act(() => api.cancel(transactionId))}>{translate('pos_payments.charge.cancel')}</Button>
                 )}
-                {status === 'pending' && attention && transactionId && (
+                {status === 'pending' && attention && allowConfirm && transactionId && (
                     <Button variant="contained" disabled={busy} onClick={() => act(() => api.confirm(transactionId))}>{translate('pos_payments.charge.confirm')}</Button>
                 )}
                 {tx?.final && <Button variant="contained" onClick={onClose}>{translate('pos_payments.charge.close')}</Button>}

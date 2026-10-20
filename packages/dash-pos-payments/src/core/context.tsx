@@ -35,8 +35,10 @@ export const PosPaymentsProvider: React.FC<{
     translate?: PosPaymentsKit['translate'];
     notify: PosPaymentsKit['notify'];
     locale?: string;
+    /** Where charges are followed (default: the staff API `pos-payments/transactions`). */
+    transactionsPath?: string;
     children: React.ReactNode;
-}> = ({ http, translate, notify, locale = 'es', children }) => {
+}> = ({ http, translate, notify, locale = 'es', transactionsPath, children }) => {
     const kit = useMemo<PosPaymentsKit>(() => {
         const own = bundledTranslate(locale);
         // The host's texts win; a key it does not know falls back to ours. Asked WITHOUT `_`: with a
@@ -49,8 +51,8 @@ export const PosPaymentsProvider: React.FC<{
             return own(key, fallback === undefined ? rest : { ...rest, _: fallback });
         };
 
-        return { api: createPosPaymentsApi(http), translate: t, notify };
-    }, [http, translate, notify, locale]);
+        return { api: createPosPaymentsApi(http, { transactionsPath }), translate: t, notify };
+    }, [http, translate, notify, locale, transactionsPath]);
 
     return <Ctx.Provider value={kit}>{children}</Ctx.Provider>;
 };
