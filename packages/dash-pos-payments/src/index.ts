@@ -10,3 +10,4 @@ export { PosPaymentsProvider, usePosPayments, bundledTranslate, posPaymentsEs, p
 export type { PosPaymentsKit } from './core/context';
 export { PosPaymentSettings } from './PosPaymentSettings';
 export { PosChargeDialog } from './PosChargeDialog';
+export { PosPaymentsList } from './PosPaymentsList';

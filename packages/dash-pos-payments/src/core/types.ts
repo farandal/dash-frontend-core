@@ -74,6 +74,46 @@ export interface PosTransaction {
     expires_at: string | null;
     settled_at: string | null;
     created_at: string | null;
+    // Payments list fields.
+    point_of_sale_name?: string | null;
+    manual_confirmation?: boolean;
+    note?: string | null;
+    refunded_amount?: string;
+    refundable_amount?: string;
+    refunds?: { amount: string; refund_id?: string; status?: string; refunded_at?: string }[];
+    late_results_count?: number;
+    /** Whether this user may refund it from the list, or why not (already translated). */
+    refund?: { allowed: boolean; hint: string | null };
+}
+
+/** A point of sale the user sees, for the payments list filter. */
+export interface PosPointOfSaleOption {
+    id: number | string;
+    name: string;
+    tenant_id: string | null;
+    connector: string | null;
+    active: boolean;
+}
+
+export interface PosTransactionFilters {
+    point_of_sale_id?: number | string;
+    status?: string;
+    provider?: string;
+    reference_type?: string;
+    reference?: string;
+    from?: string;
+    to?: string;
+    attention?: boolean;
+    late?: boolean;
+    page?: number;
+    per_page?: number;
+}
+
+export interface PosTransactionPage {
+    data: PosTransaction[];
+    total: number;
+    page: number;
+    per_page: number;
 }
 
 /**

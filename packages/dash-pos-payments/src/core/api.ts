@@ -1,4 +1,4 @@
-import type { Connector, PaymentConfig, PosHttp, PosTransaction, Terminal } from './types';
+import type { Connector, PaymentConfig, PosHttp, PosPointOfSaleOption, PosTransaction, PosTransactionFilters, PosTransactionPage, Terminal } from './types';
 
 const unwrap = <T,>(body: any): T => (body && typeof body === 'object' && 'data' in body ? body.data : body);
 
@@ -23,6 +23,18 @@ export function createPosPaymentsApi(http: () => PosHttp, options: { transaction
         refresh: (id: string) => post<PosTransaction>(`${tx}/${id}/refresh`),
         cancel: (id: string) => post<PosTransaction>(`${tx}/${id}/cancel`),
         confirm: (id: string, note?: string) => post<PosTransaction>(`${tx}/${id}/confirm`, note ? { note } : {}),
+
+        // The payments list (administrators).
+        pointOfSales: () => get<PosPointOfSaleOption[]>('pos-payments/point-of-sales'),
+        transactions: async (filters: PosTransactionFilters = {}): Promise<PosTransactionPage> => {
+            const query = Object.entries(filters)
+                .filter(([, value]) => value !== undefined && value !== null && value !== '' && value !== false)
+                .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value === true ? '1' : String(value))}`)
+                .join('&');
+            // Not unwrapped: the page carries total/page next to data.
+            return (await http().get(`pos-payments/transactions${query ? `?${query}` : ''}`)).data as PosTransactionPage;
+        },
+        refund: (id: string, amount?: string | number) => post<PosTransaction>(`pos-payments/transactions/${id}/refund`, amount !== undefined && amount !== '' ? { amount } : {}),
     };
 }
 
