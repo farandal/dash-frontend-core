@@ -405,7 +405,10 @@ const AppMaterialMenu: React.FC<IAppMenuExtended> = props => {
                 paddingRight: '5px',
                 //borderRight: navExpanded && navSize === 'large' ? '1px solid rgba(0, 0, 0, 0.12)' : 'none',
                 display: 'flex',
-                flexDirection: 'column',
+                // Stacking the toggle button above the logo only fits a vertical (left/right)
+                // sidebar's width. A horizontal (top/bottom) bar is too short for that stack,
+                // which is what collapsed the logo's <img> to 0×0 - they need to sit side by side.
+                flexDirection: isHorizontal ? 'row' : 'column',
                 alignItems: 'center',
                 gap: 1
             }}>
@@ -415,7 +418,7 @@ const AppMaterialMenu: React.FC<IAppMenuExtended> = props => {
                         display: 'flex',
                         alignItems: 'center',
                         //gap: 1,
-                        flexDirection: 'column',
+                        flexDirection: isHorizontal ? 'row' : 'column',
 
                     }}>
                     {/* Toggle icon - burger for mobile, arrows for desktop */}

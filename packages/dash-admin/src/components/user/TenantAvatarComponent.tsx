@@ -79,11 +79,20 @@ const TenantAvatarComponent: React.FC<TenantAvatarComponentProps> = ({
         >
              
             
-                <img 
-                    src={imageUrl} 
+                <img
+                    src={imageUrl}
                     alt={alt}
-                    style={{
+                    style={isHorizontal ? {
+                        // The container's height is the one definite dimension here (width is
+                        // intentionally auto) - scaling off height:100% resolves reliably,
+                        // where height:auto + max-height:100% collapsed to 0 (the percentage
+                        // had no definite height to resolve against on the cross axis).
                         width: 'auto',
+                        height: '100%',
+                        maxWidth: '100%',
+                        objectFit: 'contain'
+                    } : {
+                        width: '100%',
                         height: 'auto',
                         maxWidth: '100%',
                         maxHeight: '100%',
