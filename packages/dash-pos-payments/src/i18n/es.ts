@@ -34,6 +34,17 @@ const es = {
         verified: 'Configuración verificada: el terminal está listo.',
         not_verified: 'Guardado, pero el proveedor no confirmó el terminal (¿no está en modo PDV, o es de otra cuenta?).',
         saved_manual: 'La ventanilla cobra a mano (sin terminal).',
+        oauth: {
+            platform: 'Conectar mi cuenta',
+            own: 'Usar mi propia aplicación',
+            connect: 'Conectar con Mercado Pago',
+            reconnect: 'Volver a conectar',
+            connected_as: 'Conectado (cuenta %{account})',
+            connected: 'Cuenta de Mercado Pago conectada. Elija el terminal y guarde.',
+            failed: 'No se pudo conectar la cuenta de Mercado Pago.',
+            expired: 'La conexión con Mercado Pago venció o fue revocada: vuelva a conectar.',
+            help: 'Inicie sesión en Mercado Pago con la cuenta del local y autorice a la plataforma. No necesita crear una aplicación ni copiar claves.',
+        },
         list: {
             title: 'Cobros',
             point_of_sale: 'Punto de venta',

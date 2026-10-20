@@ -28,6 +28,17 @@ const en = {
         verified: 'Configuration verified: the terminal is ready.',
         not_verified: 'Saved, but the provider did not confirm the terminal (not in PDV mode, or another account?).',
         saved_manual: 'This point of sale takes payments by hand (no terminal).',
+        oauth: {
+            platform: 'Connect my account',
+            own: 'Use my own application',
+            connect: 'Connect Mercado Pago',
+            reconnect: 'Connect again',
+            connected_as: 'Connected (account %{account})',
+            connected: 'Mercado Pago account connected. Choose the terminal and save.',
+            failed: 'The Mercado Pago account could not be connected.',
+            expired: 'The Mercado Pago connection expired or was revoked: connect again.',
+            help: 'Log in to Mercado Pago with the venue\'s account and authorise the platform. No application or keys to copy.',
+        },
         list: {
             title: 'Payments',
             point_of_sale: 'Point of sale',

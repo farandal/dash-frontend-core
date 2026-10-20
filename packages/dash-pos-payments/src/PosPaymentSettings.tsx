@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import {
-    Alert, Button, Card, CardContent, Chip, CircularProgress, FormControlLabel, MenuItem, Stack, Switch, TextField, Typography,
+    Alert, Button, Card, CardContent, Chip, CircularProgress, FormControlLabel, MenuItem, Stack, Switch, TextField, ToggleButton,
+    ToggleButtonGroup, Typography,
 } from '@mui/material';
 import { usePosPayments } from './core/context';
 import { posErrorMessage } from './core/api';
@@ -10,11 +11,25 @@ const MANUAL = '__manual__';
 
 const toBool = (value: unknown) => value === true || value === 1 || ['1', 'true', 'yes', 'on'].includes(String(value).toLowerCase());
 
+/** Fields that only a venue's own Mercado Pago application needs (with "Connect" the platform's apply). */
+const OWN_APP_FIELDS = ['access_token', 'webhook_secret'];
+
+/** The page to come back to after Mercado Pago, without a previous outcome in its query. */
+const currentPageWithoutOutcome = () => {
+    const url = new URL(window.location.href);
+    ['mp_oauth', 'reason', 'point_of_sale_id'].forEach((k) => url.searchParams.delete(k));
+    return url.toString();
+};
+
 /**
  * How a point of sale takes card payments: no integration (staff register cash by hand) or a
  * terminal connector with its credentials. Secrets are never shown again: a saved one reads
  * "saved", and leaving it empty keeps it. For Mercado Pago, the terminal can be picked from the
  * account once the access token is saved.
+ *
+ * Mercado Pago accounts connect two ways (doc §14.6): "Connect Mercado Pago" (the venue authorises
+ * the platform's application; offered when the backend has it set up) or the access token of the
+ * venue's own application. Coming back from Mercado Pago, the page carries ?mp_oauth=connected|error.
  */
 export const PosPaymentSettings: React.FC<{ pointOfSaleId: number | string; onSaved?: (config: PaymentConfig) => void }> = ({ pointOfSaleId, onSaved }) => {
     const { api, translate, notify } = usePosPayments();
@@ -26,6 +41,9 @@ export const PosPaymentSettings: React.FC<{ pointOfSaleId: number | string; onSa
     const [terminals, setTerminals] = useState<Terminal[] | null>(null);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
+    // 'platform' = "Connect Mercado Pago"; 'own' = the venue's own application (pasted token).
+    const [account, setAccount] = useState<'platform' | 'own'>('own');
+    const [connecting, setConnecting] = useState(false);
 
     useEffect(() => {
         let alive = true;
@@ -38,6 +56,8 @@ export const PosPaymentSettings: React.FC<{ pointOfSaleId: number | string; onSa
                 setSelected(current.connector ?? MANUAL);
                 setValues(current.values ?? {});
                 setRefundMode(current.settings?.refund_mode === 'manual' ? 'manual' : 'connector');
+                const oauth = current.oauth;
+                setAccount(oauth?.connected || (oauth?.available && !current.secrets_set?.access_token) ? 'platform' : 'own');
             })
             .catch((e) => notify(posErrorMessage(e), { type: 'error' }))
             .finally(() => alive && setLoading(false));
@@ -47,8 +67,33 @@ export const PosPaymentSettings: React.FC<{ pointOfSaleId: number | string; onSa
         };
     }, [api, notify, pointOfSaleId]);
 
+    // Back from Mercado Pago: say how it went once, and drop the outcome from the address.
+    useEffect(() => {
+        const url = new URL(window.location.href);
+        const outcome = url.searchParams.get('mp_oauth');
+        if (!outcome || String(url.searchParams.get('point_of_sale_id')) !== String(pointOfSaleId)) return;
+        notify(translate(outcome === 'connected' ? 'pos_payments.oauth.connected' : 'pos_payments.oauth.failed'), { type: outcome === 'connected' ? 'success' : 'error' });
+        window.history.replaceState(window.history.state, '', currentPageWithoutOutcome());
+    }, [notify, pointOfSaleId, translate]);
+
     const connector = useMemo(() => connectors.find((c) => c.key === selected) ?? null, [connectors, selected]);
-    const form: ParamFormat[] = connector?.form ?? [];
+    const oauthOffered = !!connector?.capabilities?.oauth && !!config?.oauth?.available;
+    const usesPlatform = oauthOffered && account === 'platform';
+    const form: ParamFormat[] = (connector?.form ?? [])
+        .filter((f) => !f.internal)
+        .filter((f) => !(usesPlatform && OWN_APP_FIELDS.includes(f.id)));
+    const oauthConnected = !!config?.oauth?.connected && config?.connector === connector?.key;
+
+    const connectMercadoPago = async () => {
+        setConnecting(true);
+        try {
+            const { url } = await api.mercadoPagoOAuthUrl(pointOfSaleId, currentPageWithoutOutcome());
+            window.location.assign(url);
+        } catch (e) {
+            notify(posErrorMessage(e), { type: 'error' });
+            setConnecting(false);
+        }
+    };
     const sameAsSaved = connector && config?.connector === connector.key;
 
     const setField = (id: string, value: unknown) => setValues((v) => ({ ...v, [id]: value }));
@@ -158,6 +203,27 @@ export const PosPaymentSettings: React.FC<{ pointOfSaleId: number | string; onSa
                         {connectors.map((c) => <MenuItem key={c.key} value={c.key}>{translate(c.label, { _: c.key })}</MenuItem>)}
                     </TextField>
 
+                    {oauthOffered && (
+                        <Stack spacing={1}>
+                            <ToggleButtonGroup size="small" exclusive value={account} onChange={(_, v) => v && setAccount(v)}>
+                                <ToggleButton value="platform">{translate('pos_payments.oauth.platform')}</ToggleButton>
+                                <ToggleButton value="own">{translate('pos_payments.oauth.own')}</ToggleButton>
+                            </ToggleButtonGroup>
+                            {usesPlatform && (
+                                <Stack direction="row" spacing={1} sx={{ alignItems: 'center', flexWrap: 'wrap', gap: 1 }}>
+                                    {oauthConnected && !config?.oauth?.error && (
+                                        <Chip color="success" label={translate('pos_payments.oauth.connected_as', { account: config?.oauth?.mp_user_id ?? '' })} />
+                                    )}
+                                    <Button variant={oauthConnected ? 'outlined' : 'contained'} onClick={connectMercadoPago} disabled={connecting}>
+                                        {translate(oauthConnected ? 'pos_payments.oauth.reconnect' : 'pos_payments.oauth.connect')}
+                                    </Button>
+                                </Stack>
+                            )}
+                            {usesPlatform && config?.oauth?.error && <Alert severity="warning">{translate('pos_payments.oauth.expired')}</Alert>}
+                            {usesPlatform && !oauthConnected && <Typography variant="body2" color="text.secondary">{translate('pos_payments.oauth.help')}</Typography>}
+                        </Stack>
+                    )}
+
                     {form.map(renderField)}
 
                     {connector && (
@@ -168,7 +234,7 @@ export const PosPaymentSettings: React.FC<{ pointOfSaleId: number | string; onSa
                     )}
 
                     <Stack direction="row">
-                        <Button variant="contained" onClick={save} disabled={saving} startIcon={saving ? <CircularProgress size={16} color="inherit" /> : null}>
+                        <Button variant="contained" onClick={save} disabled={saving || (usesPlatform && !oauthConnected)} startIcon={saving ? <CircularProgress size={16} color="inherit" /> : null}>
                             {translate('pos_payments.save_verify')}
                         </Button>
                     </Stack>

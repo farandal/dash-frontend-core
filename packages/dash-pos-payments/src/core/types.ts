@@ -9,6 +9,8 @@ export interface ParamFormat {
     description?: string;
     default_value?: unknown;
     choices?: { id: string; name?: string }[];
+    /** Written by its own flow (an OAuth connection's tokens): never shown in the form. */
+    internal?: boolean;
 }
 
 export interface ConnectorCapabilities {
@@ -18,6 +20,8 @@ export interface ConnectorCapabilities {
     supported_currencies: string[];
     region?: string;
     supports_refund?: boolean;
+    /** Provider of a platform OAuth connection ("Connect Mercado Pago"), when it is set up. */
+    oauth?: string | null;
 }
 
 export interface Connector {
@@ -41,6 +45,8 @@ export interface PaymentConfig {
     device_id: string | null;
     settings: { refund_mode: RefundMode };
     verified?: boolean | null;
+    /** "Connect Mercado Pago" with the platform application (no secrets). */
+    oauth?: { available: boolean; connected: boolean; mp_user_id: string | null; expires_at: string | null; error: string | null } | null;
 }
 
 export interface Terminal {

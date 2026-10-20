@@ -19,6 +19,9 @@ export function createPosPaymentsApi(http: () => PosHttp, options: { transaction
         configure: (pointOfSaleId: number | string, body: { connector: string | null; params?: Record<string, unknown>; settings?: object; device_id?: string | null; verify?: boolean }) =>
             put<PaymentConfig>(`pos-payments/point-of-sales/${pointOfSaleId}/payment`, body),
         terminals: (pointOfSaleId: number | string) => get<Terminal[]>(`pos-payments/point-of-sales/${pointOfSaleId}/terminals`),
+        /** Where to send the browser to connect the platform's Mercado Pago application. */
+        mercadoPagoOAuthUrl: (pointOfSaleId: number | string, returnUrl: string) =>
+            get<{ url: string }>(`pos-payments/point-of-sales/${pointOfSaleId}/oauth/mercadopago?return_url=${encodeURIComponent(returnUrl)}`),
         transaction: (id: string) => get<PosTransaction>(`${tx}/${id}`),
         refresh: (id: string) => post<PosTransaction>(`${tx}/${id}/refresh`),
         cancel: (id: string) => post<PosTransaction>(`${tx}/${id}/cancel`),
