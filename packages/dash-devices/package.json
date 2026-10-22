@@ -1,0 +1,53 @@
+{
+	"name": "dash-devices",
+	"version": "0.0.1",
+	"license": "MIT",
+	"main": "dist/index.js",
+	"devDependencies": {
+		"@types/node": "latest",
+		"@types/react": "latest",
+		"@types/react-dom": "latest",
+		"typescript": "latest"
+	},
+	"dependencies": {
+		"@mui/material": "^9.3.0"
+	},
+	"module": "dist/index.js",
+	"types": "./dist/index.d.ts",
+	"exports": {
+		".": "./dist/index.js",
+		"./*": "./dist/*.js",
+		"./src/*": "./dist/*.js"
+	},
+	"publishConfig": {
+		"access": "public",
+		"registry": "http://localhost:4873"
+	},
+	"scripts": {
+		"build": "tsup && pnpm run build:types",
+		"build:types": "../../node_modules/.bin/tsc -p tsconfig.json --declaration --emitDeclarationOnly --noEmit false --outDir dist --rootDir src --skipLibCheck; test -f dist/index.d.ts"
+	},
+	"type": "module",
+	"files": [
+		"dist"
+	],
+	"typesVersions": {
+		"*": {
+			"dist/*": [
+				"dist/*"
+			],
+			"src/*": [
+				"dist/*",
+				"dist/*/index"
+			],
+			"*": [
+				"dist/*",
+				"dist/*/index"
+			]
+		}
+	},
+	"peerDependencies": {
+		"react": ">=18"
+	},
+	"description": "Device management UI shared by every DASH product: the devices a terminal reports (door locks, cash drawers, printers), their gate/drawer aliases, and running an action on one. Talks to core app/DeviceCore."
+}

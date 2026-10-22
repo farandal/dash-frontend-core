@@ -1,0 +1,46 @@
+/** Textos del paquete, español. Claves `dash_devices.*`. */
+const es = {
+    dash_devices: {
+        label: 'Dispositivos',
+        menu_list: 'Lista',
+        group: 'Dispositivos',
+        tabs: { general: 'General', settings: 'Configuración', hardware: 'Equipo' },
+        fields: {
+            name: 'Nombre',
+            type: 'Tipo',
+            status: 'Estado',
+            terminal: 'Terminal',
+            aliases: 'Alias',
+            actions: 'Acciones',
+            active: 'Activo',
+            is_configured: 'Configurado',
+            config: 'Configuración del dispositivo',
+            driver: 'Controlador',
+            device_uid: 'Identificador',
+            last_seen_at: 'Visto por última vez',
+            last_error: 'Último error',
+            search: 'Buscar',
+        },
+        types: { actuator: 'Actuador (cerradura, cajón)', printer: 'Impresora' },
+        status: { connected: 'En línea', disconnected: 'Sin conexión', error: 'Con error', unknown: 'Desconocido' },
+        aliases_help: 'Nombres estables que otras aplicaciones usan para elegir este dispositivo: gate:puerta-a (una puerta), drawer:caja-1 (un cajón). Minúsculas, números, guion y punto; únicos en el venue.',
+        aliases_invalid: 'Formato: tipo:nombre, por ejemplo gate:puerta-a',
+        action: {
+            run: 'Ejecutar una acción',
+            title: 'Ejecutar en «%{name}»',
+            choose: 'Acción',
+            run_now: 'Ejecutar',
+            close: 'Cerrar',
+            not_configured: 'Activa y configura el dispositivo antes de probarlo.',
+            no_actions: 'Este dispositivo no anunció acciones.',
+            acked: 'Hecho: el dispositivo respondió.',
+            failed: 'El dispositivo respondió con un error',
+            timeout: 'El comando salió pero el dispositivo no respondió a tiempo.',
+            sent: 'Comando enviado.',
+            unavailable: 'No se pudo enviar: el dispositivo no está en línea.',
+            invalid: 'No se pudo enviar',
+        },
+    },
+};
+
+export default es;

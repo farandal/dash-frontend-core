@@ -1,0 +1,46 @@
+/** Package texts, English. Keys `dash_devices.*`. */
+const en = {
+    dash_devices: {
+        label: 'Devices',
+        menu_list: 'List',
+        group: 'Devices',
+        tabs: { general: 'General', settings: 'Settings', hardware: 'Hardware' },
+        fields: {
+            name: 'Name',
+            type: 'Type',
+            status: 'Status',
+            terminal: 'Terminal',
+            aliases: 'Aliases',
+            actions: 'Actions',
+            active: 'Active',
+            is_configured: 'Configured',
+            config: 'Device settings',
+            driver: 'Driver',
+            device_uid: 'Identifier',
+            last_seen_at: 'Last seen',
+            last_error: 'Last error',
+            search: 'Search',
+        },
+        types: { actuator: 'Actuator (door lock, cash drawer)', printer: 'Printer' },
+        status: { connected: 'Online', disconnected: 'Offline', error: 'Error', unknown: 'Unknown' },
+        aliases_help: 'Stable names other apps use to pick this device: gate:door-a (a door), drawer:till-1 (a cash drawer). Lowercase, digits, dash and dot; unique in the venue.',
+        aliases_invalid: 'Format: kind:name, for example gate:door-a',
+        action: {
+            run: 'Run an action',
+            title: 'Run on “%{name}”',
+            choose: 'Action',
+            run_now: 'Run',
+            close: 'Close',
+            not_configured: 'Activate and configure the device before testing it.',
+            no_actions: 'This device announced no actions.',
+            acked: 'Done: the device answered.',
+            failed: 'The device answered with an error',
+            timeout: 'The command left but the device did not answer in time.',
+            sent: 'Command sent.',
+            unavailable: 'Not sent: the device is offline.',
+            invalid: 'Could not send',
+        },
+    },
+};
+
+export default en;
