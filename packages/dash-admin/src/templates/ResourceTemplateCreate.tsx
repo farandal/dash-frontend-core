@@ -143,38 +143,50 @@ export const ResourceTemplateCreate: FC<IResourceTemplate> = (props) => {
 		</Toolbar>
 	);*/
 
+	// A resource's own `create` route is react-router's exact match for
+	// .../create - guaranteed to mount, unlike the old redirect-to-list
+	// scheme this replaced (which bounced through a hash DashAutoDrawer had
+	// to re-parse after navigating away; see DashAutoDrawer's `forceMode`
+	// doc). drawerOptions.create === false keeps the original full-form
+	// behaviour below instead of ever rendering the drawer here.
+	const _showDrawer = resourceConfig.drawer && resourceConfig.drawerOptions?.create !== false;
+
 	return resourceConfig.createComponent ? (
 		<ResourceLayout resourceConfig={resourceConfig} locale={locale}>
-			<Create>
-				<SimpleForm>
-					{resourceConfig.createComponent(resourceConfig)}
-				</SimpleForm>
-			</Create>
-			{resourceConfig.drawer && (
+			{_showDrawer ? (
 				<DashAutoDrawer
 					resourceConfig={resourceConfig}
+					forceMode="create"
 					{...(resourceConfig.drawerProps && {
 						...resourceConfig.drawerProps,
 					})}
 				/>
+			) : (
+				<Create>
+					<SimpleForm>
+						{resourceConfig.createComponent(resourceConfig)}
+					</SimpleForm>
+				</Create>
 			)}
 		</ResourceLayout>
 	) : (
 		<ResourceLayout resourceConfig={resourceConfig} locale={locale}>
-			<DashAutoCreate
-				//toolbar={<ToolBar />}
-				onError={onError}
-				onSubmit={onCreate}
-				beforeSubmit={onBeforeSubmit}
-				resourceConfig={resourceConfig}
-				locale={locale}
-			/>
-			{resourceConfig.drawer && (
+			{_showDrawer ? (
 				<DashAutoDrawer
 					resourceConfig={resourceConfig}
+					forceMode="create"
 					{...(resourceConfig.drawerProps && {
 						...resourceConfig.drawerProps,
 					})}
+				/>
+			) : (
+				<DashAutoCreate
+					//toolbar={<ToolBar />}
+					onError={onError}
+					onSubmit={onCreate}
+					beforeSubmit={onBeforeSubmit}
+					resourceConfig={resourceConfig}
+					locale={locale}
 				/>
 			)}
 		</ResourceLayout>
