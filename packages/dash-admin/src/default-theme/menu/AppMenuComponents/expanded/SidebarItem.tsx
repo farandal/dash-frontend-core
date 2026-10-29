@@ -84,7 +84,16 @@ const SidebarItem = ({
       }}
     >
       <ListItemIcon>{item?.icon || DefaultIcon}</ListItemIcon>
-      {navSize !== "small" && <ListItemText>{item.label}</ListItemText>}
+      {navSize !== "small" && (
+        <ListItemText
+          primaryTypographyProps={{
+            noWrap: true,
+            sx: { textOverflow: 'ellipsis' },
+          }}
+        >
+          {item.label}
+        </ListItemText>
+      )}
     </ListItemButton>
   );
 };
