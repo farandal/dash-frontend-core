@@ -235,7 +235,11 @@ const CollapsableSidebarMenu = ({
           {navExpanded && (
             <ListItemText
               disableTypography
-              primary={<Typography color="inherit">{item.label}</Typography>}
+              primary={
+                <Typography color="inherit" noWrap sx={{ textOverflow: 'ellipsis' }}>
+                  {item.label}
+                </Typography>
+              }
             />
           )}
           {navExpanded && (

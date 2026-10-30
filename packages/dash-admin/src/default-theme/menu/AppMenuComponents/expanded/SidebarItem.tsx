@@ -84,7 +84,17 @@ const SidebarItem = ({
       }}
     >
       <ListItemIcon>{item?.icon || DefaultIcon}</ListItemIcon>
-      {navSize !== "small" && <ListItemText primaryTypographyProps={{ color: 'inherit' }}>{item.label}</ListItemText>}
+      {navSize !== "small" && (
+        <ListItemText
+          primaryTypographyProps={{
+            color: 'inherit',
+            noWrap: true,
+            sx: { textOverflow: 'ellipsis' },
+          }}
+        >
+          {item.label}
+        </ListItemText>
+      )}
     </ListItemButton>
   );
 };
