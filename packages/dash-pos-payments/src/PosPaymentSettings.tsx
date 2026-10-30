@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import {
-    Alert, Button, Card, CardContent, Chip, CircularProgress, FormControlLabel, MenuItem, Stack, Switch, TextField, ToggleButton,
-    ToggleButtonGroup, Typography,
+    Alert, Button, Card, CardContent, Chip, CircularProgress, createTheme, FormControlLabel, MenuItem, Stack, Switch, TextField,
+    ThemeProvider, ToggleButton, ToggleButtonGroup, Typography, useTheme,
 } from '@mui/material';
 import { usePosPayments } from './core/context';
 import { posErrorMessage } from './core/api';
@@ -44,6 +44,18 @@ export const PosPaymentSettings: React.FC<{ pointOfSaleId: number | string; onSa
     // 'platform' = "Connect Mercado Pago"; 'own' = the venue's own application (pasted token).
     const [account, setAccount] = useState<'platform' | 'own'>('own');
     const [connecting, setConnecting] = useState(false);
+
+    // The drawer this renders inside always gives it a light (near-white) card surface, in both
+    // of the app's dark/light modes — but Typography/FormHelperText/Select text color follows the
+    // app's CURRENT mode, which (in dark mode) is meant for a dark surface and is unreadable here.
+    // A self-contained light theme keeps this card legible regardless of the app's mode, while
+    // still picking up the app's own brand colors so buttons/focus rings stay on-brand.
+    const ambientTheme = useTheme();
+    const lightTheme = useMemo(() => createTheme({
+        palette: { mode: 'light', primary: ambientTheme.palette.primary, secondary: ambientTheme.palette.secondary },
+        typography: ambientTheme.typography,
+        shape: ambientTheme.shape,
+    }), [ambientTheme]);
 
     useEffect(() => {
         let alive = true;
@@ -193,8 +205,9 @@ export const PosPaymentSettings: React.FC<{ pointOfSaleId: number | string; onSa
     if (loading) return <CircularProgress size={24} />;
 
     return (
-        <Card variant="outlined">
-            <CardContent>
+        <ThemeProvider theme={lightTheme}>
+            <Card variant="outlined">
+                <CardContent>
                 <Stack spacing={2}>
                     <Typography variant="h6">{translate('pos_payments.integration')}</Typography>
 
@@ -241,6 +254,7 @@ export const PosPaymentSettings: React.FC<{ pointOfSaleId: number | string; onSa
                 </Stack>
             </CardContent>
         </Card>
+        </ThemeProvider>
     );
 };
 
