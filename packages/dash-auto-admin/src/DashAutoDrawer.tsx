@@ -2,7 +2,7 @@ import { PropsWithChildren, useCallback, useEffect, useState } from 'react';
 import AutoCreate from './DashAutoCreate';
 import AutoEdit from './DashAutoEdit';
 
-import { Toolbar, SaveButton, Button } from 'react-admin';
+import { Toolbar, SaveButton, Button, useRedirect } from 'react-admin';
 
 import IDashAutoAdminResourceConfig from './interfaces/IDashAutoAdminResourceConfig';
 
@@ -25,11 +25,26 @@ export interface IDashAutoDrawerPublicProps extends DrawerProps {
 export interface IDashAutoDrawer extends IDashAutoDrawerPublicProps, PropsWithChildren {
     recordId?: React.Key;
     resourceConfig: IDashAutoAdminResourceConfig;
+    /**
+     * Bypasses the hash-matching below entirely and opens the drawer in this
+     * mode immediately. Meant for a route that react-router is guaranteed to
+     * have matched (e.g. the resource's own native `create` route) rather
+     * than a redirect-then-reopen-by-hash round trip: if the resource's
+     * `/create` URL instead redirected to the list page and relied on this
+     * component re-parsing a hash it was handed through navigation state,
+     * any timing/ordering mismatch there means NEITHER the drawer nor a
+     * fallback full-page form can open, because the redirect already
+     * abandoned the only route that could have rendered one. forceMode
+     * exists so the simplest case (plain navigation to .../create) never
+     * depends on that mechanism at all.
+     */
+    forceMode?: 'create' | 'edit' | 'show';
 }
 
 const DashAutoDrawer: React.FC<IDashAutoDrawer> = ({
     resourceConfig,
     recordId,
+    forceMode,
     type = 'normal',
     placement = 'right',
     width = '100%', // TODO: This is the default value for the drawer width, to be deprecated; must be set at a HoC.
@@ -41,6 +56,7 @@ const DashAutoDrawer: React.FC<IDashAutoDrawer> = ({
     ...props
 }) => {
     const location = useLocation();
+    const redirect = useRedirect();
 
     const DrawerComponent = type === 'swipeable' ? SwipeableDrawer : Drawer;
 
@@ -64,13 +80,22 @@ const DashAutoDrawer: React.FC<IDashAutoDrawer> = ({
     };
 
     const [open, setOpen] = useState<boolean>(
-        location.state?.hash
+        forceMode
             ? true
-            : hashTargetsThisResource(window.location.hash),
+            : location.state?.hash
+                ? true
+                : hashTargetsThisResource(window.location.hash),
     );
 
     const handleCloseDrawer = () => {
         setOpen(false);
+        // There's no list page to have come back to here (forceMode means we
+        // never redirected away from e.g. /model/create in the first place),
+        // so closing has to navigate there itself to land where closing the
+        // hash-driven drawer used to leave you.
+        if (forceMode) {
+            redirect('list', resourceConfig.model);
+        }
     };
 
     const handleOpenDrawer = () => {
@@ -105,25 +130,31 @@ const DashAutoDrawer: React.FC<IDashAutoDrawer> = ({
         };
     }, []);
 
-    let mode = 'edit';
-    const _createMatch = match(
-        `/${resourceConfig.model}/inline/create`,
-        String(localHash).substring(1),
-    );
-    if (_createMatch.matches) {
-        mode = 'create';
-    }
-    const _editMatch = match(
-        `/${resourceConfig.model}/inline/:id/:mode`,
-        String(localHash).substring(1),
-    );
-    mode =
-        _editMatch.matches && _editMatch.params?.mode
-            ? _editMatch.params.mode
-            : mode;
-    const resource_id = ['edit', 'show'].includes(mode)
-        ? _editMatch.params?.id
+    let mode: string = forceMode ?? 'edit';
+    let resource_id: string | null | undefined = forceMode
+        ? recordId != null ? String(recordId) : null
         : null;
+
+    if (!forceMode) {
+        const _createMatch = match(
+            `/${resourceConfig.model}/inline/create`,
+            String(localHash).substring(1),
+        );
+        if (_createMatch.matches) {
+            mode = 'create';
+        }
+        const _editMatch = match(
+            `/${resourceConfig.model}/inline/:id/:mode`,
+            String(localHash).substring(1),
+        );
+        mode =
+            _editMatch.matches && _editMatch.params?.mode
+                ? _editMatch.params.mode
+                : mode;
+        resource_id = ['edit', 'show'].includes(mode)
+            ? _editMatch.params?.id
+            : null;
+    }
 
     //const [placement, setPlacement] = useState<DrawerProps['anchor']>('right');
     //const [open, setOpen] = useState<boolean>(location.state?.hash ? true : false);

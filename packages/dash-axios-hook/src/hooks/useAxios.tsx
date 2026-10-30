@@ -77,7 +77,7 @@ const refreshAccessToken = async (axiosInstance: any): Promise<string | null> =>
 // Function to handle logout
 const handleLogout = () => {
 	console.log('[Axios] Logging out due to authentication failure');
-	debugger;
+
 	// Clear all auth data
 	//dashStorage.removeItem('token');
 	//dashStorage.removeItem('refreshToken');

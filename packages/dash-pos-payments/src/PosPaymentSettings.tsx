@@ -38,6 +38,9 @@ export const PosPaymentSettings: React.FC<{ pointOfSaleId: number | string; onSa
     const [selected, setSelected] = useState<string>(MANUAL);
     const [values, setValues] = useState<Record<string, unknown>>({});
     const [refundMode, setRefundMode] = useState<RefundMode>('connector');
+    // Payment test mode: the terminal is charged a small fixed amount, and that is what is booked.
+    const [testMode, setTestMode] = useState(false);
+    const [testAmount, setTestAmount] = useState('');
     const [terminals, setTerminals] = useState<Terminal[] | null>(null);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
@@ -68,6 +71,8 @@ export const PosPaymentSettings: React.FC<{ pointOfSaleId: number | string; onSa
                 setSelected(current.connector ?? MANUAL);
                 setValues(current.values ?? {});
                 setRefundMode(current.settings?.refund_mode === 'manual' ? 'manual' : 'connector');
+                setTestMode(!!current.settings?.test_mode);
+                setTestAmount(String(current.settings?.test_amount ?? ''));
                 const oauth = current.oauth;
                 setAccount(oauth?.connected || (oauth?.available && !current.secrets_set?.access_token) ? 'platform' : 'own');
             })
@@ -114,7 +119,10 @@ export const PosPaymentSettings: React.FC<{ pointOfSaleId: number | string; onSa
         setSaving(true);
         try {
             const saved = await api.configure(pointOfSaleId, connector
-                ? { connector: connector.key, params: values, settings: { refund_mode: refundMode }, verify: true }
+                ? {
+                    connector: connector.key, params: values, verify: true,
+                    settings: { refund_mode: refundMode, test_mode: testMode, ...(testAmount ? { test_amount: testAmount } : {}) },
+                }
                 : { connector: null });
             setConfig(saved);
             setValues(saved.values ?? {});
@@ -246,6 +254,22 @@ export const PosPaymentSettings: React.FC<{ pointOfSaleId: number | string; onSa
                         </TextField>
                     )}
 
+                    {connector && (
+                        <Stack spacing={1}>
+                            <FormControlLabel
+                                control={<Switch checked={testMode} onChange={(e) => setTestMode(e.target.checked)} />}
+                                label={translate('pos_payments.test_mode.label')}
+                            />
+                            {testMode && (
+                                <TextField
+                                    size="small" type="number" label={translate('pos_payments.test_mode.amount')} value={testAmount}
+                                    onChange={(e) => setTestAmount(e.target.value)} helperText={translate('pos_payments.test_mode.amount_help')}
+                                />
+                            )}
+                            {testMode && <Alert severity="warning">{translate('pos_payments.test_mode.active', { amount: testAmount || config?.settings?.test_amount || '' })}</Alert>}
+                            <Typography variant="body2" color="text.secondary">{translate('pos_payments.test_mode.help')}</Typography>
+                        </Stack>
+                    )}
                     <Stack direction="row">
                         <Button variant="contained" onClick={save} disabled={saving || (usesPlatform && !oauthConnected)} startIcon={saving ? <CircularProgress size={16} color="inherit" /> : null}>
                             {translate('pos_payments.save_verify')}

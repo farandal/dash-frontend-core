@@ -78,21 +78,21 @@ export const ResourceTemplate = (resourceConfig: IDashAutoAdminResourceConfig & 
 
                 <Route element={<MotionWrapper />}>
 
-                    {resourceConfig?.drawer === true && resourceConfig?.drawerOptions?.create !== false ? (
-                        <Route
-                            path={URL_PREFIX + PATH + '/create'}
-                            element={
-                                <DashResourceProvider resourceConfig={resourceConfig}><Redirect
-                                    stateHashPattern={
-                                        URL_PREFIX + PATH + '/inline/create'
-                                    }
-                                    method='list'
-                                    drawerMethod='create'
-                                    resourceConfig={resourceConfig}
-                                /></DashResourceProvider>
-                            }
-                        />
-                    ) : null}
+                    {/*
+                        A ".../create" redirect-to-list-with-hash route used to live
+                        here, so visiting the resource's own native create URL would
+                        bounce to the list page and let DashAutoDrawer re-open as a
+                        drawer by re-parsing a hash from navigation state. That route
+                        permanently shadowed react-admin's own create route (an exact
+                        path match always wins), so when the hash round trip didn't
+                        land - a real, recurring bug - NEITHER the drawer nor a
+                        fallback full-page form could open: the only route that could
+                        have rendered either was the one already redirected away from.
+                        ResourceTemplateCreate now renders the drawer itself (via
+                        DashAutoDrawer's forceMode="create") directly on this resource's
+                        native create route, which react-router is guaranteed to match,
+                        removing the redirect and the hash-timing dependency entirely.
+                    */}
                     {resourceConfig?.drawer === true && resourceConfig?.drawerOptions?.edit !== false ? (
                         <Route
                             path={URL_PREFIX + PATH + '/inline'}

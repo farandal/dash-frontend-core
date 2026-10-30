@@ -197,7 +197,8 @@ export const dashDefaultDataProviderOverrides: DashDataProviderOverrides = {
             const results = response.data;
 
             return {
-                data: results.data,
+                // Some endpoints wrap the list: { data: { data: [...], total } }
+                data: Array.isArray(results.data) ? results.data : (results.data?.data ?? []),
                 total:
                     results.data && results.data.total
                         ? results.data.total

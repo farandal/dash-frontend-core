@@ -152,6 +152,7 @@ export const PosPaymentsList: React.FC<{
                                     <Stack direction="row" spacing={0.5} sx={{ flexWrap: 'wrap' }}>
                                         <Chip size="small" color={statusColor(tx)} label={t(tx.needs_attention ? 'pos_payments.list.statuses.attention' : `pos_payments.list.statuses.${tx.status}`)} />
                                         {tx.provider === 'manual' && <Chip size="small" variant="outlined" label={t('pos_payments.list.manual')} />}
+                                        {tx.is_test && <Chip size="small" color="warning" label={t('pos_payments.list.test')} />}
                                         {!!tx.late_results_count && <Chip size="small" color="error" variant="outlined" label={t('pos_payments.list.late_short')} />}
                                     </Stack>
                                 </TableCell>

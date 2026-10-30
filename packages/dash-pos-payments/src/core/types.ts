@@ -43,7 +43,7 @@ export interface PaymentConfig {
     values: Record<string, unknown>;
     secrets_set: Record<string, boolean>;
     device_id: string | null;
-    settings: { refund_mode: RefundMode };
+    settings: { refund_mode: RefundMode; test_mode?: boolean; test_amount?: string };
     verified?: boolean | null;
     /** "Connect Mercado Pago" with the platform application (no secrets). */
     oauth?: { available: boolean; connected: boolean; mp_user_id: string | null; expires_at: string | null; error: string | null } | null;
@@ -67,6 +67,8 @@ export interface PosTransaction {
     amount: string;
     currency: string;
     status: TransactionStatus;
+    /** Payment test mode: the terminal was asked for less than `amount`. */
+    is_test?: boolean;
     final: boolean;
     approved: boolean;
     provider: string;
