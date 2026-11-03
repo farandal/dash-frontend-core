@@ -35,6 +35,17 @@ export interface AppSidebarMaterialProps {
    
 }
 
+// The user's own choice for the large (permanent sidebar) layout. It is kept apart from
+// 'dashNavExpanded', which is also written by the automatic collapse on small screens:
+// reading that back after a rotation turned a forced collapse into the "preference".
+// Only a user toggle updates this one, so it survives portrait <-> landscape changes.
+const DESKTOP_EXPANDED_KEY = 'dashNavDesktopExpanded';
+
+const readDesktopExpandedPreference = (): boolean | null => {
+    const stored = dashStorage.getItem(DESKTOP_EXPANDED_KEY);
+    return stored === 'true' ? true : stored === 'false' ? false : null;
+};
+
 const AppSidebarMaterial: React.FC<AppSidebarMaterialProps> = (props) => {
     const { sidebarPosition: propSidebarPosition} = props;
     const location = useLocation();
@@ -84,6 +95,21 @@ const AppSidebarMaterial: React.FC<AppSidebarMaterialProps> = (props) => {
         localNavSizeRef.current = localNavSize;
     }, [localNavExpanded, localNavSize]);
 
+    // Latest layout mode, readable from event callbacks without re-subscribing
+    const isMediumOrSmallerRef = React.useRef(isMediumOrSmaller);
+    React.useEffect(() => {
+        isMediumOrSmallerRef.current = isMediumOrSmaller;
+    }, [isMediumOrSmaller]);
+
+    // A user toggle: apply it, and remember it as the preference for the large layout.
+    // (In the burger/drawer layout the sidebar always starts closed, so there is nothing to remember.)
+    const applyUserExpanded = React.useCallback((expanded: boolean) => {
+        setLocalNavExpanded(expanded);
+        if (!isMediumOrSmallerRef.current) {
+            dashStorage.setItem(DESKTOP_EXPANDED_KEY, String(expanded));
+        }
+    }, []);
+
     // Persist nav state to localStorage when it changes
     React.useEffect(() => {
         dashStorage.setItem('dashNavExpanded', String(localNavExpanded));
@@ -96,11 +122,11 @@ const AppSidebarMaterial: React.FC<AppSidebarMaterialProps> = (props) => {
     // Listen for nav events from other components
     React.useEffect(() => {
         const unsubscribeToggle = NavEventManager.onToggleExpanded(() => {
-            setLocalNavExpanded(prev => !prev);
+            applyUserExpanded(!localNavExpandedRef.current);
         });
 
         const unsubscribeSet = NavEventManager.onSetExpanded((expanded) => {
-            setLocalNavExpanded(expanded);
+            applyUserExpanded(expanded);
         });
 
         // Listen for close drawer events (triggered when navigating on mobile)
@@ -115,7 +141,7 @@ const AppSidebarMaterial: React.FC<AppSidebarMaterialProps> = (props) => {
             unsubscribeSet();
             unsubscribeClose();
         };
-    }, [localNavSize]);
+    }, [localNavSize, applyUserExpanded]);
 
     // Memoize logo extraction to prevent unnecessary re-renders
     const logos = React.useMemo(() => ({
@@ -218,7 +244,7 @@ const AppSidebarMaterial: React.FC<AppSidebarMaterialProps> = (props) => {
     const toggleDrawer = (e) => {
         e.preventDefault();
         e.stopPropagation();
-        setLocalNavExpanded(!localNavExpanded);
+        applyUserExpanded(!localNavExpanded);
         // 🎯 NO Redux dispatch here - only local state update
         // Redux will be synced only on location changes
     };
@@ -240,16 +266,13 @@ const AppSidebarMaterial: React.FC<AppSidebarMaterialProps> = (props) => {
                 setLocalNavSize("small");
                 setLocalNavExpanded(false);
             } else {
-                // Large screen: respect stored preferences or apply defaults
-                const hasStoredNavSize = dashStorage.getItem('dashNavSize') !== null;
-                const hasStoredNavExpanded = dashStorage.getItem('dashNavExpanded') !== null;
-
-                if (!hasStoredNavSize) {
-                    setLocalNavSize("large");
-                }
-                if (!hasStoredNavExpanded) {
-                    setLocalNavExpanded(isLargeScreen);
-                }
+                // Large screen. The size follows the layout (as it does when a breakpoint is crossed
+                // live): 'dashNavSize' may still say "small" from an earlier portrait session, which
+                // would leave the permanent sidebar in drawer mode with no way to open it.
+                // Only the expanded/collapsed state is a user choice; 'dashNavExpanded' is not read
+                // back because the automatic collapse on small screens writes to it too.
+                setLocalNavSize("large");
+                setLocalNavExpanded(readDesktopExpandedPreference() ?? isLargeScreen);
             }
             
             setPrevIsSmall(isSmallScreen);
@@ -266,8 +289,9 @@ const AppSidebarMaterial: React.FC<AppSidebarMaterialProps> = (props) => {
                 // Crossed into medium or smaller screen - collapse nav
                 setLocalNavExpanded(false);
             } else {
-                // Crossed into larger screen - expand nav
-                setLocalNavExpanded(true);
+                // Crossed into larger screen (e.g. rotating the device): restore what the user
+                // chose for this layout; only a user who never chose gets the default (expanded).
+                setLocalNavExpanded(readDesktopExpandedPreference() ?? true);
             }
             
             setPrevIsMediumOrSmaller(isMediumOrSmaller);
@@ -286,8 +310,8 @@ const AppSidebarMaterial: React.FC<AppSidebarMaterialProps> = (props) => {
         // Check if we crossed the large breakpoint
         if (prevIsLarge !== isLargeScreen) {
             if (isLargeScreen && !isMediumOrSmaller) {
-                // Only expand when crossing into large AND not in secondary mode
-                setLocalNavExpanded(true);
+                // Only when crossing into large AND not in secondary mode; respect the user's choice
+                setLocalNavExpanded(readDesktopExpandedPreference() ?? true);
             }
             
             setPrevIsLarge(isLargeScreen);
