@@ -1013,3 +1013,24 @@
         white-space: nowrap !important;
     }
 }
+
+// Phone sidebar. On small screens the drawer is MUI's temporary (modal) variant, which
+// renders in a portal under <body> - outside .dash-app-layout - so the layout-scoped
+// collapsed-menu rules above never reach it. Without these, its icon rows kept MUI's
+// default 8px/16px left-aligned padding plus the icon's margins: the tiles sat ~9px right of
+// the round header buttons (toggle, avatar, bell, language, theme), which are centred.
+// The border marks where the scrolling list starts, so a tile clipped by scrolling no
+// longer looks like it is hidden under the buttons.
+.sidebar-drawer.MuiDrawer-modal[data-sidebar-position="left"],
+.sidebar-drawer.MuiDrawer-modal[data-sidebar-position="right"] {
+    .sidebar-list .MuiButtonBase-root.MuiListItemButton-root {
+        padding: 8px !important;
+        justify-content: center !important;
+    }
+    .sidebar-list .MuiListItemIcon-root {
+        margin: 0 !important;
+    }
+    .dash-layout-sider-scrollbar {
+        border-top: 1px solid rgba(255, 255, 255, 0.15);
+    }
+}

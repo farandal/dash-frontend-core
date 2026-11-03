@@ -402,7 +402,9 @@ const AppMaterialMenu: React.FC<IAppMenuExtended> = props => {
             }>
 
             <Box sx={{
-                paddingRight: '5px',
+                // Only beside the wide layout's logo: in the icon-only column it pushed the
+                // round buttons 2-3px off the axis of the menu tiles below them.
+                paddingRight: isHorizontal || (navExpanded && navSize === 'large') ? '5px' : 0,
                 //borderRight: navExpanded && navSize === 'large' ? '1px solid rgba(0, 0, 0, 0.12)' : 'none',
                 display: 'flex',
                 // Stacking the toggle button above the logo only fits a vertical (left/right)
